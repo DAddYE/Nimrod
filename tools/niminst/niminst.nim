@@ -166,10 +166,10 @@ proc parseCmdLine(c: var TConfigData) =
         break
     of cmdLongOption, cmdShortOption:
       case normalize(key.string)
-      of "help", "h": 
+      of "help", "h":
         stdout.write(Usage)
         quit(0)
-      of "version", "v": 
+      of "version", "v":
         stdout.write(Version & "\n")
         quit(0)
       of "o", "output": c.outdir = val
@@ -339,7 +339,7 @@ proc readCFiles(c: var TConfigData, osA, cpuA: int) =
       of cfgKeyValuePair:
         case section
         of "ccompiler": pathFlags(p, k.key, k.value, c.ccompiler)
-        of "linker": 
+        of "linker":
           pathFlags(p, k.key, k.value, c.linker)
           # HACK: we conditionally add ``-lm -ldl``, so remove them from the
           # linker flags:
@@ -469,23 +469,23 @@ when haveZipLib:
 proc debDist(c: var TConfigData) =
   if not existsFile("build.sh"): quit("No build.sh found.")
   if not existsFile("install.sh"): quit("No install.sh found.")
-  
+
   if c.debOpts.shortDesc == "": quit("shortDesc must be set in the .ini file.")
   if c.debOpts.licenses.len == 0:
     echo("[Warning] No licenses specified for .deb creation.")
-  
+
   # -- Copy files into /tmp/..
   echo("Copying source to tmp/niminst/deb/")
   var currentSource = getCurrentDir()
   var workingDir = getTempDir() / "niminst" / "deb"
   var upstreamSource = (c.name.toLower() & "-" & c.version)
-  
+
   createDir(workingDir / upstreamSource)
-  
+
   template copyNimDist(f, dest: string): stmt =
     createDir((workingDir / upstreamSource / dest).splitFile.dir)
     copyFile(currentSource / f, workingDir / upstreamSource / dest)
-  
+
   # Don't copy all files, only the ones specified in the config:
   copyNimDist(buildShFile, buildShFile)
   copyNimDist(installShFile, installShFile)

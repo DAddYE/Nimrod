@@ -22,14 +22,14 @@ type
                     ## or not is unspecified! However, compilation
                     ## in preventDeadlocks-mode guarantees re-entrancy.
   TCond* = TSysCond ## Nimrod condition variable
-  
+
   FLock* = object of TEffect ## effect that denotes that some lock operation
                              ## is performed
   FAquireLock* = object of FLock  ## effect that denotes that some lock is
                                   ## aquired
   FReleaseLock* = object of FLock ## effect that denotes that some lock is
                                   ## released
-  
+
 const
   noDeadlocks = defined(preventDeadlocks)
   maxLocksPerThread* = 10 ## max number of locks a thread can hold
@@ -37,7 +37,7 @@ const
                           ## when compiled with ``-d:preventDeadlocks``.
 
 var
-  deadlocksPrevented*: int ## counts the number of times a 
+  deadlocksPrevented*: int ## counts the number of times a
                            ## deadlock has been prevented
 
 when noDeadlocks:
@@ -45,20 +45,20 @@ when noDeadlocks:
     locksLen {.threadvar.}: int
     locks {.threadvar.}: array [0..MaxLocksPerThread-1, pointer]
 
-  proc OrderedLocks(): bool = 
+  proc orderedLocks(): bool =
     for i in 0 .. locksLen-2:
       if locks[i] >= locks[i+1]: return false
     result = true
 
-proc InitLock*(lock: var TLock) {.inline.} =
+proc initLock*(lock: var TLock) {.inline.} =
   ## Initializes the given lock.
   InitSysLock(lock)
 
-proc DeinitLock*(lock: var TLock) {.inline.} =
+proc deinitLock*(lock: var TLock) {.inline.} =
   ## Frees the resources associated with the lock.
   DeinitSys(lock)
 
-proc TryAcquire*(lock: var TLock): bool {.tags: [FAquireLock].} = 
+proc tryAcquire*(lock: var TLock): bool {.tags: [FAquireLock].} =
   ## Tries to acquire the given lock. Returns `true` on success.
   result = TryAcquireSys(lock)
   when noDeadlocks:
@@ -90,7 +90,7 @@ proc TryAcquire*(lock: var TLock): bool {.tags: [FAquireLock].} =
     inc(locksLen)
     assert OrderedLocks()
 
-proc Acquire*(lock: var TLock) {.tags: [FAquireLock].} =
+proc acquire*(lock: var TLock) {.tags: [FAquireLock].} =
   ## Acquires the given lock.
   when nodeadlocks:
     var p = addr(lock)
@@ -103,7 +103,7 @@ proc Acquire*(lock: var TLock) {.tags: [FAquireLock].} =
       else:
         # do the crazy stuff here:
         if locksLen >= len(locks):
-          raise newException(EResourceExhausted, 
+          raise newException(EResourceExhausted,
               "cannot acquire additional lock")
         while L >= i:
           ReleaseSys(cast[ptr TSysLock](locks[L])[])
@@ -124,7 +124,7 @@ proc Acquire*(lock: var TLock) {.tags: [FAquireLock].} =
         discard system.atomicInc(deadlocksPrevented, 1)
         assert OrderedLocks()
         return
-        
+
     # simply add to the end:
     if locksLen >= len(locks):
       raise newException(EResourceExhausted, "cannot acquire additional lock")
@@ -134,33 +134,33 @@ proc Acquire*(lock: var TLock) {.tags: [FAquireLock].} =
     assert OrderedLocks()
   else:
     AcquireSys(lock)
-  
-proc Release*(lock: var TLock) {.tags: [FReleaseLock].} =
+
+proc release*(lock: var TLock) {.tags: [FReleaseLock].} =
   ## Releases the given lock.
   when nodeadlocks:
     var p = addr(lock)
     var L = locksLen
     for i in countdown(L-1, 0):
-      if locks[i] == p: 
+      if locks[i] == p:
         for j in i..L-2: locks[j] = locks[j+1]
         dec locksLen
         break
   ReleaseSys(lock)
 
 
-proc InitCond*(cond: var TCond) {.inline.} =
+proc initCond*(cond: var TCond) {.inline.} =
   ## Initializes the given condition variable.
   InitSysCond(cond)
 
-proc DeinitCond*(cond: var TCond) {.inline.} =
+proc deinitCond*(cond: var TCond) {.inline.} =
   ## Frees the resources associated with the lock.
   DeinitSysCond(cond)
 
 proc wait*(cond: var TCond, lock: var TLock) {.inline.} =
-  ## waits on the condition variable `cond`. 
+  ## waits on the condition variable `cond`.
   WaitSysCond(cond, lock)
-  
+
 proc signal*(cond: var TCond) {.inline.} =
-  ## sends a signal to the condition variable `cond`. 
+  ## sends a signal to the condition variable `cond`.
   signalSysCond(cond)
 

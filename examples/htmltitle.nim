@@ -4,7 +4,7 @@
 
 import os, streams, parsexml, strutils
 
-if paramCount() < 1: 
+if paramCount() < 1:
   quit("Usage: htmltitle filename[.html]")
 
 var filename = addFileExt(ParamStr(1), "html")
@@ -15,11 +15,11 @@ open(x, s, filename)
 while true:
   x.next()
   case x.kind
-  of xmlElementStart: 
-    if cmpIgnoreCase(x.elementName, "title") == 0: 
+  of xmlElementStart:
+    if cmpIgnoreCase(x.elementName, "title") == 0:
       var title = ""
       x.next()  # skip "<title>"
-      while x.kind == xmlCharData: 
+      while x.kind == xmlCharData:
         title.add(x.charData)
         x.next()
       if x.kind == xmlElementEnd and cmpIgnoreCase(x.elementName, "title") == 0:
@@ -27,7 +27,7 @@ while true:
         quit(0) # Success!
       else:
         echo(x.errorMsgExpected("/title"))
-  
+
   of xmlEof: break # end of file reached
   else: nil # ignore other events
 

@@ -10,7 +10,7 @@ proc foo(s: expr[string]): string =
 
   const R = s.toUpper
   return R
-  
+
 echo foo("test 1")
 echo foo("test 2")
 echo foo("test " & $2)

@@ -9,7 +9,7 @@
 
 ## Implements the "compiler as a service" feature.
 
-import 
+import
   sockets,
   times, commands, options, msgs, nimconf,
   extccomp, strutils, os, platform, parseopt
@@ -27,23 +27,23 @@ var
     # the arguments to be passed to the program that
     # should be run
 
-proc ProcessCmdLine*(pass: TCmdLinePass, cmd: string) =
+proc processCmdLine*(pass: TCmdLinePass, cmd: string) =
   var p = parseopt.initOptParser(cmd)
   var argsCount = 0
-  while true: 
+  while true:
     parseopt.next(p)
     case p.kind
-    of cmdEnd: break 
-    of cmdLongOption, cmdShortOption: 
+    of cmdEnd: break
+    of cmdLongOption, cmdShortOption:
       # hint[X]:off is parsed as (p.key = "hint[X]", p.val = "off")
       # we fix this here
       var bracketLe = strutils.find(p.key, '[')
-      if bracketLe >= 0: 
+      if bracketLe >= 0:
         var key = substr(p.key, 0, bracketLe - 1)
         var val = substr(p.key, bracketLe + 1) & ':' & p.val
-        ProcessSwitch(key, val, pass, gCmdLineInfo)
-      else: 
-        ProcessSwitch(p.key, p.val, pass, gCmdLineInfo)
+        processSwitch(key, val, pass, gCmdLineInfo)
+      else:
+        processSwitch(p.key, p.val, pass, gCmdLineInfo)
     of cmdArgument:
       if argsCount == 0:
         options.command = p.key
@@ -55,7 +55,7 @@ proc ProcessCmdLine*(pass: TCmdLinePass, cmd: string) =
           arguments = cmdLineRest(p)
           break
       inc argsCount
-          
+
   if pass == passCmd2:
     if optRun notin gGlobalOptions and arguments != "":
       rawMessage(errArgsNeedRunOption, [])
@@ -77,10 +77,10 @@ proc serve*(action: proc (){.nimcall.}) =
       if line == "quit": quit()
       execute line
       echo ""
-      FlushFile(stdout)
+      flushFile(stdout)
 
   of "tcp", "":
-    var server = Socket()
+    var server = socket()
     let p = getConfigVar("server.port")
     let port = if p.len > 0: parseInt(p).TPort else: 6000.TPort
     server.bindAddr(port, getConfigVar("server.address"))

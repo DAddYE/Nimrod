@@ -16,7 +16,7 @@ type
   coff = int
   csize = int
 
-  AllocProc* = proc (handle: PHandle, suggested_size: csize): TBuf {.cdecl.}
+  allocProc* = proc (handle: PHandle, suggested_size: csize): TBuf {.cdecl.}
   ReadProc* = proc (stream: PStream, nread: cssize, buf: TBuf) {.cdecl.}
   ReadProc2* = proc (stream: PPipe, nread: cssize, buf: TBuf, pending: THandleType) {.cdecl.}
   WriteProc* = proc (req: PWrite, status: cint) {.cdecl.}
@@ -136,7 +136,7 @@ type
     fs_event_init* {.importc: "fs_event_init".}: uint64
 
   TLoop* {.pure, final, importc: "uv_loop_t", header: "uv.h".} = object
-    # ares_handles_* {.importc: "uv_ares_handles_".}: pointer # XXX: This seems to be a private field? 
+    # ares_handles_* {.importc: "uv_ares_handles_".}: pointer # XXX: This seems to be a private field?
     eio_want_poll_notifier* {.importc: "uv_eio_want_poll_notifier".}: TAsync
     eio_done_poll_notifier* {.importc: "uv_eio_done_poll_notifier".}: TAsync
     eio_poller* {.importc: "uv_eio_poller".}: TIdle
@@ -165,7 +165,7 @@ type
   TStream* {.pure, final, importc: "uv_stream_t", header: "uv.h".} = object
     loop* {.importc: "loop".}: PLoop
     typ* {.importc: "type".}: THandleType
-    alloc_cb* {.importc: "alloc_cb".}: AllocProc
+    alloc_cb* {.importc: "alloc_cb".}: allocProc
     read_cb* {.importc: "read_cb".}: ReadProc
     read2_cb* {.importc: "read2_cb".}: ReadProc2
     close_cb* {.importc: "close_cb".}: CloseProc
@@ -186,7 +186,7 @@ type
   TTcp* {.pure, final, importc: "uv_tcp_t", header: "uv.h".} = object
     loop* {.importc: "loop".}: PLoop
     typ* {.importc: "type".}: THandleType
-    alloc_cb* {.importc: "alloc_cb".}: AllocProc
+    alloc_cb* {.importc: "alloc_cb".}: allocProc
     read_cb* {.importc: "read_cb".}: ReadProc
     read2_cb* {.importc: "read2_cb".}: ReadProc2
     close_cb* {.importc: "close_cb".}: CloseProc
@@ -231,7 +231,7 @@ type
   tTTy* {.pure, final, importc: "uv_tty_t", header: "uv.h".} = object
     loop* {.importc: "loop".}: PLoop
     typ* {.importc: "type".}: THandleType
-    alloc_cb* {.importc: "alloc_cb".}: AllocProc
+    alloc_cb* {.importc: "alloc_cb".}: allocProc
     read_cb* {.importc: "read_cb".}: ReadProc
     read2_cb* {.importc: "read2_cb".}: ReadProc2
     close_cb* {.importc: "close_cb".}: CloseProc
@@ -243,7 +243,7 @@ type
   TPipe* {.pure, final, importc: "uv_pipe_t", header: "uv.h".} = object
     loop* {.importc: "loop".}: PLoop
     typ* {.importc: "type".}: THandleType
-    alloc_cb* {.importc: "alloc_cb".}: AllocProc
+    alloc_cb* {.importc: "alloc_cb".}: allocProc
     read_cb* {.importc: "read_cb".}: ReadProc
     read2_cb* {.importc: "read2_cb".}: ReadProc2
     close_cb* {.importc: "close_cb".}: CloseProc
@@ -432,10 +432,10 @@ proc listen*(stream: PStream, backlog: cint, cb: ConnectionProc): cint{.
 proc accept*(server: PStream, client: PStream): cint{.
     importc: "uv_accept", header: "uv.h".}
 
-proc read_start*(a2: PStream, alloc_cb: AllocProc, read_cb: ReadProc): cint{.
+proc read_start*(a2: PStream, alloc_cb: allocProc, read_cb: ReadProc): cint{.
     importc: "uv_read_start", header: "uv.h".}
 
-proc read_start*(a2: PStream, alloc_cb: AllocProc, read_cb: ReadProc2): cint{.
+proc read_start*(a2: PStream, alloc_cb: allocProc, read_cb: ReadProc2): cint{.
     importc: "uv_read2_start", header: "uv.h".}
 
 proc read_stop*(a2: PStream): cint{.
@@ -486,7 +486,7 @@ proc udp_send*(req: PUdpSend, handle: PUdp, bufs: ptr TBuf, bufcnt: cint, adr: T
 proc udp_send6*(req: PUdpSend, handle: PUdp, bufs: ptr TBuf, bufcnt: cint, adr: TSockAddrIn6, send_cb: UdpSendProc): cint{.
     importc: "uv_udp_send6", header: "uv.h".}
 
-proc udp_recv_start*(handle: PUdp, alloc_cb: AllocProc, recv_cb: UdpRecvProc): cint{.
+proc udp_recv_start*(handle: PUdp, alloc_cb: allocProc, recv_cb: UdpRecvProc): cint{.
     importc: "uv_udp_recv_start", header: "uv.h".}
 
 proc udp_recv_stop*(handle: PUdp): cint{.

@@ -55,7 +55,7 @@ proc copyStrLast(s: NimString, start, last: int): NimString {.compilerProc.} =
   if len > 0:
     result = rawNewString(len)
     result.len = len
-    c_memcpy(result.data, addr(s.data[start]), len * sizeof(Char))
+    c_memcpy(result.data, addr(s.data[start]), len * sizeof(char))
     #result.data[len] = '\0'
   else:
     result = rawNewString(len)
@@ -63,13 +63,13 @@ proc copyStrLast(s: NimString, start, last: int): NimString {.compilerProc.} =
 proc copyStr(s: NimString, start: int): NimString {.compilerProc.} =
   result = copyStrLast(s, start, s.len-1)
 
-proc toNimStr(str: CString, len: int): NimString {.compilerProc.} =
+proc toNimStr(str: cstring, len: int): NimString {.compilerProc.} =
   result = rawNewString(len)
   result.len = len
-  c_memcpy(result.data, str, (len+1) * sizeof(Char))
+  c_memcpy(result.data, str, (len+1) * sizeof(char))
   #result.data[len] = '\0' # readline relies on this!
 
-proc cstrToNimstr(str: CString): NimString {.compilerRtl.} =
+proc cstrToNimstr(str: cstring): NimString {.compilerRtl.} =
   result = toNimstr(str, c_strlen(str))
 
 proc copyString(src: NimString): NimString {.compilerRtl.} =
@@ -79,7 +79,7 @@ proc copyString(src: NimString): NimString {.compilerRtl.} =
     else:
       result = rawNewString(src.space)
       result.len = src.len
-      c_memcpy(result.data, src.data, (src.len + 1) * sizeof(Char))
+      c_memcpy(result.data, src.data, (src.len + 1) * sizeof(char))
 
 proc copyStringRC1(src: NimString): NimString {.compilerRtl.} =
   if src != nil:
@@ -98,8 +98,8 @@ proc hashString(s: string): int {.compilerproc.} =
   # the compiler needs exactly the same hash function!
   # this used to be used for efficient generation of string case statements
   var h = 0
-  for i in 0..Len(s)-1:
-    h = h +% Ord(s[i])
+  for i in 0..len(s)-1:
+    h = h +% ord(s[i])
     h = h +% h shl 10
     h = h xor (h shr 6)
   h = h +% h shl 3
@@ -203,7 +203,7 @@ proc setLengthSeq(seq: PGenericSeq, elemSize, newLen: int): PGenericSeq {.
                                GenericSeqSize))
   elif newLen < result.len:
     # we need to decref here, otherwise the GC leaks!
-    when not defined(boehmGC) and not defined(nogc) and 
+    when not defined(boehmGC) and not defined(nogc) and
          not defined(gcMarkAndSweep):
       when compileOption("gc", "v2"):
         for i in newLen..result.len-1:
@@ -220,7 +220,7 @@ proc setLengthSeq(seq: PGenericSeq, elemSize, newLen: int): PGenericSeq {.
           forAllChildrenAux(cast[pointer](cast[TAddress](result) +%
                             GenericSeqSize +% (i*%elemSize)),
                             extGetCellType(result).base, waZctDecRef)
-      
+
     # XXX: zeroing out the memory can still result in crashes if a wiped-out
     # cell is aliased by another pointer (ie proc paramter or a let variable).
     # This is a tought problem, because even if we don't zeroMem here, in the
@@ -236,7 +236,7 @@ proc nimIntToStr(x: int): string {.compilerRtl.} =
   result = newString(sizeof(x)*4)
   var i = 0
   var y = x
-  while True:
+  while true:
     var d = y div 10
     result[i] = chr(abs(int(y - d*10)) + ord('0'))
     inc(i)
@@ -259,7 +259,7 @@ proc nimInt64ToStr(x: int64): string {.compilerRtl.} =
   result = newString(sizeof(x)*4)
   var i = 0
   var y = x
-  while True:
+  while true:
     var d = y div 10
     result[i] = chr(abs(int(y - d*10)) + ord('0'))
     inc(i)

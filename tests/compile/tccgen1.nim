@@ -18,21 +18,21 @@ type
     FOwnerDocument: PDocument # Read-Only
     FParentNode: PNode # Read-Only
     prefix*: string # Setting this should change some values... TODO!
-  
+
   PElement* = ref Element
   Element = object of Node
     FTagName: string # Read-only
-  
-  PCharacterData = ref CharacterData
-  CharacterData = object of Node
+
+  PcharacterData = ref characterData
+  characterData = object of Node
     data*: string
-    
+
   PDocument* = ref Document
   Document = object of Node
     FImplementation: PDOMImplementation # Read-only
     FDocumentElement: PElement # Read-only
-    
-  PAttr* = ref Attr  
+
+  PAttr* = ref Attr
   Attr = object of Node
     FName: string # Read-only
     FSpecified: bool # Read-only
@@ -43,23 +43,23 @@ type
   DocumentFragment = object of Node
 
   PText* = ref Text
-  Text = object of CharacterData
-  
+  Text = object of characterData
+
   PComment* = ref comment
-  Comment = object of CharacterData
-  
+  Comment = object of characterData
+
   PCDataSection* = ref CDataSection
   CDataSection = object of Text
-    
+
   PProcessingInstruction* = ref ProcessingInstruction
   ProcessingInstruction = object of Node
     data*: string
     FTarget: string # Read-only
 
-proc `namespaceURI=`*(n: var PNode, value: string) = 
+proc `namespaceURI=`*(n: var PNode, value: string) =
   n.FNamespaceURI = value
-  
-proc main = 
+
+proc main =
   var n: PNode
   new(n)
   n.namespaceURI = "test"

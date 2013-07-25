@@ -51,7 +51,7 @@ write(stdout, "Du heißt " & s)
 
 type Bar [T; I:range] = array[I, T]
 proc foo*[T; I:range](a, b: Bar[T, I]): Bar[T, I] =
-  when len(a) != 3: 
+  when len(a) != 3:
     # Error: constant expression expected
     {.fatal:"Dimensions have to be 3".}
   #...

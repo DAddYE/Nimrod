@@ -79,7 +79,7 @@ proc `==`(a: TStaticStr, b: cstring): bool =
 proc write(f: TFile, s: TStaticStr) =
   write(f, cstring(s.data))
 
-proc ListBreakPoints() =
+proc listBreakPoints() =
   write(stdout, EndbBeg)
   write(stdout, "| Breakpoints:\n")
   for b in listBreakpoints():
@@ -117,7 +117,7 @@ proc writeVariable(stream: TFile, slot: TVarSlot) =
   write(stream, " = ")
   writeln(stream, dbgRepr(slot.address, slot.typ))
 
-proc ListFrame(stream: TFile, f: PFrame) =
+proc listFrame(stream: TFile, f: PFrame) =
   write(stream, EndbBeg)
   write(stream, "| Frame (")
   write(stream, f.len)
@@ -126,7 +126,7 @@ proc ListFrame(stream: TFile, f: PFrame) =
     writeln(stream, getLocal(f, i).name)
   write(stream, EndbEnd)
 
-proc ListLocals(stream: TFile, f: PFrame) =
+proc listLocals(stream: TFile, f: PFrame) =
   write(stream, EndbBeg)
   write(stream, "| Frame (")
   write(stream, f.len)
@@ -135,7 +135,7 @@ proc ListLocals(stream: TFile, f: PFrame) =
     writeVariable(stream, getLocal(f, i))
   write(stream, EndbEnd)
 
-proc ListGlobals(stream: TFile) =
+proc listGlobals(stream: TFile) =
   write(stream, EndbBeg)
   write(stream, "| Globals:\n")
   for i in 0 .. getGlobalLen()-1:
@@ -152,7 +152,7 @@ proc debugOut(msg: cstring) =
 
 proc dbgFatal(msg: cstring) =
   debugOut(msg)
-  dbgAborting = True # the debugger wants to abort
+  dbgAborting = true # the debugger wants to abort
   quit(1)
 
 proc dbgShowCurrentProc(dbgFramePointer: PFrame) =
@@ -176,7 +176,7 @@ proc scanAndAppendWord(src: cstring, a: var TStaticStr, start: int): int =
   result = start
   # skip whitespace:
   while src[result] in {'\t', ' '}: inc(result)
-  while True:
+  while true:
     case src[result]
     of 'a'..'z', '0'..'9': add(a, src[result])
     of '_': nil # just skip it
@@ -240,7 +240,7 @@ g, globals              display available global variables
 maxdisplay <integer>    set the display's recursion maximum
 """)
 
-proc InvalidCommand() =
+proc invalidCommand() =
   debugOut("[Warning] invalid command ignored (type 'h' for help) ")
 
 proc hasExt(s: cstring): bool =
@@ -272,7 +272,7 @@ proc createBreakPoint(s: cstring, start: int) =
     if not addBreakpoint(br.filename, br.low, br.high):
       debugOut("[Warning] no breakpoint could be set; out of breakpoint space ")
 
-proc BreakpointToggle(s: cstring, start: int) =
+proc breakpointToggle(s: cstring, start: int) =
   var a = parseBreakpoint(s, start)
   if not a.filename.isNil:
     var b = checkBreakpoints(a.filename, a.low)
@@ -296,7 +296,7 @@ proc dbgEvaluate(stream: TFile, s: cstring, start: int, f: PFrame) =
     for i in 0 .. f.len-1:
       let v = getLocal(f, i)
       if c_strcmp(v.name, dbgTemp.data) == 0:
-        writeVariable(stream, v)  
+        writeVariable(stream, v)
 
 proc dbgOut(s: cstring, start: int, currFrame: PFrame) =
   var dbgTemp: tstaticstr
@@ -326,7 +326,7 @@ proc dbgStackFrame(s: cstring, start: int, currFrame: PFrame) =
     close(stream)
 
 proc readLine(f: TFile, line: var TStaticStr): bool =
-  while True:
+  while true:
     var c = fgetc(f)
     if c < 0'i32:
       if line.len > 0: break
@@ -339,7 +339,7 @@ proc readLine(f: TFile, line: var TStaticStr): bool =
     add line, chr(int(c))
   result = true
 
-proc ListFilenames() =
+proc listFilenames() =
   write(stdout, EndbBeg)
   write(stdout, "| Files:\n")
   var i = 0
@@ -352,10 +352,10 @@ proc ListFilenames() =
   write(stdout, EndbEnd)
 
 proc dbgWriteStackTrace(f: PFrame)
-proc CommandPrompt() =
+proc commandPrompt() =
   # if we return from this routine, user code executes again
   var
-    again = True
+    again = true
     dbgFramePtr = framePtr # for going down and up the stack
     dbgDown = 0 # how often we did go down
     dbgTemp: TStaticStr
@@ -390,7 +390,7 @@ proc CommandPrompt() =
       dbgHelp()
     elif ?"q" or ?"quit":
       dbgState = dbQuiting
-      dbgAborting = True
+      dbgAborting = true
       again = false
       quit(1) # BUGFIX: quit with error code > 0
     elif ?"e" or ?"eval":
@@ -482,7 +482,7 @@ proc dbgWriteStackTrace(f: PFrame) =
     inc(i)
     b = b.prev
   for j in countdown(i-1, 0):
-    if tempFrames[j] == nil: 
+    if tempFrames[j] == nil:
       write(stdout, "(")
       write(stdout, skipped)
       write(stdout, " calls omitted) ...")

@@ -1,7 +1,7 @@
 discard """
   output: '''true'''
 """
-  
+
 import hashes, math
 
 
@@ -63,7 +63,7 @@ template rawInsertImpl() =
   data[h].val = val
   data[h].slot = seFilled
 
-proc RawGet[A, B](t: TTable[A, B], key: A): int =
+proc rawGet[A, B](t: TTable[A, B], key: A): int =
   rawGetImpl()
 
 proc `[]`*[A, B](t: TTable[A, B], key: A): B =
@@ -78,11 +78,11 @@ proc hasKey*[A, B](t: TTable[A, B], key: A): bool =
   ## returns true iff `key` is in the table `t`.
   result = rawGet(t, key) >= 0
 
-proc RawInsert[A, B](t: var TTable[A, B], data: var TKeyValuePairSeq[A, B],
+proc rawInsert[A, B](t: var TTable[A, B], data: var TKeyValuePairSeq[A, B],
                      key: A, val: B) =
   rawInsertImpl()
 
-proc Enlarge[A, B](t: var TTable[A, B]) =
+proc enlarge[A, B](t: var TTable[A, B]) =
   var n: TKeyValuePairSeq[A, B]
   newSeq(n, len(t.data) * growthFactor)
   for i in countup(0, high(t.data)):
@@ -116,7 +116,7 @@ proc initTable*[A, B](initialSize=64): TTable[A, B] =
   result.counter = 0
   newSeq(result.data, initialSize)
 
-proc toTable*[A, B](pairs: openarray[tuple[key: A, 
+proc toTable*[A, B](pairs: openarray[tuple[key: A,
                     val: B]]): TTable[A, B] =
   ## creates a new hash table that contains the given `pairs`.
   result = initTable[A, B](nextPowerOfTwo(pairs.len+10))
@@ -165,7 +165,7 @@ iterator values*[A](t: TCountTable[A]): int =
   for h in 0..high(t.data):
     if t.data[h].val != 0: yield t.data[h].val
 
-proc RawGet[A](t: TCountTable[A], key: A): int =
+proc rawGet[A](t: TCountTable[A], key: A): int =
   var h: THash = hash(key) and high(t.data) # start with real hash value
   while t.data[h].val != 0:
     if t.data[h].key == key: return h
@@ -183,14 +183,14 @@ proc hasKey*[A](t: TCountTable[A], key: A): bool =
   ## returns true iff `key` is in the table `t`.
   result = rawGet(t, key) >= 0
 
-proc RawInsert[A](t: TCountTable[A], data: var seq[tuple[key: A, val: int]],
+proc rawInsert[A](t: TCountTable[A], data: var seq[tuple[key: A, val: int]],
                   key: A, val: int) =
   var h: THash = hash(key) and high(data)
   while data[h].val != 0: h = nextTry(h, high(data))
   data[h].key = key
   data[h].val = val
 
-proc Enlarge[A](t: var TCountTable[A]) =
+proc enlarge[A](t: var TCountTable[A]) =
   var n: seq[tuple[key: A, val: int]]
   newSeq(n, len(t.data) * growthFactor)
   for i in countup(0, high(t.data)):
@@ -218,7 +218,7 @@ proc `$`*[A](t: TCountTable[A]): string =
   ## The `$` operator for count tables.
   dollarImpl()
 
-proc inc*[A](t: var TCountTable[A], key: A, val = 1) = 
+proc inc*[A](t: var TCountTable[A], key: A, val = 1) =
   ## increments `t[key]` by `val`.
   var index = RawGet(t, key)
   if index >= 0:
@@ -228,7 +228,7 @@ proc inc*[A](t: var TCountTable[A], key: A, val = 1) =
     RawInsert(t, t.data, key, val)
     inc(t.counter)
 
-proc Smallest*[A](t: TCountTable[A]): tuple[key: A, val: int] =
+proc smallest*[A](t: TCountTable[A]): tuple[key: A, val: int] =
   ## returns the largest (key,val)-pair. Efficiency: O(n)
   assert t.len > 0
   var minIdx = 0
@@ -237,7 +237,7 @@ proc Smallest*[A](t: TCountTable[A]): tuple[key: A, val: int] =
   result.key = t.data[minIdx].key
   result.val = t.data[minIdx].val
 
-proc Largest*[A](t: TCountTable[A]): tuple[key: A, val: int] =
+proc largest*[A](t: TCountTable[A]): tuple[key: A, val: int] =
   ## returns the (key,val)-pair with the largest `val`. Efficiency: O(n)
   assert t.len > 0
   var maxIdx = 0

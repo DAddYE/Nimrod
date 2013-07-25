@@ -10,10 +10,10 @@ type
     x: int
   TParticle = object of TThing
     a, b: int
-    
+
 method collide(a, b: TThing) {.inline.} =
   quit "to override!"
-  
+
 method collide(a: TThing, b: TUnit) {.inline.} =
   write stdout, "collide: thing, unit "
 

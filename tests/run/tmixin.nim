@@ -11,7 +11,7 @@ type
 proc test(f: TFoo1) =
   echo "1"
 
-proc Foo[T](f: T) =
+proc foo[T](f: T) =
   mixin test
   test(f)
 

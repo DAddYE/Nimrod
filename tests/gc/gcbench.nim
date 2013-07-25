@@ -70,14 +70,14 @@ const
   kMaxTreeDepth = 16
 
 # Nodes used by a tree of a given size
-proc TreeSize(i: int): int = return ((1 shl (i + 1)) - 1)
+proc treeSize(i: int): int = return ((1 shl (i + 1)) - 1)
 
 # Number of iterations to use for a given tree depth
-proc NumIters(i: int): int =
+proc numIters(i: int): int =
   return 2 * TreeSize(kStretchTreeDepth) div TreeSize(i)
 
 # Build tree top down, assigning to older objects.
-proc Populate(iDepth: int, thisNode: PNode) =
+proc populate(iDepth: int, thisNode: PNode) =
   if iDepth <= 0:
     return
   else:
@@ -87,17 +87,17 @@ proc Populate(iDepth: int, thisNode: PNode) =
     Populate(iDepth-1, thisNode.right)
 
 # Build tree bottom-up
-proc MakeTree(iDepth: int): PNode =
+proc makeTree(iDepth: int): PNode =
   if iDepth <= 0:
     new(result)
   else:
     return newNode(MakeTree(iDepth-1), MakeTree(iDepth-1))
 
-proc PrintDiagnostics() =
+proc printDiagnostics() =
   echo("Total memory available: " & $getTotalMem() & " bytes")
   echo("Free memory: " & $getFreeMem() & " bytes")
 
-proc TimeConstruction(depth: int) =
+proc timeConstruction(depth: int) =
   var
     root, tempTree: PNode
     iNumIters: int

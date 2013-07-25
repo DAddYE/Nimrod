@@ -9,7 +9,7 @@ type
   TTestObj = object of TObject
     x: string
 
-proc MakeObj(): TTestObj =
+proc makeObj(): TTestObj =
   result.x = "Hello"
 
 for i in 1 .. 1_000_000:

@@ -81,7 +81,7 @@ proc draw(o: PRenderer, p: PPrimitive) =
   p.bindBufs()
   setVertAttribPointers()
 
-  ?glDrawElements(p.vertMode.GLenum, p.indices.len.GLsizei, cGLunsignedShort, nil)
+  ?glDrawElements(p.vertMode.Glenum, p.indices.len.GLsizei, cGLunsignedShort, nil)
 
 proc draw*(o: PRenderer) =
   ?glClear(GLcolorBufferBit)

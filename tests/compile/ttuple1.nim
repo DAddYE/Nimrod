@@ -9,8 +9,8 @@ for key, val in items(romanNumbers):
   if c < romanNumbers.len: stdout.write(", ") else: echo""
 #echo""
 
-proc PrintBiTuple(t: tuple[k: string, v: int]): int =
+proc printBiTuple(t: tuple[k: string, v: int]): int =
   stdout.write(t.k & "=" & $t.v & ", ")
   return 0
-  
+
 

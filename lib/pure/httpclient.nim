@@ -12,27 +12,27 @@
 ##
 ## Retrieving a website
 ## ====================
-## 
+##
 ## This example uses HTTP GET to retrieve
 ## ``http://google.com``
-## 
+##
 ## .. code-block:: nimrod
 ##   echo(getContent("http://google.com"))
-## 
+##
 ## Using HTTP POST
 ## ===============
-## 
-## This example demonstrates the usage of the W3 HTML Validator, it 
+##
+## This example demonstrates the usage of the W3 HTML Validator, it
 ## uses ``multipart/form-data`` as the ``Content-Type`` to send the HTML to
-## the server. 
-## 
+## the server.
+##
 ## .. code-block:: nimrod
 ##   var headers: string = "Content-Type: multipart/form-data; boundary=xyz\c\L"
 ##   var body: string = "--xyz\c\L"
 ##   # soap 1.2 output
 ##   body.add("Content-Disposition: form-data; name=\"output\"\c\L")
 ##   body.add("\c\Lsoap12\c\L")
-##    
+##
 ##   # html
 ##   body.add("--xyz\c\L")
 ##   body.add("Content-Disposition: form-data; name=\"uploaded_file\";" &
@@ -40,7 +40,7 @@
 ##   body.add("Content-Type: text/html\c\L")
 ##   body.add("\c\L<html><head></head><body><p>test</p></body></html>\c\L")
 ##   body.add("--xyz--")
-##    
+##
 ##   echo(postContent("http://validator.w3.org/check", headers, body))
 ##
 ## SSL/TLS support
@@ -67,8 +67,8 @@ import sockets, strutils, parseurl, parseutils, strtabs
 
 type
   TResponse* = tuple[
-    version: string, 
-    status: string, 
+    version: string,
+    status: string,
     headers: PStringTable,
     body: string]
 
@@ -76,7 +76,7 @@ type
                                        ## does not conform to the implemented
                                        ## protocol
 
-  EHttpRequestErr* = object of ESynch ## Thrown in the ``getContent`` proc 
+  EHttpRequestErr* = object of ESynch ## Thrown in the ``getContent`` proc
                                       ## and ``postContent`` proc,
                                       ## when the server returns an error
 
@@ -87,7 +87,7 @@ proc httpError(msg: string) =
   new(e)
   e.msg = msg
   raise e
-  
+
 proc fileError(msg: string) =
   var e: ref EIO
   new(e)
@@ -131,15 +131,15 @@ proc parseChunks(s: TSocket, timeout: int): string =
     s.skip(2, timeout) # Skip \c\L
     # Trailer headers will only be sent if the request specifies that we want
     # them: http://tools.ietf.org/html/rfc2616#section-3.6.1
-  
+
 proc parseBody(s: TSocket, headers: PStringTable, timeout: int): string =
   result = ""
   if headers["Transfer-Encoding"] == "chunked":
     result = parseChunks(s, timeout)
   else:
-    # -REGION- Content-Length
+    # -REGION- Content-length
     # (http://tools.ietf.org/html/rfc2616#section-4.4) NR.3
-    var contentLengthHeader = headers["Content-Length"]
+    var contentLengthHeader = headers["Content-length"]
     if contentLengthHeader != "":
       var length = contentLengthHeader.parseint()
       result = newString(length)
@@ -154,12 +154,12 @@ proc parseBody(s: TSocket, headers: PStringTable, timeout: int): string =
                   " got: " & $received)
     else:
       # (http://tools.ietf.org/html/rfc2616#section-4.4) NR.4 TODO
-      
+
       # -REGION- Connection: Close
       # (http://tools.ietf.org/html/rfc2616#section-4.4) NR.5
       if headers["Connection"] == "close":
         var buf = ""
-        while True:
+        while true:
           buf = newString(4000)
           let r = s.recv(addr(buf[0]), 4000, timeout)
           if r == 0: break
@@ -172,7 +172,7 @@ proc parseResponse(s: TSocket, getBody: bool, timeout: int): TResponse =
   var fullyRead = false
   var line = ""
   result.headers = newStringTable(modeCaseInsensitive)
-  while True:
+  while true:
     line = ""
     linei = 0
     s.readLine(line, timeout)
@@ -205,7 +205,7 @@ proc parseResponse(s: TSocket, getBody: bool, timeout: int): TResponse =
       if line[linei] != ':': httpError("invalid headers")
       inc(linei) # Skip :
       linei += skipWhitespace(line, linei)
-      
+
       result.headers[name] = line[linei.. -1]
   if not fullyRead:
     httpError("Connection was closed before full request has been made")
@@ -220,17 +220,17 @@ type
                       ## correspond to a GET request, but without the response
                       ## body.
     httpGET,          ## Retrieves the specified resource.
-    httpPOST,         ## Submits data to be processed to the identified 
-                      ## resource. The data is included in the body of the 
+    httpPOST,         ## Submits data to be processed to the identified
+                      ## resource. The data is included in the body of the
                       ## request.
     httpPUT,          ## Uploads a representation of the specified resource.
     httpDELETE,       ## Deletes the specified resource.
-    httpTRACE,        ## Echoes back the received request, so that a client 
+    httpTRACE,        ## Echoes back the received request, so that a client
                       ## can see what intermediate servers are adding or
                       ## changing in the request.
-    httpOPTIONS,      ## Returns the HTTP methods that the server supports 
+    httpOPTIONS,      ## Returns the HTTP methods that the server supports
                       ## for specified address.
-    httpCONNECT       ## Converts the request connection to a transparent 
+    httpCONNECT       ## Converts the request connection to a transparent
                       ## TCP/IP tunnel, usually used for proxies.
 
 when not defined(ssl):
@@ -239,7 +239,7 @@ when not defined(ssl):
 else:
   let defaultSSLContext = newContext(verifyMode = CVerifyNone)
 
-proc request*(url: string, httpMethod = httpGET, extraHeaders = "", 
+proc request*(url: string, httpMethod = httpGET, extraHeaders = "",
               body = "",
               sslContext: PSSLContext = defaultSSLContext,
               timeout = -1, userAgent = defUserAgent): TResponse =
@@ -252,13 +252,13 @@ proc request*(url: string, httpMethod = httpGET, extraHeaders = "",
   headers.add(" /" & r.path & r.query)
 
   headers.add(" HTTP/1.1\c\L")
-  
+
   add(headers, "Host: " & r.hostname & "\c\L")
   if userAgent != "":
     add(headers, "User-Agent: " & userAgent & "\c\L")
   add(headers, extraHeaders)
   add(headers, "\c\L")
-  
+
   var s = socket()
   var port = TPort(80)
   if r.scheme == "https":
@@ -270,7 +270,7 @@ proc request*(url: string, httpMethod = httpGET, extraHeaders = "",
                 "SSL support is not available. Cannot connect over SSL.")
   if r.port != "":
     port = TPort(r.port.parseInt)
-  
+
   if timeout == -1:
     s.connect(r.hostname, port)
   else:
@@ -278,15 +278,15 @@ proc request*(url: string, httpMethod = httpGET, extraHeaders = "",
   s.send(headers)
   if body != "":
     s.send(body)
-  
+
   result = parseResponse(s, httpMethod != httpHEAD, timeout)
   s.close()
-  
+
 proc redirection(status: string): bool =
   const redirectionNRs = ["301", "302", "303", "307"]
   for i in items(redirectionNRs):
     if status.startsWith(i):
-      return True
+      return true
 
 proc getNewLocation(lastUrl: string, headers: PStringTable): string =
   result = headers["Location"]
@@ -296,7 +296,7 @@ proc getNewLocation(lastUrl: string, headers: PStringTable): string =
   if r.hostname == "" and r.path != "":
     let origParsed = parseURL(lastUrl)
     result = origParsed.hostname & "/" & r.path
-  
+
 proc get*(url: string, extraHeaders = "", maxRedirects = 5,
           sslContext: PSSLContext = defaultSSLContext,
           timeout = -1, userAgent = defUserAgent): TResponse =
@@ -313,7 +313,7 @@ proc get*(url: string, extraHeaders = "", maxRedirects = 5,
       result = request(redirectTo, httpGET, extraHeaders, "", sslContext,
                        timeout, userAgent)
       lastUrl = redirectTo
-      
+
 proc getContent*(url: string, extraHeaders = "", maxRedirects = 5,
                  sslContext: PSSLContext = defaultSSLContext,
                  timeout = -1, userAgent = defUserAgent): string =
@@ -327,18 +327,18 @@ proc getContent*(url: string, extraHeaders = "", maxRedirects = 5,
     raise newException(EHTTPRequestErr, r.status)
   else:
     return r.body
-  
+
 proc post*(url: string, extraHeaders = "", body = "",
            maxRedirects = 5,
            sslContext: PSSLContext = defaultSSLContext,
            timeout = -1, userAgent = defUserAgent): TResponse =
   ## | POSTs ``body`` to the ``url`` and returns a ``TResponse`` object.
-  ## | This proc adds the necessary Content-Length header.
+  ## | This proc adds the necessary Content-length header.
   ## | This proc also handles redirection.
   ## | Extra headers can be specified and must be separated by ``\c\L``.
   ## | An optional timeout can be specified in miliseconds, if reading from the
   ## server takes longer than specified an ETimeout exception will be raised.
-  var xh = extraHeaders & "Content-Length: " & $len(body) & "\c\L"
+  var xh = extraHeaders & "Content-length: " & $len(body) & "\c\L"
   result = request(url, httpPOST, xh, body, sslContext, timeout, userAgent)
   var lastUrl = ""
   for i in 1..maxRedirects:
@@ -348,7 +348,7 @@ proc post*(url: string, extraHeaders = "", body = "",
       result = request(redirectTo, meth, xh, body, sslContext, timeout,
                        userAgent)
       lastUrl = redirectTo
-  
+
 proc postContent*(url: string, extraHeaders = "", body = "",
                   maxRedirects = 5,
                   sslContext: PSSLContext = defaultSSLContext,
@@ -364,7 +364,7 @@ proc postContent*(url: string, extraHeaders = "", body = "",
     raise newException(EHTTPRequestErr, r.status)
   else:
     return r.body
-  
+
 proc downloadFile*(url: string, outputFilename: string,
                    sslContext: PSSLContext = defaultSSLContext,
                    timeout = -1, userAgent = defUserAgent) =
@@ -388,13 +388,13 @@ when isMainModule:
 
   #var r = get("http://validator.w3.org/check?uri=http%3A%2F%2Fgoogle.com&
   #  charset=%28detect+automatically%29&doctype=Inline&group=0")
-  
+
   var headers: string = "Content-Type: multipart/form-data; boundary=xyz\c\L"
   var body: string = "--xyz\c\L"
   # soap 1.2 output
   body.add("Content-Disposition: form-data; name=\"output\"\c\L")
   body.add("\c\Lsoap12\c\L")
-  
+
   # html
   body.add("--xyz\c\L")
   body.add("Content-Disposition: form-data; name=\"uploaded_file\";" &

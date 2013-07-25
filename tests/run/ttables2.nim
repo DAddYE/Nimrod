@@ -5,7 +5,7 @@ discard """
 
 import tables
 
-proc TestHashIntInt() =
+proc testHashIntInt() =
   var tab = initTable[int,int]()
   for i in 1..1_000_000:
     tab[i] = i

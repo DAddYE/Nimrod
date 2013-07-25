@@ -13,11 +13,11 @@ proc genErrors(s: string) =
   else:
     raise newException(EsomeotherErr, "bla")
 
-when True:
+when true:
   try:
     genErrors("errssor!")
   except ESomething:
     echo("Error happened")
-  
+
 
 

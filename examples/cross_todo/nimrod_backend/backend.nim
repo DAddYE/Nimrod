@@ -18,7 +18,7 @@ type
                               ## getModificationDate accessor.
 
   TPagedParams* = object
-    ## Contains parameters for a query, initialize default values with
+    ## contains parameters for a query, initialize default values with
     ## initDefaults().
     pageSize*: int64          ## Lines per returned query page, -1 for
                               ## unlimited.
@@ -202,7 +202,7 @@ proc getPagedTodos*(conn: TDbConn; params: TPagedParams;
   #echo("Query " & string(query))
   #echo("args: " & args.join(", "))
 
-  var newId: biggestInt
+  var newId: BiggestInt
   for row in conn.fastRows(query, args):
     let numChars = row[0].parseBiggestInt(newId)
     assert(numChars > 0, "Huh, couldn't parse identifier from database?")

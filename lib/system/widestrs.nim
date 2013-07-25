@@ -11,16 +11,16 @@
 ## module! Do not import it directly!
 
 type
-  TUtf16Char* = distinct int16
-  WideCString* = ref array[0.. 1_000_000, TUtf16Char]
+  TUtf16char* = distinct int16
+  Widecstring* = ref array[0.. 1_000_000, TUtf16char]
 
-proc len*(w: WideCString): int =
+proc len*(w: Widecstring): int =
   ## returns the length of a widestring. This traverses the whole string to
   ## find the binary zero end marker!
   while int16(w[result]) != 0'i16: inc result
 
 const
-  UNI_REPLACEMENT_CHAR = TUtf16Char(0xFFFD'i16)
+  UNI_REPLACEMENT_CHAR = TUtf16char(0xFFFD'i16)
   UNI_MAX_BMP = 0x0000FFFF
   UNI_MAX_UTF16 = 0x0010FFFF
   UNI_MAX_UTF32 = 0x7FFFFFFF
@@ -77,39 +77,39 @@ iterator runes(s: cstring): int =
     fastRuneAt(s, i, result, true)
     yield result
 
-proc newWideCString*(source: cstring, L: int): WideCString =
+proc newWidecstring*(source: cstring, L: int): Widecstring =
   unsafeNew(result, L * 4 + 2)
-  #result = cast[wideCString](alloc(L * 4 + 2))
+  #result = cast[widecstring](alloc(L * 4 + 2))
   var d = 0
   for ch in runes(source):
     if ch <=% UNI_MAX_BMP:
       if ch >=% UNI_SUR_HIGH_START and ch <=% UNI_SUR_LOW_END:
         result[d] = UNI_REPLACEMENT_CHAR
       else:
-        result[d] = TUtf16Char(toU16(ch))
+        result[d] = TUtf16char(toU16(ch))
     elif ch >% UNI_MAX_UTF16:
       result[d] = UNI_REPLACEMENT_CHAR
     else:
       let ch = ch -% halfBase
-      result[d] = TUtf16Char(toU16((ch shr halfShift) +% UNI_SUR_HIGH_START))
+      result[d] = TUtf16char(toU16((ch shr halfShift) +% UNI_SUR_HIGH_START))
       inc d
-      result[d] = TUtf16Char(toU16((ch and halfMask) +% UNI_SUR_LOW_START))
+      result[d] = TUtf16char(toU16((ch and halfMask) +% UNI_SUR_LOW_START))
     inc d
-  result[d] = TUtf16Char(0'i16)
+  result[d] = TUtf16char(0'i16)
 
-proc newWideCString*(s: cstring): WideCString =
+proc newWidecstring*(s: cstring): Widecstring =
   if s.isNil: return nil
 
   when not defined(c_strlen):
-    proc c_strlen(a: CString): int {.nodecl, noSideEffect, importc: "strlen".}
+    proc c_strlen(a: cstring): int {.nodecl, noSideEffect, importc: "strlen".}
 
   let L = cstrlen(s)
-  result = newWideCString(s, L)
+  result = newWidecstring(s, L)
 
-proc newWideCString*(s: string): WideCString =
-  result = newWideCString(s, s.len)
+proc newWidecstring*(s: string): Widecstring =
+  result = newWidecstring(s, s.len)
 
-proc `$`*(w: wideCString, estimate: int): string =
+proc `$`*(w: widecstring, estimate: int): string =
   result = newStringOfCap(estimate + estimate shr 2)
 
   var i = 0
@@ -124,7 +124,7 @@ proc `$`*(w: wideCString, estimate: int): string =
         ch = ((ch -% UNI_SUR_HIGH_START) shr halfShift) +%
               (ch2 -% UNI_SUR_LOW_START) +% halfBase
         inc i
-        
+
     if ch <=% 127:
       result.add chr(ch)
     elif ch <=% 0x07FF:
@@ -145,5 +145,5 @@ proc `$`*(w: wideCString, estimate: int): string =
       result.add chr(0xFFFD shr 6 and ones(6) or 0b10_0000_00)
       result.add chr(0xFFFD and ones(6) or 0b10_0000_00)
 
-proc `$`*(s: WideCString): string =
+proc `$`*(s: Widecstring): string =
   result = s $ 80

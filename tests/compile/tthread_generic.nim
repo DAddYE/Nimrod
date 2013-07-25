@@ -13,7 +13,7 @@ proc handleThreadFunc(arg: TThreadFuncArgs[int]){.thread.} =
   var output = func()
   callback(output)
 
-proc `@||->`*[T](func: proc(): T {.thread.}, 
+proc `@||->`*[T](func: proc(): T {.thread.},
                  callback: proc(val: T){.thread.}): TThread[TThreadFuncArgs[T]] =
   var thr: TThread[TThreadFuncArgs[T]]
   var args: TThreadFuncArgs[T]
@@ -31,7 +31,7 @@ when isMainModule:
     return 1
   proc callbackFunc(val: int) {.thread.} =
     echo($(val))
-   
+
   var thr = (testFunc @||-> callbackFunc)
   echo("test")
   joinThread(thr)

@@ -2,7 +2,7 @@ import os
 import strutils
 
 proc fannkuch (n: int): int =
-    var 
+    var
         count: seq[int]
         maxFlips = 0
         m        = n-1
@@ -20,7 +20,7 @@ proc fannkuch (n: int): int =
         perm[i]  = i
     count[n] = n+1
 
-    while True:
+    while true:
         if check < 30:
             for i in items (perm1):
                 write (stdout, $(i+1))
@@ -58,7 +58,7 @@ proc fannkuch (n: int): int =
                 for i in 0 .. r-1:
                     perm1[i] = perm1[i+1]
                 perm1[r] = tmp
-                
+
                 dec (count[r])
                 if count[r] > 0:
                     break makePerm

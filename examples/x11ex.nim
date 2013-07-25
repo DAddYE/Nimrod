@@ -3,7 +3,7 @@ import xlib, xutil, x, keysym
 const
   WINDOW_WIDTH = 400
   WINDOW_HEIGHT = 300
-  
+
 var
   width, height: cuint
   display: PDisplay
@@ -12,7 +12,7 @@ var
   win: TWindow
   sizeHints: TXSizeHints
 
-proc create_window = 
+proc create_window =
   width = WINDOW_WIDTH
   height = WINDOW_HEIGHT
 
@@ -35,14 +35,14 @@ proc create_window =
   size_hints.max_height = height.cint
   discard XSetStandardProperties(display, win, "Simple Window", "window",
                          0, nil, 0, addr(size_hints))
-  discard XSelectInput(display, win, ButtonPressMask or KeyPressMask or 
-                                     PointerMotionMask)
+  discard XSelectInput(display, win, ButtonPressMask or KeyPressMask or
+                                     pointerMotionMask)
   discard XMapWindow(display, win)
 
 proc close_window =
   discard XDestroyWindow(display, win)
   discard XCloseDisplay(display)
-    
+
 var
   xev: TXEvent
 
@@ -53,7 +53,7 @@ proc process_event =
     key = XLookupKeysym(cast[ptr TXKeyEvent](addr(xev)), 0)
     if key.int != 0:
       echo("keyboard event")
-  of ButtonPressMask, PointerMotionMask:
+  of ButtonPressMask, pointerMotionMask:
     Echo("Mouse event")
   else: nil
 

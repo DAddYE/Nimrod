@@ -8,19 +8,19 @@
 #
 
 ## This module contains code for reading from `stdin`:idx:. On UNIX the GNU
-## readline library is wrapped and set up to provide default key bindings 
+## readline library is wrapped and set up to provide default key bindings
 ## (e.g. you can navigate with the arrow keys). On Windows ``system.readLine``
-## is used. This suffices because Windows' console already provides the 
+## is used. This suffices because Windows' console already provides the
 ## wanted functionality.
 
 when defined(Windows):
-  proc ReadLineFromStdin*(prompt: string): TaintedString {.
-                          tags: [FReadIO, FWriteIO].} = 
+  proc readLineFromStdin*(prompt: string): TaintedString {.
+                          tags: [FReadIO, FWriteIO].} =
     ## Reads a line from stdin.
     stdout.write(prompt)
     result = readLine(stdin)
 
-  proc ReadLineFromStdin*(prompt: string, line: var TaintedString): bool {.
+  proc readLineFromStdin*(prompt: string, line: var TaintedString): bool {.
                           tags: [FReadIO, FWriteIO].} =
     ## Reads a `line` from stdin. `line` must not be
     ## ``nil``! May throw an IO exception.
@@ -33,8 +33,8 @@ when defined(Windows):
 
 else:
   import readline, history
-    
-  proc ReadLineFromStdin*(prompt: string): TaintedString {.
+
+  proc readLineFromStdin*(prompt: string): TaintedString {.
                           tags: [FReadIO, FWriteIO].} =
     var buffer = readline.readLine(prompt)
     if isNil(buffer): quit(0)
@@ -43,7 +43,7 @@ else:
       add_history(buffer)
     readline.free(buffer)
 
-  proc ReadLineFromStdin*(prompt: string, line: var TaintedString): bool {.
+  proc readLineFromStdin*(prompt: string, line: var TaintedString): bool {.
                           tags: [FReadIO, FWriteIO].} =
     var buffer = readline.readLine(prompt)
     if isNil(buffer): quit(0)
@@ -55,8 +55,8 @@ else:
     result = true
 
   # initialization:
-  # disable auto-complete: 
+  # disable auto-complete:
   proc doNothing(a, b: cint): cint {.cdecl, procvar.} = nil
-  
+
   discard readline.bind_key('\t'.ord, doNothing)
 

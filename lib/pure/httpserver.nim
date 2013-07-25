@@ -45,7 +45,7 @@ proc badRequest(client: TSocket) =
   send(client, "HTTP/1.1 400 Bad Request" & wwwNL)
   sendTextContentType(client)
   send(client, "<p>Your browser sent a bad request, " &
-               "such as a POST without a Content-Length.</p>" & wwwNL)
+               "such as a POST without a Content-length.</p>" & wwwNL)
 
 when false:
   proc cannotExec(client: TSocket) =
@@ -90,14 +90,14 @@ proc serveFile*(client: TSocket, filename: string) =
     headers(client, filename)
     const bufSize = 8000 # != 8K might be good for memory manager
     var buf = alloc(bufsize)
-    while True:
+    while true:
       var bytesread = readBuffer(f, buf, bufsize)
       if bytesread > 0:
         var byteswritten = send(client, buf, bytesread)
         if bytesread != bytesWritten:
           dealloc(buf)
           close(f)
-          OSError(OSLastError())
+          osError(osLastError())
       if bytesread != bufSize: break
     dealloc(buf)
     close(f)
@@ -143,9 +143,9 @@ when false:
     if meth == reqPost:
       # get from client and post to CGI program:
       var buf = alloc(contentLength)
-      if recv(client, buf, contentLength) != contentLength: 
+      if recv(client, buf, contentLength) != contentLength:
         dealloc(buf)
-        OSError()
+        osError()
       var inp = process.inputStream
       inp.writeData(buf, contentLength)
       dealloc(buf)
@@ -178,7 +178,7 @@ when false:
     else:
       path = "." & data[1]
     # path starts with "/", by adding "." in front of it we serve files from cwd
-    
+
     if cmpIgnoreCase(data[0], "GET") == 0:
       if q >= 0:
         cgi = true
@@ -219,16 +219,16 @@ type
     headers*: PStringTable ## headers with which the client made the request
     body*: string          ## only set with POST requests
     ip*: string            ## ip address of the requesting client
-  
+
   PAsyncHTTPServer* = ref TAsyncHTTPServer
   TAsyncHTTPServer = object of TServer
     asyncSocket: PAsyncSocket
-  
+
 proc open*(s: var TServer, port = TPort(80)) =
   ## creates a new server at port `port`. If ``port == 0`` a free port is
   ## acquired that can be accessed later by the ``port`` proc.
   s.socket = socket(AF_INET)
-  if s.socket == InvalidSocket: OSError(OSLastError())
+  if s.socket == InvalidSocket: osError(osLastError())
   bindAddr(s.socket, port)
   listen(s.socket)
 
@@ -260,7 +260,7 @@ proc next*(s: var TServer) =
   var data = ""
   s.client.readLine(data)
   if data == "":
-    # Socket disconnected 
+    # Socket disconnected
     s.client.close()
     next(s)
     return
@@ -281,9 +281,9 @@ proc next*(s: var TServer) =
       s.client.close()
       next(s)
       return
-  
+
   var i = skipWhitespace(data)
-  if skipIgnoreCase(data, "GET") > 0: 
+  if skipIgnoreCase(data, "GET") > 0:
     s.reqMethod = "GET"
     inc(i, 3)
   elif skipIgnoreCase(data, "POST") > 0:
@@ -294,7 +294,7 @@ proc next*(s: var TServer) =
     s.client.close()
     next(s)
     return
-  
+
   if s.reqMethod == "POST":
     # Check for Expect header
     if s.headers.hasKey("Expect"):
@@ -302,12 +302,12 @@ proc next*(s: var TServer) =
         s.client.sendStatus("100 Continue")
       else:
         s.client.sendStatus("417 Expectation Failed")
-  
+
     # Read the body
     # - Check for Content-length header
-    if s.headers.hasKey("Content-Length"):
+    if s.headers.hasKey("Content-length"):
       var contentLength = 0
-      if parseInt(s.headers["Content-Length"], contentLength) == 0:
+      if parseInt(s.headers["Content-length"], contentLength) == 0:
         badRequest(s.client)
         s.client.close()
         next(s)
@@ -338,13 +338,13 @@ proc next*(s: var TServer) =
       s.client.close()
       next(s)
       return
-  
+
   var L = skipWhitespace(data, i)
   inc(i, L)
   # XXX we ignore "HTTP/1.1" etc. for now here
   var query = 0
   var last = i
-  while last < data.len and data[last] notin whitespace: 
+  while last < data.len and data[last] notin whitespace:
     if data[last] == '?' and query == 0: query = last
     inc(last)
   if query > 0:
@@ -358,7 +358,7 @@ proc close*(s: TServer) =
   ## closes the server (and the socket the server uses).
   close(s.socket)
 
-proc run*(handleRequest: proc (client: TSocket, 
+proc run*(handleRequest: proc (client: TSocket,
                                path, query: string): bool {.closure.},
           port = TPort(80)) =
   ## encapsulates the server object and main loop
@@ -386,7 +386,7 @@ proc nextAsync(s: PAsyncHTTPServer) =
   var data = ""
   s.client.readLine(data)
   if data == "":
-    # Socket disconnected 
+    # Socket disconnected
     s.client.close()
     return
   var header = ""
@@ -405,9 +405,9 @@ proc nextAsync(s: PAsyncHTTPServer) =
     else:
       s.client.close()
       return
-  
+
   var i = skipWhitespace(data)
-  if skipIgnoreCase(data, "GET") > 0: 
+  if skipIgnoreCase(data, "GET") > 0:
     s.reqMethod = "GET"
     inc(i, 3)
   elif skipIgnoreCase(data, "POST") > 0:
@@ -417,7 +417,7 @@ proc nextAsync(s: PAsyncHTTPServer) =
     unimplemented(s.client)
     s.client.close()
     return
-  
+
   if s.reqMethod == "POST":
     # Check for Expect header
     if s.headers.hasKey("Expect"):
@@ -425,12 +425,12 @@ proc nextAsync(s: PAsyncHTTPServer) =
         s.client.sendStatus("100 Continue")
       else:
         s.client.sendStatus("417 Expectation Failed")
-  
+
     # Read the body
     # - Check for Content-length header
-    if s.headers.hasKey("Content-Length"):
+    if s.headers.hasKey("Content-length"):
       var contentLength = 0
-      if parseInt(s.headers["Content-Length"], contentLength) == 0:
+      if parseInt(s.headers["Content-length"], contentLength) == 0:
         badRequest(s.client)
         s.client.close()
         return
@@ -457,13 +457,13 @@ proc nextAsync(s: PAsyncHTTPServer) =
       badRequest(s.client)
       s.client.close()
       return
-  
+
   var L = skipWhitespace(data, i)
   inc(i, L)
   # XXX we ignore "HTTP/1.1" etc. for now here
   var query = 0
   var last = i
-  while last < data.len and data[last] notin whitespace: 
+  while last < data.len and data[last] notin whitespace:
     if data[last] == '?' and query == 0: query = last
     inc(last)
   if query > 0:
@@ -473,7 +473,7 @@ proc nextAsync(s: PAsyncHTTPServer) =
     s.query = ""
     s.path = data.substr(i, last-1)
 
-proc asyncHTTPServer*(handleRequest: proc (server: PAsyncHTTPServer, client: TSocket, 
+proc asyncHTTPServer*(handleRequest: proc (server: PAsyncHTTPServer, client: TSocket,
                         path, query: string): bool {.closure.},
                      port = TPort(80), address = ""): PAsyncHTTPServer =
   ## Creates an Asynchronous HTTP server at ``port``.
@@ -486,14 +486,14 @@ proc asyncHTTPServer*(handleRequest: proc (server: PAsyncHTTPServer, client: TSo
       let quit = handleRequest(capturedRet, capturedRet.client, capturedRet.path,
                                capturedRet.query)
       if quit: capturedRet.asyncSocket.close()
-  
+
   capturedRet.asyncSocket.bindAddr(port, address)
   capturedRet.asyncSocket.listen()
   if port == TPort(0):
     capturedRet.port = getSockName(capturedRet.asyncSocket)
   else:
     capturedRet.port = port
-  
+
   capturedRet.client = InvalidSocket
   capturedRet.reqMethod = ""
   capturedRet.body = ""
@@ -518,11 +518,11 @@ when isMainModule:
   echo("httpserver running on port ", s.port)
   while true:
     next(s)
-    
+
     inc(counter)
     s.client.send("Hello, Andreas, for the $#th time. $# ? $#" % [
       $counter, s.path, s.query] & wwwNL)
-    
+
     close(s.client)
   close(s)
 

@@ -9,7 +9,7 @@ proc incx(x: var int) = # is built-in proc
 proc decx(x: var int) =
   x = x - 1
 
-proc First(y: var int) =
+proc first(y: var int) =
   var x: int
   i_ncx(x)
   if x == 10:
@@ -20,7 +20,7 @@ proc First(y: var int) =
     else:
       x=11
 
-proc TestLoops() =
+proc testLoops() =
   var i, j: int
   while i >= 0:
     if i mod 3 == 0:
@@ -31,11 +31,11 @@ proc TestLoops() =
       break
     break
 
-  while True:
+  while true:
     break
 
 
-proc Foo(n: int): int =
+proc foo(n: int): int =
     var
         a, old: int
         b, c: bool
@@ -76,7 +76,7 @@ proc main[T]() =
   b = (1, 2, 3)
   myType = b
   echo myType
-  
+
   var myType2: MyType2
   var c: MyType2
   c = (1.0, 2.0)

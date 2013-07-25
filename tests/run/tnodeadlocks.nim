@@ -14,9 +14,9 @@ var
 
 proc doNothing() = nil
 
-proc threadFunc(interval: tuple[a, b: int]) {.thread.} = 
+proc threadFunc(interval: tuple[a, b: int]) {.thread.} =
   doNothing()
-  for i in interval.a..interval.b: 
+  for i in interval.a..interval.b:
     when nodeadlocks:
       case i mod 6
       of 0:
@@ -47,7 +47,7 @@ proc threadFunc(interval: tuple[a, b: int]) {.thread.} =
     else:
       Acquire(L) # lock stdout
       Acquire(M)
-      
+
     echo i
     os.sleep(10)
     when nodeadlocks:

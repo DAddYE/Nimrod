@@ -7,7 +7,7 @@
 #    distribution, for details about the copyright.
 #
 
-## Thread var support for crappy architectures that lack native support for 
+## Thread var support for crappy architectures that lack native support for
 ## thread local storage. (**Thank you Mac OS X!**)
 
 # included from cgen.nim
@@ -15,14 +15,14 @@
 proc emulatedThreadVars(): bool {.inline.} =
   result = {optThreads, optTlsEmulation} <= gGlobalOptions
 
-proc AccessThreadLocalVar(p: BProc, s: PSym) =
+proc accessThreadLocalVar(p: BProc, s: PSym) =
   if emulatedThreadVars() and not p.ThreadVarAccessed:
     p.ThreadVarAccessed = true
     p.module.usesThreadVars = true
     appf(p.procSec(cpsLocals), "\tNimThreadVars* NimTV;$n")
     app(p.procSec(cpsInit),
       ropecg(p.module, "\tNimTV = (NimThreadVars*) #GetThreadLocalVars();$n"))
-    
+
 var
   nimtv: PRope                 # nimrod thread vars; the struct body
   nimtvDeps: seq[PType] = @[]  # type deps: every module needs whole struct
@@ -49,14 +49,14 @@ proc declareThreadVar(m: BModule, s: PSym, isExtern: bool) =
     if optThreads in gGlobalOptions: app(m.s[cfsVars], "NIM_THREADVAR ")
     app(m.s[cfsVars], getTypeDesc(m, s.loc.t))
     appf(m.s[cfsVars], " $1;$n", [s.loc.r])
-  
+
 proc generateThreadLocalStorage(m: BModule) =
   if nimtv != nil and (m.usesThreadVars or sfMainModule in m.module.flags):
     for t in items(nimtvDeps): discard getTypeDesc(m, t)
     appf(m.s[cfsSeqTypes], "typedef struct {$1} NimThreadVars;$n", [nimtv])
 
-proc GenerateThreadVarsSize(m: BModule) =
+proc generateThreadVarsSize(m: BModule) =
   if nimtv != nil:
-    app(m.s[cfsProcs], 
-      "NI NimThreadVarsSize(){return (NI)sizeof(NimThreadVars);}" & tnl)
+    app(m.s[cfsProcs],
+      "NI NimThreadVarsSize(){return (NI)sizeof(NimThreadVars);}" & Tnl)
 

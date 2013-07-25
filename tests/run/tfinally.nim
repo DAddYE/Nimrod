@@ -6,17 +6,17 @@ here
 """
 # Test return in try statement:
 
-proc main: int = 
+proc main: int =
   try:
     try:
       return 1
     finally:
       echo("came")
       return 2
-  finally: 
+  finally:
     echo("here ")
     return 3
-    
+
 echo main() #OUT came here 3
 
 

@@ -5,7 +5,7 @@ type
 
 proc newButton*(onClick: TButtonClicked) =
   nil
-  
+
 proc main() =
   newButton(onClick = proc(b: PButton) =
     var requestomat = 12

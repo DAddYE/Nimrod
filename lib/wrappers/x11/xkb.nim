@@ -68,20 +68,20 @@
 #        2004/09/15 - 16      - Convertion from the c header of XKB.h.
 #
 
-import 
+import
   X, Xlib
 
-proc XkbCharToInt*(v: int8): int16
-proc XkbIntTo2Chars*(i: int16, h, L: var int8)
-proc Xkb2CharsToInt*(h, L: int8): int16
+proc xkbCharToInt*(v: int8): int16
+proc xkbIntTo2chars*(i: int16, h, L: var int8)
+proc xkb2charsToInt*(h, L: int8): int16
   #
   #          Common data structures and access macros
-  #        
+  #
 type
   PWord* = ptr array[0..64_000, int16]
   PByte* = ptr byte
   PXkbStatePtr* = ptr TXkbStateRec
-  TXkbStateRec*{.final.} = object 
+  TXkbStateRec*{.final.} = object
     group*: int8
     locked_group*: int8
     base_group*: int16
@@ -98,31 +98,31 @@ type
     ptr_buttons*: int16
 
 
-proc XkbModLocks*(s: PXkbStatePtr): int8
-proc XkbStateMods*(s: PXkbStatePtr): int16
-proc XkbGroupLock*(s: PXkbStatePtr): int8
-proc XkbStateGroup*(s: PXkbStatePtr): int16
-proc XkbStateFieldFromRec*(s: PXkbStatePtr): int
-proc XkbGrabStateFromRec*(s: PXkbStatePtr): int
-type 
+proc xkbModLocks*(s: PXkbStatePtr): int8
+proc xkbStateMods*(s: PXkbStatePtr): int16
+proc xkbGroupLock*(s: PXkbStatePtr): int8
+proc xkbStateGroup*(s: PXkbStatePtr): int16
+proc xkbStateFieldFromRec*(s: PXkbStatePtr): int
+proc xkbGrabStateFromRec*(s: PXkbStatePtr): int
+type
   PXkbModsPtr* = ptr TXkbModsRec
-  TXkbModsRec*{.final.} = object 
+  TXkbModsRec*{.final.} = object
     mask*: int8               # effective mods
     real_mods*: int8
     vmods*: int16
 
 
-type 
+type
   PXkbKTMapEntryPtr* = ptr TXkbKTMapEntryRec
-  TXkbKTMapEntryRec*{.final.} = object 
+  TXkbKTMapEntryRec*{.final.} = object
     active*: bool
     level*: int8
     mods*: TXkbModsRec
 
 
-type 
+type
   PXkbKeyTypePtr* = ptr TXkbKeyTypeRec
-  TXkbKeyTypeRec*{.final.} = object 
+  TXkbKeyTypeRec*{.final.} = object
     mods*: TXkbModsRec
     num_levels*: int8
     map_count*: int8
@@ -132,25 +132,25 @@ type
     level_names*: TAtom
 
 
-proc XkbNumGroups*(g: int16): int16
-proc XkbOutOfRangeGroupInfo*(g: int16): int16
-proc XkbOutOfRangeGroupAction*(g: int16): int16
-proc XkbOutOfRangeGroupNumber*(g: int16): int16
-proc XkbSetGroupInfo*(g, w, n: int16): int16
-proc XkbSetNumGroups*(g, n: int16): int16
+proc xkbNumGroups*(g: int16): int16
+proc xkbOutOfRangeGroupInfo*(g: int16): int16
+proc xkbOutOfRangeGroupAction*(g: int16): int16
+proc xkbOutOfRangeGroupNumber*(g: int16): int16
+proc xkbSetGroupInfo*(g, w, n: int16): int16
+proc xkbSetNumGroups*(g, n: int16): int16
   #
   #          Structures and access macros used primarily by the server
-  #        
-type 
+  #
+type
   PXkbBehavior* = ptr TXkbBehavior
-  TXkbBehavior*{.final.} = object 
+  TXkbBehavior*{.final.} = object
     theType*: int8
     data*: int8
 
 
-type 
+type
   PXkbModAction* = ptr TXkbModAction
-  TXkbModAction*{.final.} = object 
+  TXkbModAction*{.final.} = object
     theType*: int8
     flags*: int8
     mask*: int8
@@ -159,21 +159,21 @@ type
     vmods2*: int8
 
 
-proc XkbModActionVMods*(a: PXkbModAction): int16
-proc XkbSetModActionVMods*(a: PXkbModAction, v: int8)
-type 
+proc xkbModActionVMods*(a: PXkbModAction): int16
+proc xkbSetModActionVMods*(a: PXkbModAction, v: int8)
+type
   PXkbGroupAction* = ptr TXkbGroupAction
-  TXkbGroupAction*{.final.} = object 
+  TXkbGroupAction*{.final.} = object
     theType*: int8
     flags*: int8
     group_XXX*: int8
 
 
-proc XkbSAGroup*(a: PXkbGroupAction): int8
-proc XkbSASetGroupProc*(a: PXkbGroupAction, g: int8)
-type 
+proc xkbSAGroup*(a: PXkbGroupAction): int8
+proc xkbSASetGroupProc*(a: PXkbGroupAction, g: int8)
+type
   PXkbISOAction* = ptr TXkbISOAction
-  TXkbISOAction*{.final.} = object 
+  TXkbISOAction*{.final.} = object
     theType*: int8
     flags*: int8
     mask*: int8
@@ -184,9 +184,9 @@ type
     vmods2*: int8
 
 
-type 
+type
   PXkbPtrAction* = ptr TXkbPtrAction
-  TXkbPtrAction*{.final.} = object 
+  TXkbPtrAction*{.final.} = object
     theType*: int8
     flags*: int8
     high_XXX*: int8
@@ -195,43 +195,43 @@ type
     low_YYY*: int8
 
 
-proc XkbPtrActionX*(a: PXkbPtrAction): int16
-proc XkbPtrActionY*(a: PXkbPtrAction): int16
-proc XkbSetPtrActionX*(a: PXkbPtrAction, x: int8)
-proc XkbSetPtrActionY*(a: PXkbPtrAction, y: int8)
-type 
+proc xkbPtrActionX*(a: PXkbPtrAction): int16
+proc xkbPtrActionY*(a: PXkbPtrAction): int16
+proc xkbSetPtrActionX*(a: PXkbPtrAction, x: int8)
+proc xkbSetPtrActionY*(a: PXkbPtrAction, y: int8)
+type
   PXkbPtrBtnAction* = ptr TXkbPtrBtnAction
-  TXkbPtrBtnAction*{.final.} = object 
+  TXkbPtrBtnAction*{.final.} = object
     theType*: int8
     flags*: int8
     count*: int8
     button*: int8
 
 
-type 
+type
   PXkbPtrDfltAction* = ptr TXkbPtrDfltAction
-  TXkbPtrDfltAction*{.final.} = object 
+  TXkbPtrDfltAction*{.final.} = object
     theType*: int8
     flags*: int8
     affect*: int8
     valueXXX*: int8
 
 
-proc XkbSAPtrDfltValue*(a: PXkbPtrDfltAction): int8
-proc XkbSASetPtrDfltValue*(a: PXkbPtrDfltAction, c: pointer)
-type 
+proc xkbSAPtrDfltValue*(a: PXkbPtrDfltAction): int8
+proc xkbSASetPtrDfltValue*(a: PXkbPtrDfltAction, c: pointer)
+type
   PXkbSwitchScreenAction* = ptr TXkbSwitchScreenAction
-  TXkbSwitchScreenAction*{.final.} = object 
+  TXkbSwitchScreenAction*{.final.} = object
     theType*: int8
     flags*: int8
     screenXXX*: int8
 
 
-proc XkbSAScreen*(a: PXkbSwitchScreenAction): int8
-proc XkbSASetScreen*(a: PXkbSwitchScreenAction, s: pointer)
-type 
+proc xkbSAScreen*(a: PXkbSwitchScreenAction): int8
+proc xkbSASetScreen*(a: PXkbSwitchScreenAction, s: pointer)
+type
   PXkbCtrlsAction* = ptr TXkbCtrlsAction
-  TXkbCtrlsAction*{.final.} = object 
+  TXkbCtrlsAction*{.final.} = object
     theType*: int8
     flags*: int8
     ctrls3*: int8
@@ -240,19 +240,19 @@ type
     ctrls0*: int8
 
 
-proc XkbActionSetCtrls*(a: PXkbCtrlsAction, c: int8)
-proc XkbActionCtrls*(a: PXkbCtrlsAction): int16
-type 
+proc xkbActionSetCtrls*(a: PXkbCtrlsAction, c: int8)
+proc xkbActionCtrls*(a: PXkbCtrlsAction): int16
+type
   PXkbMessageAction* = ptr TXkbMessageAction
-  TXkbMessageAction*{.final.} = object 
+  TXkbMessageAction*{.final.} = object
     theType*: int8
     flags*: int8
     message*: array[0..5, char]
 
 
-type 
+type
   PXkbRedirectKeyAction* = ptr TXkbRedirectKeyAction
-  TXkbRedirectKeyAction*{.final.} = object 
+  TXkbRedirectKeyAction*{.final.} = object
     theType*: int8
     new_key*: int8
     mods_mask*: int8
@@ -263,13 +263,13 @@ type
     vmods1*: int8
 
 
-proc XkbSARedirectVMods*(a: PXkbRedirectKeyAction): int16
-proc XkbSARedirectSetVMods*(a: PXkbRedirectKeyAction, m: int8)
-proc XkbSARedirectVModsMask*(a: PXkbRedirectKeyAction): int16
-proc XkbSARedirectSetVModsMask*(a: PXkbRedirectKeyAction, m: int8)
-type 
+proc xkbSARedirectVMods*(a: PXkbRedirectKeyAction): int16
+proc xkbSARedirectSetVMods*(a: PXkbRedirectKeyAction, m: int8)
+proc xkbSARedirectVModsMask*(a: PXkbRedirectKeyAction): int16
+proc xkbSARedirectSetVModsMask*(a: PXkbRedirectKeyAction, m: int8)
+type
   PXkbDeviceBtnAction* = ptr TXkbDeviceBtnAction
-  TXkbDeviceBtnAction*{.final.} = object 
+  TXkbDeviceBtnAction*{.final.} = object
     theType*: int8
     flags*: int8
     count*: int8
@@ -277,11 +277,11 @@ type
     device*: int8
 
 
-type 
+type
   PXkbDeviceValuatorAction* = ptr TXkbDeviceValuatorAction
   TXkbDeviceValuatorAction*{.final.} = object  #
                                                #      Macros to classify key actions
-                                               #                
+                                               #
     theType*: int8
     device*: int8
     v1_what*: int8
@@ -292,26 +292,26 @@ type
     v2_value*: int8
 
 
-const 
+const
   XkbAnyActionDataSize* = 7
 
-type 
+type
   PXkbAnyAction* = ptr TXkbAnyAction
-  TXkbAnyAction*{.final.} = object 
+  TXkbAnyAction*{.final.} = object
     theType*: int8
     data*: array[0..XkbAnyActionDataSize - 1, int8]
 
 
-proc XkbIsModAction*(a: PXkbAnyAction): bool
-proc XkbIsGroupAction*(a: PXkbAnyAction): bool
-proc XkbIsPtrAction*(a: PXkbAnyAction): bool
-type 
+proc xkbIsModAction*(a: PXkbAnyAction): bool
+proc xkbIsGroupAction*(a: PXkbAnyAction): bool
+proc xkbIsPtrAction*(a: PXkbAnyAction): bool
+type
   PXkbAction* = ptr TXkbAction
   TXkbAction*{.final.} = object  #
                                  #      XKB request codes, used in:
                                  #      -  xkbReqType field of all requests
                                  #      -  requestMinor field of some events
-                                 #                
+                                 #
     any*: TXkbAnyAction
     mods*: TXkbModAction
     group*: TXkbGroupAction
@@ -328,7 +328,7 @@ type
     theType*: int8
 
 
-const 
+const
   X_kbUseExtension* = 0
   X_kbSelectEvents* = 1
   X_kbBell* = 3
@@ -357,9 +357,9 @@ const
   X_kbSetDebuggingFlags* = 101 #
                                #      In the X sense, XKB reports only one event.
                                #      The type field of all XKB events is XkbEventCode
-                               #                
+                               #
 
-const 
+const
   XkbEventCode* = 0
   XkbNumberEvents* = XkbEventCode + 1 #
                                       #      XKB has a minor event code so it can use one X event code for
@@ -367,9 +367,9 @@ const
                                       #       - reported in the xkbType field of all XKB events.
                                       #       - XkbSelectEventDetails: Indicates the event for which event details
                                       #         are being changed
-                                      #                
+                                      #
 
-const 
+const
   XkbNewKeyboardNotify* = 0
   XkbMapNotify* = 1
   XkbStateNotify* = 2
@@ -384,9 +384,9 @@ const
   XkbExtensionDeviceNotify* = 11 #
                                  #      Event Mask:
                                  #       - XkbSelectEvents:  Specifies event interest.
-                                 #    
+                                 #
 
-const 
+const
   XkbNewKeyboardNotifyMask* = int(1) shl 0
   XkbMapNotifyMask* = int(1) shl 1
   XkbStateNotifyMask* = int(1) shl 2
@@ -401,9 +401,9 @@ const
   XkbExtensionDeviceNotifyMask* = int(1) shl 11
   XkbAllEventsMask* = 0x00000FFF #
                                  #      NewKeyboardNotify event details:
-                                 #    
+                                 #
 
-const 
+const
   XkbNKN_KeycodesMask* = int(1) shl 0
   XkbNKN_GeometryMask* = int(1) shl 1
   XkbNKN_DeviceIDMask* = int(1) shl 2
@@ -411,9 +411,9 @@ const
                                             #      AccessXNotify event types:
                                             #       - The 'what' field of AccessXNotify events reports the
                                             #         reason that the event was generated.
-                                            #                
+                                            #
 
-const 
+const
   XkbAXN_SKPress* = 0
   XkbAXN_SKAccept* = 1
   XkbAXN_SKReject* = 2
@@ -424,9 +424,9 @@ const
                          #      AccessXNotify details:
                          #      - Used as an event detail mask to limit the conditions under which
                          #        AccessXNotify events are reported
-                         #                
+                         #
 
-const 
+const
   XkbAXN_SKPressMask* = int(1) shl 0
   XkbAXN_SKAcceptMask* = int(1) shl 1
   XkbAXN_SKRejectMask* = int(1) shl 2
@@ -440,9 +440,9 @@ const
                                         #         the keyboard state components have changed.
                                         #       - Used as an event detail mask to limit the conditions under
                                         #         which StateNotify events are reported.
-                                        #                
+                                        #
 
-const 
+const
   XkbModifierStateMask* = int(1) shl 0
   XkbModifierBaseMask* = int(1) shl 1
   XkbModifierLatchMask* = int(1) shl 2
@@ -484,9 +484,9 @@ const
                                           #         that drive the indicator.
                                           #       - Specifies the boolean controls affected by the SetControls and
                                           #         LockControls key actions.
-                                          #                
+                                          #
 
-const 
+const
   XkbRepeatKeysMask* = int(1) shl 0
   XkbSlowKeysMask* = int(1) shl 1
   XkbBounceKeysMask* = int(1) shl 2
@@ -509,29 +509,29 @@ const
   XkbAllBooleanCtrlsMask* = 0x00001FFF
   XkbAllControlsMask* = 0xF8001FFF #
                                    #      Compatibility Map Compontents:
-                                   #       - Specifies the components to be allocated in XkbAllocCompatMap.
-                                   #                
+                                   #       - Specifies the components to be allocated in XkballocCompatMap.
+                                   #
 
-const 
+const
   XkbSymInterpMask* = 1 shl 0
   XkbGroupCompatMask* = 1 shl 1
   XkbAllCompatMask* = 0x00000003 #
                                  #      Assorted constants and limits.
-                                 #                
+                                 #
 
-const 
+const
   XkbAllIndicatorsMask* = 0xFFFFFFFF #
                                      #      Map components masks:
                                      #      Those in AllMapComponentsMask:
                                      #       - Specifies the individual fields to be loaded or changed for the
                                      #         GetMap and SetMap requests.
                                      #      Those in ClientInfoMask:
-                                     #       - Specifies the components to be allocated by XkbAllocClientMap.
+                                     #       - Specifies the components to be allocated by XkballocClientMap.
                                      #      Those in ServerInfoMask:
-                                     #       - Specifies the components to be allocated by XkbAllocServerMap.
-                                     #                
+                                     #       - Specifies the components to be allocated by XkballocServerMap.
+                                     #
 
-const 
+const
   XkbKeyTypesMask* = 1 shl 0
   XkbKeySymsMask* = 1 shl 1
   XkbModifierMapMask* = 1 shl 2
@@ -549,10 +549,10 @@ const
                                                                           #       - Specifies the names to be loaded or changed for the GetNames and
                                                                           #         SetNames requests.
                                                                           #       - Specifies the names that have changed in a NamesNotify event.
-                                                                          #       - Specifies the names components to be allocated by XkbAllocNames.
-                                                                          #                
+                                                                          #       - Specifies the names components to be allocated by XkballocNames.
+                                                                          #
 
-const 
+const
   XkbKeycodesNameMask* = 1 shl 0
   XkbGeometryNameMask* = 1 shl 1
   XkbSymbolsNameMask* = 1 shl 2
@@ -572,9 +572,9 @@ const
                                 #      Miscellaneous event details:
                                 #      - event detail masks for assorted events that don't reall
                                 #        have any details.
-                                #                
+                                #
 
-const 
+const
   XkbAllStateEventsMask* = XkbAllStateComponentsMask
   XkbAllMapEventsMask* = XkbAllMapComponentsMask
   XkbAllControlEventsMask* = XkbAllControlsMask
@@ -594,9 +594,9 @@ const
                                            #                            found.
                                            #      The low byte of the resourceID for this error contains the device
                                            #      id, class specifier or feedback id that failed.
-                                           #                
+                                           #
 
-const 
+const
   XkbKeyboard* = 0
   XkbNumberErrors* = 1
   XkbErr_BadDevice* = 0x000000FF
@@ -604,9 +604,9 @@ const
   XkbErr_BadId* = 0x000000FD #
                              #      Keyboard Components Mask:
                              #      - Specifies the components that follow a GetKeyboardByNameReply
-                             #                
+                             #
 
-const 
+const
   XkbClientMapMask* = int(1) shl 0
   XkbServerMapMask* = int(1) shl 1
   XkbCompatMapMask* = int(1) shl 2
@@ -622,9 +622,9 @@ const
                                      #         fields of an XkbControlsRec specify the Access X options to be
                                      #         changed if the keyboard times out and the values to which they
                                      #         should be changed.
-                                     #                
+                                     #
 
-const 
+const
   XkbAX_SKPressFBMask* = int(1) shl 0
   XkbAX_SKAcceptFBMask* = int(1) shl 1
   XkbAX_FeatureFBMask* = int(1) shl 2
@@ -656,18 +656,18 @@ const
                                      #      XkbAllXIIds is used to get information about all device indicator
                                      #                        feedbacks without having to list them.
                                      #      XkbXINone is used to indicate that no class or id has been specified.
-                                     #      XkbLegalXILedClass(c)  True if 'c' specifies a legal class with LEDs
-                                     #      XkbLegalXIBellClass(c) True if 'c' specifies a legal class with bells
-                                     #      XkbExplicitXIDevice(d) True if 'd' explicitly specifies a device
-                                     #      XkbExplicitXIClass(c)  True if 'c' explicitly specifies a device class
-                                     #      XkbExplicitXIId(c)     True if 'i' explicitly specifies a device id
-                                     #      XkbSingleXIClass(c)    True if 'c' specifies exactly one device class,
+                                     #      XkbLegalXILedClass(c)  true if 'c' specifies a legal class with LEDs
+                                     #      XkbLegalXIBellClass(c) true if 'c' specifies a legal class with bells
+                                     #      XkbExplicitXIDevice(d) true if 'd' explicitly specifies a device
+                                     #      XkbExplicitXIClass(c)  true if 'c' explicitly specifies a device class
+                                     #      XkbExplicitXIId(c)     true if 'i' explicitly specifies a device id
+                                     #      XkbSingleXIClass(c)    true if 'c' specifies exactly one device class,
                                      #                             including the default.
-                                     #      XkbSingleXIId(i)       True if 'i' specifies exactly one device
+                                     #      XkbSingleXIId(i)       true if 'i' specifies exactly one device
                                      #                              identifier, including the default.
-                                     #                
+                                     #
 
-const 
+const
   XkbUseCoreKbd* = 0x00000100
   XkbUseCorePtr* = 0x00000200
   XkbDfltXIClass* = 0x00000300
@@ -676,14 +676,14 @@ const
   XkbAllXIIds* = 0x00000600
   XkbXINone* = 0x0000FF00
 
-proc XkbLegalXILedClass*(c: int): bool
-proc XkbLegalXIBellClass*(c: int): bool
-proc XkbExplicitXIDevice*(c: int): bool
-proc XkbExplicitXIClass*(c: int): bool
-proc XkbExplicitXIId*(c: int): bool
-proc XkbSingleXIClass*(c: int): bool
-proc XkbSingleXIId*(c: int): bool
-const 
+proc xkbLegalXILedClass*(c: int): bool
+proc xkbLegalXIBellClass*(c: int): bool
+proc xkbExplicitXIDevice*(c: int): bool
+proc xkbExplicitXIClass*(c: int): bool
+proc xkbExplicitXIId*(c: int): bool
+proc xkbSingleXIClass*(c: int): bool
+proc xkbSingleXIId*(c: int): bool
+const
   XkbNoModifier* = 0x000000FF
   XkbNoShiftLevel* = 0x000000FF
   XkbNoShape* = 0x000000FF
@@ -697,9 +697,9 @@ const
                           #      Group Index and Mask:
                           #       - Indices into the kt_index array of a key type.
                           #       - Mask specifies types to be changed for XkbChangeTypesOfKey
-                          #    
+                          #
 
-const 
+const
   XkbGroup1Index* = 0
   XkbGroup2Index* = 1
   XkbGroup3Index* = 2
@@ -717,11 +717,11 @@ const
                                  #      GroupForCoreState:  Given the state reported in an event,
                                  #                      determine the keyboard group.
                                  #      IsLegalGroup:   Returns TRUE if 'g' is a valid group index.
-                                 #                
+                                 #
 
-proc XkbBuildCoreState*(m, g: int): int
-proc XkbGroupForCoreState*(s: int): int
-proc XkbIsLegalGroup*(g: int): bool
+proc xkbBuildCoreState*(m, g: int): int
+proc xkbGroupForCoreState*(s: int): int
+proc xkbIsLegalGroup*(g: int): bool
   #
   #      GroupsWrap values:
   #       - The 'groupsWrap' field of an XkbControlsRec specifies the
@@ -729,8 +729,8 @@ proc XkbIsLegalGroup*(g: int): bool
   #       - Bits 6 and 7 of the group info field of a key symbol map
   #         specify the interpretation of out of range groups for the
   #         corresponding key.
-  #                
-const 
+  #
+const
   XkbWrapIntoRange* = 0x00000000
   XkbClampIntoRange* = 0x00000040
   XkbRedirectIntoRange* = 0x00000080 #
@@ -762,9 +762,9 @@ const
                                      #      DfltBtnAbsolute           SetPtrDflt
                                      #      SwitchApplication SwitchScreen
                                      #      SwitchAbsolute            SwitchScreen
-                                     #                
+                                     #
 
-const 
+const
   XkbSA_ClearLocks* = int(1) shl 0
   XkbSA_LatchToLock* = int(1) shl 1
   XkbSA_LockNoLock* = int(1) shl 0
@@ -792,9 +792,9 @@ const
                                        #      action only.  Valuator operations specify the action
                                        #      to be taken.   Values specified in the action are
                                        #      multiplied by 2^scale before they are applied.
-                                       #                
+                                       #
 
-const 
+const
   XkbSA_IgnoreVal* = 0x00000000
   XkbSA_SetValMin* = 0x00000010
   XkbSA_SetValCenter* = 0x00000020
@@ -804,13 +804,13 @@ const
   XkbSA_ValOpMask* = 0x00000070
   XkbSA_ValScaleMask* = 0x00000007
 
-proc XkbSA_ValOp*(a: int): int
-proc XkbSA_ValScale*(a: int): int
+proc xkbSA_ValOp*(a: int): int
+proc xkbSA_ValScale*(a: int): int
   #
   #      Action types: specifies the type of a key action.  Reported in the
   #      type field of all key actions.
-  #                
-const 
+  #
+const
   XkbSA_NoAction* = 0x00000000
   XkbSA_SetMods* = 0x00000001
   XkbSA_LatchMods* = 0x00000002
@@ -835,11 +835,11 @@ const
   XkbSA_LastAction* = XkbSA_DeviceValuator
   XkbSA_NumActions* = XkbSA_LastAction + 1
 
-const 
+const
   XkbSA_XFree86Private* = 0x00000086
 #
 #      Specifies the key actions that clear latched groups or modifiers.
-#                
+#
 
 const  ##define        XkbSA_BreakLatch \
        #        ((1<<XkbSA_NoAction)|(1<<XkbSA_PtrBtn)|(1<<XkbSA_LockPtrBtn)|\
@@ -858,9 +858,9 @@ const  ##define        XkbSA_BreakLatch \
                                                              #         the listed behavior.
                                                              #      Key Behavior Types:
                                                              #         Specifies the behavior of the underlying key.
-                                                             #                
+                                                             #
 
-const 
+const
   XkbKB_Permanent* = 0x00000080
   XkbKB_OpMask* = 0x0000007F
   XkbKB_Default* = 0x00000000
@@ -870,18 +870,18 @@ const
   XkbKB_Overlay2* = 0x00000004
   XkbKB_RGAllowNone* = 0x00000080 #
                                   #      Various macros which describe the range of legal keycodes.
-                                  #                
+                                  #
 
-const 
+const
   XkbMinLegalKeyCode* = 8
   XkbMaxLegalKeyCode* = 255
   XkbMaxKeyCount* = XkbMaxLegalKeyCode - XkbMinLegalKeyCode + 1
   XkbPerKeyBitArraySize* = (XkbMaxLegalKeyCode + 1) div 8
 
-proc XkbIsLegalKeycode*(k: int): bool
-type 
+proc xkbIsLegalKeycode*(k: int): bool
+type
   PXkbControlsPtr* = ptr TXkbControlsRec
-  TXkbControlsRec*{.final.} = object 
+  TXkbControlsRec*{.final.} = object
     mk_dflt_btn*: int8
     num_groups*: int8
     groups_wrap*: int8
@@ -906,13 +906,13 @@ type
     per_key_repeat*: array[0..XkbPerKeyBitArraySize - 1, int8]
 
 
-proc XkbAX_AnyFeedback*(c: PXkbControlsPtr): int16
-proc XkbAX_NeedOption*(c: PXkbControlsPtr, w: int16): int16
-proc XkbAX_NeedFeedback*(c: PXkbControlsPtr, w: int16): bool
+proc xkbAX_AnyFeedback*(c: PXkbControlsPtr): int16
+proc xkbAX_NeedOption*(c: PXkbControlsPtr, w: int16): int16
+proc xkbAX_NeedFeedback*(c: PXkbControlsPtr, w: int16): bool
   #
   #      Assorted constants and limits.
-  #                
-const 
+  #
+const
   XkbNumModifiers* = 8
   XkbNumVirtualMods* = 16
   XkbNumIndicators* = 32
@@ -929,9 +929,9 @@ const
   XkbGeomMaxLabelColors* = 3
   XkbGeomMaxPriority* = 255
 
-type 
+type
   PXkbServerMapPtr* = ptr TXkbServerMapRec
-  TXkbServerMapRec*{.final.} = object 
+  TXkbServerMapRec*{.final.} = object
     num_acts*: int16
     size_acts*: int16
     acts*: ptr array[0..0xfff, TXkbAction]
@@ -942,22 +942,22 @@ type
     vmodmap*: PWord
 
 
-proc XkbSMKeyActionsPtr*(m: PXkbServerMapPtr, k: int16): PXkbAction
+proc xkbSMKeyActionsPtr*(m: PXkbServerMapPtr, k: int16): PXkbAction
   #
   #          Structures and access macros used primarily by clients
-  #        
-type 
+  #
+type
   PXkbSymMapPtr* = ptr TXkbSymMapRec
-  TXkbSymMapRec*{.final.} = object 
+  TXkbSymMapRec*{.final.} = object
     kt_index*: array[0..XkbNumKbdGroups - 1, int8]
     group_info*: int8
     width*: int8
     offset*: int8
 
 
-type 
+type
   PXkbClientMapPtr* = ptr TXkbClientMapRec
-  TXkbClientMapRec*{.final.} = object 
+  TXkbClientMapRec*{.final.} = object
     size_types*: int8
     num_types*: int8
     types*: ptr array[0..0xffff, TXkbKeyTypeRec]
@@ -968,20 +968,20 @@ type
     modmap*: PByte
 
 
-proc XkbCMKeyGroupInfo*(m: PXkbClientMapPtr, k: int16): int8
-proc XkbCMKeyNumGroups*(m: PXkbClientMapPtr, k: int16): int8
-proc XkbCMKeyGroupWidth*(m: PXkbClientMapPtr, k: int16, g: int8): int8
-proc XkbCMKeyGroupsWidth*(m: PXkbClientMapPtr, k: int16): int8
-proc XkbCMKeyTypeIndex*(m: PXkbClientMapPtr, k: int16, g: int8): int8
-proc XkbCMKeyType*(m: PXkbClientMapPtr, k: int16, g: int8): PXkbKeyTypePtr
-proc XkbCMKeyNumSyms*(m: PXkbClientMapPtr, k: int16): int16
-proc XkbCMKeySymsOffset*(m: PXkbClientMapPtr, k: int16): int8
+proc xkbCMKeyGroupInfo*(m: PXkbClientMapPtr, k: int16): int8
+proc xkbCMKeyNumGroups*(m: PXkbClientMapPtr, k: int16): int8
+proc xkbCMKeyGroupWidth*(m: PXkbClientMapPtr, k: int16, g: int8): int8
+proc xkbCMKeyGroupsWidth*(m: PXkbClientMapPtr, k: int16): int8
+proc xkbCMKeyTypeIndex*(m: PXkbClientMapPtr, k: int16, g: int8): int8
+proc xkbCMKeyType*(m: PXkbClientMapPtr, k: int16, g: int8): PXkbKeyTypePtr
+proc xkbCMKeyNumSyms*(m: PXkbClientMapPtr, k: int16): int16
+proc xkbCMKeySymsOffset*(m: PXkbClientMapPtr, k: int16): int8
   #
   #          Compatibility structures and access macros
-  #        
-type 
+  #
+type
   PXkbSymInterpretPtr* = ptr TXkbSymInterpretRec
-  TXkbSymInterpretRec*{.final.} = object 
+  TXkbSymInterpretRec*{.final.} = object
     sym*: TKeySym
     flags*: int8
     match*: int8
@@ -990,18 +990,18 @@ type
     act*: TXkbAnyAction
 
 
-type 
+type
   PXkbCompatMapPtr* = ptr TXkbCompatMapRec
-  TXkbCompatMapRec*{.final.} = object 
+  TXkbCompatMapRec*{.final.} = object
     sym_interpret*: PXkbSymInterpretPtr
     groups*: array[0..XkbNumKbdGroups - 1, TXkbModsRec]
     num_si*: int16
     size_si*: int16
 
 
-type 
+type
   PXkbIndicatorMapPtr* = ptr TXkbIndicatorMapRec
-  TXkbIndicatorMapRec*{.final.} = object 
+  TXkbIndicatorMapRec*{.final.} = object
     flags*: int8
     which_groups*: int8
     groups*: int8
@@ -1010,35 +1010,35 @@ type
     ctrls*: int16
 
 
-proc XkbIM_IsAuto*(i: PXkbIndicatorMapPtr): bool
-proc XkbIM_InUse*(i: PXkbIndicatorMapPtr): bool
-type 
+proc xkbIM_IsAuto*(i: PXkbIndicatorMapPtr): bool
+proc xkbIM_InUse*(i: PXkbIndicatorMapPtr): bool
+type
   PXkbIndicatorPtr* = ptr TXkbIndicatorRec
-  TXkbIndicatorRec*{.final.} = object 
+  TXkbIndicatorRec*{.final.} = object
     phys_indicators*: int32
     maps*: array[0..XkbNumIndicators - 1, TXkbIndicatorMapRec]
 
 
-type 
+type
   PXkbKeyNamePtr* = ptr TXkbKeyNameRec
-  TXkbKeyNameRec*{.final.} = object 
-    name*: array[0..XkbKeyNameLength - 1, Char]
+  TXkbKeyNameRec*{.final.} = object
+    name*: array[0..XkbKeyNameLength - 1, char]
 
 
-type 
+type
   PXkbKeyAliasPtr* = ptr TXkbKeyAliasRec
   TXkbKeyAliasRec*{.final.} = object  #
                                       #          Names for everything
-                                      #        
-    float*: array[0..XkbKeyNameLength - 1, Char]
-    alias*: array[0..XkbKeyNameLength - 1, Char]
+                                      #
+    float*: array[0..XkbKeyNameLength - 1, char]
+    alias*: array[0..XkbKeyNameLength - 1, char]
 
 
-type 
+type
   PXkbNamesPtr* = ptr TXkbNamesRec
   TXkbNamesRec*{.final.} = object  #
                                    #      Key Type index and mask for the four standard key types.
-                                   #                
+                                   #
     keycodes*: TAtom
     geometry*: TAtom
     symbols*: TAtom
@@ -1056,7 +1056,7 @@ type
     num_rg*: int16
 
 
-const 
+const
   XkbOneLevelIndex* = 0
   XkbTwoLevelIndex* = 1
   XkbAlphabeticIndex* = 2
@@ -1070,12 +1070,12 @@ const
   XkbKeypadMask* = 1 shl 3
   XkbAllRequiredTypes* = 0x0000000F
 
-proc XkbShiftLevel*(n: int8): int8
-proc XkbShiftLevelMask*(n: int8): int8
+proc xkbShiftLevel*(n: int8): int8
+proc xkbShiftLevelMask*(n: int8): int8
   #
   #      Extension name and version information
-  #                
-const 
+  #
+const
   XkbName* = "XKEYBOARD"
   XkbMajorVersion* = 1
   XkbMinorVersion* = 0 #
@@ -1083,9 +1083,9 @@ const
                        #       - Used in the 'explicit' field of an XkbServerMap.  Specifies
                        #         the keyboard components that should _not_ be updated automatically
                        #         in response to core protocol keyboard mapping requests.
-                       #                
+                       #
 
-const 
+const
   XkbExplicitKeyTypesMask* = 0x0000000F
   XkbExplicitKeyType1Mask* = 1 shl 0
   XkbExplicitKeyType2Mask* = 1 shl 1
@@ -1098,17 +1098,17 @@ const
   XkbAllExplicitMask* = 0x000000FF #
                                    #      Symbol interpretations flags:
                                    #       - Used in the flags field of a symbol interpretation
-                                   #                
+                                   #
 
-const 
+const
   XkbSI_AutoRepeat* = 1 shl 0
   XkbSI_LockingKey* = 1 shl 1 #
                               #      Symbol interpretations match specification:
                               #       - Used in the match field of a symbol interpretation to specify
                               #         the conditions under which an interpretation is used.
-                              #                
+                              #
 
-const 
+const
   XkbSI_LevelOneOnly* = 0x00000080
   XkbSI_OpMask* = 0x0000007F
   XkbSI_NoneOf* = 0
@@ -1120,9 +1120,9 @@ const
                      #       - Used in the flags field of an indicator map to indicate the
                      #         conditions under which and indicator can be changed and the
                      #         effects of changing the indicator.
-                     #                
+                     #
 
-const 
+const
   XkbIM_NoExplicit* = int(1) shl 7
   XkbIM_NoAutomatic* = int(1) shl 6
   XkbIM_LEDDrivesKB* = int(1) shl 5 #
@@ -1130,9 +1130,9 @@ const
                                     #       - Used by the 'which_groups' and 'which_mods' fields of an indicator
                                     #         map to specify which keyboard components should be used to drive
                                     #         the indicator.
-                                    #                
+                                    #
 
-const 
+const
   XkbIM_UseBase* = int(1) shl 0
   XkbIM_UseLatched* = int(1) shl 1
   XkbIM_UseLocked* = int(1) shl 2
@@ -1145,9 +1145,9 @@ const
                                                            #      GetByName components:
                                                            #       - Specifies desired or necessary components to GetKbdByName request.
                                                            #       - Reports the components that were found in a GetKbdByNameReply
-                                                           #                
+                                                           #
 
-const 
+const
   XkbGBN_TypesMask* = int(1) shl 0
   XkbGBN_CompatMapMask* = int(1) shl 1
   XkbGBN_ClientSymbolsMask* = int(1) shl 2
@@ -1159,9 +1159,9 @@ const
   XkbGBN_OtherNamesMask* = int(1) shl 7
   XkbGBN_AllComponentsMask* = 0x000000FF #
                                          #       ListComponents flags
-                                         #                        
+                                         #
 
-const 
+const
   XkbLC_Hidden* = int(1) shl 0
   XkbLC_Default* = int(1) shl 1
   XkbLC_Partial* = int(1) shl 2
@@ -1179,9 +1179,9 @@ const
                                         #        XkbGetDeviceInfo or in an XkbExtensionDeviceNotify event.
                                         #      XkbXI_UnsupportedFeature is reported in XkbExtensionDeviceNotify
                                         #      events to indicate an attempt to use an unsupported feature.
-                                        #                
+                                        #
 
-const 
+const
   XkbXI_KeyboardsMask* = int(1) shl 0
   XkbXI_ButtonActionsMask* = int(1) shl 1
   XkbXI_IndicatorNamesMask* = int(1) shl 2
@@ -1194,9 +1194,9 @@ const
   XkbAllExtensionDeviceEventsMask* = 0x0000801F #
                                                 #      Per-Client Flags:
                                                 #       - Specifies flags to be changed by the PerClientFlags request.
-                                                #                
+                                                #
 
-const 
+const
   XkbPCF_DetectableAutoRepeatMask* = int(1) shl 0
   XkbPCF_GrabsUseXKBStateMask* = int(1) shl 1
   XkbPCF_AutoResetControlsMask* = int(1) shl 2
@@ -1204,55 +1204,55 @@ const
   XkbPCF_SendEventUsesXKBState* = int(1) shl 4
   XkbPCF_AllFlagsMask* = 0x0000001F #
                                     #      Debugging flags and controls
-                                    #                
+                                    #
 
-const 
+const
   XkbDF_DisableLocks* = 1 shl 0
 
-type 
+type
   PXkbPropertyPtr* = ptr TXkbPropertyRec
-  TXkbPropertyRec*{.final.} = object 
+  TXkbPropertyRec*{.final.} = object
     name*: cstring
     value*: cstring
 
 
-type 
+type
   PXkbColorPtr* = ptr TXkbColorRec
-  TXkbColorRec*{.final.} = object 
+  TXkbColorRec*{.final.} = object
     pixel*: int16
     spec*: cstring
 
 
-type 
+type
   PXkbPointPtr* = ptr TXkbPointRec
-  TXkbPointRec*{.final.} = object 
+  TXkbPointRec*{.final.} = object
     x*: int16
     y*: int16
 
 
-type 
+type
   PXkbBoundsPtr* = ptr TXkbBoundsRec
-  TXkbBoundsRec*{.final.} = object 
+  TXkbBoundsRec*{.final.} = object
     x1*: int16
     y1*: int16
     x2*: int16
     y2*: int16
 
 
-proc XkbBoundsWidth*(b: PXkbBoundsPtr): int16
-proc XkbBoundsHeight*(b: PXkbBoundsPtr): int16
-type 
+proc xkbBoundsWidth*(b: PXkbBoundsPtr): int16
+proc xkbBoundsHeight*(b: PXkbBoundsPtr): int16
+type
   PXkbOutlinePtr* = ptr TXkbOutlineRec
-  TXkbOutlineRec*{.final.} = object 
+  TXkbOutlineRec*{.final.} = object
     num_points*: int16
     sz_points*: int16
     corner_radius*: int16
     points*: PXkbPointPtr
 
 
-type 
+type
   PXkbShapePtr* = ptr TXkbShapeRec
-  TXkbShapeRec*{.final.} = object 
+  TXkbShapeRec*{.final.} = object
     name*: TAtom
     num_outlines*: int16
     sz_outlines*: int16
@@ -1262,10 +1262,10 @@ type
     bounds*: TXkbBoundsRec
 
 
-proc XkbOutlineIndex*(s: PXkbShapePtr, o: PXkbOutlinePtr): int32
-type 
+proc xkbOutlineIndex*(s: PXkbShapePtr, o: PXkbOutlinePtr): int32
+type
   PXkbShapeDoodadPtr* = ptr TXkbShapeDoodadRec
-  TXkbShapeDoodadRec*{.final.} = object 
+  TXkbShapeDoodadRec*{.final.} = object
     name*: TAtom
     theType*: int8
     priority*: int8
@@ -1276,9 +1276,9 @@ type
     shape_ndx*: int16
 
 
-type 
+type
   PXkbTextDoodadPtr* = ptr TXkbTextDoodadRec
-  TXkbTextDoodadRec*{.final.} = object 
+  TXkbTextDoodadRec*{.final.} = object
     name*: TAtom
     theType*: int8
     priority*: int8
@@ -1292,9 +1292,9 @@ type
     font*: cstring
 
 
-type 
+type
   PXkbIndicatorDoodadPtr* = ptr TXkbIndicatorDoodadRec
-  TXkbIndicatorDoodadRec*{.final.} = object 
+  TXkbIndicatorDoodadRec*{.final.} = object
     name*: TAtom
     theType*: int8
     priority*: int8
@@ -1306,9 +1306,9 @@ type
     off_color_ndx*: int16
 
 
-type 
+type
   PXkbLogoDoodadPtr* = ptr TXkbLogoDoodadRec
-  TXkbLogoDoodadRec*{.final.} = object 
+  TXkbLogoDoodadRec*{.final.} = object
     name*: TAtom
     theType*: int8
     priority*: int8
@@ -1320,9 +1320,9 @@ type
     logo_name*: cstring
 
 
-type 
+type
   PXkbAnyDoodadPtr* = ptr TXkbAnyDoodadRec
-  TXkbAnyDoodadRec*{.final.} = object 
+  TXkbAnyDoodadRec*{.final.} = object
     name*: TAtom
     theType*: int8
     priority*: int8
@@ -1331,9 +1331,9 @@ type
     angle*: int16
 
 
-type 
+type
   PXkbDoodadPtr* = ptr TXkbDoodadRec
-  TXkbDoodadRec*{.final.} = object 
+  TXkbDoodadRec*{.final.} = object
     any*: TXkbAnyDoodadRec
     shape*: TXkbShapeDoodadRec
     text*: TXkbTextDoodadRec
@@ -1341,7 +1341,7 @@ type
     logo*: TXkbLogoDoodadRec
 
 
-const 
+const
   XkbUnknownDoodad* = 0
   XkbOutlineDoodad* = 1
   XkbSolidDoodad* = 2
@@ -1349,18 +1349,18 @@ const
   XkbIndicatorDoodad* = 4
   XkbLogoDoodad* = 5
 
-type 
+type
   PXkbKeyPtr* = ptr TXkbKeyRec
-  TXkbKeyRec*{.final.} = object 
+  TXkbKeyRec*{.final.} = object
     name*: TXkbKeyNameRec
     gap*: int16
     shape_ndx*: int8
     color_ndx*: int8
 
 
-type 
+type
   PXkbRowPtr* = ptr TXkbRowRec
-  TXkbRowRec*{.final.} = object 
+  TXkbRowRec*{.final.} = object
     top*: int16
     left*: int16
     num_keys*: int16
@@ -1370,7 +1370,7 @@ type
     bounds*: TXkbBoundsRec
 
 
-type 
+type
   PXkbOverlayPtr* = ptr TXkbOverlayRec #forward for TXkbSectionRec use.
                                        #Do not add more "type"
   PXkbSectionPtr* = ptr TXkbSectionRec
@@ -1402,7 +1402,7 @@ type
     sz_keys*: int16
     keys*: PXkbOverlayKeyPtr
 
-  TXkbOverlayRec*{.final.} = object 
+  TXkbOverlayRec*{.final.} = object
     name*: TAtom
     section_under*: PXkbSectionPtr
     num_rows*: int16
@@ -1411,10 +1411,10 @@ type
     bounds*: PXkbBoundsPtr
 
 
-type 
+type
   PXkbGeometryRec* = ptr TXkbGeometryRec
   PXkbGeometryPtr* = PXkbGeometryRec
-  TXkbGeometryRec*{.final.} = object 
+  TXkbGeometryRec*{.final.} = object
     name*: TAtom
     width_mm*: int16
     height_mm*: int16
@@ -1440,7 +1440,7 @@ type
     key_aliases*: ptr array[0..0xffff, TXkbKeyAliasRec]
 
 
-const 
+const
   XkbGeomPropertiesMask* = 1 shl 0
   XkbGeomColorsMask* = 1 shl 1
   XkbGeomShapesMask* = 1 shl 2
@@ -1449,11 +1449,11 @@ const
   XkbGeomKeyAliasesMask* = 1 shl 5
   XkbGeomAllMask* = 0x0000003F
 
-type 
+type
   PXkbGeometrySizesPtr* = ptr TXkbGeometrySizesRec
   TXkbGeometrySizesRec*{.final.} = object  #
                                            #          Tie it all together into one big keyboard description
-                                           #        
+                                           #
     which*: int16
     num_properties*: int16
     num_colors*: int16
@@ -1463,9 +1463,9 @@ type
     num_key_aliases*: int16
 
 
-type 
+type
   PXkbDescPtr* = ptr TXkbDescRec
-  TXkbDescRec*{.final.} = object 
+  TXkbDescRec*{.final.} = object
     dpy*: PDisplay
     flags*: int16
     device_spec*: int16
@@ -1480,29 +1480,29 @@ type
     geom*: PXkbGeometryPtr
 
 
-proc XkbKeyKeyTypeIndex*(d: PXkbDescPtr, k: int16, g: int8): int8
-proc XkbKeyKeyType*(d: PXkbDescPtr, k: int16, g: int8): PXkbKeyTypePtr
-proc XkbKeyGroupWidth*(d: PXkbDescPtr, k: int16, g: int8): int8
-proc XkbKeyGroupsWidth*(d: PXkbDescPtr, k: int16): int8
-proc XkbKeyGroupInfo*(d: PXkbDescPtr, k: int16): int8
-proc XkbKeyNumGroups*(d: PXkbDescPtr, k: int16): int8
-proc XkbKeyNumSyms*(d: PXkbDescPtr, k: int16): int16
-proc XkbKeySym*(d: PXkbDescPtr, k: int16, n: int16): TKeySym
-proc XkbKeySymEntry*(d: PXkbDescPtr, k: int16, sl: int16, g: int8): TKeySym
-proc XkbKeyAction*(d: PXkbDescPtr, k: int16, n: int16): PXkbAction
-proc XkbKeyActionEntry*(d: PXkbDescPtr, k: int16, sl: int16, g: int8): int8
-proc XkbKeyHasActions*(d: PXkbDescPtr, k: int16): bool
-proc XkbKeyNumActions*(d: PXkbDescPtr, k: int16): int16
-proc XkbKeyActionsPtr*(d: PXkbDescPtr, k: int16): PXkbAction
-proc XkbKeycodeInRange*(d: PXkbDescPtr, k: int16): bool
-proc XkbNumKeys*(d: PXkbDescPtr): int8
+proc xkbKeyKeyTypeIndex*(d: PXkbDescPtr, k: int16, g: int8): int8
+proc xkbKeyKeyType*(d: PXkbDescPtr, k: int16, g: int8): PXkbKeyTypePtr
+proc xkbKeyGroupWidth*(d: PXkbDescPtr, k: int16, g: int8): int8
+proc xkbKeyGroupsWidth*(d: PXkbDescPtr, k: int16): int8
+proc xkbKeyGroupInfo*(d: PXkbDescPtr, k: int16): int8
+proc xkbKeyNumGroups*(d: PXkbDescPtr, k: int16): int8
+proc xkbKeyNumSyms*(d: PXkbDescPtr, k: int16): int16
+proc xkbKeySym*(d: PXkbDescPtr, k: int16, n: int16): TKeySym
+proc xkbKeySymEntry*(d: PXkbDescPtr, k: int16, sl: int16, g: int8): TKeySym
+proc xkbKeyAction*(d: PXkbDescPtr, k: int16, n: int16): PXkbAction
+proc xkbKeyActionEntry*(d: PXkbDescPtr, k: int16, sl: int16, g: int8): int8
+proc xkbKeyHasActions*(d: PXkbDescPtr, k: int16): bool
+proc xkbKeyNumActions*(d: PXkbDescPtr, k: int16): int16
+proc xkbKeyActionsPtr*(d: PXkbDescPtr, k: int16): PXkbAction
+proc xkbKeycodeInRange*(d: PXkbDescPtr, k: int16): bool
+proc xkbNumKeys*(d: PXkbDescPtr): int8
   #
   #          The following structures can be used to track changes
   #          to a keyboard device
-  #        
-type 
+  #
+type
   PXkbMapChangesPtr* = ptr TXkbMapChangesRec
-  TXkbMapChangesRec*{.final.} = object 
+  TXkbMapChangesRec*{.final.} = object
     changed*: int16
     min_key_code*: TKeyCode
     max_key_code*: TKeyCode
@@ -1524,24 +1524,24 @@ type
     vmods*: int16
 
 
-type 
+type
   PXkbControlsChangesPtr* = ptr TXkbControlsChangesRec
-  TXkbControlsChangesRec*{.final.} = object 
+  TXkbControlsChangesRec*{.final.} = object
     changed_ctrls*: int16
     enabled_ctrls_changes*: int16
     num_groups_changed*: bool
 
 
-type 
+type
   PXkbIndicatorChangesPtr* = ptr TXkbIndicatorChangesRec
-  TXkbIndicatorChangesRec*{.final.} = object 
+  TXkbIndicatorChangesRec*{.final.} = object
     state_changes*: int16
     map_changes*: int16
 
 
-type 
+type
   PXkbNameChangesPtr* = ptr TXkbNameChangesRec
-  TXkbNameChangesRec*{.final.} = object 
+  TXkbNameChangesRec*{.final.} = object
     changed*: int16
     first_type*: int8
     num_types*: int8
@@ -1556,21 +1556,21 @@ type
     changed_groups*: int8
 
 
-type 
+type
   PXkbCompatChangesPtr* = ptr TXkbCompatChangesRec
-  TXkbCompatChangesRec*{.final.} = object 
+  TXkbCompatChangesRec*{.final.} = object
     changed_groups*: int8
     first_si*: int16
     num_si*: int16
 
 
-type 
+type
   PXkbChangesPtr* = ptr TXkbChangesRec
   TXkbChangesRec*{.final.} = object  #
                                      #          These data structures are used to construct a keymap from
                                      #          a set of components or to list components in the server
                                      #          database.
-                                     #        
+                                     #
     device_spec*: int16
     state_changes*: int16
     map*: TXkbMapChangesRec
@@ -1580,9 +1580,9 @@ type
     compat*: TXkbCompatChangesRec
 
 
-type 
+type
   PXkbComponentNamesPtr* = ptr TXkbComponentNamesRec
-  TXkbComponentNamesRec*{.final.} = object 
+  TXkbComponentNamesRec*{.final.} = object
     keymap*: ptr int16
     keycodes*: ptr int16
     types*: ptr int16
@@ -1591,19 +1591,19 @@ type
     geometry*: ptr int16
 
 
-type 
+type
   PXkbComponentNamePtr* = ptr TXkbComponentNameRec
-  TXkbComponentNameRec*{.final.} = object 
+  TXkbComponentNameRec*{.final.} = object
     flags*: int16
     name*: cstring
 
 
-type 
+type
   PXkbComponentListPtr* = ptr TXkbComponentListRec
   TXkbComponentListRec*{.final.} = object  #
                                            #          The following data structures describe and track changes to a
                                            #          non-keyboard extension device
-                                           #        
+                                           #
     num_keymaps*: int16
     num_keycodes*: int16
     num_types*: int16
@@ -1618,9 +1618,9 @@ type
     geometry*: PXkbComponentNamePtr
 
 
-type 
+type
   PXkbDeviceLedInfoPtr* = ptr TXkbDeviceLedInfoRec
-  TXkbDeviceLedInfoRec*{.final.} = object 
+  TXkbDeviceLedInfoRec*{.final.} = object
     led_class*: int16
     led_id*: int16
     phys_indicators*: int16
@@ -1631,9 +1631,9 @@ type
     maps*: array[0..XkbNumIndicators - 1, TXkbIndicatorMapRec]
 
 
-type 
+type
   PXkbDeviceInfoPtr* = ptr TXkbDeviceInfoRec
-  TXkbDeviceInfoRec*{.final.} = object 
+  TXkbDeviceInfoRec*{.final.} = object
     name*: cstring
     theType*: TAtom
     device_spec*: int16
@@ -1649,761 +1649,761 @@ type
     leds*: PXkbDeviceLedInfoPtr
 
 
-proc XkbXI_DevHasBtnActs*(d: PXkbDeviceInfoPtr): bool
-proc XkbXI_LegalDevBtn*(d: PXkbDeviceInfoPtr, b: int16): bool
-proc XkbXI_DevHasLeds*(d: PXkbDeviceInfoPtr): bool
-type 
+proc xkbXI_DevHasBtnActs*(d: PXkbDeviceInfoPtr): bool
+proc xkbXI_LegalDevBtn*(d: PXkbDeviceInfoPtr, b: int16): bool
+proc xkbXI_DevHasLeds*(d: PXkbDeviceInfoPtr): bool
+type
   PXkbDeviceLedChangesPtr* = ptr TXkbDeviceLedChangesRec
-  TXkbDeviceLedChangesRec*{.final.} = object 
+  TXkbDeviceLedChangesRec*{.final.} = object
     led_class*: int16
     led_id*: int16
     defined*: int16           #names or maps changed
     next*: PXkbDeviceLedChangesPtr
 
 
-type 
+type
   PXkbDeviceChangesPtr* = ptr TXkbDeviceChangesRec
-  TXkbDeviceChangesRec*{.final.} = object 
+  TXkbDeviceChangesRec*{.final.} = object
     changed*: int16
     first_btn*: int16
     num_btns*: int16
     leds*: TXkbDeviceLedChangesRec
 
 
-proc XkbShapeDoodadColor*(g: PXkbGeometryPtr, d: PXkbShapeDoodadPtr): PXkbColorPtr
-proc XkbShapeDoodadShape*(g: PXkbGeometryPtr, d: PXkbShapeDoodadPtr): PXkbShapePtr
-proc XkbSetShapeDoodadColor*(g: PXkbGeometryPtr, d: PXkbShapeDoodadPtr, 
+proc xkbShapeDoodadColor*(g: PXkbGeometryPtr, d: PXkbShapeDoodadPtr): PXkbColorPtr
+proc xkbShapeDoodadShape*(g: PXkbGeometryPtr, d: PXkbShapeDoodadPtr): PXkbShapePtr
+proc xkbSetShapeDoodadColor*(g: PXkbGeometryPtr, d: PXkbShapeDoodadPtr,
                              c: PXkbColorPtr)
-proc XkbSetShapeDoodadShape*(g: PXkbGeometryPtr, d: PXkbShapeDoodadPtr, 
+proc xkbSetShapeDoodadShape*(g: PXkbGeometryPtr, d: PXkbShapeDoodadPtr,
                              s: PXkbShapePtr)
-proc XkbTextDoodadColor*(g: PXkbGeometryPtr, d: PXkbTextDoodadPtr): PXkbColorPtr
-proc XkbSetTextDoodadColor*(g: PXkbGeometryPtr, d: PXkbTextDoodadPtr, 
+proc xkbTextDoodadColor*(g: PXkbGeometryPtr, d: PXkbTextDoodadPtr): PXkbColorPtr
+proc xkbSetTextDoodadColor*(g: PXkbGeometryPtr, d: PXkbTextDoodadPtr,
                             c: PXkbColorPtr)
-proc XkbIndicatorDoodadShape*(g: PXkbGeometryPtr, d: PXkbIndicatorDoodadPtr): PXkbShapeDoodadPtr
-proc XkbIndicatorDoodadOnColor*(g: PXkbGeometryPtr, d: PXkbIndicatorDoodadPtr): PXkbColorPtr
-proc XkbIndicatorDoodadOffColor*(g: PXkbGeometryPtr, d: PXkbIndicatorDoodadPtr): PXkbColorPtr
-proc XkbSetIndicatorDoodadOnColor*(g: PXkbGeometryPtr, 
+proc xkbIndicatorDoodadShape*(g: PXkbGeometryPtr, d: PXkbIndicatorDoodadPtr): PXkbShapeDoodadPtr
+proc xkbIndicatorDoodadOnColor*(g: PXkbGeometryPtr, d: PXkbIndicatorDoodadPtr): PXkbColorPtr
+proc xkbIndicatorDoodadOffColor*(g: PXkbGeometryPtr, d: PXkbIndicatorDoodadPtr): PXkbColorPtr
+proc xkbSetIndicatorDoodadOnColor*(g: PXkbGeometryPtr,
                                    d: PXkbIndicatorDoodadPtr, c: PXkbColorPtr)
-proc XkbSetIndicatorDoodadOffColor*(g: PXkbGeometryPtr, 
+proc xkbSetIndicatorDoodadOffColor*(g: PXkbGeometryPtr,
                                     d: PXkbIndicatorDoodadPtr, c: PXkbColorPtr)
-proc XkbSetIndicatorDoodadShape*(g: PXkbGeometryPtr, d: PXkbIndicatorDoodadPtr, 
+proc xkbSetIndicatorDoodadShape*(g: PXkbGeometryPtr, d: PXkbIndicatorDoodadPtr,
                                  s: PXkbShapeDoodadPtr)
-proc XkbLogoDoodadColor*(g: PXkbGeometryPtr, d: PXkbLogoDoodadPtr): PXkbColorPtr
-proc XkbLogoDoodadShape*(g: PXkbGeometryPtr, d: PXkbLogoDoodadPtr): PXkbShapeDoodadPtr
-proc XkbSetLogoDoodadColor*(g: PXkbGeometryPtr, d: PXkbLogoDoodadPtr, 
+proc xkbLogoDoodadColor*(g: PXkbGeometryPtr, d: PXkbLogoDoodadPtr): PXkbColorPtr
+proc xkbLogoDoodadShape*(g: PXkbGeometryPtr, d: PXkbLogoDoodadPtr): PXkbShapeDoodadPtr
+proc xkbSetLogoDoodadColor*(g: PXkbGeometryPtr, d: PXkbLogoDoodadPtr,
                             c: PXkbColorPtr)
-proc XkbSetLogoDoodadShape*(g: PXkbGeometryPtr, d: PXkbLogoDoodadPtr, 
+proc xkbSetLogoDoodadShape*(g: PXkbGeometryPtr, d: PXkbLogoDoodadPtr,
                             s: PXkbShapeDoodadPtr)
-proc XkbKeyShape*(g: PXkbGeometryPtr, k: PXkbKeyPtr): PXkbShapeDoodadPtr
-proc XkbKeyColor*(g: PXkbGeometryPtr, k: PXkbKeyPtr): PXkbColorPtr
-proc XkbSetKeyShape*(g: PXkbGeometryPtr, k: PXkbKeyPtr, s: PXkbShapeDoodadPtr)
-proc XkbSetKeyColor*(g: PXkbGeometryPtr, k: PXkbKeyPtr, c: PXkbColorPtr)
-proc XkbGeomColorIndex*(g: PXkbGeometryPtr, c: PXkbColorPtr): int32
-proc XkbAddGeomProperty*(geom: PXkbGeometryPtr, name: cstring, value: cstring): PXkbPropertyPtr{.
+proc xkbKeyShape*(g: PXkbGeometryPtr, k: PXkbKeyPtr): PXkbShapeDoodadPtr
+proc xkbKeyColor*(g: PXkbGeometryPtr, k: PXkbKeyPtr): PXkbColorPtr
+proc xkbSetKeyShape*(g: PXkbGeometryPtr, k: PXkbKeyPtr, s: PXkbShapeDoodadPtr)
+proc xkbSetKeyColor*(g: PXkbGeometryPtr, k: PXkbKeyPtr, c: PXkbColorPtr)
+proc xkbGeomColorIndex*(g: PXkbGeometryPtr, c: PXkbColorPtr): int32
+proc xkbAddGeomProperty*(geom: PXkbGeometryPtr, name: cstring, value: cstring): PXkbPropertyPtr{.
     cdecl, dynlib: libX11, importc: "XkbAddGeomProperty".}
-proc XkbAddGeomKeyAlias*(geom: PXkbGeometryPtr, alias: cstring, float: cstring): PXkbKeyAliasPtr{.
+proc xkbAddGeomKeyAlias*(geom: PXkbGeometryPtr, alias: cstring, float: cstring): PXkbKeyAliasPtr{.
     cdecl, dynlib: libX11, importc: "XkbAddGeomKeyAlias".}
-proc XkbAddGeomColor*(geom: PXkbGeometryPtr, spec: cstring, pixel: int16): PXkbColorPtr{.
+proc xkbAddGeomColor*(geom: PXkbGeometryPtr, spec: cstring, pixel: int16): PXkbColorPtr{.
     cdecl, dynlib: libX11, importc: "XkbAddGeomColor".}
-proc XkbAddGeomOutline*(shape: PXkbShapePtr, sz_points: int16): PXkbOutlinePtr{.
+proc xkbAddGeomOutline*(shape: PXkbShapePtr, sz_points: int16): PXkbOutlinePtr{.
     cdecl, dynlib: libX11, importc: "XkbAddGeomOutline".}
-proc XkbAddGeomShape*(geom: PXkbGeometryPtr, name: TAtom, sz_outlines: int16): PXkbShapePtr{.
+proc xkbAddGeomShape*(geom: PXkbGeometryPtr, name: TAtom, sz_outlines: int16): PXkbShapePtr{.
     cdecl, dynlib: libX11, importc: "XkbAddGeomShape".}
-proc XkbAddGeomKey*(row: PXkbRowPtr): PXkbKeyPtr{.cdecl, dynlib: libX11, 
+proc xkbAddGeomKey*(row: PXkbRowPtr): PXkbKeyPtr{.cdecl, dynlib: libX11,
     importc: "XkbAddGeomKey".}
-proc XkbAddGeomRow*(section: PXkbSectionPtr, sz_keys: int16): PXkbRowPtr{.cdecl, 
+proc xkbAddGeomRow*(section: PXkbSectionPtr, sz_keys: int16): PXkbRowPtr{.cdecl,
     dynlib: libX11, importc: "XkbAddGeomRow".}
-proc XkbAddGeomSection*(geom: PXkbGeometryPtr, name: TAtom, sz_rows: int16, 
+proc xkbAddGeomSection*(geom: PXkbGeometryPtr, name: TAtom, sz_rows: int16,
                         sz_doodads: int16, sz_overlays: int16): PXkbSectionPtr{.
     cdecl, dynlib: libX11, importc: "XkbAddGeomSection".}
-proc XkbAddGeomOverlay*(section: PXkbSectionPtr, name: TAtom, sz_rows: int16): PXkbOverlayPtr{.
+proc xkbAddGeomOverlay*(section: PXkbSectionPtr, name: TAtom, sz_rows: int16): PXkbOverlayPtr{.
     cdecl, dynlib: libX11, importc: "XkbAddGeomOverlay".}
-proc XkbAddGeomOverlayRow*(overlay: PXkbOverlayPtr, row_under: int16, 
-                           sz_keys: int16): PXkbOverlayRowPtr{.cdecl, 
+proc xkbAddGeomOverlayRow*(overlay: PXkbOverlayPtr, row_under: int16,
+                           sz_keys: int16): PXkbOverlayRowPtr{.cdecl,
     dynlib: libX11, importc: "XkbAddGeomOverlayRow".}
-proc XkbAddGeomOverlayKey*(overlay: PXkbOverlayPtr, row: PXkbOverlayRowPtr, 
+proc xkbAddGeomOverlayKey*(overlay: PXkbOverlayPtr, row: PXkbOverlayRowPtr,
                            over: cstring, under: cstring): PXkbOverlayKeyPtr{.
     cdecl, dynlib: libX11, importc: "XkbAddGeomOverlayKey".}
-proc XkbAddGeomDoodad*(geom: PXkbGeometryPtr, section: PXkbSectionPtr, 
-                       name: TAtom): PXkbDoodadPtr{.cdecl, dynlib: libX11, 
+proc xkbAddGeomDoodad*(geom: PXkbGeometryPtr, section: PXkbSectionPtr,
+                       name: TAtom): PXkbDoodadPtr{.cdecl, dynlib: libX11,
     importc: "XkbAddGeomDoodad".}
-proc XkbFreeGeomKeyAliases*(geom: PXkbGeometryPtr, first: int16, count: int16, 
-                            freeAll: bool){.cdecl, dynlib: libX11, 
+proc xkbFreeGeomKeyAliases*(geom: PXkbGeometryPtr, first: int16, count: int16,
+                            freeAll: bool){.cdecl, dynlib: libX11,
     importc: "XkbFreeGeomKeyAliases".}
-proc XkbFreeGeomColors*(geom: PXkbGeometryPtr, first: int16, count: int16, 
-                        freeAll: bool){.cdecl, dynlib: libX11, 
+proc xkbFreeGeomColors*(geom: PXkbGeometryPtr, first: int16, count: int16,
+                        freeAll: bool){.cdecl, dynlib: libX11,
                                         importc: "XkbFreeGeomColors".}
-proc XkbFreeGeomDoodads*(doodads: PXkbDoodadPtr, nDoodads: int16, freeAll: bool){.
+proc xkbFreeGeomDoodads*(doodads: PXkbDoodadPtr, nDoodads: int16, freeAll: bool){.
     cdecl, dynlib: libX11, importc: "XkbFreeGeomDoodads".}
-proc XkbFreeGeomProperties*(geom: PXkbGeometryPtr, first: int16, count: int16, 
-                            freeAll: bool){.cdecl, dynlib: libX11, 
+proc xkbFreeGeomProperties*(geom: PXkbGeometryPtr, first: int16, count: int16,
+                            freeAll: bool){.cdecl, dynlib: libX11,
     importc: "XkbFreeGeomProperties".}
-proc XkbFreeGeomOverlayKeys*(row: PXkbOverlayRowPtr, first: int16, count: int16, 
-                             freeAll: bool){.cdecl, dynlib: libX11, 
+proc xkbFreeGeomOverlayKeys*(row: PXkbOverlayRowPtr, first: int16, count: int16,
+                             freeAll: bool){.cdecl, dynlib: libX11,
     importc: "XkbFreeGeomOverlayKeys".}
-proc XkbFreeGeomOverlayRows*(overlay: PXkbOverlayPtr, first: int16, 
-                             count: int16, freeAll: bool){.cdecl, 
+proc xkbFreeGeomOverlayRows*(overlay: PXkbOverlayPtr, first: int16,
+                             count: int16, freeAll: bool){.cdecl,
     dynlib: libX11, importc: "XkbFreeGeomOverlayRows".}
-proc XkbFreeGeomOverlays*(section: PXkbSectionPtr, first: int16, count: int16, 
-                          freeAll: bool){.cdecl, dynlib: libX11, 
+proc xkbFreeGeomOverlays*(section: PXkbSectionPtr, first: int16, count: int16,
+                          freeAll: bool){.cdecl, dynlib: libX11,
     importc: "XkbFreeGeomOverlays".}
-proc XkbFreeGeomKeys*(row: PXkbRowPtr, first: int16, count: int16, freeAll: bool){.
+proc xkbFreeGeomKeys*(row: PXkbRowPtr, first: int16, count: int16, freeAll: bool){.
     cdecl, dynlib: libX11, importc: "XkbFreeGeomKeys".}
-proc XkbFreeGeomRows*(section: PXkbSectionPtr, first: int16, count: int16, 
-                      freeAll: bool){.cdecl, dynlib: libX11, 
+proc xkbFreeGeomRows*(section: PXkbSectionPtr, first: int16, count: int16,
+                      freeAll: bool){.cdecl, dynlib: libX11,
                                       importc: "XkbFreeGeomRows".}
-proc XkbFreeGeomSections*(geom: PXkbGeometryPtr, first: int16, count: int16, 
-                          freeAll: bool){.cdecl, dynlib: libX11, 
+proc xkbFreeGeomSections*(geom: PXkbGeometryPtr, first: int16, count: int16,
+                          freeAll: bool){.cdecl, dynlib: libX11,
     importc: "XkbFreeGeomSections".}
-proc XkbFreeGeomPoints*(outline: PXkbOutlinePtr, first: int16, count: int16, 
-                        freeAll: bool){.cdecl, dynlib: libX11, 
+proc xkbFreeGeomPoints*(outline: PXkbOutlinePtr, first: int16, count: int16,
+                        freeAll: bool){.cdecl, dynlib: libX11,
                                         importc: "XkbFreeGeomPoints".}
-proc XkbFreeGeomOutlines*(shape: PXkbShapePtr, first: int16, count: int16, 
-                          freeAll: bool){.cdecl, dynlib: libX11, 
+proc xkbFreeGeomOutlines*(shape: PXkbShapePtr, first: int16, count: int16,
+                          freeAll: bool){.cdecl, dynlib: libX11,
     importc: "XkbFreeGeomOutlines".}
-proc XkbFreeGeomShapes*(geom: PXkbGeometryPtr, first: int16, count: int16, 
-                        freeAll: bool){.cdecl, dynlib: libX11, 
+proc xkbFreeGeomShapes*(geom: PXkbGeometryPtr, first: int16, count: int16,
+                        freeAll: bool){.cdecl, dynlib: libX11,
                                         importc: "XkbFreeGeomShapes".}
-proc XkbFreeGeometry*(geom: PXkbGeometryPtr, which: int16, freeMap: bool){.
+proc xkbFreeGeometry*(geom: PXkbGeometryPtr, which: int16, freeMap: bool){.
     cdecl, dynlib: libX11, importc: "XkbFreeGeometry".}
-proc XkbAllocGeomProps*(geom: PXkbGeometryPtr, nProps: int16): TStatus{.cdecl, 
-    dynlib: libX11, importc: "XkbAllocGeomProps".}
-proc XkbAllocGeomKeyAliases*(geom: PXkbGeometryPtr, nAliases: int16): TStatus{.
-    cdecl, dynlib: libX11, importc: "XkbAllocGeomKeyAliases".}
-proc XkbAllocGeomColors*(geom: PXkbGeometryPtr, nColors: int16): TStatus{.cdecl, 
-    dynlib: libX11, importc: "XkbAllocGeomColors".}
-proc XkbAllocGeomShapes*(geom: PXkbGeometryPtr, nShapes: int16): TStatus{.cdecl, 
-    dynlib: libX11, importc: "XkbAllocGeomShapes".}
-proc XkbAllocGeomSections*(geom: PXkbGeometryPtr, nSections: int16): TStatus{.
-    cdecl, dynlib: libX11, importc: "XkbAllocGeomSections".}
-proc XkbAllocGeomOverlays*(section: PXkbSectionPtr, num_needed: int16): TStatus{.
-    cdecl, dynlib: libX11, importc: "XkbAllocGeomOverlays".}
-proc XkbAllocGeomOverlayRows*(overlay: PXkbOverlayPtr, num_needed: int16): TStatus{.
-    cdecl, dynlib: libX11, importc: "XkbAllocGeomOverlayRows".}
-proc XkbAllocGeomOverlayKeys*(row: PXkbOverlayRowPtr, num_needed: int16): TStatus{.
-    cdecl, dynlib: libX11, importc: "XkbAllocGeomOverlayKeys".}
-proc XkbAllocGeomDoodads*(geom: PXkbGeometryPtr, nDoodads: int16): TStatus{.
-    cdecl, dynlib: libX11, importc: "XkbAllocGeomDoodads".}
-proc XkbAllocGeomSectionDoodads*(section: PXkbSectionPtr, nDoodads: int16): TStatus{.
-    cdecl, dynlib: libX11, importc: "XkbAllocGeomSectionDoodads".}
-proc XkbAllocGeomOutlines*(shape: PXkbShapePtr, nOL: int16): TStatus{.cdecl, 
-    dynlib: libX11, importc: "XkbAllocGeomOutlines".}
-proc XkbAllocGeomRows*(section: PXkbSectionPtr, nRows: int16): TStatus{.cdecl, 
-    dynlib: libX11, importc: "XkbAllocGeomRows".}
-proc XkbAllocGeomPoints*(ol: PXkbOutlinePtr, nPts: int16): TStatus{.cdecl, 
-    dynlib: libX11, importc: "XkbAllocGeomPoints".}
-proc XkbAllocGeomKeys*(row: PXkbRowPtr, nKeys: int16): TStatus{.cdecl, 
-    dynlib: libX11, importc: "XkbAllocGeomKeys".}
-proc XkbAllocGeometry*(xkb: PXkbDescPtr, sizes: PXkbGeometrySizesPtr): TStatus{.
-    cdecl, dynlib: libX11, importc: "XkbAllocGeometry".}
-proc XkbSetGeometryProc*(dpy: PDisplay, deviceSpec: int16, geom: PXkbGeometryPtr): TStatus{.
+proc xkballocGeomProps*(geom: PXkbGeometryPtr, nProps: int16): TStatus{.cdecl,
+    dynlib: libX11, importc: "XkballocGeomProps".}
+proc xkballocGeomKeyAliases*(geom: PXkbGeometryPtr, nAliases: int16): TStatus{.
+    cdecl, dynlib: libX11, importc: "XkballocGeomKeyAliases".}
+proc xkballocGeomColors*(geom: PXkbGeometryPtr, nColors: int16): TStatus{.cdecl,
+    dynlib: libX11, importc: "XkballocGeomColors".}
+proc xkballocGeomShapes*(geom: PXkbGeometryPtr, nShapes: int16): TStatus{.cdecl,
+    dynlib: libX11, importc: "XkballocGeomShapes".}
+proc xkballocGeomSections*(geom: PXkbGeometryPtr, nSections: int16): TStatus{.
+    cdecl, dynlib: libX11, importc: "XkballocGeomSections".}
+proc xkballocGeomOverlays*(section: PXkbSectionPtr, num_needed: int16): TStatus{.
+    cdecl, dynlib: libX11, importc: "XkballocGeomOverlays".}
+proc xkballocGeomOverlayRows*(overlay: PXkbOverlayPtr, num_needed: int16): TStatus{.
+    cdecl, dynlib: libX11, importc: "XkballocGeomOverlayRows".}
+proc xkballocGeomOverlayKeys*(row: PXkbOverlayRowPtr, num_needed: int16): TStatus{.
+    cdecl, dynlib: libX11, importc: "XkballocGeomOverlayKeys".}
+proc xkballocGeomDoodads*(geom: PXkbGeometryPtr, nDoodads: int16): TStatus{.
+    cdecl, dynlib: libX11, importc: "XkballocGeomDoodads".}
+proc xkballocGeomSectionDoodads*(section: PXkbSectionPtr, nDoodads: int16): TStatus{.
+    cdecl, dynlib: libX11, importc: "XkballocGeomSectionDoodads".}
+proc xkballocGeomOutlines*(shape: PXkbShapePtr, nOL: int16): TStatus{.cdecl,
+    dynlib: libX11, importc: "XkballocGeomOutlines".}
+proc xkballocGeomRows*(section: PXkbSectionPtr, nRows: int16): TStatus{.cdecl,
+    dynlib: libX11, importc: "XkballocGeomRows".}
+proc xkballocGeomPoints*(ol: PXkbOutlinePtr, nPts: int16): TStatus{.cdecl,
+    dynlib: libX11, importc: "XkballocGeomPoints".}
+proc xkballocGeomKeys*(row: PXkbRowPtr, nKeys: int16): TStatus{.cdecl,
+    dynlib: libX11, importc: "XkballocGeomKeys".}
+proc xkballocGeometry*(xkb: PXkbDescPtr, sizes: PXkbGeometrySizesPtr): TStatus{.
+    cdecl, dynlib: libX11, importc: "XkballocGeometry".}
+proc xkbSetGeometryProc*(dpy: PDisplay, deviceSpec: int16, geom: PXkbGeometryPtr): TStatus{.
     cdecl, dynlib: libX11, importc: "XkbSetGeometry".}
-proc XkbComputeShapeTop*(shape: PXkbShapePtr, bounds: PXkbBoundsPtr): bool{.
+proc xkbComputeShapeTop*(shape: PXkbShapePtr, bounds: PXkbBoundsPtr): bool{.
     cdecl, dynlib: libX11, importc: "XkbComputeShapeTop".}
-proc XkbComputeShapeBounds*(shape: PXkbShapePtr): bool{.cdecl, dynlib: libX11, 
+proc xkbComputeShapeBounds*(shape: PXkbShapePtr): bool{.cdecl, dynlib: libX11,
     importc: "XkbComputeShapeBounds".}
-proc XkbComputeRowBounds*(geom: PXkbGeometryPtr, section: PXkbSectionPtr, 
-                          row: PXkbRowPtr): bool{.cdecl, dynlib: libX11, 
+proc xkbComputeRowBounds*(geom: PXkbGeometryPtr, section: PXkbSectionPtr,
+                          row: PXkbRowPtr): bool{.cdecl, dynlib: libX11,
     importc: "XkbComputeRowBounds".}
-proc XkbComputeSectionBounds*(geom: PXkbGeometryPtr, section: PXkbSectionPtr): bool{.
+proc xkbComputeSectionBounds*(geom: PXkbGeometryPtr, section: PXkbSectionPtr): bool{.
     cdecl, dynlib: libX11, importc: "XkbComputeSectionBounds".}
-proc XkbFindOverlayForKey*(geom: PXkbGeometryPtr, wanted: PXkbSectionPtr, 
-                           under: cstring): cstring{.cdecl, dynlib: libX11, 
+proc xkbFindOverlayForKey*(geom: PXkbGeometryPtr, wanted: PXkbSectionPtr,
+                           under: cstring): cstring{.cdecl, dynlib: libX11,
     importc: "XkbFindOverlayForKey".}
-proc XkbGetGeometryProc*(dpy: PDisplay, xkb: PXkbDescPtr): TStatus{.cdecl, 
+proc xkbGetGeometryProc*(dpy: PDisplay, xkb: PXkbDescPtr): TStatus{.cdecl,
     dynlib: libX11, importc: "XkbGetGeometry".}
-proc XkbGetNamedGeometry*(dpy: PDisplay, xkb: PXkbDescPtr, name: TAtom): TStatus{.
+proc xkbGetNamedGeometry*(dpy: PDisplay, xkb: PXkbDescPtr, name: TAtom): TStatus{.
     cdecl, dynlib: libX11, importc: "XkbGetNamedGeometry".}
-when defined(XKB_IN_SERVER): 
-  proc SrvXkbAddGeomKeyAlias*(geom: PXkbGeometryPtr, alias: cstring, 
-                              float: cstring): PXkbKeyAliasPtr{.cdecl, 
+when defined(XKB_IN_SERVER):
+  proc srvXkbAddGeomKeyAlias*(geom: PXkbGeometryPtr, alias: cstring,
+                              float: cstring): PXkbKeyAliasPtr{.cdecl,
       dynlib: libX11, importc: "XkbAddGeomKeyAlias".}
-  proc SrvXkbAddGeomColor*(geom: PXkbGeometryPtr, spec: cstring, pixel: int16): PXkbColorPtr{.
+  proc srvXkbAddGeomColor*(geom: PXkbGeometryPtr, spec: cstring, pixel: int16): PXkbColorPtr{.
       cdecl, dynlib: libX11, importc: "XkbAddGeomColor".}
-  proc SrvXkbAddGeomDoodad*(geom: PXkbGeometryPtr, section: PXkbSectionPtr, 
-                            name: TAtom): PXkbDoodadPtr{.cdecl, dynlib: libX11, 
+  proc srvXkbAddGeomDoodad*(geom: PXkbGeometryPtr, section: PXkbSectionPtr,
+                            name: TAtom): PXkbDoodadPtr{.cdecl, dynlib: libX11,
       importc: "XkbAddGeomDoodad".}
-  proc SrvXkbAddGeomKey*(geom: PXkbGeometryPtr, alias: cstring, float: cstring): PXkbKeyAliasPtr{.
+  proc srvXkbAddGeomKey*(geom: PXkbGeometryPtr, alias: cstring, float: cstring): PXkbKeyAliasPtr{.
       cdecl, dynlib: libX11, importc: "XkbAddGeomKeyAlias".}
-  proc SrvXkbAddGeomOutline*(shape: PXkbShapePtr, sz_points: int16): PXkbOutlinePtr{.
+  proc srvXkbAddGeomOutline*(shape: PXkbShapePtr, sz_points: int16): PXkbOutlinePtr{.
       cdecl, dynlib: libX11, importc: "XkbAddGeomOutline".}
-  proc SrvXkbAddGeomOverlay*(overlay: PXkbOverlayPtr, row: PXkbOverlayRowPtr, 
+  proc srvXkbAddGeomOverlay*(overlay: PXkbOverlayPtr, row: PXkbOverlayRowPtr,
                              over: cstring, under: cstring): PXkbOverlayKeyPtr{.
       cdecl, dynlib: libX11, importc: "XkbAddGeomOverlayKey".}
-  proc SrvXkbAddGeomOverlayRow*(overlay: PXkbOverlayPtr, row_under: int16, 
-                                sz_keys: int16): PXkbOverlayRowPtr{.cdecl, 
+  proc srvXkbAddGeomOverlayRow*(overlay: PXkbOverlayPtr, row_under: int16,
+                                sz_keys: int16): PXkbOverlayRowPtr{.cdecl,
       dynlib: libX11, importc: "XkbAddGeomOverlayRow".}
-  proc SrvXkbAddGeomOverlayKey*(overlay: PXkbOverlayPtr, row: PXkbOverlayRowPtr, 
+  proc srvXkbAddGeomOverlayKey*(overlay: PXkbOverlayPtr, row: PXkbOverlayRowPtr,
                                 over: cstring, under: cstring): PXkbOverlayKeyPtr{.
       cdecl, dynlib: libX11, importc: "XkbAddGeomOverlayKey".}
-  proc SrvXkbAddGeomProperty*(geom: PXkbGeometryPtr, name: cstring, 
-                              value: cstring): PXkbPropertyPtr{.cdecl, 
+  proc srvXkbAddGeomProperty*(geom: PXkbGeometryPtr, name: cstring,
+                              value: cstring): PXkbPropertyPtr{.cdecl,
       dynlib: libX11, importc: "XkbAddGeomProperty".}
-  proc SrvXkbAddGeomRow*(section: PXkbSectionPtr, sz_keys: int16): PXkbRowPtr{.
+  proc srvXkbAddGeomRow*(section: PXkbSectionPtr, sz_keys: int16): PXkbRowPtr{.
       cdecl, dynlib: libX11, importc: "XkbAddGeomRow".}
-  proc SrvXkbAddGeomSection*(geom: PXkbGeometryPtr, name: TAtom, sz_rows: int16, 
+  proc srvXkbAddGeomSection*(geom: PXkbGeometryPtr, name: TAtom, sz_rows: int16,
                              sz_doodads: int16, sz_overlays: int16): PXkbSectionPtr{.
       cdecl, dynlib: libX11, importc: "XkbAddGeomSection".}
-  proc SrvXkbAddGeomShape*(geom: PXkbGeometryPtr, name: TAtom, 
-                           sz_outlines: int16): PXkbShapePtr{.cdecl, 
+  proc srvXkbAddGeomShape*(geom: PXkbGeometryPtr, name: TAtom,
+                           sz_outlines: int16): PXkbShapePtr{.cdecl,
       dynlib: libX11, importc: "XkbAddGeomShape".}
-  proc SrvXkbAllocGeomKeyAliases*(geom: PXkbGeometryPtr, nAliases: int16): TStatus{.
-      cdecl, dynlib: libX11, importc: "XkbAllocGeomKeyAliases".}
-  proc SrvXkbAllocGeomColors*(geom: PXkbGeometryPtr, nColors: int16): TStatus{.
-      cdecl, dynlib: libX11, importc: "XkbAllocGeomColors".}
-  proc SrvXkbAllocGeomDoodads*(geom: PXkbGeometryPtr, nDoodads: int16): TStatus{.
-      cdecl, dynlib: libX11, importc: "XkbAllocGeomDoodads".}
-  proc SrvXkbAllocGeomKeys*(row: PXkbRowPtr, nKeys: int16): TStatus{.cdecl, 
-      dynlib: libX11, importc: "XkbAllocGeomKeys".}
-  proc SrvXkbAllocGeomOutlines*(shape: PXkbShapePtr, nOL: int16): TStatus{.
-      cdecl, dynlib: libX11, importc: "XkbAllocGeomOutlines".}
-  proc SrvXkbAllocGeomPoints*(ol: PXkbOutlinePtr, nPts: int16): TStatus{.cdecl, 
-      dynlib: libX11, importc: "XkbAllocGeomPoints".}
-  proc SrvXkbAllocGeomProps*(geom: PXkbGeometryPtr, nProps: int16): TStatus{.
-      cdecl, dynlib: libX11, importc: "XkbAllocGeomProps".}
-  proc SrvXkbAllocGeomRows*(section: PXkbSectionPtr, nRows: int16): TStatus{.
-      cdecl, dynlib: libX11, importc: "XkbAllocGeomRows".}
-  proc SrvXkbAllocGeomSectionDoodads*(section: PXkbSectionPtr, nDoodads: int16): TStatus{.
-      cdecl, dynlib: libX11, importc: "XkbAllocGeomSectionDoodads".}
-  proc SrvXkbAllocGeomSections*(geom: PXkbGeometryPtr, nSections: int16): TStatus{.
-      cdecl, dynlib: libX11, importc: "XkbAllocGeomSections".}
-  proc SrvXkbAllocGeomOverlays*(section: PXkbSectionPtr, num_needed: int16): TStatus{.
-      cdecl, dynlib: libX11, importc: "XkbAllocGeomOverlays".}
-  proc SrvXkbAllocGeomOverlayRows*(overlay: PXkbOverlayPtr, num_needed: int16): TStatus{.
-      cdecl, dynlib: libX11, importc: "XkbAllocGeomOverlayRows".}
-  proc SrvXkbAllocGeomOverlayKeys*(row: PXkbOverlayRowPtr, num_needed: int16): TStatus{.
-      cdecl, dynlib: libX11, importc: "XkbAllocGeomOverlayKeys".}
-  proc SrvXkbAllocGeomShapes*(geom: PXkbGeometryPtr, nShapes: int16): TStatus{.
-      cdecl, dynlib: libX11, importc: "XkbAllocGeomShapes".}
-  proc SrvXkbAllocGeometry*(xkb: PXkbDescPtr, sizes: PXkbGeometrySizesPtr): TStatus{.
-      cdecl, dynlib: libX11, importc: "XkbAllocGeometry".}
-  proc SrvXkbFreeGeomKeyAliases*(geom: PXkbGeometryPtr, first: int16, 
-                                 count: int16, freeAll: bool){.cdecl, 
+  proc srvXkballocGeomKeyAliases*(geom: PXkbGeometryPtr, nAliases: int16): TStatus{.
+      cdecl, dynlib: libX11, importc: "XkballocGeomKeyAliases".}
+  proc srvXkballocGeomColors*(geom: PXkbGeometryPtr, nColors: int16): TStatus{.
+      cdecl, dynlib: libX11, importc: "XkballocGeomColors".}
+  proc srvXkballocGeomDoodads*(geom: PXkbGeometryPtr, nDoodads: int16): TStatus{.
+      cdecl, dynlib: libX11, importc: "XkballocGeomDoodads".}
+  proc srvXkballocGeomKeys*(row: PXkbRowPtr, nKeys: int16): TStatus{.cdecl,
+      dynlib: libX11, importc: "XkballocGeomKeys".}
+  proc srvXkballocGeomOutlines*(shape: PXkbShapePtr, nOL: int16): TStatus{.
+      cdecl, dynlib: libX11, importc: "XkballocGeomOutlines".}
+  proc srvXkballocGeomPoints*(ol: PXkbOutlinePtr, nPts: int16): TStatus{.cdecl,
+      dynlib: libX11, importc: "XkballocGeomPoints".}
+  proc srvXkballocGeomProps*(geom: PXkbGeometryPtr, nProps: int16): TStatus{.
+      cdecl, dynlib: libX11, importc: "XkballocGeomProps".}
+  proc srvXkballocGeomRows*(section: PXkbSectionPtr, nRows: int16): TStatus{.
+      cdecl, dynlib: libX11, importc: "XkballocGeomRows".}
+  proc srvXkballocGeomSectionDoodads*(section: PXkbSectionPtr, nDoodads: int16): TStatus{.
+      cdecl, dynlib: libX11, importc: "XkballocGeomSectionDoodads".}
+  proc srvXkballocGeomSections*(geom: PXkbGeometryPtr, nSections: int16): TStatus{.
+      cdecl, dynlib: libX11, importc: "XkballocGeomSections".}
+  proc srvXkballocGeomOverlays*(section: PXkbSectionPtr, num_needed: int16): TStatus{.
+      cdecl, dynlib: libX11, importc: "XkballocGeomOverlays".}
+  proc srvXkballocGeomOverlayRows*(overlay: PXkbOverlayPtr, num_needed: int16): TStatus{.
+      cdecl, dynlib: libX11, importc: "XkballocGeomOverlayRows".}
+  proc srvXkballocGeomOverlayKeys*(row: PXkbOverlayRowPtr, num_needed: int16): TStatus{.
+      cdecl, dynlib: libX11, importc: "XkballocGeomOverlayKeys".}
+  proc srvXkballocGeomShapes*(geom: PXkbGeometryPtr, nShapes: int16): TStatus{.
+      cdecl, dynlib: libX11, importc: "XkballocGeomShapes".}
+  proc srvXkballocGeometry*(xkb: PXkbDescPtr, sizes: PXkbGeometrySizesPtr): TStatus{.
+      cdecl, dynlib: libX11, importc: "XkballocGeometry".}
+  proc srvXkbFreeGeomKeyAliases*(geom: PXkbGeometryPtr, first: int16,
+                                 count: int16, freeAll: bool){.cdecl,
       dynlib: libX11, importc: "XkbFreeGeomKeyAliases".}
-  proc SrvXkbFreeGeomColors*(geom: PXkbGeometryPtr, first: int16, count: int16, 
-                             freeAll: bool){.cdecl, dynlib: libX11, 
+  proc srvXkbFreeGeomColors*(geom: PXkbGeometryPtr, first: int16, count: int16,
+                             freeAll: bool){.cdecl, dynlib: libX11,
       importc: "XkbFreeGeomColors".}
-  proc SrvXkbFreeGeomDoodads*(doodads: PXkbDoodadPtr, nDoodads: int16, 
-                              freeAll: bool){.cdecl, dynlib: libX11, 
+  proc srvXkbFreeGeomDoodads*(doodads: PXkbDoodadPtr, nDoodads: int16,
+                              freeAll: bool){.cdecl, dynlib: libX11,
       importc: "XkbFreeGeomDoodads".}
-  proc SrvXkbFreeGeomProperties*(geom: PXkbGeometryPtr, first: int16, 
-                                 count: int16, freeAll: bool){.cdecl, 
+  proc srvXkbFreeGeomProperties*(geom: PXkbGeometryPtr, first: int16,
+                                 count: int16, freeAll: bool){.cdecl,
       dynlib: libX11, importc: "XkbFreeGeomProperties".}
-  proc SrvXkbFreeGeomOverlayKeys*(row: PXkbOverlayRowPtr, first: int16, 
-                                  count: int16, freeAll: bool){.cdecl, 
+  proc srvXkbFreeGeomOverlayKeys*(row: PXkbOverlayRowPtr, first: int16,
+                                  count: int16, freeAll: bool){.cdecl,
       dynlib: libX11, importc: "XkbFreeGeomOverlayKeys".}
-  proc SrvXkbFreeGeomOverlayRows*(overlay: PXkbOverlayPtr, first: int16, 
-                                  count: int16, freeAll: bool){.cdecl, 
+  proc srvXkbFreeGeomOverlayRows*(overlay: PXkbOverlayPtr, first: int16,
+                                  count: int16, freeAll: bool){.cdecl,
       dynlib: libX11, importc: "XkbFreeGeomOverlayRows".}
-  proc SrvXkbFreeGeomOverlays*(section: PXkbSectionPtr, first: int16, 
-                               count: int16, freeAll: bool){.cdecl, 
+  proc srvXkbFreeGeomOverlays*(section: PXkbSectionPtr, first: int16,
+                               count: int16, freeAll: bool){.cdecl,
       dynlib: libX11, importc: "XkbFreeGeomOverlays".}
-  proc SrvXkbFreeGeomKeys*(row: PXkbRowPtr, first: int16, count: int16, 
-                           freeAll: bool){.cdecl, dynlib: libX11, 
+  proc srvXkbFreeGeomKeys*(row: PXkbRowPtr, first: int16, count: int16,
+                           freeAll: bool){.cdecl, dynlib: libX11,
       importc: "XkbFreeGeomKeys".}
-  proc SrvXkbFreeGeomRows*(section: PXkbSectionPtr, first: int16, count: int16, 
-                           freeAll: bool){.cdecl, dynlib: libX11, 
+  proc srvXkbFreeGeomRows*(section: PXkbSectionPtr, first: int16, count: int16,
+                           freeAll: bool){.cdecl, dynlib: libX11,
       importc: "XkbFreeGeomRows".}
-  proc SrvXkbFreeGeomSections*(geom: PXkbGeometryPtr, first: int16, 
-                               count: int16, freeAll: bool){.cdecl, 
+  proc srvXkbFreeGeomSections*(geom: PXkbGeometryPtr, first: int16,
+                               count: int16, freeAll: bool){.cdecl,
       dynlib: libX11, importc: "XkbFreeGeomSections".}
-  proc SrvXkbFreeGeomPoints*(outline: PXkbOutlinePtr, first: int16, 
-                             count: int16, freeAll: bool){.cdecl, 
+  proc srvXkbFreeGeomPoints*(outline: PXkbOutlinePtr, first: int16,
+                             count: int16, freeAll: bool){.cdecl,
       dynlib: libX11, importc: "XkbFreeGeomPoints".}
-  proc SrvXkbFreeGeomOutlines*(shape: PXkbShapePtr, first: int16, count: int16, 
-                               freeAll: bool){.cdecl, dynlib: libX11, 
+  proc srvXkbFreeGeomOutlines*(shape: PXkbShapePtr, first: int16, count: int16,
+                               freeAll: bool){.cdecl, dynlib: libX11,
       importc: "XkbFreeGeomOutlines".}
-  proc SrvXkbFreeGeomShapes*(geom: PXkbGeometryPtr, first: int16, count: int16, 
-                             freeAll: bool){.cdecl, dynlib: libX11, 
+  proc srvXkbFreeGeomShapes*(geom: PXkbGeometryPtr, first: int16, count: int16,
+                             freeAll: bool){.cdecl, dynlib: libX11,
       importc: "XkbFreeGeomShapes".}
-  proc SrvXkbFreeGeometry*(geom: PXkbGeometryPtr, which: int16, freeMap: bool){.
+  proc srvXkbFreeGeometry*(geom: PXkbGeometryPtr, which: int16, freeMap: bool){.
       cdecl, dynlib: libX11, importc: "XkbFreeGeometry".}
 # implementation
 
 import                        #************************************ xkb ************************************
   xi
 
-proc XkbLegalXILedClass(c: int): bool = 
+proc xkbLegalXILedClass(c: int): bool =
   ##define XkbLegalXILedClass(c) (((c)==KbdFeedbackClass)||((c)==LedFeedbackClass)||
   #                                ((c)==XkbDfltXIClass)||((c)==XkbAllXIClasses))
   Result = (c == KbdFeedbackClass) or (c == LedFeedbackClass) or
       (c == XkbDfltXIClass) or (c == XkbAllXIClasses)
 
-proc XkbLegalXIBellClass(c: int): bool = 
+proc xkbLegalXIBellClass(c: int): bool =
   ##define XkbLegalXIBellClass(c) (((c)==KbdFeedbackClass)||((c)==BellFeedbackClass)||
   #                                 ((c)==XkbDfltXIClass)||((c)==XkbAllXIClasses))
   Result = (c == KbdFeedbackClass) or (c == BellFeedbackClass) or
       (c == XkbDfltXIClass) or (c == XkbAllXIClasses)
 
-proc XkbExplicitXIDevice(c: int): bool = 
+proc xkbExplicitXIDevice(c: int): bool =
   ##define XkbExplicitXIDevice(c) (((c)&(~0xff))==0)
   Result = (c and (not 0x000000FF)) == 0
 
-proc XkbExplicitXIClass(c: int): bool = 
+proc xkbExplicitXIClass(c: int): bool =
   ##define XkbExplicitXIClass(c) (((c)&(~0xff))==0)
   Result = (c and (not 0x000000FF)) == 0
 
-proc XkbExplicitXIId(c: int): bool = 
+proc xkbExplicitXIId(c: int): bool =
   ##define XkbExplicitXIId(c) (((c)&(~0xff))==0)
   Result = (c and (not 0x000000FF)) == 0
 
-proc XkbSingleXIClass(c: int): bool = 
+proc xkbSingleXIClass(c: int): bool =
   ##define XkbSingleXIClass(c) ((((c)&(~0xff))==0)||((c)==XkbDfltXIClass))
   Result = ((c and (not 0x000000FF)) == 0) or (c == XkbDfltXIClass)
 
-proc XkbSingleXIId(c: int): bool = 
+proc xkbSingleXIId(c: int): bool =
   ##define XkbSingleXIId(c) ((((c)&(~0xff))==0)||((c)==XkbDfltXIId))
   Result = ((c and (not 0x000000FF)) == 0) or (c == XkbDfltXIId)
 
-proc XkbBuildCoreState(m, g: int): int = 
+proc xkbBuildCoreState(m, g: int): int =
   ##define XkbBuildCoreState(m,g) ((((g)&0x3)<<13)|((m)&0xff))
   Result = ((g and 0x00000003) shl 13) or (m and 0x000000FF)
 
-proc XkbGroupForCoreState(s: int): int = 
+proc xkbGroupForCoreState(s: int): int =
   ##define XkbGroupForCoreState(s) (((s)>>13)&0x3)
   Result = (s shr 13) and 0x00000003
 
-proc XkbIsLegalGroup(g: int): bool = 
+proc xkbIsLegalGroup(g: int): bool =
   ##define XkbIsLegalGroup(g) (((g)>=0)&&((g)<XkbNumKbdGroups))
   Result = (g >= 0) and (g < XkbNumKbdGroups)
 
-proc XkbSA_ValOp(a: int): int = 
+proc xkbSA_ValOp(a: int): int =
   ##define XkbSA_ValOp(a) ((a)&XkbSA_ValOpMask)
   Result = a and XkbSA_ValOpMask
 
-proc XkbSA_ValScale(a: int): int = 
+proc xkbSA_ValScale(a: int): int =
   ##define XkbSA_ValScale(a) ((a)&XkbSA_ValScaleMask)
   Result = a and XkbSA_ValScaleMask
 
-proc XkbIsModAction(a: PXkbAnyAction): bool = 
+proc xkbIsModAction(a: PXkbAnyAction): bool =
   ##define XkbIsModAction(a) (((a)->type>=Xkb_SASetMods)&&((a)->type<=XkbSA_LockMods))
   Result = (ze(a.theType) >= XkbSA_SetMods) and (ze(a.theType) <= XkbSA_LockMods)
 
-proc XkbIsGroupAction(a: PXkbAnyAction): bool = 
+proc xkbIsGroupAction(a: PXkbAnyAction): bool =
   ##define XkbIsGroupAction(a) (((a)->type>=XkbSA_SetGroup)&&((a)->type<=XkbSA_LockGroup))
   Result = (ze(a.theType) >= XkbSA_SetGroup) or (ze(a.theType) <= XkbSA_LockGroup)
 
-proc XkbIsPtrAction(a: PXkbAnyAction): bool = 
+proc xkbIsPtrAction(a: PXkbAnyAction): bool =
   ##define XkbIsPtrAction(a) (((a)->type>=XkbSA_MovePtr)&&((a)->type<=XkbSA_SetPtrDflt))
   Result = (ze(a.theType) >= XkbSA_MovePtr) and
       (ze(a.theType) <= XkbSA_SetPtrDflt)
 
-proc XkbIsLegalKeycode(k: int): bool = 
+proc xkbIsLegalKeycode(k: int): bool =
   ##define        XkbIsLegalKeycode(k)    (((k)>=XkbMinLegalKeyCode)&&((k)<=XkbMaxLegalKeyCode))
   Result = (k >= XkbMinLegalKeyCode) and (k <= XkbMaxLegalKeyCode)
 
-proc XkbShiftLevel(n: int8): int8 = 
+proc xkbShiftLevel(n: int8): int8 =
   ##define XkbShiftLevel(n) ((n)-1)
   Result = n - 1'i8
 
-proc XkbShiftLevelMask(n: int8): int8 = 
+proc xkbShiftLevelMask(n: int8): int8 =
   ##define XkbShiftLevelMask(n) (1<<((n)-1))
   Result = 1'i8 shl (n - 1'i8)
 
-proc XkbCharToInt(v: int8): int16 = 
+proc xkbCharToInt(v: int8): int16 =
   ##define XkbCharToInt(v) ((v)&0x80?(int)((v)|(~0xff)):(int)((v)&0x7f))
   if ((v and 0x80'i8) != 0'i8): Result = v or (not 0xFF'i16)
   else: Result = int16(v and 0x7F'i8)
-  
-proc XkbIntTo2Chars(i: int16, h, L: var int8) = 
-  ##define XkbIntTo2Chars(i,h,l) (((h)=((i>>8)&0xff)),((l)=((i)&0xff)))
+
+proc xkbIntTo2chars(i: int16, h, L: var int8) =
+  ##define XkbIntTo2chars(i,h,l) (((h)=((i>>8)&0xff)),((l)=((i)&0xff)))
   h = toU8((i shr 8'i16) and 0x00FF'i16)
   L = toU8(i and 0xFF'i16)
 
-proc Xkb2CharsToInt(h, L: int8): int16 = 
-  when defined(cpu64): 
-    ##define Xkb2CharsToInt(h,l) ((h)&0x80?(int)(((h)<<8)|(l)|(~0xffff)): (int)(((h)<<8)|(l)&0x7fff))
-    if (h and 0x80'i8) != 0'i8: 
+proc xkb2charsToInt(h, L: int8): int16 =
+  when defined(cpu64):
+    ##define Xkb2charsToInt(h,l) ((h)&0x80?(int)(((h)<<8)|(l)|(~0xffff)): (int)(((h)<<8)|(l)&0x7fff))
+    if (h and 0x80'i8) != 0'i8:
       Result = toU16((ze(h) shl 8) or ze(L) or not 0x0000FFFF)
-    else: 
+    else:
       Result = toU16((ze(h) shl 8) or ze(L) and 0x00007FFF)
-  else: 
-    ##define Xkb2CharsToInt(h,l) ((short)(((h)<<8)|(l)))
+  else:
+    ##define Xkb2charsToInt(h,l) ((short)(((h)<<8)|(l)))
     Result = toU16(ze(h) shl 8 or ze(L))
 
-proc XkbModLocks(s: PXkbStatePtr): int8 = 
+proc xkbModLocks(s: PXkbStatePtr): int8 =
   ##define XkbModLocks(s) ((s)->locked_mods)
   Result = s.locked_mods
 
-proc XkbStateMods(s: PXkbStatePtr): int16 = 
+proc xkbStateMods(s: PXkbStatePtr): int16 =
   ##define XkbStateMods(s) ((s)->base_mods|(s)->latched_mods|XkbModLocks(s))
   Result = s.base_mods or s.latched_mods or XkbModLocks(s)
 
-proc XkbGroupLock(s: PXkbStatePtr): int8 = 
+proc xkbGroupLock(s: PXkbStatePtr): int8 =
   ##define XkbGroupLock(s) ((s)->locked_group)
   Result = s.locked_group
 
-proc XkbStateGroup(s: PXkbStatePtr): int16 = 
+proc xkbStateGroup(s: PXkbStatePtr): int16 =
   ##define XkbStateGroup(s) ((s)->base_group+(s)->latched_group+XkbGroupLock(s))
   Result = S.base_group + (s.latched_group) + XkbGroupLock(s)
 
-proc XkbStateFieldFromRec(s: PXkbStatePtr): int = 
+proc xkbStateFieldFromRec(s: PXkbStatePtr): int =
   ##define XkbStateFieldFromRec(s) XkbBuildCoreState((s)->lookup_mods,(s)->group)
   Result = XkbBuildCoreState(s.lookup_mods, s.group)
 
-proc XkbGrabStateFromRec(s: PXkbStatePtr): int = 
+proc xkbGrabStateFromRec(s: PXkbStatePtr): int =
   ##define XkbGrabStateFromRec(s) XkbBuildCoreState((s)->grab_mods,(s)->group)
   Result = XkbBuildCoreState(s.grab_mods, s.group)
 
-proc XkbNumGroups(g: int16): int16 = 
+proc xkbNumGroups(g: int16): int16 =
   ##define XkbNumGroups(g) ((g)&0x0f)
   Result = g and 0x0000000F'i16
 
-proc XkbOutOfRangeGroupInfo(g: int16): int16 = 
+proc xkbOutOfRangeGroupInfo(g: int16): int16 =
   ##define XkbOutOfRangeGroupInfo(g) ((g)&0xf0)
   Result = g and 0x000000F0'i16
 
-proc XkbOutOfRangeGroupAction(g: int16): int16 = 
+proc xkbOutOfRangeGroupAction(g: int16): int16 =
   ##define XkbOutOfRangeGroupAction(g) ((g)&0xc0)
   Result = g and 0x000000C0'i16
 
-proc XkbOutOfRangeGroupNumber(g: int16): int16 = 
+proc xkbOutOfRangeGroupNumber(g: int16): int16 =
   ##define XkbOutOfRangeGroupNumber(g) (((g)&0x30)>>4)
   Result = (g and 0x00000030'i16) shr 4'i16
 
-proc XkbSetGroupInfo(g, w, n: int16): int16 = 
+proc xkbSetGroupInfo(g, w, n: int16): int16 =
   ##define XkbSetGroupInfo(g,w,n) (((w)&0xc0)|(((n)&3)<<4)|((g)&0x0f))
-  Result = (w and 0x000000C0'i16) or 
+  Result = (w and 0x000000C0'i16) or
     ((n and 3'i16) shl 4'i16) or (g and 0x0000000F'i16)
 
-proc XkbSetNumGroups(g, n: int16): int16 = 
+proc xkbSetNumGroups(g, n: int16): int16 =
   ##define XkbSetNumGroups(g,n) (((g)&0xf0)|((n)&0x0f))
   Result = (g and 0x000000F0'i16) or (n and 0x0000000F'i16)
 
-proc XkbModActionVMods(a: PXkbModAction): int16 = 
+proc xkbModActionVMods(a: PXkbModAction): int16 =
   ##define XkbModActionVMods(a) ((short)(((a)->vmods1<<8)|((a)->vmods2)))
   Result = toU16((ze(a.vmods1) shl 8) or ze(a.vmods2))
 
-proc XkbSetModActionVMods(a: PXkbModAction, v: int8) = 
+proc xkbSetModActionVMods(a: PXkbModAction, v: int8) =
   ##define XkbSetModActionVMods(a,v) (((a)->vmods1=(((v)>>8)&0xff)),(a)->vmods2=((v)&0xff))
   a.vmods1 = toU8((ze(v) shr 8) and 0x000000FF)
   a.vmods2 = toU8(ze(v) and 0x000000FF)
 
-proc XkbSAGroup(a: PXkbGroupAction): int8 = 
+proc xkbSAGroup(a: PXkbGroupAction): int8 =
   ##define XkbSAGroup(a) (XkbCharToInt((a)->group_XXX))
   Result = int8(XkbCharToInt(a.group_XXX))
 
-proc XkbSASetGroupProc(a: PXkbGroupAction, g: int8) = 
+proc xkbSASetGroupProc(a: PXkbGroupAction, g: int8) =
   ##define XkbSASetGroup(a,g) ((a)->group_XXX=(g))
   a.group_XXX = g
 
-proc XkbPtrActionX(a: PXkbPtrAction): int16 = 
-  ##define XkbPtrActionX(a) (Xkb2CharsToInt((a)->high_XXX,(a)->low_XXX))
-  Result = int16(Xkb2CharsToInt(a.high_XXX, a.low_XXX))
+proc xkbPtrActionX(a: PXkbPtrAction): int16 =
+  ##define XkbPtrActionX(a) (Xkb2charsToInt((a)->high_XXX,(a)->low_XXX))
+  Result = int16(Xkb2charsToInt(a.high_XXX, a.low_XXX))
 
-proc XkbPtrActionY(a: PXkbPtrAction): int16 = 
-  ##define XkbPtrActionY(a) (Xkb2CharsToInt((a)->high_YYY,(a)->low_YYY))
-  Result = int16(Xkb2CharsToInt(a.high_YYY, a.low_YYY))
+proc xkbPtrActionY(a: PXkbPtrAction): int16 =
+  ##define XkbPtrActionY(a) (Xkb2charsToInt((a)->high_YYY,(a)->low_YYY))
+  Result = int16(Xkb2charsToInt(a.high_YYY, a.low_YYY))
 
-proc XkbSetPtrActionX(a: PXkbPtrAction, x: int8) = 
-  ##define XkbSetPtrActionX(a,x) (XkbIntTo2Chars(x,(a)->high_XXX,(a)->low_XXX))
-  XkbIntTo2Chars(x, a.high_XXX, a.low_XXX)
+proc xkbSetPtrActionX(a: PXkbPtrAction, x: int8) =
+  ##define XkbSetPtrActionX(a,x) (XkbIntTo2chars(x,(a)->high_XXX,(a)->low_XXX))
+  XkbIntTo2chars(x, a.high_XXX, a.low_XXX)
 
-proc XkbSetPtrActionY(a: PXkbPtrAction, y: int8) = 
-  ##define XkbSetPtrActionY(a,y) (XkbIntTo2Chars(y,(a)->high_YYY,(a)->low_YYY))
-  XkbIntTo2Chars(y, a.high_YYY, a.low_YYY)
+proc xkbSetPtrActionY(a: PXkbPtrAction, y: int8) =
+  ##define XkbSetPtrActionY(a,y) (XkbIntTo2chars(y,(a)->high_YYY,(a)->low_YYY))
+  XkbIntTo2chars(y, a.high_YYY, a.low_YYY)
 
-proc XkbSAPtrDfltValue(a: PXkbPtrDfltAction): int8 = 
+proc xkbSAPtrDfltValue(a: PXkbPtrDfltAction): int8 =
   ##define XkbSAPtrDfltValue(a) (XkbCharToInt((a)->valueXXX))
   Result = int8(XkbCharToInt(a.valueXXX))
 
-proc XkbSASetPtrDfltValue(a: PXkbPtrDfltAction, c: pointer) = 
+proc xkbSASetPtrDfltValue(a: PXkbPtrDfltAction, c: pointer) =
   ##define XkbSASetPtrDfltValue(a,c) ((a)->valueXXX= ((c)&0xff))
   a.valueXXX = toU8(cast[int](c))
 
-proc XkbSAScreen(a: PXkbSwitchScreenAction): int8 = 
+proc xkbSAScreen(a: PXkbSwitchScreenAction): int8 =
   ##define XkbSAScreen(a) (XkbCharToInt((a)->screenXXX))
   Result = toU8(XkbCharToInt(a.screenXXX))
 
-proc XkbSASetScreen(a: PXkbSwitchScreenAction, s: pointer) = 
+proc xkbSASetScreen(a: PXkbSwitchScreenAction, s: pointer) =
   ##define XkbSASetScreen(a,s) ((a)->screenXXX= ((s)&0xff))
   a.screenXXX = toU8(cast[int](s))
 
-proc XkbActionSetCtrls(a: PXkbCtrlsAction, c: int8) = 
+proc xkbActionSetCtrls(a: PXkbCtrlsAction, c: int8) =
   ##define XkbActionSetCtrls(a,c) (((a)->ctrls3=(((c)>>24)&0xff)),((a)->ctrls2=(((c)>>16)&0xff)),
-  #                                 ((a)->ctrls1=(((c)>>8)&0xff)),((a)->ctrls0=((c)&0xff)))        
+  #                                 ((a)->ctrls1=(((c)>>8)&0xff)),((a)->ctrls0=((c)&0xff)))
   a.ctrls3 = toU8((ze(c) shr 24) and 0x000000FF)
   a.ctrls2 = toU8((ze(c) shr 16) and 0x000000FF)
   a.ctrls1 = toU8((ze(c) shr 8) and 0x000000FF)
   a.ctrls0 = toU8(ze(c) and 0x000000FF)
 
-proc XkbActionCtrls(a: PXkbCtrlsAction): int16 = 
+proc xkbActionCtrls(a: PXkbCtrlsAction): int16 =
   ##define XkbActionCtrls(a) ((((unsigned int)(a)->ctrls3)<<24)|(((unsigned int)(a)->ctrls2)<<16)|
-  #                            (((unsigned int)(a)->ctrls1)<<8)|((unsigned int)((a)->ctrls0)))      
-  Result = toU16((ze(a.ctrls3) shl 24) or (ze(a.ctrls2) shl 16) or 
+  #                            (((unsigned int)(a)->ctrls1)<<8)|((unsigned int)((a)->ctrls0)))
+  Result = toU16((ze(a.ctrls3) shl 24) or (ze(a.ctrls2) shl 16) or
      (ze(a.ctrls1) shl 8) or ze(a.ctrls0))
 
-proc XkbSARedirectVMods(a: PXkbRedirectKeyAction): int16 = 
+proc xkbSARedirectVMods(a: PXkbRedirectKeyAction): int16 =
   ##define XkbSARedirectVMods(a) ((((unsigned int)(a)->vmods1)<<8)|((unsigned int)(a)->vmods0))
   Result = toU16((ze(a.vmods1) shl 8) or ze(a.vmods0))
 
-proc XkbSARedirectSetVMods(a: PXkbRedirectKeyAction, m: int8) = 
+proc xkbSARedirectSetVMods(a: PXkbRedirectKeyAction, m: int8) =
   ##define XkbSARedirectSetVMods(a,m) (((a)->vmods_mask1=(((m)>>8)&0xff)),((a)->vmods_mask0=((m)&0xff)))
   a.vmods_mask1 = toU8((ze(m) shr 8) and 0x000000FF)
   a.vmods_mask0 = toU8(ze(m) or 0x000000FF)
 
-proc XkbSARedirectVModsMask(a: PXkbRedirectKeyAction): int16 = 
+proc xkbSARedirectVModsMask(a: PXkbRedirectKeyAction): int16 =
   ##define XkbSARedirectVModsMask(a) ((((unsigned int)(a)->vmods_mask1)<<8)|
   #                                     ((unsigned int)(a)->vmods_mask0))
   Result = toU16((ze(a.vmods_mask1) shl 8) or ze(a.vmods_mask0))
 
-proc XkbSARedirectSetVModsMask(a: PXkbRedirectKeyAction, m: int8) = 
+proc xkbSARedirectSetVModsMask(a: PXkbRedirectKeyAction, m: int8) =
   ##define XkbSARedirectSetVModsMask(a,m) (((a)->vmods_mask1=(((m)>>8)&0xff)),((a)->vmods_mask0=((m)&0xff)))
   a.vmods_mask1 = toU8(ze(m) shr 8 and 0x000000FF)
   a.vmods_mask0 = toU8(ze(m) and 0x000000FF)
 
-proc XkbAX_AnyFeedback(c: PXkbControlsPtr): int16 = 
+proc xkbAX_AnyFeedback(c: PXkbControlsPtr): int16 =
   ##define XkbAX_AnyFeedback(c) ((c)->enabled_ctrls&XkbAccessXFeedbackMask)
   Result = toU16(ze(c.enabled_ctrls) and XkbAccessXFeedbackMask)
 
-proc XkbAX_NeedOption(c: PXkbControlsPtr, w: int16): int16 = 
+proc xkbAX_NeedOption(c: PXkbControlsPtr, w: int16): int16 =
   ##define XkbAX_NeedOption(c,w) ((c)->ax_options&(w))
   Result = toU16(ze(c.ax_options) and ze(w))
 
-proc XkbAX_NeedFeedback(c: PXkbControlsPtr, w: int16): bool = 
+proc xkbAX_NeedFeedback(c: PXkbControlsPtr, w: int16): bool =
   ##define XkbAX_NeedFeedback(c,w) (XkbAX_AnyFeedback(c)&&XkbAX_NeedOption(c,w))
   Result = (XkbAX_AnyFeedback(c) > 0'i16) and (XkbAX_NeedOption(c, w) > 0'i16)
 
-proc XkbSMKeyActionsPtr(m: PXkbServerMapPtr, k: int16): PXkbAction = 
+proc xkbSMKeyActionsPtr(m: PXkbServerMapPtr, k: int16): PXkbAction =
   ##define XkbSMKeyActionsPtr(m,k) (&(m)->acts[(m)->key_acts[k]])
   Result = addr(m.acts[ze(m.key_acts[ze(k)])])
 
-proc XkbCMKeyGroupInfo(m: PXkbClientMapPtr, k: int16): int8 = 
+proc xkbCMKeyGroupInfo(m: PXkbClientMapPtr, k: int16): int8 =
   ##define XkbCMKeyGroupInfo(m,k) ((m)->key_sym_map[k].group_info)
   Result = m.key_sym_map[ze(k)].group_info
 
-proc XkbCMKeyNumGroups(m: PXkbClientMapPtr, k: int16): int8 = 
+proc xkbCMKeyNumGroups(m: PXkbClientMapPtr, k: int16): int8 =
   ##define XkbCMKeyNumGroups(m,k) (XkbNumGroups((m)->key_sym_map[k].group_info))
   Result = toU8(XkbNumGroups(m.key_sym_map[ze(k)].group_info))
 
-proc XkbCMKeyGroupWidth(m: PXkbClientMapPtr, k: int16, g: int8): int8 = 
+proc xkbCMKeyGroupWidth(m: PXkbClientMapPtr, k: int16, g: int8): int8 =
   ##define XkbCMKeyGroupWidth(m,k,g) (XkbCMKeyType(m,k,g)->num_levels)
   Result = XkbCMKeyType(m, k, g).num_levels
 
-proc XkbCMKeyGroupsWidth(m: PXkbClientMapPtr, K: int16): int8 = 
+proc xkbCMKeyGroupsWidth(m: PXkbClientMapPtr, K: int16): int8 =
   ##define XkbCMKeyGroupsWidth(m,k) ((m)->key_sym_map[k].width)
   Result = m.key_sym_map[ze(k)].width
 
-proc XkbCMKeyTypeIndex(m: PXkbClientMapPtr, k: int16, g: int8): int8 = 
+proc xkbCMKeyTypeIndex(m: PXkbClientMapPtr, k: int16, g: int8): int8 =
   ##define XkbCMKeyTypeIndex(m,k,g) ((m)->key_sym_map[k].kt_index[g&0x3])
   Result = m.key_sym_map[ze(k)].kt_index[ze(g) and 0x00000003]
 
-proc XkbCMKeyType(m: PXkbClientMapPtr, k: int16, g: int8): PXkbKeyTypePtr = 
+proc xkbCMKeyType(m: PXkbClientMapPtr, k: int16, g: int8): PXkbKeyTypePtr =
   ##define XkbCMKeyType(m,k,g) (&(m)->types[XkbCMKeyTypeIndex(m,k,g)])
   Result = addr(m.types[ze(XkbCMKeyTypeIndex(m, k, g))])
 
-proc XkbCMKeyNumSyms(m: PXkbClientMapPtr, k: int16): int16 = 
+proc xkbCMKeyNumSyms(m: PXkbClientMapPtr, k: int16): int16 =
   ##define XkbCMKeyNumSyms(m,k) (XkbCMKeyGroupsWidth(m,k)*XkbCMKeyNumGroups(m,k))
   Result = toU16(ze(XkbCMKeyGroupsWidth(m, k)) or ze(XkbCMKeyNumGroups(m, k)))
 
-proc XkbCMKeySymsOffset(m: PXkbClientMapPtr, k: int16): int8 = 
+proc xkbCMKeySymsOffset(m: PXkbClientMapPtr, k: int16): int8 =
   ##define XkbCMKeySymsOffset(m,k) ((m)->key_sym_map[k].offset)
   Result = m.key_sym_map[ze(k)].offset
 
-proc XkbCMKeySymsPtr*(m: PXkbClientMapPtr, k: int16): PKeySym = 
+proc xkbCMKeySymsPtr*(m: PXkbClientMapPtr, k: int16): PKeySym =
   ##define XkbCMKeySymsPtr(m,k) (&(m)->syms[XkbCMKeySymsOffset(m,k)])
   Result = addr(m.syms[ze(XkbCMKeySymsOffset(m, k))])
 
-proc XkbIM_IsAuto(i: PXkbIndicatorMapPtr): bool = 
+proc xkbIM_IsAuto(i: PXkbIndicatorMapPtr): bool =
   ##define XkbIM_IsAuto(i) ((((i)->flags&XkbIM_NoAutomatic)==0)&&(((i)->which_groups&&(i)->groups)||
   #                           ((i)->which_mods&&(i)->mods.mask)||  ((i)->ctrls)))
   Result = ((ze(i.flags) and XkbIM_NoAutomatic) == 0) and
       (((i.which_groups > 0'i8) and (i.groups > 0'i8)) or
       ((i.which_mods > 0'i8) and (i.mods.mask > 0'i8)) or (i.ctrls > 0'i8))
 
-proc XkbIM_InUse(i: PXkbIndicatorMapPtr): bool = 
-  ##define XkbIM_InUse(i) (((i)->flags)||((i)->which_groups)||((i)->which_mods)||((i)->ctrls)) 
+proc xkbIM_InUse(i: PXkbIndicatorMapPtr): bool =
+  ##define XkbIM_InUse(i) (((i)->flags)||((i)->which_groups)||((i)->which_mods)||((i)->ctrls))
   Result = (i.flags > 0'i8) or (i.which_groups > 0'i8) or (i.which_mods > 0'i8) or
       (i.ctrls > 0'i8)
 
-proc XkbKeyKeyTypeIndex(d: PXkbDescPtr, k: int16, g: int8): int8 = 
+proc xkbKeyKeyTypeIndex(d: PXkbDescPtr, k: int16, g: int8): int8 =
   ##define XkbKeyKeyTypeIndex(d,k,g)      (XkbCMKeyTypeIndex((d)->map,k,g))
   Result = XkbCMKeyTypeIndex(d.map, k, g)
 
-proc XkbKeyKeyType(d: PXkbDescPtr, k: int16, g: int8): PXkbKeyTypePtr = 
+proc xkbKeyKeyType(d: PXkbDescPtr, k: int16, g: int8): PXkbKeyTypePtr =
   ##define XkbKeyKeyType(d,k,g) (XkbCMKeyType((d)->map,k,g))
   Result = XkbCMKeyType(d.map, k, g)
 
-proc XkbKeyGroupWidth(d: PXkbDescPtr, k: int16, g: int8): int8 = 
+proc xkbKeyGroupWidth(d: PXkbDescPtr, k: int16, g: int8): int8 =
   ##define XkbKeyGroupWidth(d,k,g) (XkbCMKeyGroupWidth((d)->map,k,g))
   Result = XkbCMKeyGroupWidth(d.map, k, g)
 
-proc XkbKeyGroupsWidth(d: PXkbDescPtr, k: int16): int8 = 
+proc xkbKeyGroupsWidth(d: PXkbDescPtr, k: int16): int8 =
   ##define XkbKeyGroupsWidth(d,k) (XkbCMKeyGroupsWidth((d)->map,k))
   Result = XkbCMKeyGroupsWidth(d.map, k)
 
-proc XkbKeyGroupInfo(d: PXkbDescPtr, k: int16): int8 = 
+proc xkbKeyGroupInfo(d: PXkbDescPtr, k: int16): int8 =
   ##define XkbKeyGroupInfo(d,k) (XkbCMKeyGroupInfo((d)->map,(k)))
   Result = XkbCMKeyGroupInfo(d.map, k)
 
-proc XkbKeyNumGroups(d: PXkbDescPtr, k: int16): int8 = 
+proc xkbKeyNumGroups(d: PXkbDescPtr, k: int16): int8 =
   ##define XkbKeyNumGroups(d,k) (XkbCMKeyNumGroups((d)->map,(k)))
   Result = XkbCMKeyNumGroups(d.map, k)
 
-proc XkbKeyNumSyms(d: PXkbDescPtr, k: int16): int16 = 
+proc xkbKeyNumSyms(d: PXkbDescPtr, k: int16): int16 =
   ##define XkbKeyNumSyms(d,k) (XkbCMKeyNumSyms((d)->map,(k)))
   Result = XkbCMKeyNumSyms(d.map, k)
 
-proc XkbKeySymsPtr*(d: PXkbDescPtr, k: int16): PKeySym = 
+proc xkbKeySymsPtr*(d: PXkbDescPtr, k: int16): PKeySym =
   ##define XkbKeySymsPtr(d,k) (XkbCMKeySymsPtr((d)->map,(k)))
   Result = XkbCMKeySymsPtr(d.map, k)
 
-proc XkbKeySym(d: PXkbDescPtr, k: int16, n: int16): TKeySym = 
+proc xkbKeySym(d: PXkbDescPtr, k: int16, n: int16): TKeySym =
   ##define XkbKeySym(d,k,n) (XkbKeySymsPtr(d,k)[n])
   Result = cast[ptr array[0..0xffff, TKeySym]](XkbKeySymsPtr(d, k))[ze(n)] # XXX: this seems strange!
 
-proc XkbKeySymEntry(d: PXkbDescPtr, k: int16, sl: int16, g: int8): TKeySym = 
+proc xkbKeySymEntry(d: PXkbDescPtr, k: int16, sl: int16, g: int8): TKeySym =
   ##define XkbKeySymEntry(d,k,sl,g) (XkbKeySym(d,k,((XkbKeyGroupsWidth(d,k)*(g))+(sl))))
   Result = XkbKeySym(d, k, toU16(ze(XkbKeyGroupsWidth(d, k)) * ze(g) + ze(sl)))
 
-proc XkbKeyAction(d: PXkbDescPtr, k: int16, n: int16): PXkbAction = 
+proc xkbKeyAction(d: PXkbDescPtr, k: int16, n: int16): PXkbAction =
   ##define XkbKeyAction(d,k,n) (XkbKeyHasActions(d,k)?&XkbKeyActionsPtr(d,k)[n]:NULL)
-  #if (XkbKeyHasActions(d, k)): 
+  #if (XkbKeyHasActions(d, k)):
   #  Result = XkbKeyActionsPtr(d, k)[ze(n)] #Buggy !!!
   assert(false)
   result = nil
-  
-proc XkbKeyActionEntry(d: PXkbDescPtr, k: int16, sl: int16, g: int8): int8 = 
+
+proc xkbKeyActionEntry(d: PXkbDescPtr, k: int16, sl: int16, g: int8): int8 =
   ##define XkbKeyActionEntry(d,k,sl,g) (XkbKeyHasActions(d,k) ?
   #                                      XkbKeyAction(d, k, ((XkbKeyGroupsWidth(d, k) * (g))+(sl))):NULL)
-  if XkbKeyHasActions(d, k): 
+  if XkbKeyHasActions(d, k):
     Result = XkbKeyGroupsWidth(d, k) *% g +% toU8(sl)
-  else: 
+  else:
     Result = 0'i8
-  
-proc XkbKeyHasActions(d: PXkbDescPtr, k: int16): bool = 
+
+proc xkbKeyHasActions(d: PXkbDescPtr, k: int16): bool =
   ##define XkbKeyHasActions(d,k) ((d)->server->key_acts[k]!=0)
   Result = d.server.key_acts[ze(k)] != 0'i16
 
-proc XkbKeyNumActions(d: PXkbDescPtr, k: int16): int16 = 
+proc xkbKeyNumActions(d: PXkbDescPtr, k: int16): int16 =
   ##define XkbKeyNumActions(d,k) (XkbKeyHasActions(d,k)?XkbKeyNumSyms(d,k):1)
   if (XkbKeyHasActions(d, k)): Result = XkbKeyNumSyms(d, k)
   else: Result = 1'i16
-  
-proc XkbKeyActionsPtr(d: PXkbDescPtr, k: int16): PXkbAction = 
+
+proc xkbKeyActionsPtr(d: PXkbDescPtr, k: int16): PXkbAction =
   ##define XkbKeyActionsPtr(d,k) (XkbSMKeyActionsPtr((d)->server,k))
   Result = XkbSMKeyActionsPtr(d.server, k)
 
-proc XkbKeycodeInRange(d: PXkbDescPtr, k: int16): bool = 
+proc xkbKeycodeInRange(d: PXkbDescPtr, k: int16): bool =
   ##define XkbKeycodeInRange(d,k) (((k)>=(d)->min_key_code)&& ((k)<=(d)->max_key_code))
   Result = (char(toU8(k)) >= d.min_key_code) and (char(toU8(k)) <= d.max_key_code)
 
-proc XkbNumKeys(d: PXkbDescPtr): int8 = 
+proc xkbNumKeys(d: PXkbDescPtr): int8 =
   ##define XkbNumKeys(d) ((d)->max_key_code-(d)->min_key_code+1)
   Result = toU8(ord(d.max_key_code) - ord(d.min_key_code) + 1)
 
-proc XkbXI_DevHasBtnActs(d: PXkbDeviceInfoPtr): bool = 
+proc xkbXI_DevHasBtnActs(d: PXkbDeviceInfoPtr): bool =
   ##define XkbXI_DevHasBtnActs(d) (((d)->num_btns>0)&&((d)->btn_acts!=NULL))
   Result = (d.num_btns > 0'i16) and (not (d.btn_acts == nil))
 
-proc XkbXI_LegalDevBtn(d: PXkbDeviceInfoPtr, b: int16): bool = 
+proc xkbXI_LegalDevBtn(d: PXkbDeviceInfoPtr, b: int16): bool =
   ##define XkbXI_LegalDevBtn(d,b) (XkbXI_DevHasBtnActs(d)&&((b)<(d)->num_btns))
   Result = XkbXI_DevHasBtnActs(d) and (b <% d.num_btns)
 
-proc XkbXI_DevHasLeds(d: PXkbDeviceInfoPtr): bool = 
+proc xkbXI_DevHasLeds(d: PXkbDeviceInfoPtr): bool =
   ##define XkbXI_DevHasLeds(d) (((d)->num_leds>0)&&((d)->leds!=NULL))
   Result = (d.num_leds > 0'i16) and (not (d.leds == nil))
 
-proc XkbBoundsWidth(b: PXkbBoundsPtr): int16 = 
+proc xkbBoundsWidth(b: PXkbBoundsPtr): int16 =
   ##define XkbBoundsWidth(b) (((b)->x2)-((b)->x1))
   Result = (b.x2) - b.x1
 
-proc XkbBoundsHeight(b: PXkbBoundsPtr): int16 = 
+proc xkbBoundsHeight(b: PXkbBoundsPtr): int16 =
   ##define XkbBoundsHeight(b) (((b)->y2)-((b)->y1))
   Result = (b.y2) - b.y1
 
-proc XkbOutlineIndex(s: PXkbShapePtr, o: PXkbOutlinePtr): int32 = 
+proc xkbOutlineIndex(s: PXkbShapePtr, o: PXkbOutlinePtr): int32 =
   ##define XkbOutlineIndex(s,o) ((int)((o)-&(s)->outlines[0]))
   Result = int32((cast[TAddress](o) - cast[TAddress](addr(s.outlines[0]))) div sizeof(PXkbOutlinePtr))
 
-proc XkbShapeDoodadColor(g: PXkbGeometryPtr, d: PXkbShapeDoodadPtr): PXkbColorPtr = 
+proc xkbShapeDoodadColor(g: PXkbGeometryPtr, d: PXkbShapeDoodadPtr): PXkbColorPtr =
   ##define XkbShapeDoodadColor(g,d) (&(g)->colors[(d)->color_ndx])
   Result = addr((g.colors[ze(d.color_ndx)]))
 
-proc XkbShapeDoodadShape(g: PXkbGeometryPtr, d: PXkbShapeDoodadPtr): PXkbShapePtr = 
+proc xkbShapeDoodadShape(g: PXkbGeometryPtr, d: PXkbShapeDoodadPtr): PXkbShapePtr =
   ##define XkbShapeDoodadShape(g,d) (&(g)->shapes[(d)->shape_ndx])
   Result = addr(g.shapes[ze(d.shape_ndx)])
 
-proc XkbSetShapeDoodadColor(g: PXkbGeometryPtr, d: PXkbShapeDoodadPtr, 
-                            c: PXkbColorPtr) = 
+proc xkbSetShapeDoodadColor(g: PXkbGeometryPtr, d: PXkbShapeDoodadPtr,
+                            c: PXkbColorPtr) =
   ##define XkbSetShapeDoodadColor(g,d,c) ((d)->color_ndx= (c)-&(g)->colors[0])
   d.color_ndx = toU16((cast[TAddress](c) - cast[TAddress](addr(g.colors[0]))) div sizeof(TXkbColorRec))
 
-proc XkbSetShapeDoodadShape(g: PXkbGeometryPtr, d: PXkbShapeDoodadPtr, 
-                            s: PXkbShapePtr) = 
+proc xkbSetShapeDoodadShape(g: PXkbGeometryPtr, d: PXkbShapeDoodadPtr,
+                            s: PXkbShapePtr) =
   ##define XkbSetShapeDoodadShape(g,d,s) ((d)->shape_ndx= (s)-&(g)->shapes[0])
   d.shape_ndx = toU16((cast[TAddress](s) - cast[TAddress](addr(g.shapes[0]))) div sizeof(TXkbShapeRec))
 
-proc XkbTextDoodadColor(g: PXkbGeometryPtr, d: PXkbTextDoodadPtr): PXkbColorPtr = 
+proc xkbTextDoodadColor(g: PXkbGeometryPtr, d: PXkbTextDoodadPtr): PXkbColorPtr =
   ##define XkbTextDoodadColor(g,d) (&(g)->colors[(d)->color_ndx])
   Result = addr(g.colors[ze(d.color_ndx)])
 
-proc XkbSetTextDoodadColor(g: PXkbGeometryPtr, d: PXkbTextDoodadPtr, 
-                           c: PXkbColorPtr) = 
+proc xkbSetTextDoodadColor(g: PXkbGeometryPtr, d: PXkbTextDoodadPtr,
+                           c: PXkbColorPtr) =
   ##define XkbSetTextDoodadColor(g,d,c) ((d)->color_ndx= (c)-&(g)->colors[0])
   d.color_ndx = toU16((cast[TAddress](c) - cast[TAddress](addr(g.colors[0]))) div sizeof(TXkbColorRec))
 
-proc XkbIndicatorDoodadShape(g: PXkbGeometryPtr, d: PXkbIndicatorDoodadPtr): PXkbShapeDoodadPtr = 
+proc xkbIndicatorDoodadShape(g: PXkbGeometryPtr, d: PXkbIndicatorDoodadPtr): PXkbShapeDoodadPtr =
   ##define XkbIndicatorDoodadShape(g,d) (&(g)->shapes[(d)->shape_ndx])
   Result = cast[PXkbShapeDoodadPtr](addr(g.shapes[ze(d.shape_ndx)]))
 
-proc XkbIndicatorDoodadOnColor(g: PXkbGeometryPtr, d: PXkbIndicatorDoodadPtr): PXkbColorPtr = 
+proc xkbIndicatorDoodadOnColor(g: PXkbGeometryPtr, d: PXkbIndicatorDoodadPtr): PXkbColorPtr =
   ##define XkbIndicatorDoodadOnColor(g,d) (&(g)->colors[(d)->on_color_ndx])
   Result = addr(g.colors[ze(d.on_color_ndx)])
 
-proc XkbIndicatorDoodadOffColor(g: PXkbGeometryPtr, d: PXkbIndicatorDoodadPtr): PXkbColorPtr = 
+proc xkbIndicatorDoodadOffColor(g: PXkbGeometryPtr, d: PXkbIndicatorDoodadPtr): PXkbColorPtr =
   ##define XkbIndicatorDoodadOffColor(g,d) (&(g)->colors[(d)->off_color_ndx])
   Result = addr(g.colors[ze(d.off_color_ndx)])
 
-proc XkbSetIndicatorDoodadOnColor(g: PXkbGeometryPtr, d: PXkbIndicatorDoodadPtr, 
-                                  c: PXkbColorPtr) = 
+proc xkbSetIndicatorDoodadOnColor(g: PXkbGeometryPtr, d: PXkbIndicatorDoodadPtr,
+                                  c: PXkbColorPtr) =
   ##define XkbSetIndicatorDoodadOnColor(g,d,c) ((d)->on_color_ndx= (c)-&(g)->colors[0])
   d.on_color_ndx = toU16((cast[TAddress](c) - cast[TAddress](addr(g.colors[0]))) div sizeof(TXkbColorRec))
 
-proc XkbSetIndicatorDoodadOffColor(g: PXkbGeometryPtr, 
-                                   d: PXkbIndicatorDoodadPtr, c: PXkbColorPtr) = 
+proc xkbSetIndicatorDoodadOffColor(g: PXkbGeometryPtr,
+                                   d: PXkbIndicatorDoodadPtr, c: PXkbColorPtr) =
   ##define        XkbSetIndicatorDoodadOffColor(g,d,c) ((d)->off_color_ndx= (c)-&(g)->colors[0])
   d.off_color_ndx = toU16((cast[TAddress](c) - cast[TAddress](addr(g.colors[0]))) div sizeof(TxkbColorRec))
 
-proc XkbSetIndicatorDoodadShape(g: PXkbGeometryPtr, d: PXkbIndicatorDoodadPtr, 
-                                s: PXkbShapeDoodadPtr) = 
+proc xkbSetIndicatorDoodadShape(g: PXkbGeometryPtr, d: PXkbIndicatorDoodadPtr,
+                                s: PXkbShapeDoodadPtr) =
   ##define XkbSetIndicatorDoodadShape(g,d,s) ((d)->shape_ndx= (s)-&(g)->shapes[0])
   d.shape_ndx = toU16((cast[TAddress](s) - (cast[TAddress](addr(g.shapes[0])))) div sizeof(TXkbShapeRec))
 
-proc XkbLogoDoodadColor(g: PXkbGeometryPtr, d: PXkbLogoDoodadPtr): PXkbColorPtr = 
+proc xkbLogoDoodadColor(g: PXkbGeometryPtr, d: PXkbLogoDoodadPtr): PXkbColorPtr =
   ##define XkbLogoDoodadColor(g,d) (&(g)->colors[(d)->color_ndx])
   Result = addr(g.colors[ze(d.color_ndx)])
 
-proc XkbLogoDoodadShape(g: PXkbGeometryPtr, d: PXkbLogoDoodadPtr): PXkbShapeDoodadPtr = 
+proc xkbLogoDoodadShape(g: PXkbGeometryPtr, d: PXkbLogoDoodadPtr): PXkbShapeDoodadPtr =
   ##define XkbLogoDoodadShape(g,d) (&(g)->shapes[(d)->shape_ndx])
   Result = cast[PXkbShapeDoodadPtr](addr(g.shapes[ze(d.shape_ndx)]))
 
-proc XkbSetLogoDoodadColor(g: PXkbGeometryPtr, d: PXkbLogoDoodadPtr, 
-                           c: PXkbColorPtr) = 
+proc xkbSetLogoDoodadColor(g: PXkbGeometryPtr, d: PXkbLogoDoodadPtr,
+                           c: PXkbColorPtr) =
   ##define XkbSetLogoDoodadColor(g,d,c) ((d)->color_ndx= (c)-&(g)->colors[0])
   d.color_ndx = toU16((cast[TAddress](c) - cast[TAddress](addr(g.colors[0]))) div sizeof(TXkbColorRec))
 
-proc XkbSetLogoDoodadShape(g: PXkbGeometryPtr, d: PXkbLogoDoodadPtr, 
-                           s: PXkbShapeDoodadPtr) = 
+proc xkbSetLogoDoodadShape(g: PXkbGeometryPtr, d: PXkbLogoDoodadPtr,
+                           s: PXkbShapeDoodadPtr) =
   ##define XkbSetLogoDoodadShape(g,d,s) ((d)->shape_ndx= (s)-&(g)->shapes[0])
   d.shape_ndx = toU16((cast[TAddress](s) - cast[TAddress](addr(g.shapes[0]))) div sizeof(TXkbShapeRec))
 
-proc XkbKeyShape(g: PXkbGeometryPtr, k: PXkbKeyPtr): PXkbShapeDoodadPtr = 
+proc xkbKeyShape(g: PXkbGeometryPtr, k: PXkbKeyPtr): PXkbShapeDoodadPtr =
   ##define XkbKeyShape(g,k) (&(g)->shapes[(k)->shape_ndx])
   Result = cast[PXkbShapeDoodadPtr](addr(g.shapes[ze(k.shape_ndx)]))
 
-proc XkbKeyColor(g: PXkbGeometryPtr, k: PXkbKeyPtr): PXkbColorPtr = 
+proc xkbKeyColor(g: PXkbGeometryPtr, k: PXkbKeyPtr): PXkbColorPtr =
   ##define XkbKeyColor(g,k) (&(g)->colors[(k)->color_ndx])
   Result = addr(g.colors[ze(k.color_ndx)])
 
-proc XkbSetKeyShape(g: PXkbGeometryPtr, k: PXkbKeyPtr, s: PXkbShapeDoodadPtr) = 
+proc xkbSetKeyShape(g: PXkbGeometryPtr, k: PXkbKeyPtr, s: PXkbShapeDoodadPtr) =
   ##define XkbSetKeyShape(g,k,s) ((k)->shape_ndx= (s)-&(g)->shapes[0])
   k.shape_ndx = toU8((cast[TAddress](s) - cast[TAddress](addr(g.shapes[0]))) div sizeof(TXkbShapeRec))
 
-proc XkbSetKeyColor(g: PXkbGeometryPtr, k: PXkbKeyPtr, c: PXkbColorPtr) = 
+proc xkbSetKeyColor(g: PXkbGeometryPtr, k: PXkbKeyPtr, c: PXkbColorPtr) =
   ##define XkbSetKeyColor(g,k,c) ((k)->color_ndx= (c)-&(g)->colors[0])
   k.color_ndx = toU8((cast[TAddress](c) - cast[TAddress](addr(g.colors[0]))) div sizeof(TxkbColorRec))
 
-proc XkbGeomColorIndex(g: PXkbGeometryPtr, c: PXkbColorPtr): int32 = 
+proc xkbGeomColorIndex(g: PXkbGeometryPtr, c: PXkbColorPtr): int32 =
   ##define XkbGeomColorIndex(g,c) ((int)((c)-&(g)->colors[0]))
   Result = toU16((cast[TAddress](c) - (cast[TAddress](addr(g.colors[0])))) div sizeof(TxkbColorRec))

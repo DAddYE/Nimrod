@@ -38,13 +38,13 @@ proc stackTraceAux(c: PCtx; x: PStackFrame; pc: int) =
     if x.prc != nil:
       for k in 1..max(1, 25-s.len): add(s, ' ')
       add(s, x.prc.name.s)
-    MsgWriteln(s)
+    msgWriteln(s)
 
 proc stackTrace(c: PCtx, tos: PStackFrame, pc: int,
                 msg: TMsgKind, arg = "") =
-  MsgWriteln("stack trace: (most recent call last)")
+  msgWriteln("stack trace: (most recent call last)")
   stackTraceAux(c, tos, pc)
-  LocalError(c.debug[pc], msg, arg)
+  localError(c.debug[pc], msg, arg)
 
 proc bailOut(c: PCtx; tos: PStackFrame) =
   stackTrace(c, tos, c.exceptionInstr, errUnhandledExceptionX,
@@ -82,7 +82,7 @@ template decodeBx(k: expr) {.immediate, dirty.} =
 proc compile(c: PCtx, s: PSym): int = vmgen.genProc(c, s)
 
 proc myreset(n: PNode) =
-  when defined(system.reset): 
+  when defined(system.reset):
     var oldInfo = n.info
     reset(n[])
     n.info = oldInfo
@@ -149,7 +149,7 @@ proc cleanUpOnException(c: PCtx; tos: PStackFrame; regs: TNodeSeq): int =
       let exceptType = c.types[c.code[pc2].regBx-wordExcess].skipTypes(
                           abstractPtrs)
       if inheritanceDiff(exceptType, raisedType) <= 0:
-        # mark exception as handled but keep it in B for 
+        # mark exception as handled but keep it in B for
         # the getCurrentException() builtin:
         c.currentExceptionB = c.currentExceptionA
         c.currentExceptionA = nil
@@ -204,7 +204,7 @@ proc execute(c: PCtx, start: int) =
       decodeB(nkStrLit)
       debug regs[rb]
       echo rb
-      Message(c.debug[pc], warnUser, " here")
+      message(c.debug[pc], warnUser, " here")
       regs[ra].strVal = regs[rb].strVal
     of opcAsgnFloat:
       decodeB(nkFloatLit)
@@ -341,7 +341,7 @@ proc execute(c: PCtx, start: int) =
     of opcSubu:
       decodeBC(nkIntLit)
       regs[ra].intVal = regs[rb].intVal -% regs[rc].intVal
-    of opcMulu: 
+    of opcMulu:
       decodeBC(nkIntLit)
       regs[ra].intVal = regs[rb].intVal *% regs[rc].intVal
     of opcDivu:
@@ -399,28 +399,28 @@ proc execute(c: PCtx, start: int) =
       regs[ra].intVal = not regs[rb].intVal
     of opcEqStr:
       decodeBC(nkIntLit)
-      regs[ra].intVal = Ord(regs[rb].strVal == regs[rc].strVal)
+      regs[ra].intVal = ord(regs[rb].strVal == regs[rc].strVal)
     of opcLeStr:
       decodeBC(nkIntLit)
-      regs[ra].intVal = Ord(regs[rb].strVal <= regs[rc].strVal)
+      regs[ra].intVal = ord(regs[rb].strVal <= regs[rc].strVal)
     of opcLtStr:
       decodeBC(nkIntLit)
-      regs[ra].intVal = Ord(regs[rb].strVal < regs[rc].strVal)
+      regs[ra].intVal = ord(regs[rb].strVal < regs[rc].strVal)
     of opcLeSet:
       decodeBC(nkIntLit)
-      regs[ra].intVal = Ord(containsSets(regs[rb], regs[rc]))
-    of opcEqSet: 
+      regs[ra].intVal = ord(containsSets(regs[rb], regs[rc]))
+    of opcEqSet:
       decodeBC(nkIntLit)
-      regs[ra].intVal = Ord(equalSets(regs[rb], regs[rc]))
+      regs[ra].intVal = ord(equalSets(regs[rb], regs[rc]))
     of opcLtSet:
       decodeBC(nkIntLit)
       let a = regs[rb]
       let b = regs[rc]
-      regs[ra].intVal = Ord(containsSets(a, b) and not equalSets(a, b))
+      regs[ra].intVal = ord(containsSets(a, b) and not equalSets(a, b))
     of opcMulSet:
       decodeBC(nkCurly)
       move(regs[ra].sons, nimsets.intersectSets(regs[rb], regs[rc]).sons)
-    of opcPlusSet: 
+    of opcPlusSet:
       decodeBC(nkCurly)
       move(regs[ra].sons, nimsets.unionSets(regs[rb], regs[rc]).sons)
     of opcMinusSet:
@@ -428,7 +428,7 @@ proc execute(c: PCtx, start: int) =
       move(regs[ra].sons, nimsets.diffSets(regs[rb], regs[rc]).sons)
     of opcSymDiffSet:
       decodeBC(nkCurly)
-      move(regs[ra].sons, nimsets.symdiffSets(regs[rb], regs[rc]).sons)    
+      move(regs[ra].sons, nimsets.symdiffSets(regs[rb], regs[rc]).sons)
     of opcConcatStr:
       decodeBC(nkStrLit)
       regs[ra].strVal = getstr(regs[rb])
@@ -438,13 +438,13 @@ proc execute(c: PCtx, start: int) =
       echo regs[ra].strVal
     of opcContainsSet:
       decodeBC(nkIntLit)
-      regs[ra].intVal = Ord(inSet(regs[rb], regs[rc]))
+      regs[ra].intVal = ord(inSet(regs[rb], regs[rc]))
     of opcSubStr:
       decodeBC(nkStrLit)
       inc pc
       assert c.code[pc].opcode == opcSubStr
       let rd = c.code[pc].regA
-      regs[ra].strVal = substr(regs[rb].strVal, regs[rc].intVal.int, 
+      regs[ra].strVal = substr(regs[rb].strVal, regs[rc].intVal.int,
                                regs[rd].intVal.int)
     of opcIndCall, opcIndCallAsgn:
       # dest = call regStart, n; where regStart = fn, arg1, ...
@@ -483,12 +483,12 @@ proc execute(c: PCtx, start: int) =
       # we know the next instruction is a 'jmp':
       let branch = c.constants[instr.regBx-wordExcess]
       var cond = false
-      for j in countup(0, sonsLen(branch) - 2): 
-        if overlap(regs[ra], branch.sons[j]): 
+      for j in countup(0, sonsLen(branch) - 2):
+        if overlap(regs[ra], branch.sons[j]):
           cond = true
           break
       assert c.code[pc+1].opcode == opcJmp
-      inc pc 
+      inc pc
       # we skip this instruction so that the final 'inc(pc)' skips
       # the following jump
       if cond:
@@ -509,7 +509,7 @@ proc execute(c: PCtx, start: int) =
       if c.currentExceptionA != nil:
         # we are in a cleanup run:
         pc = cleanupOnException(c, tos, regs)-1
-        if pc < 0: 
+        if pc < 0:
           bailOut(c, tos)
           return
     of opcRaise:
@@ -551,7 +551,7 @@ proc execute(c: PCtx, start: int) =
       let rb = instr.regB
       regs[ra] = regs[rb].sons[1]
     else:
-      InternalError(c.debug[pc], "unknown opcode " & $instr.opcode)
+      internalError(c.debug[pc], "unknown opcode " & $instr.opcode)
     inc pc
 
 proc eval*(c: PCtx, n: PNode): PNode =

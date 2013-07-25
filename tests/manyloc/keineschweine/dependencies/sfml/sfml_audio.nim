@@ -126,7 +126,7 @@ proc getBuffer*(sound: PSound): PSoundBuffer{.
 #/
 #/ If set, the sound will restart from beginning after
 #/ reaching the end and so on, until it is stopped or
-#/ sfSound_setLoop(sound, sfFalse) is called.
+#/ sfSound_setLoop(sound, sffalse) is called.
 #/ The default looping state for sounds is false.
 proc setLoop*(sound: PSound; loop: bool){.
   cdecl, importc: "sfSound_setLoop", dynlib: Lib.}
@@ -258,7 +258,7 @@ proc newSoundBuffer*(filename: cstring): PSoundBuffer{.
 #/ ogg, wav, flac, aiff, au, raw, paf, svx, nist, voc, ircam,
 #/ w64, mat4, mat5 pvf, htk, sds, avr, sd2, caf, wve, mpc2k, rf64.
 #/
-#/ \param data        Pointer to the file data in memory
+#/ \param data        pointer to the file data in memory
 #/ \param sizeInBytes Size of the data to load, in bytes
 #/
 #/ \return A new sfSoundBuffer object (NULL if failed)
@@ -286,7 +286,7 @@ proc newSoundBuffer*(stream: PInputStream): PSoundBuffer{.
 #/ The assumed format of the audio samples is 16 bits signed integer
 #/ (sfInt16).
 #/
-#/ \param samples      Pointer to the array of samples in memory
+#/ \param samples      pointer to the array of samples in memory
 #/ \param sampleCount  Number of samples in the array
 #/ \param channelCount Number of channels (1 = mono, 2 = stereo, ...)
 #/ \param sampleRate   Sample rate (number of samples to play per second)
@@ -294,7 +294,7 @@ proc newSoundBuffer*(stream: PInputStream): PSoundBuffer{.
 #/ \return A new sfSoundBuffer object (NULL if failed)
 #/
 #//////////////////////////////////////////////////////////
-proc createFromSamples*(samples: ptr int16; sampleCount: cuint; 
+proc createFromSamples*(samples: ptr int16; sampleCount: cuint;
                          channelCount: cuint; sampleRate: cuint): PSoundBuffer{.
   cdecl, importc: "sfSoundBuffer_createFromSamples", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
@@ -325,7 +325,7 @@ proc destroy*(soundBuffer: PSoundBuffer){.
 #/ \param soundBuffer Sound buffer object
 #/ \param filename    Path of the sound file to write
 #/
-#/ \return sfTrue if saving succeeded, sfFalse if it failed
+#/ \return sftrue if saving succeeded, sffalse if it failed
 #/
 #//////////////////////////////////////////////////////////
 proc saveToFile*(soundBuffer: PSoundBuffer; filename: cstring): bool {.
@@ -437,10 +437,10 @@ proc listenerSetDirection*(orientation: TVector3f){.
 proc listenerGetDirection*(): TVector3f{.
   cdecl, importc: "sfListener_getDirection", dynlib: Lib.}
 
-type 
+type
   TSoundRecorderStartCallback* = proc (a2: pointer): bool {.cdecl.}
-  #/< Type of the callback used when starting a capture 
-  TSoundRecorderProcessCallback* = proc(a2: ptr int16; a3: cuint; 
+  #/< Type of the callback used when starting a capture
+  TSoundRecorderProcessCallback* = proc(a2: ptr int16; a3: cuint;
     a4: pointer): bool {.cdecl.}
   #/< Type of the callback used to process audio data
   TSoundRecorderStopCallback* = proc (a2: pointer){.cdecl.}
@@ -456,9 +456,9 @@ type
 #/ \return A new sfSoundRecorder object (NULL if failed)
 #/
 #//////////////////////////////////////////////////////////
-proc newSoundRecorder*(onStart: TSoundRecorderStartCallback; 
-                        onProcess: TSoundRecorderProcessCallback; 
-                        onStop: TSoundRecorderStopCallback; 
+proc newSoundRecorder*(onStart: TSoundRecorderStartCallback;
+                        onProcess: TSoundRecorderProcessCallback;
+                        onStop: TSoundRecorderStopCallback;
                         userData: pointer = nil): PSoundRecorder{.
   cdecl, importc: "sfSoundRecorder_create", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
@@ -514,7 +514,7 @@ proc getSampleRate*(soundRecorder: PSoundRecorder): cuint{.
 #/ the audio capture features. If it returns false, then
 #/ any attempt to use sfSoundRecorder will fail.
 #/
-#/ \return sfTrue if audio capture is supported, sfFalse otherwise
+#/ \return sftrue if audio capture is supported, sffalse otherwise
 #/
 #//////////////////////////////////////////////////////////
 proc soundRecorderIsAvailable*(): bool {.
@@ -595,13 +595,13 @@ proc getBuffer*(soundBufferRecorder: PSoundBufferRecorder): PSoundBuffer{.
 #/ \brief defines the data to fill by the OnGetData callback
 #/
 #//////////////////////////////////////////////////////////
-type 
+type
   PSoundStreamChunk* = ptr TSoundStreamChunk
-  TSoundStreamChunk*{.pure, final.} = object 
-    samples*: ptr int16   #/< Pointer to the audio samples
+  TSoundStreamChunk*{.pure, final.} = object
+    samples*: ptr int16   #/< pointer to the audio samples
     sampleCount*: cuint     #/< Number of samples pointed by Samples
-  
-  TSoundStreamGetDataCallback* = proc (a2: PSoundStreamChunk; 
+
+  TSoundStreamGetDataCallback* = proc (a2: PSoundStreamChunk;
       a3: pointer): bool{.cdecl.}
   #/< Type of the callback used to get a sound stream data
   TSoundStreamSeekCallback* = proc (a2: TTime; a3: pointer){.cdecl.}
@@ -618,7 +618,7 @@ type
 #/ \return A new sfSoundStream object
 #/
 #//////////////////////////////////////////////////////////
-proc create*(onGetData: TSoundStreamGetDataCallback; onSeek: TSoundStreamSeekCallback; 
+proc create*(onGetData: TSoundStreamGetDataCallback; onSeek: TSoundStreamSeekCallback;
               channelCount: cuint; sampleRate: cuint; userData: pointer): PSoundStream{.
   cdecl, importc: "sfSoundStream_create", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
@@ -751,7 +751,7 @@ proc setPosition*(soundStream: PSoundStream; position: TVector3f){.
 #/ The default value is false (position is absolute).
 #/
 #/ \param soundStream Sound stream object
-#/ \param relative    sfTrue to set the position relative, sfFalse to set it absolute
+#/ \param relative    sftrue to set the position relative, sffalse to set it absolute
 #/
 #//////////////////////////////////////////////////////////
 proc setRelativeToListener*(soundStream: PSoundStream; relative: bool){.
@@ -807,11 +807,11 @@ proc setPlayingOffset*(soundStream: PSoundStream; timeOffset: TTime){.
 #/
 #/ If set, the stream will restart from beginning after
 #/ reaching the end and so on, until it is stopped or
-#/ sfSoundStream_setLoop(stream, sfFalse) is called.
+#/ sfSoundStream_setLoop(stream, sffalse) is called.
 #/ The default looping state for sound streams is false.
 #/
 #/ \param soundStream Sound stream object
-#/ \param loop        sfTrue to play in loop, sfFalse to play once
+#/ \param loop        sftrue to play in loop, sffalse to play once
 #/
 #//////////////////////////////////////////////////////////
 proc setLoop*(soundStream: PSoundStream; loop: bool){.
@@ -852,7 +852,7 @@ proc getPosition*(soundStream: PSoundStream): TVector3f{.
 #/
 #/ \param soundStream Sound stream object
 #/
-#/ \return sfTrue if the position is relative, sfFalse if it's absolute
+#/ \return sftrue if the position is relative, sffalse if it's absolute
 #/
 #//////////////////////////////////////////////////////////
 proc isRelativeToListener*(soundStream: PSoundStream): bool{.
@@ -882,7 +882,7 @@ proc getAttenuation*(soundStream: PSoundStream): cfloat{.
 #/
 #/ \param soundStream Sound stream object
 #/
-#/ \return sfTrue if the music is looping, sfFalse otherwise
+#/ \return sftrue if the music is looping, sffalse otherwise
 #/
 #//////////////////////////////////////////////////////////
 proc getLoop*(soundStream: PSoundStream): bool{.

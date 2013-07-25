@@ -10,8 +10,8 @@
 ## :Author: Zahary Karadjov
 ##
 ## This module implements the standard unit testing facilities such as
-## suites, fixtures and test cases as well as facilities for combinatorial 
-## and randomzied test case generation (not yet available) 
+## suites, fixtures and test cases as well as facilities for combinatorial
+## and randomzied test case generation (not yet available)
 ## and object mocking (not yet available)
 ##
 ## It is loosely based on C++'s boost.test and Haskell's QuickTest
@@ -29,16 +29,16 @@ type
   TTestStatus* = enum OK, FAILED
   TOutputLevel* = enum PRINT_ALL, PRINT_FAILURES, PRINT_NONE
 
-var 
+var
   # XXX: These better be thread-local
   AbortOnError*: bool
   OutputLevel*: TOutputLevel
   ColorOutput*: bool
-  
+
   checkpoints: seq[string] = @[]
 
-template TestSetupIMPL*: stmt {.immediate, dirty.} = nil
-template TestTeardownIMPL*: stmt {.immediate, dirty.} = nil
+template testSetupIMPL*: stmt {.immediate, dirty.} = nil
+template testTeardownIMPL*: stmt {.immediate, dirty.} = nil
 
 proc shouldRun(testName: string): bool =
   result = true
@@ -46,10 +46,10 @@ proc shouldRun(testName: string): bool =
 template suite*(name: expr, body: stmt): stmt {.immediate, dirty.} =
   block:
     template setup*(setupBody: stmt): stmt {.immediate, dirty.} =
-      template TestSetupIMPL: stmt {.immediate, dirty.} = setupBody
+      template testSetupIMPL: stmt {.immediate, dirty.} = setupBody
 
     template teardown*(teardownBody: stmt): stmt {.immediate, dirty.} =
-      template TestTeardownIMPL: stmt {.immediate, dirty.} = teardownBody
+      template testTeardownIMPL: stmt {.immediate, dirty.} = teardownBody
 
     body
 
@@ -67,14 +67,14 @@ proc testDone(name: string, s: TTestStatus) =
         rawPrint()
     else:
       rawPrint()
-  
+
 template test*(name: expr, body: stmt): stmt {.immediate, dirty.} =
   bind shouldRun, checkpoints, testDone
 
   if shouldRun(name):
     checkpoints = @[]
     var TestStatusIMPL {.inject.} = OK
-    
+
     try:
       TestSetupIMPL()
       body
@@ -98,13 +98,13 @@ template fail* =
 
   when not defined(ECMAScript):
     if AbortOnError: quit(1)
-  
+
   TestStatusIMPL = FAILED
   checkpoints = @[]
 
 macro check*(conditions: stmt): stmt {.immediate.} =
   let checked = callsite()[1]
-  
+
   var
     argsAsgns = newNimNode(nnkStmtList)
     argsPrintOuts = newNimNode(nnkStmtList)
@@ -112,7 +112,7 @@ macro check*(conditions: stmt): stmt {.immediate.} =
 
   template asgn(a, value: expr): stmt =
     let a = value
-  
+
   template print(name, value: expr): stmt =
     when compiles(string($value)):
       checkpoint(name & " was " & $value)
@@ -138,7 +138,7 @@ macro check*(conditions: stmt): stmt {.immediate.} =
           checkpoint(lineInfoLit & ": Check failed: " & callLit)
           argPrintOuts
           fail()
-      
+
     var checkedStr = checked.toStrLit
     inspectArgs(checked)
     result = getAst(rewrite(checked, checked.lineinfo, checkedStr, argsAsgns, argsPrintOuts))

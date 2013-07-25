@@ -12,8 +12,8 @@ macro genId(): expr =
   result = newIntLitNode(gid)
   inc gid
 
-proc Id1(): int {.compileTime.} = return genId()
-proc Id2(): int {.compileTime.} = return genId()
+proc id1(): int {.compileTime.} = return genId()
+proc id2(): int {.compileTime.} = return genId()
 
 echo Id1(), " ", Id2()
 

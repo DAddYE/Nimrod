@@ -9,9 +9,9 @@
 #    -c
 #    x.h
 #
-# Pointers to basic pascal types, inserted by h2pas conversion program.
+# pointers to basic pascal types, inserted by h2pas conversion program.
 
-const 
+const
   X_PROTOCOL* = 11
   X_PROTOCOL_REVISION* = 0
 
@@ -47,13 +47,13 @@ type
   PKeyCode* = ptr TKeyCode
   TKeyCode* = cuchar
 
-const 
+const
   None* = 0
   ParentRelative* = 1
   CopyFromParent* = 0
-  PointerWindow* = 0
+  pointerWindow* = 0
   InputFocus* = 1
-  PointerRoot* = 1
+  pointerRoot* = 1
   AnyPropertyType* = 0
   AnyKey* = 0
   AnyButton* = 0
@@ -67,8 +67,8 @@ const
   ButtonReleaseMask* = 1 shl 3
   EnterWindowMask* = 1 shl 4
   LeaveWindowMask* = 1 shl 5
-  PointerMotionMask* = 1 shl 6
-  PointerMotionHintMask* = 1 shl 7
+  pointerMotionMask* = 1 shl 6
+  pointerMotionHintMask* = 1 shl 7
   Button1MotionMask* = 1 shl 8
   Button2MotionMask* = 1 shl 9
   Button3MotionMask* = 1 shl 10
@@ -190,7 +190,7 @@ const
   AsyncBoth* = 6
   SyncBoth* = 7
   RevertToNone* = None
-  RevertToPointerRoot* = PointerRoot
+  RevertToPointerRoot* = pointerRoot
   RevertToParent* = 2
   Success* = 0
   BadRequest* = 1
@@ -203,7 +203,7 @@ const
   BadMatch* = 8
   BadDrawable* = 9
   BadAccess* = 10
-  BadAlloc* = 11
+  Badalloc* = 11
   BadColor* = 12
   BadGC* = 13
   BadIDChoice* = 14
@@ -344,8 +344,8 @@ const
   XYBitmap* = 0
   XYPixmap* = 1
   ZPixmap* = 2
-  AllocNone* = 0
-  AllocAll* = 1
+  allocNone* = 0
+  allocAll* = 1
   DoRed* = 1 shl 0
   DoGreen* = 1 shl 1
   DoBlue* = 1 shl 2
@@ -389,7 +389,7 @@ const
   GrayScale* = 1
   StaticColor* = 2
   PseudoColor* = 3
-  TrueColor* = 4
+  trueColor* = 4
   DirectColor* = 5
   LSBFirst* = 0
   MSBFirst* = 1

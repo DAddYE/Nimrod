@@ -24,7 +24,7 @@ proc badRequest(client: TSocket) =
   send(client, "HTTP/1.0 400 BAD REQUEST" & wwwNL)
   sendTextContentType(client)
   send(client, "<p>Your browser sent a bad request, " &
-               "such as a POST without a Content-Length.</p>" & wwwNL)
+               "such as a POST without a Content-length.</p>" & wwwNL)
 
 
 proc cannotExec(client: TSocket) =
@@ -72,14 +72,14 @@ proc serveFile(client: TSocket, filename: string) =
     headers(client, filename)
     const bufSize = 8000 # != 8K might be good for memory manager
     var buf = alloc(bufsize)
-    while True:
+    while true:
       var bytesread = readBuffer(f, buf, bufsize)
       if bytesread > 0:
         var byteswritten = send(client, buf, bytesread)
         if bytesread != bytesWritten:
           dealloc(buf)
           close(f)
-          OSError()
+          osError()
       if bytesread != bufSize: break
     dealloc(buf)
     close(f)
@@ -89,7 +89,7 @@ proc serveFile(client: TSocket, filename: string) =
 
 # ------------------ CGI execution -------------------------------------------
 
-proc executeCgi(server: var TServer, client: TSocket, path, query: string, 
+proc executeCgi(server: var TServer, client: TSocket, path, query: string,
                 meth: TRequestMethod) =
   var env = newStringTable(modeCaseInsensitive)
   var contentLength = -1
@@ -122,18 +122,18 @@ proc executeCgi(server: var TServer, client: TSocket, path, query: string,
   send(client, "HTTP/1.0 200 OK" & wwwNL)
 
   var process = startProcess(command=path, env=env)
- 
+
   var job: TJob
   job.process = process
   job.client = client
   server.job.add(job)
- 
+
   if meth == reqPost:
     # get from client and post to CGI program:
     var buf = alloc(contentLength)
-    if recv(client, buf, contentLength) != contentLength: 
+    if recv(client, buf, contentLength) != contentLength:
       dealloc(buf)
-      OSError()
+      osError()
     var inp = process.inputStream
     inp.writeData(buf, contentLength)
     dealloc(buf)
@@ -223,7 +223,7 @@ when isMainModule:
   var server: TServer
   server.job = @[]
   server.socket = socket(AF_INET)
-  if server.socket == InvalidSocket: OSError()
+  if server.socket == InvalidSocket: osError()
   server.socket.bindAddr(port=TPort(port))
   listen(server.socket)
   echo("server up on port " & $port)

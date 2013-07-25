@@ -45,7 +45,7 @@ proc testCase(t: TTokType): int =
   else: result = -1
   test(0, 9) # test the call
 
-proc TestLoops() =
+proc testLoops() =
   var
     i, j: int
 
@@ -58,7 +58,7 @@ proc TestLoops() =
       break
     break
 
-  while True:
+  while true:
     break
 
 

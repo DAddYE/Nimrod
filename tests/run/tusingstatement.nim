@@ -3,21 +3,21 @@ discard """
   output: "Using test.Closing test."
 """
 
-import 
+import
   macros
 
 # This macro mimics the using statement from C#
 #
-# XXX: 
+# XXX:
 #  It doen't match the C# version exactly yet.
-#  In particular, it's not recursive, which prevents it from dealing 
+#  In particular, it's not recursive, which prevents it from dealing
 #  with exceptions thrown from the variable initializers when multiple.
 #  variables are used.
 #
 #  Also, since nimrod relies less on exceptions in general, a more
 #  idiomatic definition could be:
 #  var x = init()
-#  if opened(x): 
+#  if opened(x):
 #    try:
 #      body
 #    finally:
@@ -34,19 +34,19 @@ macro using(e: expr): stmt {.immediate.} =
 
   var args = e
   var body = e[2]
-  
-  var 
+
+  var
     variables : seq[PNimrodNode]
     closingCalls : seq[PNimrodNode]
 
   newSeq(variables, 0)
   newSeq(closingCalls, 0)
-  
+
   for i in countup(1, args.len-2):
     if args[i].kind == nnkExprEqExpr:
       var varName = args[i][0]
       var varValue = args[i][1]
- 
+
       var varAssignment = newNimNode(nnkIdentDefs)
       varAssignment.add(varName)
       varAssignment.add(newNimNode(nnkEmpty)) # empty means no type
@@ -57,7 +57,7 @@ macro using(e: expr): stmt {.immediate.} =
     else:
       error "Using statement: Unexpected expression. Got " &
         $args[i].kind & " instead of assignment."
-  
+
   var varSection = newNimNode(nnkVarSection)
   varSection.add(variables)
 
@@ -81,10 +81,10 @@ macro using(e: expr): stmt {.immediate.} =
   targetAst[0][1][0] = varSection
   targetAst[0][1][1][0] = body
   targetAst[0][1][1][1][0] = finallyBlock
-  
+
   result = targetAst
 
-type 
+type
   TResource* = object
     field*: string
 

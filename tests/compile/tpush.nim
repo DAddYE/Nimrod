@@ -8,7 +8,7 @@ proc noWarning() =
 
 {.pop.}
 
-proc WarnMe() =
+proc warnMe() =
   var
     x: int
   echo(x)

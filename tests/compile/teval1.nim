@@ -13,7 +13,7 @@ when true:
 
 const
   x = testProc()
-  
+
 echo "##", x, "##"
 
 

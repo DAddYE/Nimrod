@@ -15,10 +15,10 @@ import
 
 const
   MaxLineLength* = 80         # lines longer than this lead to a warning
-  numChars*: TCharSet = {'0'..'9', 'a'..'z', 'A'..'Z'}
-  SymChars*: TCharSet = {'a'..'z', 'A'..'Z', '0'..'9', '\x80'..'\xFF'}
-  SymStartChars*: TCharSet = {'a'..'z', 'A'..'Z', '\x80'..'\xFF'}
-  OpChars*: TCharSet = {'+', '-', '*', '/', '<', '>', '!', '?', '^', '.', '|',
+  numChars*: TcharSet = {'0'..'9', 'a'..'z', 'A'..'Z'}
+  SymChars*: TcharSet = {'a'..'z', 'A'..'Z', '0'..'9', '\x80'..'\xFF'}
+  SymStartChars*: TcharSet = {'a'..'z', 'A'..'Z', '\x80'..'\xFF'}
+  OpChars*: TcharSet = {'+', '-', '*', '/', '<', '>', '!', '?', '^', '.', '|',
     '=', ':', '%', '&', '$', '@', '~', '\x80'..'\xFF'}
 
 # keywords are sorted!
@@ -78,7 +78,7 @@ type
 
 
 proc getTok*(L: var TLexer, tok: var TToken)
-proc PrintTok*(tok: TToken)
+proc printTok*(tok: TToken)
 proc `$`*(tok: TToken): string
 # implementation
 
@@ -109,13 +109,13 @@ proc getLineInfo*(L: TLexer): TLineInfo =
   result = newLineInfo(L.filename, L.linenumber, getColNumber(L, L.bufpos))
 
 proc lexMessage*(L: TLexer, msg: TMsgKind, arg = "") =
-  msgs.GlobalError(getLineInfo(L), msg, arg)
+  msgs.globalError(getLineInfo(L), msg, arg)
 
 proc lexMessagePos(L: var TLexer, msg: TMsgKind, pos: int, arg = "") =
   var info = newLineInfo(L.filename, L.linenumber, pos - L.lineStart)
-  msgs.GlobalError(info, msg, arg)
+  msgs.globalError(info, msg, arg)
 
-proc TokKindToStr*(k: TTokKind): string =
+proc tokKindToStr*(k: TTokKind): string =
   case k
   of pxEof: result = "[EOF]"
   of firstKeyword..lastKeyword:
@@ -162,7 +162,7 @@ proc `$`(tok: TToken): string =
   of pxFloatLit: result = $tok.fNumber
   else: result = TokKindToStr(tok.xkind)
 
-proc PrintTok(tok: TToken) =
+proc printTok(tok: TToken) =
   writeln(stdout, $tok)
 
 proc setKeyword(L: var TLexer, tok: var TToken) =
@@ -170,19 +170,19 @@ proc setKeyword(L: var TLexer, tok: var TToken) =
   if x < 0: tok.xkind = pxSymbol
   else: tok.xKind = TTokKind(x + ord(firstKeyword))
 
-proc matchUnderscoreChars(L: var TLexer, tok: var TToken, chars: TCharSet) =
+proc matchUnderscoreChars(L: var TLexer, tok: var TToken, chars: TcharSet) =
   # matches ([chars]_)*
   var pos = L.bufpos              # use registers for pos, buf
   var buf = L.buf
   while true:
     if buf[pos] in chars:
       add(tok.literal, buf[pos])
-      Inc(pos)
+      inc(pos)
     else:
       break
     if buf[pos] == '_':
       add(tok.literal, '_')
-      Inc(pos)
+      inc(pos)
   L.bufPos = pos
 
 proc isFloatLiteral(s: string): bool =
@@ -199,7 +199,7 @@ proc getNumber2(L: var TLexer, tok: var TToken) =
     inc(L.bufpos)
     return
   tok.base = base2
-  var xi: biggestInt = 0
+  var xi: BiggestInt = 0
   var bits = 0
   while true:
     case L.buf[pos]
@@ -221,7 +221,7 @@ proc getNumber2(L: var TLexer, tok: var TToken) =
 proc getNumber16(L: var TLexer, tok: var TToken) =
   var pos = L.bufpos + 1          # skip $
   tok.base = base16
-  var xi: biggestInt = 0
+  var xi: BiggestInt = 0
   var bits = 0
   while true:
     case L.buf[pos]
@@ -271,7 +271,7 @@ proc getNumber10(L: var TLexer, tok: var TToken) =
   except EOverflow:
     lexMessage(L, errNumberOutOfRange, tok.literal)
 
-proc HandleCRLF(L: var TLexer, pos: int): int =
+proc handleCRLF(L: var TLexer, pos: int): int =
   case L.buf[pos]
   of CR: result = nimlexbase.HandleCR(L, pos)
   of LF: result = nimlexbase.HandleLF(L, pos)
@@ -334,17 +334,17 @@ proc getSymbol(L: var TLexer, tok: var TToken) =
     var c = buf[pos]
     case c
     of 'a'..'z', '0'..'9', '\x80'..'\xFF':
-      h = h +% Ord(c)
+      h = h +% ord(c)
       h = h +% h shl 10
       h = h xor (h shr 6)
     of 'A'..'Z':
       c = chr(ord(c) + (ord('a') - ord('A'))) # toLower()
-      h = h +% Ord(c)
+      h = h +% ord(c)
       h = h +% h shl 10
       h = h xor (h shr 6)
     of '_': nil
     else: break
-    Inc(pos)
+    inc(pos)
   h = h +% h shl 3
   h = h xor (h shr 11)
   h = h +% h shl 15
@@ -428,7 +428,7 @@ proc skip(L: var TLexer, tok: var TToken) =
   while true:
     case buf[pos]
     of ' ', Tabulator:
-      Inc(pos)                # newline is special:
+      inc(pos)                # newline is special:
     of CR, LF:
       pos = HandleCRLF(L, pos)
       buf = L.buf
@@ -449,7 +449,7 @@ proc getTok(L: var TLexer, tok: var TToken) =
     case c
     of ';':
       tok.xkind = pxSemicolon
-      Inc(L.bufpos)
+      inc(L.bufpos)
     of '/':
       if L.buf[L.bufpos + 1] == '/':
         scanLineComment(L, tok)
@@ -458,12 +458,12 @@ proc getTok(L: var TLexer, tok: var TToken) =
         inc(L.bufpos)
     of ',':
       tok.xkind = pxComma
-      Inc(L.bufpos)
+      inc(L.bufpos)
     of '(':
-      Inc(L.bufpos)
+      inc(L.bufpos)
       if (L.buf[L.bufPos] == '*'):
         if (L.buf[L.bufPos + 1] == '$'):
-          Inc(L.bufpos, 2)
+          inc(L.bufpos, 2)
           skip(L, tok)
           getSymbol(L, tok)
           tok.xkind = pxStarDirLe
@@ -481,12 +481,12 @@ proc getTok(L: var TLexer, tok: var TToken) =
         tok.xkind = pxStar
     of ')':
       tok.xkind = pxParRi
-      Inc(L.bufpos)
+      inc(L.bufpos)
     of '[':
-      Inc(L.bufpos)
+      inc(L.bufpos)
       tok.xkind = pxBracketLe
     of ']':
-      Inc(L.bufpos)
+      inc(L.bufpos)
       tok.xkind = pxBracketRi
     of '.':
       inc(L.bufpos)
@@ -496,21 +496,21 @@ proc getTok(L: var TLexer, tok: var TToken) =
       else:
         tok.xkind = pxDot
     of '{':
-      Inc(L.bufpos)
+      inc(L.bufpos)
       case L.buf[L.bufpos]
       of '$':
-        Inc(L.bufpos)
+        inc(L.bufpos)
         skip(L, tok)
         getSymbol(L, tok)
         tok.xkind = pxCurlyDirLe
       of '&':
-        Inc(L.bufpos)
+        inc(L.bufpos)
         tok.xkind = pxAmp
       of '%':
-        Inc(L.bufpos)
+        inc(L.bufpos)
         tok.xkind = pxPer
       of '@':
-        Inc(L.bufpos)
+        inc(L.bufpos)
         tok.xkind = pxCommand
       else: scanCurlyComment(L, tok)
     of '+':
@@ -554,7 +554,7 @@ proc getTok(L: var TLexer, tok: var TToken) =
       inc(L.bufpos)
     of '}':
       tok.xkind = pxCurlyDirRi
-      Inc(L.bufpos)
+      inc(L.bufpos)
     of '\'', '#':
       getString(L, tok)
     of '$':
@@ -567,4 +567,4 @@ proc getTok(L: var TLexer, tok: var TToken) =
       tok.literal = c & ""
       tok.xkind = pxInvalid
       lexMessage(L, errInvalidToken, c & " (\\" & $(ord(c)) & ')')
-      Inc(L.bufpos)
+      inc(L.bufpos)

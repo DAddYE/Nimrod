@@ -1,15 +1,15 @@
-type  
+type
   TMaybe[T] = object
-    case empty: Bool
-    of False: value: T
+    case empty: bool
+    of false: value: T
     else: nil
 
-proc Just*[T](val: T): TMaybe[T] =
-  result.empty = False
+proc just*[T](val: T): TMaybe[T] =
+  result.empty = false
   result.value = val
 
-proc Nothing[T](): TMaybe[T] =
-  result.empty = True
+proc nothing[T](): TMaybe[T] =
+  result.empty = true
 
 proc safeReadLine(): TMaybe[string] =
   var r = stdin.readLine()

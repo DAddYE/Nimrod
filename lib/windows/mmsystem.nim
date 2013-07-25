@@ -270,8 +270,8 @@ const
   MEVT_F_LONG* = 0x80000000
   MEVT_F_CALLBACK* = 0x40000000
 
-proc MEVT_EVENTTYPE*(x: int8): int8
-proc MEVT_EVENTPARM*(x: DWORD): DWORD
+proc mEVT_EVENTTYPE*(x: int8): int8
+proc mEVT_EVENTPARM*(x: DWORD): DWORD
 const
   MEVT_SHORTMSG* = 0
   MEVT_TEMPO* = 0x00000001
@@ -736,10 +736,10 @@ const
   MCI_FORMAT_SAMPLES* = 9
   MCI_FORMAT_TMSF* = 10
 
-proc MCI_MSF_MINUTE*(msf: int32): int8
-proc MCI_MSF_SECOND*(msf: int32): int8
-proc MCI_MSF_FRAME*(msf: int32): int8
-proc MCI_MAKE_MSF*(m, s, f: int8): int32
+proc mCI_MSF_MINUTE*(msf: int32): int8
+proc mCI_MSF_SECOND*(msf: int32): int8
+proc mCI_MSF_FRAME*(msf: int32): int8
+proc mCI_MAKE_MSF*(m, s, f: int8): int32
 const
   MCI_SET_DOOR_OPEN* = 256
   MCI_SET_DOOR_CLOSED* = 512
@@ -752,14 +752,14 @@ const
   MCI_SET_AUDIO_LEFT* = 1
   MCI_SET_AUDIO_RIGHT* = 2
 
-proc MCI_TMSF_TRACK*(tmsf: int32): int8
-proc MCI_TMSF_MINUTE*(tmsf: int32): int8
-proc MCI_TMSF_SECOND*(tmsf: int32): int8
-proc MCI_TMSF_FRAME*(tmsf: int32): int8
-proc MCI_HMS_HOUR*(h: int32): int8
-proc MCI_HMS_MINUTE*(h: int32): int8
-proc MCI_HMS_SECOND*(h: int32): int8
-proc MCI_MAKE_HMS*(h, m, s: int8): int32
+proc mCI_TMSF_TRACK*(tmsf: int32): int8
+proc mCI_TMSF_MINUTE*(tmsf: int32): int8
+proc mCI_TMSF_SECOND*(tmsf: int32): int8
+proc mCI_TMSF_FRAME*(tmsf: int32): int8
+proc mCI_HMS_HOUR*(h: int32): int8
+proc mCI_HMS_MINUTE*(h: int32): int8
+proc mCI_HMS_SECOND*(h: int32): int8
+proc mCI_MAKE_HMS*(h, m, s: int8): int32
 const
   MCI_INFO_PRODUCT* = 256
   MCI_INFO_FILE* = 512
@@ -768,7 +768,7 @@ const
   MCI_INFO_NAME* = 0x00001000
   MCI_INFO_COPYRIGHT* = 0x00002000
 
-proc MCI_MAKE_TMSF*(t, m, s, f: int8): int32
+proc mCI_MAKE_TMSF*(t, m, s, f: int8): int32
 const
   MCI_WAIT* = 2
   MCI_FROM* = 4
@@ -971,7 +971,7 @@ const
   QUERYROPSUPPORT* = 40
   SELECTDIB* = 41
 
-proc DIBINDEX*(n: int32): int32
+proc dIBINDEX*(n: int32): int32
 const
   SC_SCREENSAVE* = 0x0000F140
   AUXCAPS_CDAUDIO* = 1
@@ -1358,7 +1358,7 @@ type
     dwType*, dwDeviceID*: DWORD
     wMid*, wPid*: int16
     vDriverVersion*: MMVERSION
-    szPname*: array[0..pred(MAXPNAMELEN), Char]
+    szPname*: array[0..pred(MAXPNAMELEN), char]
 
   PMIXERLINEA* = ptr MIXERLINEA
   LPMIXERLINEA* = ptr MIXERLINEA
@@ -1379,7 +1379,7 @@ type
     dwType*, dwDeviceID*: DWORD
     wMid*, wPid*: int16
     vDriverVersion*: MMVERSION
-    szPname*: array[0..pred(MAXPNAMELEN), WChar]
+    szPname*: array[0..pred(MAXPNAMELEN), Wchar]
 
   TMIXERLINEW* = MIXERLINEW
   PMIXERLINEW* = ptr MIXERLINEW
@@ -1478,7 +1478,7 @@ type
     dwControlID*: DWORD
     cChannels*: DWORD
     cMultipleItems*, cbDetails*: DWORD
-    paDetails*: Pointer
+    paDetails*: pointer
 
   MIXERCONTROLDETAILS* = tMIXERCONTROLDETAILS
   PMIXERCONTROLDETAILS* = ptr tMIXERCONTROLDETAILS
@@ -2598,58 +2598,58 @@ proc mixerGetLineInfo*(x1: HMIXEROBJ, x2: LPMIXERLINE, x3: DWORD): MMRESULT{.
     stdcall, dynlib: "winmm.dll", importc: "mixerGetLineInfoA".}
 proc mixerGetID*(x1: HMIXEROBJ, x2: var UINT, x3: DWORD): MMRESULT{.stdcall,
     dynlib: "winmm.dll", importc: "mixerGetID".}
-proc PlaySoundA*(x1: LPCSTR, x2: HMODULE, x3: DWORD): BOOL{.stdcall,
+proc playSoundA*(x1: LPCSTR, x2: HMODULE, x3: DWORD): BOOL{.stdcall,
     dynlib: "winmm.dll", importc: "PlaySoundA".}
-proc PlaySoundW*(x1: LPCWSTR, x2: HMODULE, x3: DWORD): BOOL{.stdcall,
+proc playSoundW*(x1: LPCWSTR, x2: HMODULE, x3: DWORD): BOOL{.stdcall,
     dynlib: "winmm.dll", importc: "PlaySoundW".}
-proc PlaySound*(x1: cstring, x2: HMODULE, x3: DWORD): BOOL{.stdcall,
+proc playSound*(x1: cstring, x2: HMODULE, x3: DWORD): BOOL{.stdcall,
     dynlib: "winmm.dll", importc: "PlaySoundA".}
 # implementation
 
-proc MEVT_EVENTTYPE(x: int8): int8 =
+proc mEVT_EVENTTYPE(x: int8): int8 =
   result = toU8(x shr 24)
 
-proc MEVT_EVENTPARM(x: DWORD): DWORD =
+proc mEVT_EVENTPARM(x: DWORD): DWORD =
   result = x And 0x00FFFFFF
 
-proc MCI_MSF_MINUTE(msf: int32): int8 =
+proc mCI_MSF_MINUTE(msf: int32): int8 =
   result = toU8(msf and 0xff)
 
-proc MCI_TMSF_TRACK(tmsf: int32): int8 =
+proc mCI_TMSF_TRACK(tmsf: int32): int8 =
   result = toU8(tmsf and 0xff)
 
-proc MCI_HMS_HOUR(h: int32): int8 =
+proc mCI_HMS_HOUR(h: int32): int8 =
   result = toU8(h and 0xff)
 
-proc MCI_MSF_SECOND(msf: int32): int8 =
+proc mCI_MSF_SECOND(msf: int32): int8 =
   result = toU8(msf shr 8)
 
-proc MCI_TMSF_MINUTE(tmsf: int32): int8 =
+proc mCI_TMSF_MINUTE(tmsf: int32): int8 =
   result = toU8(tmsf shr 8)
 
-proc MCI_HMS_MINUTE(h: int32): int8 =
+proc mCI_HMS_MINUTE(h: int32): int8 =
   result = toU8(h shr 8)
 
-proc MCI_MSF_FRAME(msf: int32): int8 =
+proc mCI_MSF_FRAME(msf: int32): int8 =
   result = toU8(msf shr 16)
 
-proc MCI_TMSF_SECOND(tmsf: int32): int8 =
+proc mCI_TMSF_SECOND(tmsf: int32): int8 =
   result = toU8(tmsf shr 16)
 
-proc MCI_HMS_SECOND(h: int32): int8 =
+proc mCI_HMS_SECOND(h: int32): int8 =
   result = toU8(h shr 16)
 
-proc MCI_MAKE_MSF(m, s, f: int8): int32 =
+proc mCI_MAKE_MSF(m, s, f: int8): int32 =
   result = toU32(ze(m) or ze(s) shl 8 or ze(f) shl 16)
 
-proc MCI_MAKE_HMS(h, m, s: int8): int32 =
+proc mCI_MAKE_HMS(h, m, s: int8): int32 =
   result = toU32(ze(h) or ze(m) shl 8 or ze(s) shl 16)
 
-proc MCI_TMSF_FRAME(tmsf: int32): int8 =
+proc mCI_TMSF_FRAME(tmsf: int32): int8 =
   result = toU8(tmsf shr 24)
 
 proc mci_Make_TMSF(t, m, s, f: int8): int32 =
   result = (ze(t) or ze(m) shl 8 or ze(s) shl 16 or ze(f) shl 24).int32
 
-proc DIBINDEX(n: int32): int32 =
+proc dIBINDEX(n: int32): int32 =
   result = n Or 0x000010FF'i32 shl 16'i32

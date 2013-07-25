@@ -22,35 +22,35 @@ proc delNimCache() =
     removeDir(nimcacheDir)
   except EOS:
     echo "[Warning] could not delete: ", nimcacheDir
-    
+
 proc runRodFiles(r: var TResults, options: string) =
   template test(filename: expr): stmt =
     runSingleTest(r, rodfilesDir / filename, options)
-  
+
   delNimCache()
-  
+
   # test basic recompilation scheme:
   test "hallo"
   test "hallo"
   # test incremental type information:
   test "hallo2"
   delNimCache()
-  
+
   # test type converters:
   test "aconv"
   test "bconv"
   delNimCache()
-  
+
   # test G, A, B example from the documentation; test init sections:
   test "deada"
   test "deada2"
   delNimCache()
-  
+
   # test method generation:
   test "bmethods"
   test "bmethods2"
   delNimCache()
-  
+
   # test generics:
   test "tgeneric1"
   test "tgeneric2"
@@ -59,7 +59,7 @@ proc runRodFiles(r: var TResults, options: string) =
 proc compileRodFiles(r: var TResults, options: string) =
   template test(filename: expr): stmt =
     compileSingleTest(r, rodfilesDir / filename, options)
-    
+
   delNimCache()
   # test DLL interfacing:
   test "gtkex1"
@@ -76,10 +76,10 @@ proc safeCopyFile(src, dest: string) =
 
 proc runBasicDLLTest(c, r: var TResults, options: string) =
   compileSingleTest c, "lib/nimrtl.nim", options & " --app:lib -d:createNimRtl"
-  compileSingleTest c, "tests/dll/server.nim", 
+  compileSingleTest c, "tests/dll/server.nim",
     options & " --app:lib -d:useNimRtl"
-  
-  when defined(Windows): 
+
+  when defined(Windows):
     # windows looks in the dir of the exe (yay!):
     var nimrtlDll = DynlibFormat % "nimrtl"
     safeCopyFile("lib" / nimrtlDll, "tests/dll" / nimrtlDll)
@@ -90,13 +90,13 @@ proc runBasicDLLTest(c, r: var TResults, options: string) =
       echo "[Warning] insufficient LD_LIBRARY_PATH"
     var serverDll = DynlibFormat % "server"
     safeCopyFile("tests/dll" / serverDll, "lib" / serverDll)
-  
+
   runSingleTest r, "tests/dll/client.nim", options & " -d:useNimRtl"
 
 proc runDLLTests(r: var TResults, options: string) =
   # dummy compile result:
   var c = initResults()
-  
+
   runBasicDLLTest c, r, options
   runBasicDLLTest c, r, options & " -d:release"
   runBasicDLLTest c, r, options & " --gc:boehm"
@@ -105,7 +105,7 @@ proc runDLLTests(r: var TResults, options: string) =
 proc compileDLLTests(r: var TResults, options: string) =
   # dummy run result:
   var c = initResults()
-  
+
   runBasicDLLTest r, c, options
   runBasicDLLTest r, c, options & " -d:release"
   runBasicDLLTest r, c, options & " --gc:boehm"
@@ -123,7 +123,7 @@ proc runGcTests(r: var TResults, options: string) =
                   " --gc:markAndSweep")
     runSingleTest(r, "tests/gc" / filename, options &
                   " -d:release --gc:markAndSweep")
-  
+
   test "gcbench"
   test "gcleak"
   test "gcleak2"
@@ -140,7 +140,7 @@ proc runThreadTests(r: var TResults, options: string) =
     runSingleTest(r, "tests/threads" / filename, options)
     runSingleTest(r, "tests/threads" / filename, options & " -d:release")
     runSingleTest(r, "tests/threads" / filename, options & " --tlsEmulation:on")
-  
+
   test "tactors"
   test "tactors2"
   test "threadex"
@@ -163,11 +163,11 @@ proc runIOTests(r: var TResults, options: string) =
   var c = initResults()
   compileSingleTest(c, "tests/system/helpers/readall_echo", options)
   runSingleTest(r, "tests/system/io", options)
-  
+
 # ------------------------- debugger tests ------------------------------------
 
 proc compileDebuggerTests(r: var TResults, options: string) =
-  compileSingleTest(r, "tools/nimgrep", options & 
+  compileSingleTest(r, "tools/nimgrep", options &
                     " --debugger:on")
 
 # ------------------------- JS tests ------------------------------------------
@@ -176,7 +176,7 @@ proc runJsTests(r: var TResults, options: string) =
   template test(filename: expr): stmt =
     runSingleTest(r, filename, options & " -d:nodejs", targetJS)
     runSingleTest(r, filename, options & " -d:nodejs -d:release", targetJS)
-    
+
   for t in os.walkFiles("tests/js/t*.nim"):
     test(t)
   for testfile in ["texceptions", "texcpt1", "texcsub", "tfinally",
@@ -202,7 +202,7 @@ proc rejectSpecialTests(r: var TResults, options: string) =
 
 proc findMainFile(dir: string): string =
   # finds the file belonging to ".nimrod.cfg"; if there is no such file
-  # it returns the some ".nim" file if there is only one: 
+  # it returns the some ".nim" file if there is only one:
   const cfgExt = ".nimrod.cfg"
   result = ""
   var nimFiles = 0
@@ -229,7 +229,7 @@ proc compileSpecialTests(r: var TResults, options: string) =
 
   compileDLLTests(r, options)
   compileDebuggerTests(r, options)
-  
+
   compileManyLoc(r, options)
 
   #var given = callCompiler("nimrod i", "nimrod i", options)

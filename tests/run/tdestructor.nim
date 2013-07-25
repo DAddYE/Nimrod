@@ -7,11 +7,11 @@ type
   TMyObj = object
     x, y: int
     p: pointer
-    
+
 proc destruct(o: var TMyObj) {.destructor.} =
   if o.p != nil: dealloc o.p
   echo "Destructor called!"
-  
+
 proc open: TMyObj =
   # allow for superfluous ()
   result = (TMyObj(x: 1, y: 2, p: alloc(3)))

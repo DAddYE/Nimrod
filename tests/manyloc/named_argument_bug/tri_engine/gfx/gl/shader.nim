@@ -49,7 +49,7 @@ proc compile*(shader: TShader, path="") =
     )
 
 proc newShaderFromSrc*(src: string, `type`: TShaderType): TShader =
-  result.id = ?glCreateShader(`type`.GLenum)
+  result.id = ?glCreateShader(`type`.Glenum)
   result.setSrc(src)
   result.compile()
 

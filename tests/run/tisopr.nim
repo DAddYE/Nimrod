@@ -2,7 +2,7 @@ discard """
   output: "true true false yes"
 """
 
-proc IsVoid[T](): string = 
+proc isVoid[T](): string =
   when T is void:
     result = "yes"
   else:

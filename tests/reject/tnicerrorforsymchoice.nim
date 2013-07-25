@@ -7,11 +7,11 @@ discard """
 import scgi, sockets, asyncio, strtabs
 proc handleSCGIRequest[TScgi: TScgiState | PAsyncScgiState](s: TScgi) =
   nil
-proc handleSCGIRequest(client: PAsyncSocket, headers: PStringTable, 
+proc handleSCGIRequest(client: PAsyncSocket, headers: PStringTable,
                        input: string) =
   nil
 
-proc test(handle: proc (client: PAsyncSocket, headers: PStringTable, 
+proc test(handle: proc (client: PAsyncSocket, headers: PStringTable,
                         input: string), b: int) =
   nil
 

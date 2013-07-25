@@ -2,7 +2,7 @@ discard """
   output: "he, no return type;abc a string"
 """
 
-proc ReturnT[T](x: T): T =
+proc returnT[T](x: T): T =
   when T is void:
     echo "he, no return type;"
   else:
@@ -12,14 +12,14 @@ proc nothing(x, y: void): void =
   echo "ha"
 
 proc callProc[T](p: proc (x: T) {.nimcall.}, x: T) =
-  when T is void: 
+  when T is void:
     p()
   else:
     p(x)
 
 proc intProc(x: int) =
   echo x
-  
+
 proc emptyProc() =
   echo "empty"
 

@@ -10,7 +10,7 @@
 ## implements the module handling
 
 import
-  ast, astalgo, magicsys, crc, rodread, msgs, cgendata, sigmatch, options, 
+  ast, astalgo, magicsys, crc, rodread, msgs, cgendata, sigmatch, options,
   idents, os, lexer, idgen, passes, syntaxes
 
 type
@@ -41,13 +41,13 @@ template crc(x: PSym): expr =
   gMemCacheData[x.position].crc
 
 proc crcChanged(fileIdx: int32): bool =
-  InternalAssert fileIdx >= 0 and fileIdx < gMemCacheData.len
-  
+  internalAssert fileIdx >= 0 and fileIdx < gMemCacheData.len
+
   template updateStatus =
     gMemCacheData[fileIdx].crcStatus = if result: crcHasChanged
                                        else: crcNotChanged
     # echo "TESTING CRC: ", fileIdx.toFilename, " ", result
-  
+
   case gMemCacheData[fileIdx].crcStatus:
   of crcHasChanged:
     result = true
@@ -97,7 +97,7 @@ proc checkDepMem(fileIdx: int32): TNeedRecompile =
   if optForceFullMake in gGlobalOptions or
      crcChanged(fileIdx):
        markDirty
-  
+
   if gMemCacheData[fileIdx].deps != nil:
     gMemCacheData[fileIdx].needsRecompile = Probing
     for dep in gMemCacheData[fileIdx].deps:
@@ -105,13 +105,13 @@ proc checkDepMem(fileIdx: int32): TNeedRecompile =
       if d in {Yes, Recompiled}:
         # echo fileIdx.toFilename, " depends on ", dep.toFilename, " ", d
         markDirty
-  
+
   gMemCacheData[fileIdx].needsRecompile = No
   return No
 
 proc newModule(fileIdx: int32): PSym =
   # We cannot call ``newSym`` here, because we have to circumvent the ID
-  # mechanism, which we do in order to assign each module a persistent ID. 
+  # mechanism, which we do in order to assign each module a persistent ID.
   new(result)
   result.id = - 1             # for better error checking
   result.kind = skModule
@@ -119,18 +119,18 @@ proc newModule(fileIdx: int32): PSym =
   result.name = getIdent(splitFile(filename).name)
   if not isNimrodIdentifier(result.name.s):
     rawMessage(errInvalidModuleName, result.name.s)
-  
+
   result.owner = result       # a module belongs to itself
   result.info = newLineInfo(fileIdx, 1, 1)
   result.position = fileIdx
-  
+
   growCache gMemCacheData, fileIdx
   growCache gCompiledModules, fileIdx
   gCompiledModules[result.position] = result
-  
+
   incl(result.flags, sfUsed)
   initStrTable(result.tab)
-  StrTableAdd(result.tab, result) # a module knows itself
+  strTableAdd(result.tab, result) # a module knows itself
 
 proc compileModule*(fileIdx: int32, flags: TSymFlags): PSym =
   result = getModule(fileIdx)
@@ -143,8 +143,8 @@ proc compileModule*(fileIdx: int32, flags: TSymFlags): PSym =
     result.flags = result.flags + flags
     if gCmd in {cmdCompileToC, cmdCompileToCpp, cmdCheck, cmdIdeTools}:
       rd = handleSymbolFile(result)
-      if result.id < 0: 
-        InternalError("handleSymbolFile should have set the module\'s ID")
+      if result.id < 0:
+        internalError("handleSymbolFile should have set the module\'s ID")
         return
     else:
       result.id = getID()
@@ -155,7 +155,7 @@ proc compileModule*(fileIdx: int32, flags: TSymFlags): PSym =
       doCRC fileIdx
   else:
     if checkDepMem(fileIdx) == Yes:
-      result = CompileModule(fileIdx, flags)
+      result = compileModule(fileIdx, flags)
     else:
       result = gCompiledModules[fileIdx]
 
@@ -164,7 +164,7 @@ proc importModule*(s: PSym, fileIdx: int32): PSym {.procvar.} =
   result = compileModule(fileIdx, {})
   if optCaasEnabled in gGlobalOptions: addDep(s, fileIdx)
   if sfSystemModule in result.flags:
-    LocalError(result.info, errAttemptToRedefine, result.Name.s)
+    localError(result.info, errAttemptToRedefine, result.name.s)
 
 proc includeModule*(s: PSym, fileIdx: int32): PNode {.procvar.} =
   result = syntaxes.parseFile(fileIdx)
@@ -182,15 +182,15 @@ proc `==^`(a, b: string): bool =
 proc compileSystemModule* =
   if magicsys.SystemModule == nil:
     SystemFileIdx = fileInfoIdx(options.libpath/"system.nim")
-    discard CompileModule(SystemFileIdx, {sfSystemModule})
+    discard compileModule(SystemFileIdx, {sfSystemModule})
 
-proc CompileProject*(projectFile = gProjectMainIdx) =
+proc compileProject*(projectFile = gProjectMainIdx) =
   let systemFileIdx = fileInfoIdx(options.libpath / "system.nim")
   if projectFile == SystemFileIdx:
-    discard CompileModule(projectFile, {sfMainModule, sfSystemModule})
+    discard compileModule(projectFile, {sfMainModule, sfSystemModule})
   else:
     compileSystemModule()
-    discard CompileModule(projectFile, {sfMainModule})
+    discard compileModule(projectFile, {sfMainModule})
 
 var stdinModule: PSym
 proc makeStdinModule*(): PSym =

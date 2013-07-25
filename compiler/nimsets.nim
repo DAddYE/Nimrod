@@ -9,7 +9,7 @@
 
 # this unit handles Nimrod sets; it implements symbolic sets
 
-import 
+import
   ast, astalgo, trees, nversion, msgs, platform, bitsets, types, renderer
 
 proc toBitSet*(s: PNode, b: var TBitSet)
@@ -18,7 +18,7 @@ proc overlap*(a, b: PNode): bool
 proc inSet*(s: PNode, elem: PNode): bool
 proc someInSet*(s: PNode, a, b: PNode): bool
 proc emptyRange*(a, b: PNode): bool
-proc SetHasRange*(s: PNode): bool
+proc setHasRange*(s: PNode): bool
   # returns true if set contains a range (needed by the code generator)
   # these are used for constant folding:
 proc unionSets*(a, b: PNode): PNode
@@ -30,17 +30,17 @@ proc equalSets*(a, b: PNode): bool
 proc cardSet*(s: PNode): BiggestInt
 # implementation
 
-proc inSet(s: PNode, elem: PNode): bool = 
-  if s.kind != nkCurly: 
-    InternalError(s.info, "inSet")
+proc inSet(s: PNode, elem: PNode): bool =
+  if s.kind != nkCurly:
+    internalError(s.info, "inSet")
     return false
-  for i in countup(0, sonsLen(s) - 1): 
-    if s.sons[i].kind == nkRange: 
+  for i in countup(0, sonsLen(s) - 1):
+    if s.sons[i].kind == nkRange:
       if leValue(s.sons[i].sons[0], elem) and
-          leValue(elem, s.sons[i].sons[1]): 
+          leValue(elem, s.sons[i].sons[1]):
         return true
-    else: 
-      if sameValue(s.sons[i], elem): 
+    else:
+      if sameValue(s.sons[i], elem):
         return true
   result = false
 
@@ -58,37 +58,37 @@ proc overlap(a, b: PNode): bool =
     else:
       result = sameValue(a, b)
 
-proc SomeInSet(s: PNode, a, b: PNode): bool = 
+proc someInSet(s: PNode, a, b: PNode): bool =
   # checks if some element of a..b is in the set s
   if s.kind != nkCurly:
-    InternalError(s.info, "SomeInSet")
+    internalError(s.info, "SomeInSet")
     return false
-  for i in countup(0, sonsLen(s) - 1): 
-    if s.sons[i].kind == nkRange: 
+  for i in countup(0, sonsLen(s) - 1):
+    if s.sons[i].kind == nkRange:
       if leValue(s.sons[i].sons[0], b) and leValue(b, s.sons[i].sons[1]) or
-          leValue(s.sons[i].sons[0], a) and leValue(a, s.sons[i].sons[1]): 
+          leValue(s.sons[i].sons[0], a) and leValue(a, s.sons[i].sons[1]):
         return true
-    else: 
+    else:
       # a <= elem <= b
-      if leValue(a, s.sons[i]) and leValue(s.sons[i], b): 
+      if leValue(a, s.sons[i]) and leValue(s.sons[i], b):
         return true
   result = false
 
-proc toBitSet(s: PNode, b: var TBitSet) = 
+proc toBitSet(s: PNode, b: var TBitSet) =
   var first, j: BiggestInt
   first = firstOrd(s.typ.sons[0])
   bitSetInit(b, int(getSize(s.typ)))
-  for i in countup(0, sonsLen(s) - 1): 
-    if s.sons[i].kind == nkRange: 
+  for i in countup(0, sonsLen(s) - 1):
+    if s.sons[i].kind == nkRange:
       j = getOrdValue(s.sons[i].sons[0])
-      while j <= getOrdValue(s.sons[i].sons[1]): 
-        BitSetIncl(b, j - first)
+      while j <= getOrdValue(s.sons[i].sons[1]):
+        bitSetIncl(b, j - first)
         inc(j)
-    else: 
-      BitSetIncl(b, getOrdValue(s.sons[i]) - first)
-  
-proc ToTreeSet(s: TBitSet, settype: PType, info: TLineInfo): PNode = 
-  var 
+    else:
+      bitSetIncl(b, getOrdValue(s.sons[i]) - first)
+
+proc toTreeSet(s: TBitSet, settype: PType, info: TLineInfo): PNode =
+  var
     a, b, e, first: BiggestInt # a, b are interval borders
     elemType: PType
     n: PNode
@@ -98,59 +98,59 @@ proc ToTreeSet(s: TBitSet, settype: PType, info: TLineInfo): PNode =
   result.typ = settype
   result.info = info
   e = 0
-  while e < len(s) * elemSize: 
-    if bitSetIn(s, e): 
+  while e < len(s) * ElemSize:
+    if bitSetIn(s, e):
       a = e
       b = e
-      while true: 
-        Inc(b)
-        if (b >= len(s) * elemSize) or not bitSetIn(s, b): break 
-      Dec(b)
-      if a == b: 
+      while true:
+        inc(b)
+        if (b >= len(s) * ElemSize) or not bitSetIn(s, b): break
+      dec(b)
+      if a == b:
         addSon(result, newIntTypeNode(nkIntLit, a + first, elemType))
-      else: 
+      else:
         n = newNodeI(nkRange, info)
         n.typ = elemType
         addSon(n, newIntTypeNode(nkIntLit, a + first, elemType))
         addSon(n, newIntTypeNode(nkIntLit, b + first, elemType))
         addSon(result, n)
       e = b
-    Inc(e)
+    inc(e)
 
-type 
-  TSetOP = enum 
+type
+  TSetOP = enum
     soUnion, soDiff, soSymDiff, soIntersect
 
-proc nodeSetOp(a, b: PNode, op: TSetOp): PNode = 
+proc nodeSetOp(a, b: PNode, op: TSetOp): PNode =
   var x, y: TBitSet
   toBitSet(a, x)
   toBitSet(b, y)
   case op
-  of soUnion: BitSetUnion(x, y)
-  of soDiff: BitSetDiff(x, y)
-  of soSymDiff: BitSetSymDiff(x, y)
-  of soIntersect: BitSetIntersect(x, y)
+  of soUnion: bitSetUnion(x, y)
+  of soDiff: bitSetDiff(x, y)
+  of soSymDiff: bitSetSymDiff(x, y)
+  of soIntersect: bitSetIntersect(x, y)
   result = toTreeSet(x, a.typ, a.info)
 
-proc unionSets(a, b: PNode): PNode = 
+proc unionSets(a, b: PNode): PNode =
   result = nodeSetOp(a, b, soUnion)
 
-proc diffSets(a, b: PNode): PNode = 
+proc diffSets(a, b: PNode): PNode =
   result = nodeSetOp(a, b, soDiff)
 
-proc intersectSets(a, b: PNode): PNode = 
+proc intersectSets(a, b: PNode): PNode =
   result = nodeSetOp(a, b, soIntersect)
 
-proc symdiffSets(a, b: PNode): PNode = 
+proc symdiffSets(a, b: PNode): PNode =
   result = nodeSetOp(a, b, soSymDiff)
 
-proc containsSets(a, b: PNode): bool = 
+proc containsSets(a, b: PNode): bool =
   var x, y: TBitSet
   toBitSet(a, x)
   toBitSet(b, y)
   result = bitSetContains(x, y)
 
-proc equalSets(a, b: PNode): bool = 
+proc equalSets(a, b: PNode): bool =
   var x, y: TBitSet
   toBitSet(a, x)
   toBitSet(b, y)
@@ -162,26 +162,26 @@ proc complement*(a: PNode): PNode =
   for i in countup(0, high(x)): x[i] = not x[i]
   result = toTreeSet(x, a.typ, a.info)
 
-proc cardSet(s: PNode): BiggestInt = 
+proc cardSet(s: PNode): BiggestInt =
   # here we can do better than converting it into a compact set
   # we just count the elements directly
   result = 0
-  for i in countup(0, sonsLen(s) - 1): 
-    if s.sons[i].kind == nkRange: 
+  for i in countup(0, sonsLen(s) - 1):
+    if s.sons[i].kind == nkRange:
       result = result + getOrdValue(s.sons[i].sons[1]) -
           getOrdValue(s.sons[i].sons[0]) + 1
-    else: 
-      Inc(result)
-  
-proc SetHasRange(s: PNode): bool = 
+    else:
+      inc(result)
+
+proc setHasRange(s: PNode): bool =
   if s.kind != nkCurly:
-    InternalError(s.info, "SetHasRange")
+    internalError(s.info, "SetHasRange")
     return false
-  for i in countup(0, sonsLen(s) - 1): 
-    if s.sons[i].kind == nkRange: 
+  for i in countup(0, sonsLen(s) - 1):
+    if s.sons[i].kind == nkRange:
       return true
   result = false
 
-proc emptyRange(a, b: PNode): bool = 
+proc emptyRange(a, b: PNode): bool =
   result = not leValue(a, b)  # a > b iff not (a <= b)
-  
+

@@ -65,7 +65,7 @@ template rawInsertImpl() {.dirty.} =
   data[h].key = key
   data[h].slot = seFilled
 
-proc RawGet[A](s: TSet[A], key: A): int =
+proc rawGet[A](s: TSet[A], key: A): int =
   rawGetImpl()
 
 proc contains*[A](s: TSet[A], key: A): bool =
@@ -73,10 +73,10 @@ proc contains*[A](s: TSet[A], key: A): bool =
   var index = RawGet(s, key)
   result = index >= 0
 
-proc RawInsert[A](s: var TSet[A], data: var TKeyValuePairSeq[A], key: A) =
+proc rawInsert[A](s: var TSet[A], data: var TKeyValuePairSeq[A], key: A) =
   rawInsertImpl()
 
-proc Enlarge[A](s: var TSet[A]) =
+proc enlarge[A](s: var TSet[A]) =
   var n: TKeyValuePairSeq[A]
   newSeq(n, len(s.data) * growthFactor)
   for i in countup(0, high(s.data)):
@@ -169,7 +169,7 @@ iterator items*[A](s: TOrderedSet[A]): A =
   forAllOrderedPairs:
     yield s.data[h].key
 
-proc RawGet[A](s: TOrderedSet[A], key: A): int =
+proc rawGet[A](s: TOrderedSet[A], key: A): int =
   rawGetImpl()
 
 proc contains*[A](s: TOrderedSet[A], key: A): bool =
@@ -177,7 +177,7 @@ proc contains*[A](s: TOrderedSet[A], key: A): bool =
   var index = RawGet(s, key)
   result = index >= 0
 
-proc RawInsert[A](s: var TOrderedSet[A], 
+proc rawInsert[A](s: var TOrderedSet[A],
                   data: var TOrderedKeyValuePairSeq[A], key: A) =
   rawInsertImpl()
   data[h].next = -1
@@ -185,7 +185,7 @@ proc RawInsert[A](s: var TOrderedSet[A],
   if s.last >= 0: data[s.last].next = h
   s.last = h
 
-proc Enlarge[A](s: var TOrderedSet[A]) =
+proc enlarge[A](s: var TOrderedSet[A]) =
   var n: TOrderedKeyValuePairSeq[A]
   newSeq(n, len(s.data) * growthFactor)
   var h = s.first
@@ -193,7 +193,7 @@ proc Enlarge[A](s: var TOrderedSet[A]) =
   s.last = -1
   while h >= 0:
     var nxt = s.data[h].next
-    if s.data[h].slot == seFilled: 
+    if s.data[h].slot == seFilled:
       RawInsert(s, n, s.data[h].key)
     h = nxt
   swap(s.data, n)

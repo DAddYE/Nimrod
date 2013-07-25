@@ -114,7 +114,7 @@ proc parseSpec(filename: string): TSpec =
     of "outputsub":
       result.outp = e.value
       result.substr = true
-    of "exitcode": 
+    of "exitcode":
       discard parseInt(e.value, result.exitCode)
     of "errormsg", "msg": result.msg = e.value
     of "disabled":
@@ -126,7 +126,7 @@ proc parseSpec(filename: string): TSpec =
 # ----------------------------------------------------------------------------
 
 let
-  pegLineError = 
+  pegLineError =
     peg"{[^(]*} '(' {\d+} ', ' \d+ ') ' ('Error'/'Warning') ':' \s* {.*}"
   pegOtherError = peg"'Error:' \s* {.*}"
   pegSuccess = peg"'Hint: operation successful'.*"
@@ -190,7 +190,7 @@ const
                  "<td>Given</td><td>Success</td></tr>\n"
   TableFooter = "</table>\n"
   HtmlBegin = """<html>
-    <head> 
+    <head>
       <title>Test results</title>
       <style type="text/css">
       <!--""" & slurp("css/boilerplate.css") & "\n" &
@@ -200,7 +200,7 @@ const
 
     </head>
     <body>"""
-  
+
   HtmlEnd = "</body></html>"
 
 proc td(s: string): string =
@@ -271,10 +271,10 @@ proc codegenCheck(test, check, ext: string, given: var TSpec) =
       given.err = reInvalidPeg
     except EIO:
       given.err = reCodeNotFound
-  
+
 proc codegenChecks(test: string, expected: TSpec, given: var TSpec) =
   codegenCheck(test, expected.ccodeCheck, ".c", given)
-  
+
 proc compile(r: var TResults, pattern, options: string) =
   for test in os.walkFiles(pattern):
     let t = extractFilename(test)
@@ -321,7 +321,7 @@ proc runSingleTest(r: var TResults, test, options: string, target: TTarget) =
       else:
         let (dir, file, ext) = splitFile(test)
         exeFile = dir / "nimcache" / file & ".js"
-      
+
       if existsFile(exeFile):
         var (buf, exitCode) = execCmdEx(
           (if target==targetJS: "node " else: "") & exeFile)
@@ -377,7 +377,7 @@ proc main() =
     compileJson = "compile.json"
     runJson = "run.json"
     rejectJson = "reject.json"
-  
+
   var optPrintResults = false
   var p = initOptParser()
   p.next()

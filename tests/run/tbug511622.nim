@@ -4,7 +4,7 @@ discard """
 """
 import StrUtils, Math
 
-proc FibonacciA(n: int): int64 =
+proc fibonacciA(n: int): int64 =
   var fn = float64(n)
   var p: float64 = (1.0 + sqrt(5.0)) / 2.0
   var q: float64 = 1.0 / p

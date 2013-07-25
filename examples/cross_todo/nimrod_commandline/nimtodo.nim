@@ -111,7 +111,7 @@ proc parseCmdLine(): TParamConfig =
     usesListParams = false
     p = initOptParser()
     key, val: TaintedString
-    newId: biggestInt
+    newId: BiggestInt
 
   result.initDefaults
 

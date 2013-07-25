@@ -12,7 +12,7 @@ discard """
 # 2012-11-25
 # Loosely based on my old Lua version... Updated to current official lyrics.
 
-proc GetBottleNumber(n: int): string =
+proc getBottleNumber(n: int): string =
   var bs: string
   if n == 0:
     bs = "No more bottles"
@@ -25,7 +25,7 @@ proc GetBottleNumber(n: int): string =
 for bn in countdown(99, 1):
   const cur = GetBottleNumber(bn)
   echo(cur, " on the wall, ", cur, ".")
-  echo("Take one down and pass it around, ", GetBottleNumber(bn-1), 
+  echo("Take one down and pass it around, ", GetBottleNumber(bn-1),
        " on the wall.\n")
 
 echo "No more bottles of beer on the wall, no more bottles of beer."

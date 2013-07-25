@@ -7,7 +7,7 @@
 #    distribution, for details about the copyright.
 #
 
-## This module contains procs for serialization and deseralization of 
+## This module contains procs for serialization and deseralization of
 ## arbitrary Nimrod data structures. The serialization format uses JSON.
 ##
 ## **Restriction**: For objects their type is **not** serialized. This means
@@ -15,8 +15,8 @@
 ## type than its compiletime type:
 ##
 ## .. code-block:: nimrod
-## 
-##   type 
+##
+##   type
 ##     TA = object
 ##     TB = object of TA
 ##       f: int
@@ -81,7 +81,7 @@ proc storeAny(s: PStream, a: TAny, stored: var TIntSet) =
       s.write(", ")
       storeAny(s, a[], stored)
       s.write("]")
-  of akProc, akPointer, akCString: s.write($a.getPointer.ptrToInt)
+  of akProc, akPointer, akcstring: s.write($a.getPointer.ptrToInt)
   of akString:
     var x = getString(a)
     if IsNil(x): s.write("null")
@@ -89,13 +89,13 @@ proc storeAny(s: PStream, a: TAny, stored: var TIntSet) =
   of akInt..akInt64, akUInt..akUInt64: s.write($getBiggestInt(a))
   of akFloat..akFloat128: s.write($getBiggestFloat(a))
 
-proc loadAny(p: var TJsonParser, a: TAny, t: var TTable[biggestInt, pointer]) =
+proc loadAny(p: var TJsonParser, a: TAny, t: var TTable[BiggestInt, pointer]) =
   case a.kind
   of akNone: assert false
-  of akBool: 
+  of akBool:
     case p.kind
-    of jsonFalse: setBiggestInt(a, 0)
-    of jsonTrue: setBiggestInt(a, 1)
+    of jsonfalse: setBiggestInt(a, 0)
+    of jsontrue: setBiggestInt(a, 1)
     else: raiseParseErr(p, "'true' or 'false' expected for a bool")
     next(p)
   of akChar:
@@ -106,7 +106,7 @@ proc loadAny(p: var TJsonParser, a: TAny, t: var TTable[biggestInt, pointer]) =
         next(p)
         return
     raiseParseErr(p, "string of length 1 expected for a char")
-  of akEnum: 
+  of akEnum:
     if p.kind == jsonString:
       setBiggestInt(a, getEnumOrdinal(a, p.str))
       next(p)
@@ -122,7 +122,7 @@ proc loadAny(p: var TJsonParser, a: TAny, t: var TTable[biggestInt, pointer]) =
     if p.kind == jsonArrayEnd: next(p)
     else: raiseParseErr(p, "']' end of array expected")
   of akSequence:
-    case p.kind 
+    case p.kind
     of jsonNull:
       setPointer(a, nil)
       next(p)
@@ -143,7 +143,7 @@ proc loadAny(p: var TJsonParser, a: TAny, t: var TTable[biggestInt, pointer]) =
     if p.kind != jsonObjectStart: raiseParseErr(p, "'{' expected for an object")
     next(p)
     while p.kind != jsonObjectEnd and p.kind != jsonEof:
-      if p.kind != jsonString: 
+      if p.kind != jsonString:
         raiseParseErr(p, "string expected for a field name")
       var fieldName = p.str
       next(p)
@@ -160,7 +160,7 @@ proc loadAny(p: var TJsonParser, a: TAny, t: var TTable[biggestInt, pointer]) =
     if p.kind == jsonArrayEnd: next(p)
     else: raiseParseErr(p, "']' end of array expected")
   of akPtr, akRef:
-    case p.kind 
+    case p.kind
     of jsonNull:
       setPointer(a, nil)
       next(p)
@@ -170,7 +170,7 @@ proc loadAny(p: var TJsonParser, a: TAny, t: var TTable[biggestInt, pointer]) =
     of jsonArrayStart:
       next(p)
       if a.kind == akRef: invokeNew(a)
-      else: setPointer(a, alloc0(a.baseTypeSize))      
+      else: setPointer(a, alloc0(a.baseTypeSize))
       if p.kind == jsonInt:
         t[p.getInt] = getPointer(a)
         next(p)
@@ -179,8 +179,8 @@ proc loadAny(p: var TJsonParser, a: TAny, t: var TTable[biggestInt, pointer]) =
       if p.kind == jsonArrayEnd: next(p)
       else: raiseParseErr(p, "']' end of ref-address pair expected")
     else: raiseParseErr(p, "int for pointer type expected")
-  of akProc, akPointer, akCString: 
-    case p.kind 
+  of akProc, akPointer, akcstring:
+    case p.kind
     of jsonNull:
       setPointer(a, nil)
       next(p)
@@ -189,7 +189,7 @@ proc loadAny(p: var TJsonParser, a: TAny, t: var TTable[biggestInt, pointer]) =
       next(p)
     else: raiseParseErr(p, "int for pointer type expected")
   of akString:
-    case p.kind 
+    case p.kind
     of jsonNull:
       setPointer(a, nil)
       next(p)
@@ -197,7 +197,7 @@ proc loadAny(p: var TJsonParser, a: TAny, t: var TTable[biggestInt, pointer]) =
       setString(a, p.str)
       next(p)
     else: raiseParseErr(p, "string expected")
-  of akInt..akInt64, akUInt..akUInt64: 
+  of akInt..akInt64, akUInt..akUInt64:
     if p.kind == jsonInt:
       setBiggestInt(a, getInt(p))
       next(p)
@@ -211,7 +211,7 @@ proc loadAny(p: var TJsonParser, a: TAny, t: var TTable[biggestInt, pointer]) =
     raiseParseErr(p, "float expected")
   of akRange: loadAny(p, a.skipRange, t)
 
-proc loadAny(s: PStream, a: TAny, t: var TTable[biggestInt, pointer]) =
+proc loadAny(s: PStream, a: TAny, t: var TTable[BiggestInt, pointer]) =
   var p: TJsonParser
   open(p, s, "unknown file")
   next(p)
@@ -220,7 +220,7 @@ proc loadAny(s: PStream, a: TAny, t: var TTable[biggestInt, pointer]) =
 
 proc load*[T](s: PStream, data: var T) =
   ## loads `data` from the stream `s`. Raises `EIO` in case of an error.
-  var tab = initTable[biggestInt, pointer]()
+  var tab = initTable[BiggestInt, pointer]()
   loadAny(s, toAny(data), tab)
 
 proc store*[T](s: PStream, data: T) =
@@ -241,24 +241,24 @@ proc `$$`*[T](x: T): string =
 
 proc to*[T](data: string): T =
   ## reads data and transforms it to a ``T``.
-  var tab = initTable[biggestInt, pointer]()
+  var tab = initTable[BiggestInt, pointer]()
   loadAny(newStringStream(data), toAny(result), tab)
-  
+
 when isMainModule:
   template testit(x: expr) = echo($$to[type(x)]($$x))
 
   var x: array[0..4, array[0..4, string]] = [
-    ["test", "1", "2", "3", "4"], ["test", "1", "2", "3", "4"], 
-    ["test", "1", "2", "3", "4"], ["test", "1", "2", "3", "4"], 
+    ["test", "1", "2", "3", "4"], ["test", "1", "2", "3", "4"],
+    ["test", "1", "2", "3", "4"], ["test", "1", "2", "3", "4"],
     ["test", "1", "2", "3", "4"]]
   testit(x)
   var test2: tuple[name: string, s: uint] = ("tuple test", 56u)
   testit(test2)
-  
+
   type
     TE = enum
       blah, blah2
-  
+
     TestObj = object
       test, asd: int
       case test2: TE
@@ -266,7 +266,7 @@ when isMainModule:
         help: string
       else:
         nil
-        
+
     PNode = ref TNode
     TNode = object
       next, prev: PNode
@@ -294,7 +294,7 @@ when isMainModule:
   test4.a = "ref string test: A"
   test4.b = "ref string test: B"
   testit(test4)
-  
+
   var test5 = @[(0,1),(2,3),(4,5)]
   testit(test5)
 
@@ -305,7 +305,7 @@ when isMainModule:
   echo($$test7)
   testit(test7)
 
-  type 
+  type
     TA {.inheritable.} = object
     TB = object of TA
       f: int

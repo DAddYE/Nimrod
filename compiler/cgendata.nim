@@ -9,7 +9,7 @@
 
 ## This module contains the data structures for the C code generation phase.
 
-import 
+import
   ast, astalgo, ropes, passes, options, intsets, lists, platform
 
 type
@@ -41,7 +41,7 @@ type
     ctInt, ctInt8, ctInt16, ctInt32, ctInt64,
     ctFloat, ctFloat32, ctFloat64, ctFloat128,
     ctUInt, ctUInt8, ctUInt16, ctUInt32, ctUInt64,
-    ctArray, ctStruct, ctPtr, ctNimStr, ctNimSeq, ctProc, ctCString
+    ctArray, ctStruct, ctPtr, ctNimStr, ctNimSeq, ctProc, ctcstring
   TCFileSections* = array[TCFileSection, PRope] # represents a generated C file
   TCProcSection* = enum       # the sections a generated C proc consists of
     cpsLocals,                # section of local variables for C proc
@@ -50,7 +50,7 @@ type
   TCProcSections* = array[TCProcSection, PRope] # represents a generated C proc
   BModule* = ref TCGen
   BProc* = ref TCProc
-  TBlock*{.final.} = object 
+  TBlock*{.final.} = object
     id*: int                  # the ID of the label; positive means that it
     label*: PRope             # generated text for the label
                               # nil if label is not used
@@ -58,7 +58,7 @@ type
     isLoop*: bool             # whether block is a loop
     nestedTryStmts*: int16    # how many try statements is it nested into
     frameLen*: int16
-  
+
   TCProc{.final.} = object    # represents C proc that is currently generated
     prc*: PSym                # the Nimrod proc that this C proc belongs to
     BeforeRetNeeded*: bool    # true iff 'BeforeRet' label for proc is needed
@@ -78,9 +78,9 @@ type
     maxFrameLen*: int         # max length of frame descriptor
     module*: BModule          # used to prevent excessive parameter passing
     withinLoop*: int          # > 0 if we are within a loop
-    gcFrameId*: natural       # for the GC stack marking
+    gcFrameId*: Natural       # for the GC stack marking
     gcFrameType*: PRope       # the struct {} we put the GC markers into
-  
+
   TTypeSeq* = seq[PType]
   TCGen = object of TPassContext # represents a C source file
     module*: PSym
@@ -109,7 +109,7 @@ type
     forwardedProcs*: TSymSeq  # keep forwarded procs here
     typeNodes*, nimTypes*: int # used for type info generation
     typeNodesName*, nimTypesName*: PRope # used for type info generation
-    labels*: natural          # for generating unique module-scope names
+    labels*: Natural          # for generating unique module-scope names
     extensionLoaders*: array['0'..'9', PRope] # special procs for the
                                               # OpenGL wrapper
 
@@ -131,7 +131,7 @@ proc bmod*(module: PSym): BModule =
   # obtains the BModule for a given module PSym
   result = gModules[module.position]
 
-proc newProc*(prc: PSym, module: BModule): BProc = 
+proc newProc*(prc: PSym, module: BModule): BProc =
   new(result)
   result.prc = prc
   result.module = module

@@ -2,7 +2,7 @@ import typetraits
 
 type
   TRecord = (tuple) or (object)
-  
+
   TFoo[T, U] = object
     x: int
 

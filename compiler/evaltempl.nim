@@ -10,7 +10,7 @@
 ## Template evaluation engine. Now hygienic.
 
 import
-  strutils, options, ast, astalgo, msgs, os, idents, wordrecg, renderer, 
+  strutils, options, ast, astalgo, msgs, os, idents, wordrecg, renderer,
   rodread
 
 type
@@ -31,12 +31,12 @@ proc evalTemplateAux(templ, actual: PNode, c: var TemplCtx, result: PNode) =
         else:
           result.add copyTree(x)
       else:
-        InternalAssert sfGenSym in s.flags
-        var x = PSym(IdTableGet(c.mapping, s))
+        internalAssert sfGenSym in s.flags
+        var x = PSym(idTableGet(c.mapping, s))
         if x == nil:
           x = copySym(s, false)
           x.owner = c.genSymOwner
-          IdTablePut(c.mapping, s, x)
+          idTablePut(c.mapping, s, x)
         result.add newSymNode(x, templ.info)
     else:
       result.add copyNode(templ)
@@ -44,7 +44,7 @@ proc evalTemplateAux(templ, actual: PNode, c: var TemplCtx, result: PNode) =
     result.add copyNode(templ)
   else:
     var res = copyNode(templ)
-    for i in countup(0, sonsLen(templ) - 1): 
+    for i in countup(0, sonsLen(templ) - 1):
       evalTemplateAux(templ.sons[i], actual, c, res)
     result.add res
 
@@ -57,12 +57,12 @@ when false:
         if s.kind == skParam:
           result = copyTree(actual.sons[s.position])
         else:
-          InternalAssert sfGenSym in s.flags
-          var x = PSym(IdTableGet(c.mapping, s))
+          internalAssert sfGenSym in s.flags
+          var x = PSym(idTableGet(c.mapping, s))
           if x == nil:
             x = copySym(s, false)
             x.owner = c.genSymOwner
-            IdTablePut(c.mapping, s, x)
+            idTablePut(c.mapping, s, x)
           result = newSymNode(x, templ.info)
       else:
         result = copyNode(templ)
@@ -71,7 +71,7 @@ when false:
     else:
       result = copyNode(templ)
       newSons(result, sonsLen(templ))
-      for i in countup(0, sonsLen(templ) - 1): 
+      for i in countup(0, sonsLen(templ) - 1):
         result.sons[i] = evalTemplateAux(templ.sons[i], actual, c)
 
 proc evalTemplateArgs(n: PNode, s: PSym): PNode =
@@ -83,13 +83,13 @@ proc evalTemplateArgs(n: PNode, s: PSym): PNode =
     a = sonsLen(n)
   else: a = 0
   var f = s.typ.sonsLen
-  if a > f: GlobalError(n.info, errWrongNumberOfArguments)
+  if a > f: globalError(n.info, errWrongNumberOfArguments)
 
   result = newNodeI(nkArgList, n.info)
   for i in countup(1, f - 1):
     var arg = if i < a: n.sons[i] else: copyTree(s.typ.n.sons[i].sym.ast)
     if arg == nil or arg.kind == nkEmpty:
-      LocalError(n.info, errWrongNumberOfArguments)
+      localError(n.info, errWrongNumberOfArguments)
     addSon(result, arg)
 
 var evalTemplateCounter* = 0
@@ -98,7 +98,7 @@ var evalTemplateCounter* = 0
 proc evalTemplate*(n: PNode, tmpl, genSymOwner: PSym): PNode =
   inc(evalTemplateCounter)
   if evalTemplateCounter > 100:
-    GlobalError(n.info, errTemplateInstantiationTooNested)
+    globalError(n.info, errTemplateInstantiationTooNested)
     result = n
 
   # replace each param by the corresponding node:
@@ -107,19 +107,19 @@ proc evalTemplate*(n: PNode, tmpl, genSymOwner: PSym): PNode =
   ctx.owner = tmpl
   ctx.genSymOwner = genSymOwner
   initIdTable(ctx.mapping)
-  
+
   let body = tmpl.getBody
-  if isAtom(body): 
+  if isAtom(body):
     result = newNodeI(nkPar, body.info)
     evalTemplateAux(body, args, ctx, result)
     if result.len == 1: result = result.sons[0]
     else:
-      GlobalError(result.info, errIllFormedAstX,
+      globalError(result.info, errIllFormedAstX,
                   renderTree(result, {renderNoComments}))
   else:
     result = copyNode(body)
     #evalTemplateAux(body, args, ctx, result)
     for i in countup(0, safeLen(body) - 1):
       evalTemplateAux(body.sons[i], args, ctx, result)
-  
+
   dec(evalTemplateCounter)

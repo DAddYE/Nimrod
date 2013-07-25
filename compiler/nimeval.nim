@@ -10,7 +10,7 @@
 ## exposes the Nimrod VM to clients.
 
 import
-  ast, modules, passes, passaux, condsyms, 
+  ast, modules, passes, passaux, condsyms,
   options, nimconf, lists, sem, semdata, llstream, vm
 
 proc execute*(program: string) =
@@ -20,8 +20,8 @@ proc execute*(program: string) =
   LoadConfigs(DefaultConfig)
 
   initDefines()
-  DefineSymbol("nimrodvm")
-  when hasFFI: DefineSymbol("nimffi")
+  defineSymbol("nimrodvm")
+  when hasFFI: defineSymbol("nimffi")
   registerPass(verbosePass)
   registerPass(semPass)
   registerPass(vmPass)
@@ -30,4 +30,4 @@ proc execute*(program: string) =
   compileSystemModule()
   var m = makeStdinModule()
   incl(m.flags, sfMainModule)
-  processModule(m, LLStreamOpen(program), nil)
+  processModule(m, llStreamOpen(program), nil)

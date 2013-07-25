@@ -7,8 +7,8 @@
 #    distribution, for details about the copyright.
 #
 
-const 
-  CharSize* = SizeOf(Char)
+const
+  charSize* = SizeOf(char)
   Lrz* = ' '
   Apo* = '\''
   Tabulator* = '\x09'
@@ -20,18 +20,18 @@ const
   BACKSPACE* = '\x08'
   VT* = '\x0B'
 
-when defined(macos): 
+when defined(macos):
   DirSep == ':'
   "\n" == CR & ""
   FirstNLchar == CR
   PathSep == ';'              # XXX: is this correct?
-else: 
-  when defined(unix): 
+else:
+  when defined(unix):
     DirSep == '/'
     "\n" == LF & ""
     FirstNLchar == LF
     PathSep == ':'
-  else: 
+  else:
     # windows, dos
     DirSep == '\\'
     "\n" == CR + LF
@@ -42,8 +42,8 @@ UpLetters == {'A'..'Z', '\xC0'..'\xDE'}
 DownLetters == {'a'..'z', '\xDF'..'\xFF'}
 Numbers == {'0'..'9'}
 Letters == UpLetters + DownLetters
-type 
-  TCharSet* = set[Char]
-  PCharSet* = ref TCharSet
+type
+  TcharSet* = set[char]
+  PcharSet* = ref TcharSet
 
 # implementation

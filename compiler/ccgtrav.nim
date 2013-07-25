@@ -28,7 +28,7 @@ proc genTraverseProc(c: var TTraversalClosure, accessor: PRope, n: PNode) =
     for i in countup(0, sonsLen(n) - 1):
       genTraverseProc(c, accessor, n.sons[i])
   of nkRecCase:
-    if (n.sons[0].kind != nkSym): InternalError(n.info, "genTraverseProc")
+    if (n.sons[0].kind != nkSym): internalError(n.info, "genTraverseProc")
     var p = c.p
     let disc = n.sons[0].sym
     lineF(p, cpsStmts, "switch ($1.$2) {$n", accessor, disc.loc.r)
@@ -74,7 +74,7 @@ proc genTraverseProc(c: var TTraversalClosure, accessor: PRope, typ: PType) =
       genTraverseProc(c, accessor.parentObj, typ.sons[i])
     if typ.n != nil: genTraverseProc(c, accessor, typ.n)
   of tyTuple:
-    let typ = GetUniqueType(typ)
+    let typ = getUniqueType(typ)
     for i in countup(0, sonsLen(typ) - 1):
       genTraverseProc(c, rfmt(nil, "$1.Field$2", accessor, i.toRope), typ.sons[i])
   of tyRef, tyString, tySequence:
@@ -87,29 +87,29 @@ proc genTraverseProc(c: var TTraversalClosure, accessor: PRope, typ: PType) =
 
 proc genTraverseProcSeq(c: var TTraversalClosure, accessor: PRope, typ: PType) =
   var p = c.p
-  assert typ.kind == tySequence  
+  assert typ.kind == tySequence
   var i: TLoc
   getTemp(p, getSysType(tyInt), i)
   lineF(p, cpsStmts, "for ($1 = 0; $1 < $2->$3; $1++) {$n",
       i.r, accessor, toRope(if gCmd != cmdCompileToCpp: "Sup.len" else: "len"))
   genTraverseProc(c, ropef("$1->data[$2]", accessor, i.r), typ.sons[0])
   lineF(p, cpsStmts, "}$n")
-  
+
 proc genTraverseProc(m: BModule, typ: PType, reason: TTypeInfoReason): PRope =
   var c: TTraversalClosure
   var p = newProc(nil, m)
   result = getGlobalTempName()
-  
+
   case reason
   of tiNew: c.visitorFrmt = "#nimGCvisit((void*)$1, op);$n"
   else: assert false
-  
+
   let header = ropef("N_NIMCALL(void, $1)(void* p, NI op)", result)
-  
+
   let t = getTypeDesc(m, typ)
   lineF(p, cpsLocals, "$1 a;$n", t)
   lineF(p, cpsInit, "a = ($1)p;$n", t)
-  
+
   c.p = p
   assert typ.kind != tyTypedesc
   if typ.kind == tySequence:
@@ -120,28 +120,28 @@ proc genTraverseProc(m: BModule, typ: PType, reason: TTypeInfoReason): PRope =
       genTraverseProc(c, "a".toRope, typ.sons[0])
     else:
       genTraverseProc(c, "(*a)".toRope, typ.sons[0])
-  
+
   let generatedProc = ropef("$1 {$n$2$3$4}$n",
         [header, p.s(cpsLocals), p.s(cpsInit), p.s(cpsStmts)])
-  
+
   m.s[cfsProcHeaders].appf("$1;$n", header)
   m.s[cfsProcs].app(generatedProc)
 
 
 proc genTraverseProcForGlobal(m: BModule, s: PSym): PRope =
   discard genTypeInfo(m, s.loc.t)
-  
+
   var c: TTraversalClosure
   var p = newProc(nil, m)
   result = getGlobalTempName()
-  
+
   c.visitorFrmt = "#nimGCvisit((void*)$1, 0);$n"
   c.p = p
   let header = ropef("N_NIMCALL(void, $1)()", result)
   genTraverseProc(c, s.loc.r, s.loc.t)
-  
+
   let generatedProc = ropef("$1 {$n$2$3$4}$n",
         [header, p.s(cpsLocals), p.s(cpsInit), p.s(cpsStmts)])
-  
+
   m.s[cfsProcHeaders].appf("$1;$n", header)
   m.s[cfsProcs].app(generatedProc)

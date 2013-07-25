@@ -15,16 +15,16 @@ var
                              ## for CGI applications
 
 template stackTraceNL: expr =
-  (if IsNil(stackTraceNewLine): "\n" else: stackTraceNewLine)
+  (if isNil(stackTraceNewLine): "\n" else: stackTraceNewLine)
 
 when not defined(windows) or not defined(guiapp):
-  proc writeToStdErr(msg: CString) = write(stdout, msg)
+  proc writeToStdErr(msg: cstring) = write(stdout, msg)
 
 else:
-  proc MessageBoxA(hWnd: cint, lpText, lpCaption: cstring, uType: int): int32 {.
+  proc messageBoxA(hWnd: cint, lpText, lpCaption: cstring, uType: int): int32 {.
     header: "<windows.h>", nodecl.}
 
-  proc writeToStdErr(msg: CString) =
+  proc writeToStdErr(msg: cstring) =
     discard MessageBoxA(0, msg, nil, 0)
 
 proc registerSignalHandler()
@@ -59,7 +59,7 @@ proc pushSafePoint(s: PSafePoint) {.compilerRtl, inl.} =
 proc popSafePoint {.compilerRtl, inl.} =
   excHandler = excHandler.prev
 
-proc pushCurrentException(e: ref E_Base) {.compilerRtl, inl.} = 
+proc pushCurrentException(e: ref E_Base) {.compilerRtl, inl.} =
   e.parent = currException
   currException = e
 
@@ -68,18 +68,18 @@ proc popCurrentException {.compilerRtl, inl.} =
 
 # some platforms have native support for stack traces:
 const
-  nativeStackTraceSupported = (defined(macosx) or defined(linux)) and 
+  nativeStackTraceSupported = (defined(macosx) or defined(linux)) and
                               not nimrodStackTrace
-  hasSomeStackTrace = nimrodStackTrace or 
+  hasSomeStackTrace = nimrodStackTrace or
     defined(nativeStackTrace) and nativeStackTraceSupported
 
 when defined(nativeStacktrace) and nativeStackTraceSupported:
   type
-    TDl_info {.importc: "Dl_info", header: "<dlfcn.h>", 
+    TDl_info {.importc: "Dl_info", header: "<dlfcn.h>",
                final, pure.} = object
-      dli_fname: CString
+      dli_fname: cstring
       dli_fbase: pointer
-      dli_sname: CString
+      dli_sname: cstring
       dli_saddr: pointer
 
   proc backtrace(symbols: ptr pointer, size: int): int {.
@@ -99,7 +99,7 @@ when defined(nativeStacktrace) and nativeStackTraceSupported:
         tempDlInfo: TDl_info
     # This is allowed to be expensive since it only happens during crashes
     # (but this way you don't need manual stack tracing)
-    var size = backtrace(cast[ptr pointer](addr(tempAddresses)), 
+    var size = backtrace(cast[ptr pointer](addr(tempAddresses)),
                          len(tempAddresses))
     var enabled = false
     for i in 0..size-1:
@@ -124,7 +124,7 @@ when defined(nativeStacktrace) and nativeStackTraceSupported:
 when not hasThreadSupport:
   var
     tempFrames: array [0..127, PFrame] # should not be alloc'd on stack
-  
+
 proc auxWriteStackTrace(f: PFrame, s: var string) =
   when hasThreadSupport:
     var
@@ -161,7 +161,7 @@ proc auxWriteStackTrace(f: PFrame, s: var string) =
     inc(i)
     b = b.prev
   for j in countdown(i-1, 0):
-    if tempFrames[j] == nil: 
+    if tempFrames[j] == nil:
       add(s, "(")
       add(s, $skipped)
       add(s, " calls omitted) ...")
@@ -240,7 +240,7 @@ proc raiseExceptionAux(e: ref E_Base) =
       writeToStdErr(buf)
     quitOrDebug()
 
-proc raiseException(e: ref E_Base, ename: CString) {.compilerRtl.} =
+proc raiseException(e: ref E_Base, ename: cstring) {.compilerRtl.} =
   e.name = ename
   when hasSomeStackTrace:
     e.trace = ""
@@ -253,7 +253,7 @@ proc reraiseException() {.compilerRtl.} =
   else:
     raiseExceptionAux(currException)
 
-proc WriteStackTrace() =
+proc writeStackTrace() =
   when hasSomeStackTrace:
     var s = ""
     rawWriteStackTrace(s)
@@ -281,7 +281,7 @@ when defined(endb):
 proc signalHandler(sig: cint) {.exportc: "signalHandler", noconv.} =
   template processSignal(s, action: expr) {.immediate.} =
     if s == SIGINT: action("SIGINT: Interrupted by Ctrl-C.\n")
-    elif s == SIGSEGV: 
+    elif s == SIGSEGV:
       action("SIGSEGV: Illegal storage access. (Attempt to read from nil?)\n")
     elif s == SIGABRT:
       when defined(endb):
@@ -289,7 +289,7 @@ proc signalHandler(sig: cint) {.exportc: "signalHandler", noconv.} =
       action("SIGABRT: Abnormal termination.\n")
     elif s == SIGFPE: action("SIGFPE: Arithmetic error.\n")
     elif s == SIGILL: action("SIGILL: Illegal operation.\n")
-    elif s == SIGBUS: 
+    elif s == SIGBUS:
       action("SIGBUS: Illegal storage access. (Attempt to read from nil?)\n")
     else: action("unknown signal\n")
 
@@ -306,7 +306,7 @@ proc signalHandler(sig: cint) {.exportc: "signalHandler", noconv.} =
     template asgn(y: expr) = msg = y
     processSignal(sig, asgn)
     writeToStdErr(msg)
-  when defined(endb): dbgAborting = True
+  when defined(endb): dbgAborting = true
   quit(1) # always quit when SIGABRT
 
 proc registerSignalHandler() =

@@ -11,7 +11,7 @@ type
     status*: TStatusEnum
     desc*: string
     hash*: string
-    
+
 proc initStatus*(): TStatus =
   result.status = sUnknown
   result.desc = ""
@@ -49,9 +49,9 @@ proc `$`*(status: TStatusEnum): string =
     return "csource generation succeeded"
   of sUnknown:
     return "unknown"
-    
+
 proc makeCommitPath*(platform, hash: string): string =
-  return platform / "nimrod_" & hash.substr(0, 11) # 11 Chars.
+  return platform / "nimrod_" & hash.substr(0, 11) # 11 chars.
 
 type
   TFlag = enum

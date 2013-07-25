@@ -17,7 +17,7 @@
 const
   NilLibHandle: TLibHandle = nil
 
-proc rawWrite(f: TFile, s: string) = 
+proc rawWrite(f: TFile, s: string) =
   # we cannot throw an exception here!
   discard writeBuffer(f, cstring(s), s.len)
 
@@ -28,7 +28,7 @@ proc nimLoadLibraryError(path: string) =
   stdout.rawWrite("\n")
   quit(1)
 
-proc ProcAddrError(name: cstring) {.noinline.} =
+proc procAddrError(name: cstring) {.noinline.} =
   # carefully written to avoid memory allocation:
   stdout.rawWrite("could not import: ")
   stdout.write(name)
@@ -56,7 +56,7 @@ when defined(posix):
     RTLD_NOW {.importc: "RTLD_NOW", header: "<dlfcn.h>".}: int
 
   proc dlclose(lib: TLibHandle) {.importc, header: "<dlfcn.h>".}
-  proc dlopen(path: CString, mode: int): TLibHandle {.
+  proc dlopen(path: cstring, mode: int): TLibHandle {.
       importc, header: "<dlfcn.h>".}
   proc dlsym(lib: TLibHandle, name: cstring): TProcAddr {.
       importc, header: "<dlfcn.h>".}
@@ -72,7 +72,7 @@ when defined(posix):
 
   proc nimGetProcAddr(lib: TLibHandle, name: cstring): TProcAddr =
     result = dlsym(lib, name)
-    if result == nil: ProcAddrError(name)
+    if result == nil: procAddrError(name)
 
 elif defined(windows) or defined(dos):
   #
@@ -83,10 +83,10 @@ elif defined(windows) or defined(dos):
   type
     THINSTANCE {.importc: "HINSTANCE".} = pointer
 
-  proc FreeLibrary(lib: THINSTANCE) {.importc, header: "<windows.h>", stdcall.}
+  proc freeLibrary(lib: THINSTANCE) {.importc, header: "<windows.h>", stdcall.}
   proc winLoadLibrary(path: cstring): THINSTANCE {.
       importc: "LoadLibraryA", header: "<windows.h>", stdcall.}
-  proc GetProcAddress(lib: THINSTANCE, name: cstring): TProcAddr {.
+  proc getProcAddress(lib: THINSTANCE, name: cstring): TProcAddr {.
       importc: "GetProcAddress", header: "<windows.h>", stdcall.}
 
   proc nimUnloadLibrary(lib: TLibHandle) =
@@ -97,7 +97,7 @@ elif defined(windows) or defined(dos):
 
   proc nimGetProcAddr(lib: TLibHandle, name: cstring): TProcAddr =
     result = GetProcAddress(cast[THINSTANCE](lib), name)
-    if result == nil: ProcAddrError(name)
+    if result == nil: procAddrError(name)
 
 elif defined(mac):
   #
@@ -133,10 +133,10 @@ elif defined(mac):
       nss: NSSymbol
     nss = NSLookupSymbolInModule(NSModule(lib), name)
     result = TProcAddr(NSAddressOfSymbol(nss))
-    if result == nil: ProcAddrError(name)
+    if result == nil: procAddrError(name)
 
 else:
   {.error: "no implementation for dyncalls".}
-  
+
 {.pop.}
 

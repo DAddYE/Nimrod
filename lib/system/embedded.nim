@@ -32,12 +32,12 @@ const
 proc quitOrDebug() {.inline.} =
   quit(1)
 
-proc raiseException(e: ref E_Base, ename: CString) {.compilerRtl.} =
+proc raiseException(e: ref E_Base, ename: cstring) {.compilerRtl.} =
   sysFatal(ENoExceptionToReraise, "exception handling is not available")
 
 proc reraiseException() {.compilerRtl.} =
   sysFatal(ENoExceptionToReraise, "no exception to reraise")
 
-proc WriteStackTrace() = nil
+proc writeStackTrace() = nil
 
 proc setControlCHook(hook: proc () {.noconv.}) = nil

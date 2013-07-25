@@ -30,7 +30,7 @@ type
     opcRet,         # return
     opcYldYoid,     # yield with no value
     opcYldVal,      # yield with a value
-    
+
     opcAsgnInt,
     opcAsgnStr,
     opcAsgnFloat,
@@ -46,8 +46,8 @@ type
     opcAddr,
     opcDeref,
     opcWrStrIdx,
-    
-    opcAddInt, 
+
+    opcAddInt,
     opcAddImmInt,
     opcSubInt,
     opcSubImmInt,
@@ -56,23 +56,23 @@ type
 
     opcIncl, opcExcl, opcCard, opcMulInt, opcDivInt, opcModInt,
     opcAddFloat, opcSubFloat, opcMulFloat, opcDivFloat, opcShrInt, opcShlInt,
-    opcBitandInt, opcBitorInt, opcBitxorInt, opcAddu, opcSubu, opcMulu, 
-    opcDivu, opcModu, opcEqInt, opcLeInt, opcLtInt, opcEqFloat, 
-    opcLeFloat, opcLtFloat, opcLeu, opcLtu, opcEqRef, opcXor, 
-    opcNot, opcUnaryMinusInt, opcUnaryMinusFloat, opcBitnotInt, 
+    opcBitandInt, opcBitorInt, opcBitxorInt, opcAddu, opcSubu, opcMulu,
+    opcDivu, opcModu, opcEqInt, opcLeInt, opcLtInt, opcEqFloat,
+    opcLeFloat, opcLtFloat, opcLeu, opcLtu, opcEqRef, opcXor,
+    opcNot, opcUnaryMinusInt, opcUnaryMinusFloat, opcBitnotInt,
     opcEqStr, opcLeStr, opcLtStr, opcEqSet, opcLeSet, opcLtSet,
     opcMulSet, opcPlusSet, opcMinusSet, opcSymdiffSet, opcConcatStr,
     opcContainsSet, opcRepr, opcSetLenStr, opcSetLenSeq,
     opcSwap, opcIsNil, opcOf,
     opcSubStr, opcConv, opcCast, opcQuit, opcReset,
-    
+
     opcEcho,
     opcIndCall, # dest = call regStart, n; where regStart = fn, arg1, ...
     opcIndCallAsgn, # dest = call regStart, n; where regStart = fn, arg1, ...
 
     opcRaise,
     opcNBindSym, # opcodes for the AST manipulation following
-  
+
     opcTJmp,  # jump Bx if A != 0
     opcFJmp,  # jump Bx if A == 0
     opcJmp,   # jump Bx
@@ -111,7 +111,7 @@ type
     blocks*: seq[TBlock]    # blocks; temp data structure
     slots*: array[TRegister, tuple[inUse: bool, kind: TSlotKind]]
     maxSlots*: int
-    
+
   PCtx* = ref TCtx
   TCtx* = object of passes.TPassContext # code gen context
     code*: seq[TInstr]
@@ -122,7 +122,7 @@ type
                             # we must not optimize over a jump target and we
                             # need to generate a label for a jump target when
                             # producing a VM listing
-    globals*: PNode         # 
+    globals*: PNode         #
     constants*: PNode       # constant data
     types*: seq[PType]      # some instructions reference types (e.g. 'except')
     currentExceptionA*, currentExceptionB*: PNode
@@ -130,7 +130,7 @@ type
     prc*: PProc
 
   TPosition* = distinct int
-  
+
 proc newCtx*(): PCtx =
   PCtx(code: @[], debug: @[], jumpTargets: initIntSet(),
     globals: newNode(nkStmtList), constants: newNode(nkStmtList), types: @[],

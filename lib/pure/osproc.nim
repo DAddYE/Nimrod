@@ -57,8 +57,8 @@ proc execCmd*(command: string): int {.rtl, extern: "nosp$1", tags: [FExecIO].}
 proc startProcess*(command: string,
                    workingDir: string = "",
                    args: openarray[string] = [],
-                   env: PStringTable = nil, 
-                   options: set[TProcessOption] = {poStdErrToStdOut}): 
+                   env: PStringTable = nil,
+                   options: set[TProcessOption] = {poStdErrToStdOut}):
               PProcess {.rtl, extern: "nosp$1", tags: [FExecIO, FReadEnv].}
   ## Starts a process. `Command` is the executable file, `workingDir` is the
   ## process's working directory. If ``workingDir == ""`` the current directory
@@ -105,7 +105,7 @@ proc processID*(p: PProcess): int {.rtl, extern: "nosp$1".} =
   ## returns `p`'s process ID.
   return p.id
 
-proc waitForExit*(p: PProcess, timeout: int = -1): int {.rtl, 
+proc waitForExit*(p: PProcess, timeout: int = -1): int {.rtl,
   extern: "nosp$1", tags: [].}
   ## waits for the process to finish and returns `p`'s error code.
 
@@ -115,19 +115,19 @@ proc peekExitCode*(p: PProcess): int {.tags: [].}
 proc inputStream*(p: PProcess): PStream {.rtl, extern: "nosp$1", tags: [].}
   ## returns ``p``'s input stream for writing to
   ##
-  ## **Warning**: The returned `PStream` should not be closed manually as it 
+  ## **Warning**: The returned `PStream` should not be closed manually as it
   ## is closed when closing the PProcess ``p``.
 
 proc outputStream*(p: PProcess): PStream {.rtl, extern: "nosp$1", tags: [].}
   ## returns ``p``'s output stream for reading from
   ##
-  ## **Warning**: The returned `PStream` should not be closed manually as it 
+  ## **Warning**: The returned `PStream` should not be closed manually as it
   ## is closed when closing the PProcess ``p``.
 
 proc errorStream*(p: PProcess): PStream {.rtl, extern: "nosp$1", tags: [].}
   ## returns ``p``'s output stream for reading from
   ##
-  ## **Warning**: The returned `PStream` should not be closed manually as it 
+  ## **Warning**: The returned `PStream` should not be closed manually as it
   ## is closed when closing the PProcess ``p``.
 
 when defined(macosx) or defined(bsd):
@@ -169,7 +169,7 @@ proc countProcessors*(): int {.rtl, extern: "nosp$1".} =
 
 proc execProcesses*(cmds: openArray[string],
                     options = {poStdErrToStdOut, poParentStreams},
-                    n = countProcessors()): int {.rtl, extern: "nosp$1", 
+                    n = countProcessors()): int {.rtl, extern: "nosp$1",
                     tags: [FExecIO, FTime, FReadEnv].} =
   ## executes the commands `cmds` in parallel. Creates `n` processes
   ## that execute in parallel. The highest return value of all processes
@@ -177,7 +177,7 @@ proc execProcesses*(cmds: openArray[string],
   when defined(posix):
     # poParentStreams causes problems on Posix, so we simply disable it:
     var options = options - {poParentStreams}
-  
+
   assert n > 0
   if n > 1:
     var q: seq[PProcess]
@@ -264,7 +264,7 @@ when defined(Windows) and not defined(useNimRtl):
     # TRUE and zero bytes returned (EOF).
     # TRUE and n (>0) bytes returned (good data).
     # FALSE and bytes returned undefined (system error).
-    if a == 0 and br != 0: OSError(OSLastError())
+    if a == 0 and br != 0: osError(osLastError())
     s.atTheEnd = br < bufLen
     result = br
 
@@ -272,7 +272,7 @@ when defined(Windows) and not defined(useNimRtl):
     var s = PFileHandleStream(s)
     var bytesWritten: int32
     var a = winlean.writeFile(s.handle, buffer, bufLen.cint, bytesWritten, nil)
-    if a == 0: OSError(OSLastError())
+    if a == 0: osError(osLastError())
 
   proc newFileHandleStream(handle: THandle): PFileHandleStream =
     new(result)
@@ -307,13 +307,13 @@ when defined(Windows) and not defined(useNimRtl):
   #  O_WRONLY {.importc: "_O_WRONLY", header: "<fcntl.h>".}: int
   #  O_RDONLY {.importc: "_O_RDONLY", header: "<fcntl.h>".}: int
 
-  proc CreatePipeHandles(Rdhandle, WrHandle: var THandle) =
+  proc createPipeHandles(Rdhandle, WrHandle: var THandle) =
     var piInheritablePipe: TSecurityAttributes
     piInheritablePipe.nlength = SizeOF(TSecurityAttributes).cint
     piInheritablePipe.lpSecurityDescriptor = nil
     piInheritablePipe.Binherithandle = 1
     if CreatePipe(Rdhandle, Wrhandle, piInheritablePipe, 1024) == 0'i32:
-      OSError(OSLastError())
+      osError(osLastError())
 
   proc fileClose(h: THandle) {.inline.} =
     if h > 4: discard CloseHandle(h)
@@ -361,16 +361,16 @@ when defined(Windows) and not defined(useNimRtl):
     if env != nil: e = buildEnv(env)
     if poEchoCmd in options: echo($cmdl)
     when useWinUnicode:
-      var tmp = newWideCString(cmdl)
-      var ee = newWideCString(e)
-      var wwd = newWideCString(wd)
+      var tmp = newWidecstring(cmdl)
+      var ee = newWidecstring(e)
+      var wwd = newWidecstring(wd)
       success = winlean.CreateProcessW(nil,
-        tmp, nil, nil, 1, NORMAL_PRIORITY_CLASS or CREATE_UNICODE_ENVIRONMENT, 
+        tmp, nil, nil, 1, NORMAL_PRIORITY_CLASS or CREATE_UNICODE_ENVIRONMENT,
         ee, wwd, SI, ProcInfo)
     else:
       success = winlean.CreateProcessA(nil,
         cmdl, nil, nil, 1, NORMAL_PRIORITY_CLASS, e, wd, SI, ProcInfo)
-    let lastError = OSLastError()
+    let lastError = osLastError()
 
     if poParentStreams notin options:
       FileClose(si.hStdInput)
@@ -380,7 +380,7 @@ when defined(Windows) and not defined(useNimRtl):
 
     if e != nil: dealloc(e)
     dealloc(cmdl)
-    if success == 0: OSError(lastError)
+    if success == 0: osError(lastError)
     # Close the handle now so anyone waiting is woken:
     discard closeHandle(procInfo.hThread)
     result.FProcessHandle = procInfo.hProcess
@@ -419,7 +419,7 @@ when defined(Windows) and not defined(useNimRtl):
   proc peekExitCode(p: PProcess): int =
     var b = waitForSingleObject(p.FProcessHandle, 50) == WAIT_TIMEOUT
     if b: result = -1
-    else: 
+    else:
       var res: int32
       discard GetExitCodeProcess(p.FProcessHandle, res)
       return res
@@ -444,14 +444,14 @@ when defined(Windows) and not defined(useNimRtl):
     SI.hStdInput = GetStdHandle(STD_INPUT_HANDLE)
     SI.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE)
     when useWinUnicode:
-      var c = newWideCString(command)
+      var c = newWidecstring(command)
       var res = winlean.CreateProcessW(nil, c, nil, nil, 0,
         NORMAL_PRIORITY_CLASS, nil, nil, SI, ProcInfo)
     else:
       var res = winlean.CreateProcessA(nil, command, nil, nil, 0,
         NORMAL_PRIORITY_CLASS, nil, nil, SI, ProcInfo)
     if res == 0:
-      OSError(OSLastError())
+      osError(osLastError())
     else:
       Process = ProcInfo.hProcess
       discard CloseHandle(ProcInfo.hThread)
@@ -462,19 +462,19 @@ when defined(Windows) and not defined(useNimRtl):
         result = -1
       discard CloseHandle(Process)
 
-  proc select(readfds: var seq[PProcess], timeout = 500): int = 
+  proc select(readfds: var seq[PProcess], timeout = 500): int =
     assert readfds.len <= MAXIMUM_WAIT_OBJECTS
     var rfds: TWOHandleArray
     for i in 0..readfds.len()-1:
       rfds[i] = readfds[i].FProcessHandle
-    
-    var ret = waitForMultipleObjects(readfds.len.int32, 
+
+    var ret = waitForMultipleObjects(readfds.len.int32,
                                      addr(rfds), 0'i32, timeout.int32)
     case ret
     of WAIT_TIMEOUT:
       return 0
     of WAIT_FAILED:
-      OSError(OSLastError())
+      osError(osLastError())
     else:
       var i = ret - WAIT_OBJECT_0
       readfds.del(i)
@@ -491,7 +491,7 @@ elif not defined(useNimRtl):
       add(result, " ")
       add(result, quoteIfContainsWhite(args[i]))
 
-  proc toCStringArray(b, a: openarray[string]): cstringArray =
+  proc tocstringArray(b, a: openarray[string]): cstringArray =
     result = cast[cstringArray](alloc0((a.len + b.len + 1) * sizeof(cstring)))
     for i in 0..high(b):
       result[i] = cast[cstring](alloc(b[i].len+1))
@@ -500,7 +500,7 @@ elif not defined(useNimRtl):
       result[i+b.len] = cast[cstring](alloc(a[i].len+1))
       copyMem(result[i+b.len], cstring(a[i]), a[i].len+1)
 
-  proc ToCStringArray(t: PStringTable): cstringArray =
+  proc tocstringArray(t: PStringTable): cstringArray =
     result = cast[cstringArray](alloc0((t.len + 1) * sizeof(cstring)))
     var i = 0
     for key, val in pairs(t):
@@ -509,7 +509,7 @@ elif not defined(useNimRtl):
       copyMem(result[i], addr(x[0]), x.len+1)
       inc(i)
 
-  proc EnvToCStringArray(): cstringArray =
+  proc envTocstringArray(): cstringArray =
     var counter = 0
     for key, val in envPairs(): inc counter
     result = cast[cstringArray](alloc0((counter + 1) * sizeof(cstring)))
@@ -519,7 +519,7 @@ elif not defined(useNimRtl):
       result[i] = cast[cstring](alloc(x.len+1))
       copyMem(result[i], addr(x[0]), x.len+1)
       inc(i)
-    
+
   proc startProcess(command: string,
                  workingDir: string = "",
                  args: openarray[string] = [],
@@ -532,24 +532,24 @@ elif not defined(useNimRtl):
     if poParentStreams notin options:
       if pipe(p_stdin) != 0'i32 or pipe(p_stdout) != 0'i32 or
          pipe(p_stderr) != 0'i32:
-        OSError(OSLastError())
-    
+        osError(osLastError())
+
     var pid: TPid
     when defined(posix_spawn) and not defined(useFork):
       var attr: Tposix_spawnattr
       var fops: Tposix_spawn_file_actions
 
-      template chck(e: expr) = 
-        if e != 0'i32: OSError(OSLastError())
+      template chck(e: expr) =
+        if e != 0'i32: osError(osLastError())
 
       chck posix_spawn_file_actions_init(fops)
       chck posix_spawnattr_init(attr)
-      
+
       var mask: Tsigset
       chck sigemptyset(mask)
       chck posix_spawnattr_setsigmask(attr, mask)
       chck posix_spawnattr_setpgroup(attr, 0'i32)
-      
+
       chck posix_spawnattr_setflags(attr, POSIX_SPAWN_USEVFORK or
                                           POSIX_SPAWN_SETSIGMASK or
                                           POSIX_SPAWN_SETPGROUP)
@@ -564,59 +564,59 @@ elif not defined(useNimRtl):
           chck posix_spawn_file_actions_adddup2(fops, p_stdout[writeIdx], 2)
         else:
           chck posix_spawn_file_actions_adddup2(fops, p_stderr[writeIdx], 2)
-      
-      var e = if env == nil: EnvToCStringArray() else: ToCStringArray(env)
+
+      var e = if env == nil: envTocstringArray() else: tocstringArray(env)
       var a: cstringArray
       var res: cint
       if workingDir.len > 0: os.setCurrentDir(workingDir)
       if poUseShell notin options:
-        a = toCStringArray([extractFilename(command)], args)
+        a = tocstringArray([extractFilename(command)], args)
         res = posix_spawn(pid, command, fops, attr, a, e)
       else:
         var x = addCmdArgs(command, args)
-        a = toCStringArray(["sh", "-c"], [x])
+        a = tocstringArray(["sh", "-c"], [x])
         res = posix_spawn(pid, "/bin/sh", fops, attr, a, e)
-      deallocCStringArray(a)
-      deallocCStringArray(e)
+      dealloccstringArray(a)
+      dealloccstringArray(e)
       discard posix_spawn_file_actions_destroy(fops)
       discard posix_spawnattr_destroy(attr)
       chck res
 
     else:
-    
+
       Pid = fork()
-      if Pid < 0: OSError(OSLastError())
+      if Pid < 0: osError(osLastError())
       if pid == 0:
         ## child process:
 
         if poParentStreams notin options:
           discard close(p_stdin[writeIdx])
-          if dup2(p_stdin[readIdx], readIdx) < 0: OSError(OSLastError())
+          if dup2(p_stdin[readIdx], readIdx) < 0: osError(osLastError())
           discard close(p_stdout[readIdx])
-          if dup2(p_stdout[writeIdx], writeIdx) < 0: OSError(OSLastError())
+          if dup2(p_stdout[writeIdx], writeIdx) < 0: osError(osLastError())
           discard close(p_stderr[readIdx])
           if poStdErrToStdOut in options:
-            if dup2(p_stdout[writeIdx], 2) < 0: OSError(OSLastError())
+            if dup2(p_stdout[writeIdx], 2) < 0: osError(osLastError())
           else:
-            if dup2(p_stderr[writeIdx], 2) < 0: OSError(OSLastError())
+            if dup2(p_stderr[writeIdx], 2) < 0: osError(osLastError())
 
         # Create a new process group
         if setpgid(0, 0) == -1: quit("setpgid call failed: " & $strerror(errno))
 
         if workingDir.len > 0: os.setCurrentDir(workingDir)
         if poUseShell notin options:
-          var a = toCStringArray([extractFilename(command)], args)
+          var a = tocstringArray([extractFilename(command)], args)
           if env == nil:
             discard execv(command, a)
           else:
-            discard execve(command, a, ToCStringArray(env))
+            discard execve(command, a, TocstringArray(env))
         else:
           var x = addCmdArgs(command, args)
-          var a = toCStringArray(["sh", "-c"], [x])
+          var a = tocstringArray(["sh", "-c"], [x])
           if env == nil:
             discard execv("/bin/sh", a)
           else:
-            discard execve("/bin/sh", a, ToCStringArray(env))
+            discard execve("/bin/sh", a, TocstringArray(env))
         # too risky to raise an exception here:
         quit("execve call failed: " & $strerror(errno))
     # Parent process. Copy process information.
@@ -653,10 +653,10 @@ elif not defined(useNimRtl):
     discard close(p.errorHandle)
 
   proc suspend(p: PProcess) =
-    if kill(-p.id, SIGSTOP) != 0'i32: OSError(OSLastError())
+    if kill(-p.id, SIGSTOP) != 0'i32: osError(osLastError())
 
   proc resume(p: PProcess) =
-    if kill(-p.id, SIGCONT) != 0'i32: OSError(OSLastError())
+    if kill(-p.id, SIGCONT) != 0'i32: osError(osLastError())
 
   proc running(p: PProcess): bool =
     var ret = waitPid(p.id, p.exitCode, WNOHANG)
@@ -666,8 +666,8 @@ elif not defined(useNimRtl):
   proc terminate(p: PProcess) =
     if kill(-p.id, SIGTERM) == 0'i32:
       if p.running():
-        if kill(-p.id, SIGKILL) != 0'i32: OSError(OSLastError())
-    else: OSError(OSLastError())
+        if kill(-p.id, SIGKILL) != 0'i32: osError(osLastError())
+    else: osError(osLastError())
 
   proc waitForExit(p: PProcess, timeout: int = -1): int =
     #if waitPid(p.id, p.exitCode, 0) == int(p.id):
@@ -677,7 +677,7 @@ elif not defined(useNimRtl):
     if p.exitCode != -3: return p.exitCode
     if waitPid(p.id, p.exitCode, 0) < 0:
       p.exitCode = -3
-      OSError(OSLastError())
+      osError(osLastError())
     result = int(p.exitCode) shr 8
 
   proc peekExitCode(p: PProcess): int =
@@ -691,7 +691,7 @@ elif not defined(useNimRtl):
   proc createStream(stream: var PStream, handle: var TFileHandle,
                     fileMode: TFileMode) =
     var f: TFile
-    if not open(f, handle, fileMode): OSError(OSLastError())
+    if not open(f, handle, fileMode): osError(osLastError())
     stream = newFileStream(f)
 
   proc inputStream(p: PProcess): PStream =
@@ -714,13 +714,13 @@ elif not defined(useNimRtl):
   proc execCmd(command: string): int =
     result = csystem(command)
 
-  proc createFdSet(fd: var TFdSet, s: seq[PProcess], m: var int) = 
+  proc createFdSet(fd: var TFdSet, s: seq[PProcess], m: var int) =
     FD_ZERO(fd)
-    for i in items(s): 
+    for i in items(s):
       m = max(m, int(i.outputHandle))
       FD_SET(cint(i.outputHandle), fd)
-     
-  proc pruneProcessSet(s: var seq[PProcess], fd: var TFdSet) = 
+
+  proc pruneProcessSet(s: var seq[PProcess], fd: var TFdSet) =
     var i = 0
     var L = s.len
     while i < L:
@@ -731,26 +731,26 @@ elif not defined(useNimRtl):
         inc(i)
     setLen(s, L)
 
-  proc select(readfds: var seq[PProcess], timeout = 500): int = 
+  proc select(readfds: var seq[PProcess], timeout = 500): int =
     var tv: TTimeVal
     tv.tv_sec = 0
     tv.tv_usec = timeout * 1000
-    
+
     var rd: TFdSet
     var m = 0
     createFdSet((rd), readfds, m)
-    
+
     if timeout != -1:
       result = int(select(cint(m+1), addr(rd), nil, nil, addr(tv)))
     else:
       result = int(select(cint(m+1), addr(rd), nil, nil, nil))
-    
+
     pruneProcessSet(readfds, (rd))
 
 
 proc execCmdEx*(command: string, options: set[TProcessOption] = {
                 poStdErrToStdOut, poUseShell}): tuple[
-                output: TaintedString, 
+                output: TaintedString,
                 exitCode: int] {.tags: [FExecIO, FReadIO].} =
   ## a convenience proc that runs the `command`, grabs all its output and
   ## exit code and returns both.

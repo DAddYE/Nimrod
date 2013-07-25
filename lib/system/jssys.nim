@@ -23,9 +23,9 @@ type
   PCallFrame = ptr TCallFrame
   TCallFrame {.importc, nodecl, final.} = object
     prev: PCallFrame
-    procname: CString
+    procname: cstring
     line: int # current line number
-    filename: CString
+    filename: cstring
 
 var
   framePtr {.importc, nodecl, volatile.}: PCallFrame
@@ -48,7 +48,7 @@ proc getCurrentExceptionMsg*(): string =
 
 proc auxWriteStackTrace(f: PCallFrame): string =
   type
-    TTempFrame = tuple[procname: CString, line: int]
+    TTempFrame = tuple[procname: cstring, line: int]
   var
     it = f
     i = 0
@@ -125,7 +125,7 @@ proc raiseIndexError() {.compilerproc, noreturn.} =
 proc raiseFieldError(f: string) {.compilerproc, noreturn.} =
   raise newException(EInvalidField, f & " is not accessible")
 
-proc SetConstr() {.varargs, noStackFrame, compilerproc.} =
+proc setConstr() {.varargs, noStackFrame, compilerproc.} =
   asm """
     var result = {};
     for (var i = 0; i < arguments.length; ++i) {
@@ -170,7 +170,7 @@ proc mnewString(len: int): string {.noStackFrame, compilerproc.} =
     return result;
   """
 
-proc SetCard(a: int): int {.compilerproc, noStackFrame.} =
+proc setCard(a: int): int {.compilerproc, noStackFrame.} =
   # argument type is a fake
   asm """
     var result = 0;
@@ -178,23 +178,23 @@ proc SetCard(a: int): int {.compilerproc, noStackFrame.} =
     return result;
   """
 
-proc SetEq(a, b: int): bool {.compilerproc, noStackFrame.} =
+proc setEq(a, b: int): bool {.compilerproc, noStackFrame.} =
   asm """
     for (var elem in `a`) { if (!`b`[elem]) return false; }
     for (var elem in `b`) { if (!`a`[elem]) return false; }
     return true;
   """
 
-proc SetLe(a, b: int): bool {.compilerproc, noStackFrame.} =
+proc setLe(a, b: int): bool {.compilerproc, noStackFrame.} =
   asm """
     for (var elem in `a`) { if (!`b`[elem]) return false; }
     return true;
   """
 
-proc SetLt(a, b: int): bool {.compilerproc.} =
+proc setLt(a, b: int): bool {.compilerproc.} =
   result = SetLe(a, b) and not SetEq(a, b)
 
-proc SetMul(a, b: int): int {.compilerproc, noStackFrame.} =
+proc setMul(a, b: int): int {.compilerproc, noStackFrame.} =
   asm """
     var result = {};
     for (var elem in `a`) {
@@ -203,7 +203,7 @@ proc SetMul(a, b: int): int {.compilerproc, noStackFrame.} =
     return result;
   """
 
-proc SetPlus(a, b: int): int {.compilerproc, noStackFrame.} =
+proc setPlus(a, b: int): int {.compilerproc, noStackFrame.} =
   asm """
     var result = {};
     for (var elem in `a`) { result[elem] = true; }
@@ -211,7 +211,7 @@ proc SetPlus(a, b: int): int {.compilerproc, noStackFrame.} =
     return result;
   """
 
-proc SetMinus(a, b: int): int {.compilerproc, noStackFrame.} =
+proc setMinus(a, b: int): int {.compilerproc, noStackFrame.} =
   asm """
     var result = {};
     for (var elem in `a`) {
@@ -308,10 +308,10 @@ when defined(kwin):
       }
       print(buf);
     """
-    
+
 elif defined(nodejs):
   proc ewriteln(x: cstring) = log(x)
-  
+
   proc rawEcho {.compilerproc, nostackframe.} =
     asm """
       var buf = "";
@@ -325,12 +325,12 @@ else:
   var
     document {.importc, nodecl.}: ref TDocument
 
-  proc ewriteln(x: cstring) = 
+  proc ewriteln(x: cstring) =
     var node = document.getElementsByTagName("body")[0]
-    if node != nil: 
+    if node != nil:
       node.appendChild(document.createTextNode(x))
       node.appendChild(document.createElement("br"))
-    else: 
+    else:
       raise newException(EInvalidValue, "<body> element does not exist yet!")
 
   proc rawEcho {.compilerproc.} =
@@ -418,58 +418,58 @@ proc modInt64(a, b: int): int {.noStackFrame, compilerproc.} =
     return Math.floor(`a` % `b`);
   """
 
-proc NegInt(a: int): int {.compilerproc.} =
+proc negInt(a: int): int {.compilerproc.} =
   result = a*(-1)
 
-proc NegInt64(a: int64): int64 {.compilerproc.} =
+proc negInt64(a: int64): int64 {.compilerproc.} =
   result = a*(-1)
 
-proc AbsInt(a: int): int {.compilerproc.} =
+proc absInt(a: int): int {.compilerproc.} =
   result = if a < 0: a*(-1) else: a
 
-proc AbsInt64(a: int64): int64 {.compilerproc.} =
+proc absInt64(a: int64): int64 {.compilerproc.} =
   result = if a < 0: a*(-1) else: a
 
-proc LeU(a, b: int): bool {.compilerproc.} =
+proc leU(a, b: int): bool {.compilerproc.} =
   result = abs(a) <= abs(b)
 
-proc LtU(a, b: int): bool {.compilerproc.} =
+proc ltU(a, b: int): bool {.compilerproc.} =
   result = abs(a) < abs(b)
 
-proc LeU64(a, b: int64): bool {.compilerproc.} =
+proc leU64(a, b: int64): bool {.compilerproc.} =
   result = abs(a) <= abs(b)
 
-proc LtU64(a, b: int64): bool {.compilerproc.} =
+proc ltU64(a, b: int64): bool {.compilerproc.} =
   result = abs(a) < abs(b)
 
-proc AddU(a, b: int): int {.compilerproc.} =
+proc addU(a, b: int): int {.compilerproc.} =
   result = abs(a) + abs(b)
-proc AddU64(a, b: int64): int64 {.compilerproc.} =
+proc addU64(a, b: int64): int64 {.compilerproc.} =
   result = abs(a) + abs(b)
 
-proc SubU(a, b: int): int {.compilerproc.} =
+proc subU(a, b: int): int {.compilerproc.} =
   result = abs(a) - abs(b)
-proc SubU64(a, b: int64): int64 {.compilerproc.} =
+proc subU64(a, b: int64): int64 {.compilerproc.} =
   result = abs(a) - abs(b)
 
-proc MulU(a, b: int): int {.compilerproc.} =
+proc mulU(a, b: int): int {.compilerproc.} =
   result = abs(a) * abs(b)
-proc MulU64(a, b: int64): int64 {.compilerproc.} =
+proc mulU64(a, b: int64): int64 {.compilerproc.} =
   result = abs(a) * abs(b)
 
-proc DivU(a, b: int): int {.compilerproc.} =
+proc divU(a, b: int): int {.compilerproc.} =
   result = abs(a) div abs(b)
-proc DivU64(a, b: int64): int64 {.compilerproc.} =
+proc divU64(a, b: int64): int64 {.compilerproc.} =
   result = abs(a) div abs(b)
 
-proc ModU(a, b: int): int {.compilerproc.} =
+proc modU(a, b: int): int {.compilerproc.} =
   result = abs(a) mod abs(b)
-proc ModU64(a, b: int64): int64 {.compilerproc.} =
+proc modU64(a, b: int64): int64 {.compilerproc.} =
   result = abs(a) mod abs(b)
 
-proc Ze(a: int): int {.compilerproc.} =
+proc ze(a: int): int {.compilerproc.} =
   result = a
-proc Ze64(a: int64): int64 {.compilerproc.} =
+proc ze64(a: int64): int64 {.compilerproc.} =
   result = a
 
 proc toU8(a: int): int8 {.noStackFrame, compilerproc.} =
@@ -500,9 +500,9 @@ proc isFatPointer(ti: PNimType): bool =
     tyArray, tyArrayConstr, tyTuple,
     tyOpenArray, tySet, tyVar, tyRef, tyPtr}
 
-proc NimCopy(x: pointer, ti: PNimType): pointer {.compilerproc.}
+proc nimCopy(x: pointer, ti: PNimType): pointer {.compilerproc.}
 
-proc NimCopyAux(dest, src: Pointer, n: ptr TNimNode) {.compilerproc.} =
+proc nimCopyAux(dest, src: pointer, n: ptr TNimNode) {.compilerproc.} =
   case n.kind
   of nkNone: sysAssert(false, "NimCopyAux")
   of nkSlot:
@@ -518,7 +518,7 @@ proc NimCopyAux(dest, src: Pointer, n: ptr TNimNode) {.compilerproc.} =
       }
     """
 
-proc NimCopy(x: pointer, ti: PNimType): pointer =
+proc nimCopy(x: pointer, ti: PNimType): pointer =
   case ti.kind
   of tyPtr, tyRef, tyVar, tyNil:
     if not isFatPointer(ti):
@@ -553,7 +553,7 @@ proc NimCopy(x: pointer, ti: PNimType): pointer =
   else:
     result = x
 
-proc genericReset(x: Pointer, ti: PNimType): pointer {.compilerproc.} =
+proc genericReset(x: pointer, ti: PNimType): pointer {.compilerproc.} =
   case ti.kind
   of tyPtr, tyRef, tyVar, tyNil:
     if not isFatPointer(ti):
@@ -585,7 +585,7 @@ proc genericReset(x: Pointer, ti: PNimType): pointer {.compilerproc.} =
   else:
     result = nil
 
-proc ArrayConstr(len: int, value: pointer, typ: PNimType): pointer {.
+proc arrayConstr(len: int, value: pointer, typ: PNimType): pointer {.
                  noStackFrame, compilerproc.} =
   # types are fake
   asm """

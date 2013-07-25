@@ -1,12 +1,12 @@
 
-import 
+import
   glib2, gtk2
 
-proc newbutton(ALabel: cstring): PWidget = 
+proc newbutton(ALabel: cstring): PWidget =
   Result = button_new(ALabel)
   show(result)
 
-proc destroy(widget: pWidget, data: pgpointer){.cdecl.} = 
+proc destroy(widget: pWidget, data: pgpointer){.cdecl.} =
   main_quit()
 
 nimrod_init()

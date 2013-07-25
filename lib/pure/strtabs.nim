@@ -88,7 +88,7 @@ proc mustRehash(length, counter: int): bool =
 proc nextTry(h, maxHash: THash): THash {.inline.} =
   result = ((5 * h) + 1) and maxHash
 
-proc RawGet(t: PStringTable, key: string): int =
+proc rawGet(t: PStringTable, key: string): int =
   var h: THash = myhash(t, key) and high(t.data) # start with real hash value
   while not isNil(t.data[h].key):
     if mycmp(t, t.data[h].key, key):
@@ -100,7 +100,7 @@ proc `[]`*(t: PStringTable, key: string): string {.rtl, extern: "nstGet".} =
   ## retrieves the value at ``t[key]``. If `key` is not in `t`, "" is returned
   ## and no exception is raised. One can check with ``hasKey`` whether the key
   ## exists.
-  var index = RawGet(t, key)
+  var index = rawGet(t, key)
   if index >= 0: result = t.data[index].val
   else: result = ""
 
@@ -108,7 +108,7 @@ proc mget*(t: PStringTable, key: string): var string {.
              rtl, extern: "nstTake".} =
   ## retrieves the location at ``t[key]``. If `key` is not in `t`, the
   ## ``EInvalidKey`` exception is raised.
-  var index = RawGet(t, key)
+  var index = rawGet(t, key)
   if index >= 0: result = t.data[index].val
   else: raise newException(EInvalidKey, "key does not exist: " & key)
 
@@ -116,31 +116,31 @@ proc hasKey*(t: PStringTable, key: string): bool {.rtl, extern: "nst$1".} =
   ## returns true iff `key` is in the table `t`.
   result = rawGet(t, key) >= 0
 
-proc RawInsert(t: PStringTable, data: var TKeyValuePairSeq, key, val: string) =
+proc rawInsert(t: PStringTable, data: var TKeyValuePairSeq, key, val: string) =
   var h: THash = myhash(t, key) and high(data)
   while not isNil(data[h].key):
     h = nextTry(h, high(data))
   data[h].key = key
   data[h].val = val
 
-proc Enlarge(t: PStringTable) =
+proc enlarge(t: PStringTable) =
   var n: TKeyValuePairSeq
   newSeq(n, len(t.data) * growthFactor)
   for i in countup(0, high(t.data)):
-    if not isNil(t.data[i].key): RawInsert(t, n, t.data[i].key, t.data[i].val)
+    if not isNil(t.data[i].key): rawInsert(t, n, t.data[i].key, t.data[i].val)
   swap(t.data, n)
 
 proc `[]=`*(t: PStringTable, key, val: string) {.rtl, extern: "nstPut".} =
   ## puts a (key, value)-pair into `t`.
-  var index = RawGet(t, key)
+  var index = rawGet(t, key)
   if index >= 0:
     t.data[index].val = val
   else:
-    if mustRehash(len(t.data), t.counter): Enlarge(t)
-    RawInsert(t, t.data, key, val)
+    if mustRehash(len(t.data), t.counter): enlarge(t)
+    rawInsert(t, t.data, key, val)
     inc(t.counter)
 
-proc RaiseFormatException(s: string) =
+proc raiseFormatException(s: string) =
   var e: ref EInvalidValue
   new(e)
   e.msg = "format string: key not found: " & s
@@ -222,7 +222,7 @@ proc `$`*(t: PStringTable): string {.rtl, extern: "nstDollar".} =
     result = "{:}"
   else:
     result = "{"
-    for key, val in pairs(t): 
+    for key, val in pairs(t):
       if result.len > 1: result.add(", ")
       result.add(key)
       result.add(": ")

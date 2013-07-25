@@ -13,12 +13,12 @@
 proc semIsPartOf(c: PContext, n: PNode, flags: TExprFlags): PNode =
   var r = isPartOf(n[1], n[2])
   result = newIntNodeT(ord(r), n)
-  
+
 proc expectIntLit(c: PContext, n: PNode): int =
   let x = c.semConstExpr(c, n)
   case x.kind
   of nkIntLit..nkInt64Lit: result = int(x.intVal)
-  else: LocalError(n.info, errIntLiteralExpected)
+  else: localError(n.info, errIntLiteralExpected)
 
 proc semInstantiationInfo(c: PContext, n: PNode): PNode =
   result = newNodeIT(nkPar, n.info, n.typ)
@@ -26,9 +26,9 @@ proc semInstantiationInfo(c: PContext, n: PNode): PNode =
   let useFullPaths = expectIntLit(c, n.sons[2])
   let info = getInfoContext(idx)
   var filename = newNodeIT(nkStrLit, n.info, getSysType(tyString))
-  filename.strVal = if useFullPaths != 0: info.toFullPath else: info.ToFilename
+  filename.strVal = if useFullPaths != 0: info.toFullPath else: info.toFilename
   var line = newNodeIT(nkIntLit, n.info, getSysType(tyInt))
-  line.intVal = ToLinenumber(info)
+  line.intVal = toLinenumber(info)
   result.add(filename)
   result.add(line)
 
@@ -40,7 +40,7 @@ proc semTypeTraits(c: PContext, n: PNode): PNode =
     (typArg.kind == skParam and typArg.typ.sonsLen > 0):
     # This is either a type known to sem or a typedesc
     # param to a regular proc (again, known at instantiation)
-    result = evalTypeTrait(n, GetCurrOwner())
+    result = evalTypeTrait(n, getCurrOwner())
   else:
     # a typedesc variable, pass unmodified to evals
     result = n
@@ -53,26 +53,26 @@ proc semOrd(c: PContext, n: PNode): PNode =
 proc semBindSym(c: PContext, n: PNode): PNode =
   result = copyNode(n)
   result.add(n.sons[0])
-  
+
   let sl = semConstExpr(c, n.sons[1])
-  if sl.kind notin {nkStrLit, nkRStrLit, nkTripleStrLit}: 
-    LocalError(n.sons[1].info, errStringLiteralExpected)
+  if sl.kind notin {nkStrLit, nkRStrLit, nkTripleStrLit}:
+    localError(n.sons[1].info, errStringLiteralExpected)
     return errorNode(c, n)
-  
+
   let isMixin = semConstExpr(c, n.sons[2])
   if isMixin.kind != nkIntLit or isMixin.intVal < 0 or
       isMixin.intVal > high(TSymChoiceRule).int:
-    LocalError(n.sons[2].info, errConstExprExpected)
+    localError(n.sons[2].info, errConstExprExpected)
     return errorNode(c, n)
-  
+
   let id = newIdentNode(getIdent(sl.strVal), n.info)
-  let s = QualifiedLookUp(c, id)
+  let s = qualifiedLookUp(c, id)
   if s != nil:
     # we need to mark all symbols:
     var sc = symChoice(c, id, s, TSymChoiceRule(isMixin.intVal))
     result.add(sc)
   else:
-    LocalError(n.sons[1].info, errUndeclaredIdentifier, sl.strVal)
+    localError(n.sons[1].info, errUndeclaredIdentifier, sl.strVal)
 
 proc semLocals(c: PContext, n: PNode): PNode =
   var counter = 0
@@ -97,13 +97,13 @@ proc semLocals(c: PContext, n: PNode): PNode =
 
         addSon(tupleType.n, newSymNode(field))
         addSonSkipIntLit(tupleType, field.typ)
-        
+
         var a = newSymNode(it, result.info)
         if it.typ.skipTypes({tyGenericInst}).kind == tyVar: a = newDeref(a)
         result.add(a)
 
 proc semShallowCopy(c: PContext, n: PNode, flags: TExprFlags): PNode
-proc magicsAfterOverloadResolution(c: PContext, n: PNode, 
+proc magicsAfterOverloadResolution(c: PContext, n: PNode,
                                    flags: TExprFlags): PNode =
   case n[0].sym.magic
   of mIsPartOf: result = semIsPartOf(c, n, flags)

@@ -6,7 +6,7 @@ discard """
 
 echo len([1_000_000]) #OUT 1
 
-type 
+type
   TArray = array[0..3, int]
   TVector = distinct array[0..3, int]
 proc `[]`(v: TVector; idx: int): int = TArray(v)[idx]

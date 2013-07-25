@@ -4,7 +4,7 @@ discard """
   cmd: "nimrod cc --hints:on --threads:on $# $#"
 """
 
-var 
+var
   global: string = "test string"
   t: TThread[void]
 
