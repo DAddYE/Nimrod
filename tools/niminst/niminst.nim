@@ -379,7 +379,7 @@ proc removeDuplicateFiles(c: var TConfigData) =
           for cpuB in 1..c.cpus.len:
             if osB != osA or cpuB != cpuA:
               var orig = buildDir(osB, cpuB) / f
-              if ExistsFile(orig) and ExistsFile(dup) and
+              if existsFile(orig) and existsFile(dup) and
                   sameFileContent(orig, dup):
                 # file is identical, so delete duplicate:
                 RemoveFile(dup)

@@ -43,7 +43,7 @@ Possible Commands:
   zip                      builds the installation ZIP package
   inno [options]           builds the Inno Setup installer (for Windows)
   tests                    run the testsuite
-  update                   updates nimrod to the latest version from github
+  update                   updates Nimrod to the latest version from github
                            (compile koch with -d:withUpdate to enable)
 Boot options:
   -d:release               produce a release version of the compiler
@@ -65,15 +65,15 @@ proc tryExec(cmd: string): bool =
   result = execShellCmd(cmd) == 0
 
 const
-  compileNimInst = "-d:useLibzipSrc tools/niminst/niminst"
+  CompileNimInst = "-d:useLibzipSrc tools/niminst/niminst"
 
 proc csource(args: string) =
   exec("nimrod cc $1 -r $3 --var:version=$2 csource compiler/nimrod.ini $1" %
-       [args, NimrodVersion, compileNimInst])
+       [args, NimrodVersion, CompileNimInst])
 
 proc zip(args: string) =
   exec("nimrod cc -r $2 --var:version=$1 zip compiler/nimrod.ini" %
-       [NimrodVersion, compileNimInst])
+       [NimrodVersion, CompileNimInst])
 
 proc buildTool(toolname, args: string) =
   exec("nimrod cc $# $#" % [args, toolname])
@@ -89,7 +89,7 @@ proc inno(args: string) =
 
 proc install(args: string) =
   exec("nimrod cc -r $# --var:version=$# scripts compiler/nimrod.ini" %
-       [compileNimInst, NimrodVersion])
+       [CompileNimInst, NimrodVersion])
   exec("sh ./install.sh $#" % args)
 
 proc web(args: string) =
@@ -108,16 +108,16 @@ proc findStartNimrod: string =
   # If these fail, we try to build nimrod with the "build.(sh|bat)" script.
   var nimrod = "nimrod".exe
   result = "bin" / nimrod
-  if ExistsFile(result): return
+  if existsFile(result): return
   for dir in split(getEnv("PATH"), PathSep):
-    if ExistsFile(dir / nimrod): return nimrod
-  when defined(Posix):
+    if existsFile(dir / nimrod): return nimrod
+  when defined(posix):
     const buildScript = "build.sh"
-    if ExistsFile(buildScript):
+    if existsFile(buildScript):
       if tryExec("./" & buildScript): return "bin" / nimrod
   else:
     const buildScript = "build.bat"
-    if ExistsFile(buildScript):
+    if existsFile(buildScript):
       if tryExec(buildScript): return "bin" / nimrod
 
   echo("Found no nimrod compiler and every attempt to build one failed!")
@@ -181,19 +181,19 @@ proc cleanAux(dir: string) =
     else: nil
 
 proc removePattern(pattern: string) =
-  for f in WalkFiles(pattern):
+  for f in walkFiles(pattern):
     echo "removing: ", f
     removeFile(f)
 
 proc clean(args: string) =
-  if ExistsFile("koch.dat"): removeFile("koch.dat")
+  if existsFile("koch.dat"): removeFile("koch.dat")
   removePattern("web/*.html")
   removePattern("doc/*.html")
   cleanAux(getCurrentDir())
   for kind, path in walkDir(getCurrentDir() / "build"):
     if kind == pcDir:
       echo "removing dir: ", path
-      RemoveDir(path)
+      removeDir(path)
 
 # -------------- update -------------------------------------------------------
 
@@ -292,4 +292,3 @@ of cmdArgument:
       quit "this Koch has not been compiled with -d:withUpdate"
   else: showHelp()
 of cmdEnd: showHelp()
-

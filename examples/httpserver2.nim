@@ -197,7 +197,7 @@ proc acceptRequest(server: var TServer, client: TSocket) =
   if path[path.len-1] == '/' or existsDir(path):
     path = path / "index.html"
 
-  if not ExistsFile(path):
+  if not existsFile(path):
     discardHeaders(client)
     notFound(client, path)
     client.close()
