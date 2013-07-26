@@ -181,7 +181,7 @@ proc osErrorMsg*(): string {.rtl, extern: "nos$1", deprecated.} =
   ## **Deprecated since version 0.9.4**: use the other ``osErrorMsg`` proc.
 
   result = ""
-  when defined(Windows):
+  when defined(windows):
     var err = GetLastError()
     if err != 0'i32:
       when useWinUnicode:
@@ -230,7 +230,7 @@ proc osErrorMsg*(errorCode: TOSErrorCode): string =
   ## make this procedure use the non-unicode Win API calls to retrieve the
   ## message.
   result = ""
-  when defined(Windows):
+  when defined(windows):
     if errorCode != TOSErrorCode(0'i32):
       when useWinUnicode:
         var msgbuf: widecstring
@@ -452,7 +452,7 @@ proc getCurrentDir*(): string {.rtl, extern: "nos$1", tags: [].} =
 proc setCurrentDir*(newDir: string) {.inline, tags: [].} =
   ## Sets the `current working directory`:idx:; `EOS` is raised if
   ## `newDir` cannot been set.
-  when defined(Windows):
+  when defined(windows):
     when useWinUnicode:
       if SetCurrentDirectoryW(newWidecstring(newDir)) == 0'i32: osError(osLastError())
     else:
@@ -749,7 +749,7 @@ proc sameFile*(path1, path2: string): bool {.rtl, extern: "nos$1",
   ##
   ## This proc will return true if given two alternative hard-linked or
   ## sym-linked paths to the same file or directory.
-  when defined(Windows):
+  when defined(windows):
     var success = true
 
     when useWinUnicode:
@@ -839,7 +839,7 @@ proc copyFile*(source, dest: string) {.rtl, extern: "nos$1",
   ## to use getFilePermissions and setFilePermissions to copy them by hand,
   ## otherwise `dest` will inherit the default permissions of a newly created
   ## file for the user.
-  when defined(Windows):
+  when defined(windows):
     when useWinUnicode:
       let s = newWidecstring(source)
       let d = newWidecstring(dest)

@@ -232,11 +232,11 @@ proc parseCDATA(my: var TXMLParser) =
       markError(my, errEndOfCDataExpected)
       break
     of '\c':
-      pos = lexbase.HandleCR(my, pos)
+      pos = lexbase.handleCR(my, pos)
       buf = my.buf
       add(my.a, '\L')
     of '\L':
-      pos = lexbase.HandleLF(my, pos)
+      pos = lexbase.handleLF(my, pos)
       buf = my.buf
       add(my.a, '\L')
     else:
@@ -260,11 +260,11 @@ proc parseComment(my: var TXMLParser) =
       markError(my, errEndOfCommentExpected)
       break
     of '\c':
-      pos = lexbase.HandleCR(my, pos)
+      pos = lexbase.handleCR(my, pos)
       buf = my.buf
       if my.options.contains(reportComments): add(my.a, '\L')
     of '\L':
-      pos = lexbase.HandleLF(my, pos)
+      pos = lexbase.handleLF(my, pos)
       buf = my.buf
       if my.options.contains(reportComments): add(my.a, '\L')
     else:
@@ -283,11 +283,11 @@ proc parseWhitespace(my: var TXmlParser, skip=false) =
       inc(pos)
     of '\c':
       # the specification says that CR-LF, CR are to be transformed to LF
-      pos = lexbase.HandleCR(my, pos)
+      pos = lexbase.handleCR(my, pos)
       buf = my.buf
       if not skip: add(my.a, '\L')
     of '\L':
-      pos = lexbase.HandleLF(my, pos)
+      pos = lexbase.handleLF(my, pos)
       buf = my.buf
       if not skip: add(my.a, '\L')
     else:
@@ -382,11 +382,11 @@ proc parsePI(my: var TXmlParser) =
       inc(pos)
     of '\c':
       # the specification says that CR-LF, CR are to be transformed to LF
-      pos = lexbase.HandleCR(my, pos)
+      pos = lexbase.handleCR(my, pos)
       buf = my.buf
       add(my.b, '\L')
     of '\L':
-      pos = lexbase.HandleLF(my, pos)
+      pos = lexbase.handleLF(my, pos)
       buf = my.buf
       add(my.b, '\L')
     else:
@@ -417,11 +417,11 @@ proc parseSpecial(my: var TXmlParser) =
       inc(pos)
       add(my.a, '>')
     of '\c':
-      pos = lexbase.HandleCR(my, pos)
+      pos = lexbase.handleCR(my, pos)
       buf = my.buf
       add(my.a, '\L')
     of '\L':
-      pos = lexbase.HandleLF(my, pos)
+      pos = lexbase.handleLF(my, pos)
       buf = my.buf
       add(my.a, '\L')
     else:
@@ -504,11 +504,11 @@ proc parseAttribute(my: var TXmlParser) =
         pendingSpace = true
         inc(pos)
       of '\c':
-        pos = lexbase.HandleCR(my, pos)
+        pos = lexbase.handleCR(my, pos)
         buf = my.buf
         pendingSpace = true
       of '\L':
-        pos = lexbase.HandleLF(my, pos)
+        pos = lexbase.handleLF(my, pos)
         buf = my.buf
         pendingSpace = true
       else:
@@ -534,11 +534,11 @@ proc parseCharData(my: var TXmlParser) =
     of '\0', '<', '&': break
     of '\c':
       # the specification says that CR-LF, CR are to be transformed to LF
-      pos = lexbase.HandleCR(my, pos)
+      pos = lexbase.handleCR(my, pos)
       buf = my.buf
       add(my.a, '\L')
     of '\L':
-      pos = lexbase.HandleLF(my, pos)
+      pos = lexbase.handleLF(my, pos)
       buf = my.buf
       add(my.a, '\L')
     else:

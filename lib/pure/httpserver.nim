@@ -196,7 +196,7 @@ when false:
       discardHeaders(client)
       notFound(client)
     else:
-      when defined(Windows):
+      when defined(windows):
         var ext = splitFile(path).ext.toLower
         if ext == ".exe" or ext == ".cgi":
           # XXX: extract interpreter information here?

@@ -55,7 +55,7 @@ proc rawCompile(pattern: string, flags: cint): PPcre =
   var
     msg: cstring
     offset: cint
-  result = pcre.Compile(pattern, flags, addr(msg), addr(offset), nil)
+  result = pcre.compile(pattern, flags, addr(msg), addr(offset), nil)
   if result == nil:
     raiseInvalidRegEx($msg & "\n" & pattern & "\n" & repeatChar(offset) & "^\n")
 
@@ -81,9 +81,9 @@ proc re*(s: string, flags = {reExtended, reStudy}): TRegEx =
 proc matchOrFind(s: string, pattern: TRegEx, matches: var openarray[string],
                  start, flags: cint): cint =
   var
-    rawMatches: array[0..maxSubpatterns * 3 - 1, cint]
-    res = pcre.Exec(pattern.h, pattern.e, s, len(s).cint, start, flags,
-      cast[ptr cint](addr(rawMatches)), maxSubpatterns * 3)
+    rawMatches: array[0..MaxSubpatterns * 3 - 1, cint]
+    res = pcre.exec(pattern.h, pattern.e, s, len(s).cint, start, flags,
+      cast[ptr cint](addr(rawMatches)), MaxSubpatterns * 3)
   if res < 0'i32: return res
   for i in 1..int(res)-1:
     var a = rawMatches[i * 2]
@@ -99,9 +99,9 @@ proc findBounds*(s: string, pattern: TRegEx, matches: var openarray[string],
   ## substrings in the array `matches`. If it does not match, nothing
   ## is written into `matches` and ``(-1,0)`` is returned.
   var
-    rawMatches: array[0..maxSubpatterns * 3 - 1, cint]
-    res = pcre.Exec(pattern.h, pattern.e, s, len(s).cint, start.cint, 0'i32,
-      cast[ptr cint](addr(rawMatches)), maxSubpatterns * 3)
+    rawMatches: array[0..MaxSubpatterns * 3 - 1, cint]
+    res = pcre.exec(pattern.h, pattern.e, s, len(s).cint, start.cint, 0'i32,
+      cast[ptr cint](addr(rawMatches)), MaxSubpatterns * 3)
   if res < 0'i32: return (-1, 0)
   for i in 1..int(res)-1:
     var a = rawMatches[i * 2]
@@ -118,9 +118,9 @@ proc findBounds*(s: string, pattern: TRegEx,
   ## If it does not match, nothing is written into `matches` and
   ## ``(-1,0)`` is returned.
   var
-    rawMatches: array[0..maxSubpatterns * 3 - 1, cint]
-    res = pcre.Exec(pattern.h, pattern.e, s, len(s).cint, start.cint, 0'i32,
-      cast[ptr cint](addr(rawMatches)), maxSubpatterns * 3)
+    rawMatches: array[0..MaxSubpatterns * 3 - 1, cint]
+    res = pcre.exec(pattern.h, pattern.e, s, len(s).cint, start.cint, 0'i32,
+      cast[ptr cint](addr(rawMatches)), MaxSubpatterns * 3)
   if res < 0'i32: return (-1, 0)
   for i in 1..int(res)-1:
     var a = rawMatches[i * 2]
@@ -135,15 +135,15 @@ proc findBounds*(s: string, pattern: TRegEx,
   ## match, ``(-1,0)`` is returned.
   var
     rawMatches: array[0..3 - 1, cint]
-    res = pcre.Exec(pattern.h, nil, s, len(s).cint, start.cint, 0'i32,
+    res = pcre.exec(pattern.h, nil, s, len(s).cint, start.cint, 0'i32,
       cast[ptr cint](addr(rawMatches)), 3)
   if res < 0'i32: return (int(res), 0)
   return (int(rawMatches[0]), int(rawMatches[1]-1))
 
 proc matchOrFind(s: string, pattern: TRegEx, start, flags: cint): cint =
-  var rawMatches: array [0..maxSubpatterns * 3 - 1, cint]
-  result = pcre.Exec(pattern.h, pattern.e, s, len(s).cint, start, flags,
-                    cast[ptr cint](addr(rawMatches)), maxSubpatterns * 3)
+  var rawMatches: array [0..MaxSubpatterns * 3 - 1, cint]
+  result = pcre.exec(pattern.h, pattern.e, s, len(s).cint, start, flags,
+                    cast[ptr cint](addr(rawMatches)), MaxSubpatterns * 3)
   if result >= 0'i32:
     result = rawMatches[1] - rawMatches[0]
 
@@ -179,9 +179,9 @@ proc find*(s: string, pattern: TRegEx, matches: var openarray[string],
   ## substrings in the array ``matches``. If it does not match, nothing
   ## is written into ``matches`` and -1 is returned.
   var
-    rawMatches: array[0..maxSubpatterns * 3 - 1, cint]
-    res = pcre.Exec(pattern.h, pattern.e, s, len(s).cint, start.cint, 0'i32,
-      cast[ptr cint](addr(rawMatches)), maxSubpatterns * 3)
+    rawMatches: array[0..MaxSubpatterns * 3 - 1, cint]
+    res = pcre.exec(pattern.h, pattern.e, s, len(s).cint, start.cint, 0'i32,
+      cast[ptr cint](addr(rawMatches)), MaxSubpatterns * 3)
   if res < 0'i32: return res
   for i in 1..int(res)-1:
     var a = rawMatches[i * 2]
@@ -195,7 +195,7 @@ proc find*(s: string, pattern: TRegEx, start = 0): int =
   ## match, -1 is returned.
   var
     rawMatches: array[0..3 - 1, cint]
-    res = pcre.Exec(pattern.h, nil, s, len(s).cint, start.cint, 0'i32,
+    res = pcre.exec(pattern.h, nil, s, len(s).cint, start.cint, 0'i32,
       cast[ptr cint](addr(rawMatches)), 3)
   if res < 0'i32: return res
   return rawMatches[0]
@@ -206,10 +206,10 @@ iterator findAll*(s: string, pattern: TRegEx, start = 0): string =
   ## Note that since this is an iterator you should not modify the string you
   ## are iterating over: bad things could happen.
   var i = int32(start)
-  var rawMatches: array[0..maxSubpatterns * 3 - 1, cint]
+  var rawMatches: array[0..MaxSubpatterns * 3 - 1, cint]
   while true:
-    let res = pcre.Exec(pattern.h, pattern.e, s, len(s).cint, i, 0'i32,
-      cast[ptr cint](addr(rawMatches)), maxSubpatterns * 3)
+    let res = pcre.exec(pattern.h, pattern.e, s, len(s).cint, i, 0'i32,
+      cast[ptr cint](addr(rawMatches)), MaxSubpatterns * 3)
     if res < 0'i32: break
     let a = rawMatches[0]
     let b = rawMatches[1]
@@ -242,9 +242,9 @@ template `=~` *(s: string, pattern: TRegEx): expr =
   ##   else:
   ##     echo("syntax error")
   ##
-  bind maxSubPatterns
+  bind MaxSubPatterns
   when not definedInScope(matches):
-    var matches {.inject.}: array[0..maxSubPatterns-1, string]
+    var matches {.inject.}: array[0..MaxSubPatterns-1, string]
   match(s, pattern, matches)
 
 # ------------------------- more string handling ------------------------------
@@ -302,7 +302,7 @@ proc replacef*(s: string, sub: TRegEx, by: string): string =
   ##
   ## "var1<-keykey; val2<-key2key2"
   result = ""
-  var caps: array[0..maxSubpatterns-1, string]
+  var caps: array[0..MaxSubpatterns-1, string]
   var prev = 0
   while true:
     var match = findBounds(s, sub, caps, prev)
@@ -314,7 +314,7 @@ proc replacef*(s: string, sub: TRegEx, by: string): string =
   when false:
     result = ""
     var i = 0
-    var caps: array[0..maxSubpatterns-1, string]
+    var caps: array[0..MaxSubpatterns-1, string]
     while i < s.len:
       var x = matchLen(s, sub, caps, i)
       if x <= 0:
@@ -332,7 +332,7 @@ proc parallelReplace*(s: string, subs: openArray[
   ## applied in parallel.
   result = ""
   var i = 0
-  var caps: array[0..maxSubpatterns-1, string]
+  var caps: array[0..MaxSubpatterns-1, string]
   while i < s.len:
     block searchSubs:
       for j in 0..high(subs):

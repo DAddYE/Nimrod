@@ -202,7 +202,7 @@ proc acceptRequest(server: var TServer, client: TSocket) =
     notFound(client, path)
     client.close()
   else:
-    when defined(Windows):
+    when defined(windows):
       var ext = splitFile(path).ext.toLower
       if ext == ".exe" or ext == ".cgi":
         # XXX: extract interpreter information here?

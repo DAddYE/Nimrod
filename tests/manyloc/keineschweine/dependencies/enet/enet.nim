@@ -297,7 +297,7 @@ when defined(Linux):
   template ENET_SOCKETSET_CHECK*(sockset, socket: expr): expr =
     FD_ISSET(socket, addr((sockset)))
 
-when defined(Windows):
+when defined(windows):
   ## put the content of win32.h in here
 
 

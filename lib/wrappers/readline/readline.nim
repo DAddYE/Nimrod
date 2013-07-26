@@ -413,7 +413,7 @@ proc yank_nth_arg*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_yank_nth_arg",
     dynlib: readlineDll.}
 proc yank_last_arg*(a2: cint, a3: cint): cint{.cdecl,
     importc: "rl_yank_last_arg", dynlib: readlineDll.}
-when defined(Windows):
+when defined(windows):
   proc paste_from_clipboard*(a2: cint, a3: cint): cint{.cdecl,
       importc: "rl_paste_from_clipboard", dynlib: readlineDll.}
 # Bindable commands for incremental searching.

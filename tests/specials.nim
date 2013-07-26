@@ -79,7 +79,7 @@ proc runBasicDLLTest(c, r: var TResults, options: string) =
   compileSingleTest c, "tests/dll/server.nim",
     options & " --app:lib -d:useNimRtl"
 
-  when defined(Windows):
+  when defined(windows):
     # windows looks in the dir of the exe (yay!):
     var nimrtlDll = DynlibFormat % "nimrtl"
     safeCopyFile("lib" / nimrtlDll, "tests/dll" / nimrtlDll)

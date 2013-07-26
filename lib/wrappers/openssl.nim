@@ -41,7 +41,7 @@
 
 {.deadCodeElim: on.}
 
-when defined(WINDOWS):
+when defined(windows):
   const
     DLLSSLName = "(ssleay32|libssl32).dll"
     DLLUtilName = "libeay32.dll"

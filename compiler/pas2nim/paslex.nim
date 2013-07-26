@@ -273,8 +273,8 @@ proc getNumber10(L: var TLexer, tok: var TToken) =
 
 proc handleCRLF(L: var TLexer, pos: int): int =
   case L.buf[pos]
-  of CR: result = nimlexbase.HandleCR(L, pos)
-  of LF: result = nimlexbase.HandleLF(L, pos)
+  of CR: result = nimlexbase.handleCR(L, pos)
+  of LF: result = nimlexbase.handleLF(L, pos)
   else: result = pos
 
 proc getString(L: var TLexer, tok: var TToken) =

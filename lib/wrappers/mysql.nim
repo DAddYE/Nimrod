@@ -10,10 +10,10 @@
 {.deadCodeElim: on.}
 {.push, callconv: cdecl.}
 
-when defined(Unix):
+when defined(unix):
   const
     lib = "libmysqlclient.so.15"
-when defined(Windows):
+when defined(windows):
   const
     lib = "libmysql.dll"
 type

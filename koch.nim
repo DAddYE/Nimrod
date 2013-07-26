@@ -159,7 +159,7 @@ const
     ".idx"
   ]
   ignore = [
-    ".bzrignore", "nimrod", "nimrod.exe", "koch", "koch.exe"
+    ".gitignore", ".bzrignore", "nimrod", "nimrod.exe", "koch", "koch.exe"
   ]
 
 proc cleanAux(dir: string) =

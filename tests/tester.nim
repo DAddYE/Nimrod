@@ -204,17 +204,17 @@ const
   HtmlEnd = "</body></html>"
 
 proc td(s: string): string =
-  result = s.substr(0, 200).XMLEncode
+  result = s.substr(0, 200).xmlEncode
 
 proc addResult(r: var TResults, test, expected, given: string,
                success: TResultEnum) =
   r.data.addf("<tr><td>$#</td><td>$#</td><td>$#</td><td>$#</td></tr>\n", [
-    XMLEncode(test), td(expected), td(given), success.colorResult])
+    xmlEncode(test), td(expected), td(given), success.colorResult])
 
 proc addResult(r: var TResults, test, given: string,
                success: TResultEnum) =
   r.data.addf("<tr><td>$#</td><td>$#</td><td>$#</td></tr>\n", [
-    XMLEncode(test), td(given), success.colorResult])
+    xmlEncode(test), td(given), success.colorResult])
 
 proc listResults(reject, compile, run: TResults) =
   var s = HtmlBegin
@@ -325,8 +325,8 @@ proc runSingleTest(r: var TResults, test, options: string, target: TTarget) =
       if existsFile(exeFile):
         var (buf, exitCode) = execCmdEx(
           (if target==targetJS: "node " else: "") & exeFile)
-        if exitCode != expected.ExitCode:
-          r.addResult(t, "exitcode: " & $expected.ExitCode,
+        if exitCode != expected.exitCode:
+          r.addResult(t, "exitcode: " & $expected.exitCode,
                          "exitcode: " & $exitCode, reExitCodesDiffer)
         else:
           if strip(buf.string) != strip(expected.outp):
@@ -384,9 +384,9 @@ proc main() =
   if p.kind == cmdLongoption:
     case p.key.string
     of "print": optPrintResults = true
-    else: quit usage
+    else: quit Usage
     p.next()
-  if p.kind != cmdArgument: quit usage
+  if p.kind != cmdArgument: quit Usage
   var action = p.key.string.normalize
   p.next()
   var r = initResults()
@@ -431,12 +431,12 @@ proc main() =
   of "gc":
     runGCTests(r, p.cmdLineRest.string)
   of "test":
-    if p.kind != cmdArgument: quit usage
+    if p.kind != cmdArgument: quit Usage
     var testFile = p.key.string
     p.next()
     runSingleTest(r, testFile, p.cmdLineRest.string)
   of "comp", "rej":
-    if p.kind != cmdArgument: quit usage
+    if p.kind != cmdArgument: quit Usage
     var testFile = p.key.string
     p.next()
     if peg"'/reject/'" in testFile or action == "rej":
@@ -446,11 +446,11 @@ proc main() =
     else:
       runSingleTest(r, testFile, p.cmdLineRest.string)
   else:
-    quit usage
+    quit Usage
 
   if optPrintResults: echo r, r.data
 
 if paramCount() == 0:
-  quit usage
+  quit Usage
 main()
 

@@ -495,18 +495,18 @@ proc getBiggestFloat*(x: TAny): BiggestFloat =
   ## retrieve the float value out of `x`. `x` needs to represent
   ## some float. The value is extended to ``BiggestFloat``.
   case skipRange(x.rawtype).kind
-  of tyFloat: result = BiggestFloat(cast[ptr Float](x.value)[])
-  of tyFloat32: result = BiggestFloat(cast[ptr Float32](x.value)[])
-  of tyFloat64: result = BiggestFloat(cast[ptr Float64](x.value)[])
+  of tyFloat: result = BiggestFloat(cast[ptr float](x.value)[])
+  of tyFloat32: result = BiggestFloat(cast[ptr float32](x.value)[])
+  of tyFloat64: result = BiggestFloat(cast[ptr float64](x.value)[])
   else: assert false
 
 proc setBiggestFloat*(x: TAny, y: BiggestFloat) =
   ## sets the float value of `x`. `x` needs to represent
   ## some float.
   case skipRange(x.rawtype).kind
-  of tyFloat: cast[ptr Float](x.value)[] = y
-  of tyFloat32: cast[ptr Float32](x.value)[] = y
-  of tyFloat64: cast[ptr Float64](x.value)[] = y
+  of tyFloat: cast[ptr float](x.value)[] = y
+  of tyFloat32: cast[ptr float32](x.value)[] = y
+  of tyFloat64: cast[ptr float64](x.value)[] = y
   else: assert false
 
 proc getString*(x: TAny): string =

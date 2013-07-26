@@ -2,7 +2,7 @@
 import
   Glib2, gdk2
 
-when defined(WIN32):
+when defined(win32):
   const
     GLExtLib = "libgdkglext-win32-1.0-0.dll"
 elif defined(macosx):

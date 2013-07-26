@@ -31,7 +31,7 @@
 
 import strutils, os, strtabs, cookies
 
-proc uRlencode*(s: string): string =
+proc urlEncode*(s: string): string =
   ## Encodes a value to be HTTP safe: This means that characters in the set
   ## ``{'A'..'Z', 'a'..'z', '0'..'9', '_'}`` are carried over to the result,
   ## a space is converted to ``'+'`` and every other character is encoded as
@@ -329,9 +329,9 @@ proc setTestData*(keysvalues: varargs[string]) =
   var i = 0
   var query = ""
   while i < keysvalues.len:
-    add(query, URlencode(keysvalues[i]))
+    add(query, urlEncode(keysvalues[i]))
     add(query, '=')
-    add(query, URlencode(keysvalues[i+1]))
+    add(query, urlEncode(keysvalues[i+1]))
     add(query, '&')
     inc(i, 2)
   putenv("QUERY_STRING", query)

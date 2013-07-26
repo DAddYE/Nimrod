@@ -13,7 +13,7 @@
 ## is used. This suffices because Windows' console already provides the
 ## wanted functionality.
 
-when defined(Windows):
+when defined(windows):
   proc readLineFromStdin*(prompt: string): TaintedString {.
                           tags: [FReadIO, FWriteIO].} =
     ## Reads a line from stdin.

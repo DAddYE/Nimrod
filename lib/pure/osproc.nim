@@ -245,7 +245,7 @@ when not defined(useNimRtl):
     close(p)
 
 
-when defined(Windows) and not defined(useNimRtl):
+when defined(windows) and not defined(useNimRtl):
   # We need to implement a handle stream for Windows:
   type
     PFileHandleStream = ref TFileHandleStream

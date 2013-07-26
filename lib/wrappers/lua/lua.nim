@@ -36,11 +36,11 @@
 #
 
 when defined(useLuajit):
-  when defined(MACOSX):
+  when defined(macosx):
     const
       NAME* = "libluajit.dylib"
       LIB_NAME* = "libluajit.dylib"
-  elif defined(UNIX):
+  elif defined(unix):
     const
       NAME* = "libluajit.so(|.0)"
       LIB_NAME* = "libluajit.so(|.0)"
@@ -49,11 +49,11 @@ when defined(useLuajit):
       NAME* = "luajit.dll"
       LIB_NAME* = "luajit.dll"
 else:
-  when defined(MACOSX):
+  when defined(macosx):
     const
       NAME* = "liblua(|5.1|5.0).dylib"
       LIB_NAME* = "liblua(|5.1|5.0).dylib"
-  elif defined(UNIX):
+  elif defined(unix):
     const
       NAME* = "liblua(|5.1|5.0).so(|.0)"
       LIB_NAME* = "liblua(|5.1|5.0).so(|.0)"

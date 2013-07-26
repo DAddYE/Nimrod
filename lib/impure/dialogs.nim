@@ -14,13 +14,13 @@
 import
   glib2, gtk2
 
-when defined(Windows):
+when defined(windows):
   import windows, ShellAPI, os
 
 proc info*(window: PWindow, msg: string) =
   ## Shows an information message to the user. The process waits until the
   ## user presses the OK button.
-  when defined(Windows):
+  when defined(windows):
     discard MessageBoxA(0, msg, "Information", MB_OK or MB_ICONINFORMATION)
   else:
     var dialog = message_dialog_new(window,
@@ -33,7 +33,7 @@ proc info*(window: PWindow, msg: string) =
 proc warning*(window: PWindow, msg: string) =
   ## Shows a warning message to the user. The process waits until the user
   ## presses the OK button.
-  when defined(Windows):
+  when defined(windows):
     discard MessageBoxA(0, msg, "Warning", MB_OK or MB_ICONWARNING)
   else:
     var dialog = DIALOG(message_dialog_new(window,
@@ -46,7 +46,7 @@ proc warning*(window: PWindow, msg: string) =
 proc error*(window: PWindow, msg: string) =
   ## Shows an error message to the user. The process waits until the user
   ## presses the OK button.
-  when defined(Windows):
+  when defined(windows):
     discard MessageBoxA(0, msg, "Error", MB_OK or MB_ICONERROR)
   else:
     var dialog = DIALOG(message_dialog_new(window,
@@ -61,7 +61,7 @@ proc chooseFileToOpen*(window: PWindow, root: string = ""): string =
   ## Opens a dialog that requests a filename from the user. Returns ""
   ## if the user closed the dialog without selecting a file. On Windows,
   ## the native dialog is used, else the GTK dialog is used.
-  when defined(Windows):
+  when defined(windows):
     var
       opf: TOPENFILENAME
       buf: array [0..2047, char]
@@ -96,7 +96,7 @@ proc chooseFilesToOpen*(window: PWindow, root: string = ""): seq[string] =
   ## Opens a dialog that requests filenames from the user. Returns ``@[]``
   ## if the user closed the dialog without selecting a file. On Windows,
   ## the native dialog is used, else the GTK dialog is used.
-  when defined(Windows):
+  when defined(windows):
     var
       opf: TOPENFILENAME
       buf: array [0..2047*4, char]
@@ -157,7 +157,7 @@ proc chooseFileToSave*(window: PWindow, root: string = ""): string =
   ## Opens a dialog that requests a filename to save to from the user.
   ## Returns "" if the user closed the dialog without selecting a file.
   ## On Windows, the native dialog is used, else the GTK dialog is used.
-  when defined(Windows):
+  when defined(windows):
     var
       opf: TOPENFILENAME
       buf: array [0..2047, char]
@@ -194,7 +194,7 @@ proc chooseDir*(window: PWindow, root: string = ""): string =
   ## Opens a dialog that requests a directory from the user.
   ## Returns "" if the user closed the dialog without selecting a directory.
   ## On Windows, the native dialog is used, else the GTK dialog is used.
-  when defined(Windows):
+  when defined(windows):
     var
       lpItemID: PItemIDList
       BrowseInfo: TBrowseInfo

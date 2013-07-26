@@ -157,8 +157,8 @@ proc getEscapedChar(c: var TCfgParser, tok: var TToken) =
 
 proc handleCRLF(c: var TCfgParser, pos: int): int =
   case c.buf[pos]
-  of CR: result = lexbase.HandleCR(c, pos)
-  of LF: result = lexbase.HandleLF(c, pos)
+  of CR: result = lexbase.handleCR(c, pos)
+  of LF: result = lexbase.handleLF(c, pos)
   else: result = pos
 
 proc getString(c: var TCfgParser, tok: var TToken, rawMode: bool) =

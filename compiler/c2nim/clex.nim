@@ -338,8 +338,8 @@ proc getNumber(L: var TLexer, tok: var TToken) =
 
 proc handleCRLF(L: var TLexer, pos: int): int =
   case L.buf[pos]
-  of CR: result = nimlexbase.HandleCR(L, pos)
-  of LF: result = nimlexbase.HandleLF(L, pos)
+  of CR: result = nimlexbase.handleCR(L, pos)
+  of LF: result = nimlexbase.handleLF(L, pos)
   else: result = pos
 
 proc escape(L: var TLexer, tok: var TToken, allowEmpty=false) =
@@ -405,10 +405,10 @@ proc getString(L: var TLexer, tok: var TToken) =
       inc(pos)
       break
     of CR:
-      pos = nimlexbase.HandleCR(L, pos)
+      pos = nimlexbase.handleCR(L, pos)
       buf = L.buf
     of LF:
-      pos = nimlexbase.HandleLF(L, pos)
+      pos = nimlexbase.handleLF(L, pos)
       buf = L.buf
     of nimlexbase.EndOfFile:
       var line2 = L.linenumber

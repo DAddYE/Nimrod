@@ -510,12 +510,12 @@ proc `$` *(r: TPeg): string {.nosideEffect, rtl, extern: "npegsToString".} =
 
 type
   TCaptures* {.final.} = object ## contains the captured substrings.
-    matches: array[0..maxSubpatterns-1, tuple[first, last: int]]
+    matches: array[0..MaxSubpatterns-1, tuple[first, last: int]]
     ml: int
     origStart: int
 
 proc bounds*(c: TCaptures,
-             i: range[0..maxSubpatterns-1]): tuple[first, last: int] =
+             i: range[0..MaxSubpatterns-1]): tuple[first, last: int] =
   ## returns the bounds ``[first..last]`` of the `i`'th capture.
   result = c.matches[i]
 
@@ -682,7 +682,7 @@ proc rawMatch*(s: string, p: TPeg, start: int, c: var TCaptures): int {.
     while start+result < s.len:
       var x = rawMatch(s, p.sons[0], start+result, c)
       if x >= 0:
-        if idx < maxSubpatterns:
+        if idx < MaxSubpatterns:
           c.matches[idx] = (start, start+result-1)
         #else: silently ignore the capture
         inc(result, x)
@@ -726,7 +726,7 @@ proc rawMatch*(s: string, p: TPeg, start: int, c: var TCaptures): int {.
     inc(c.ml)
     result = rawMatch(s, p.sons[0], start, c)
     if result >= 0:
-      if idx < maxSubpatterns:
+      if idx < MaxSubpatterns:
         c.matches[idx] = (start, start+result-1)
       #else: silently ignore the capture
     else:
@@ -867,9 +867,9 @@ template `=~`*(s: string, pattern: TPeg): bool =
   ##   else:
   ##     echo("syntax error")
   ##
-  bind maxSubpatterns
+  bind MaxSubpatterns
   when not definedInScope(matches):
-    var matches {.inject.}: array[0..maxSubpatterns-1, string]
+    var matches {.inject.}: array[0..MaxSubpatterns-1, string]
   match(s, pattern, matches)
 
 # ------------------------- more string handling ------------------------------
@@ -912,7 +912,7 @@ proc replacef*(s: string, sub: TPeg, by: string): string {.
   ##   "var1<-keykey; val2<-key2key2"
   result = ""
   var i = 0
-  var caps: array[0..maxSubpatterns-1, string]
+  var caps: array[0..MaxSubpatterns-1, string]
   var c: TCaptures
   while i < s.len:
     c.ml = 0
@@ -951,7 +951,7 @@ proc parallelReplace*(s: string, subs: varargs[
   result = ""
   var i = 0
   var c: TCaptures
-  var caps: array[0..maxSubpatterns-1, string]
+  var caps: array[0..MaxSubpatterns-1, string]
   while i < s.len:
     block searchSubs:
       for j in 0..high(subs):
@@ -1061,7 +1061,7 @@ type
   TPegLexer {.inheritable.} = object          ## the lexer object.
     bufpos: int               ## the current position within the buffer
     buf: cstring              ## the buffer itself
-    LineNumber: int           ## the current line number
+    lineNumber: int           ## the current line number
     lineStart: int            ## index of last line start in buffer
     colOffset: int            ## column to add
     filename: string
@@ -1076,14 +1076,14 @@ const
 
 proc handleCR(L: var TPegLexer, pos: int): int =
   assert(L.buf[pos] == '\c')
-  inc(L.linenumber)
+  inc(L.lineNumber)
   result = pos+1
   if L.buf[result] == '\L': inc(result)
   L.lineStart = result
 
 proc handleLF(L: var TPegLexer, pos: int): int =
   assert(L.buf[pos] == '\L')
-  inc(L.linenumber)
+  inc(L.lineNumber)
   result = pos+1
   L.lineStart = result
 
@@ -1099,7 +1099,7 @@ proc getColumn(L: TPegLexer): int {.inline.} =
   result = abs(L.bufpos - L.lineStart) + L.colOffset
 
 proc getLine(L: TPegLexer): int {.inline.} =
-  result = L.linenumber
+  result = L.lineNumber
 
 proc errorStr(L: TPegLexer, msg: string, line = -1, col = -1): string =
   var line = if line < 0: getLine(L) else: line
@@ -1152,7 +1152,7 @@ proc getEscapedChar(c: var TPegLexer, tok: var TToken) =
     handleHexChar(c, xi)
     handleHexChar(c, xi)
     if xi == 0: tok.kind = tkInvalid
-    else: add(tok.literal, Chr(xi))
+    else: add(tok.literal, chr(xi))
   of '0'..'9':
     var val = ord(c.buf[c.bufpos]) - ord('0')
     inc(c.bufpos)
@@ -1165,7 +1165,7 @@ proc getEscapedChar(c: var TPegLexer, tok: var TToken) =
     else: tok.kind = tkInvalid
   of '\0'..'\31':
     tok.kind = tkInvalid
-  elif c.buf[c.bufpos] in strutils.letters:
+  elif c.buf[c.bufpos] in strutils.Letters:
     tok.kind = tkInvalid
   else:
     add(tok.literal, c.buf[c.bufpos])
@@ -1181,10 +1181,10 @@ proc skip(c: var TPegLexer) =
     of '#':
       while not (buf[pos] in {'\c', '\L', '\0'}): inc(pos)
     of '\c':
-      pos = HandleCR(c, pos)
+      pos = handleCR(c, pos)
       buf = c.buf
     of '\L':
-      pos = HandleLF(c, pos)
+      pos = handleLF(c, pos)
       buf = c.buf
     else:
       break                   # EndOfFile also leaves the loop
@@ -1469,11 +1469,11 @@ proc builtin(p: var TPegParser): TPeg =
   of "a": result = charset({'a'..'z', 'A'..'Z'})
   of "A": result = charset({'\1'..'\xff'} - {'a'..'z', 'A'..'Z'})
   of "ident": result = pegs.ident
-  of "letter": result = UnicodeLetter()
-  of "upper": result = UnicodeUpper()
-  of "lower": result = UnicodeLower()
-  of "title": result = UnicodeTitle()
-  of "white": result = UnicodeWhitespace()
+  of "letter": result = unicodeLetter()
+  of "upper": result = unicodeUpper()
+  of "lower": result = unicodeLower()
+  of "title": result = unicodeTitle()
+  of "white": result = unicodeWhitespace()
   else: pegError(p, "unknown built-in: " & p.tok.literal)
 
 proc token(terminal: TPeg, p: TPegParser): TPeg =
@@ -1718,7 +1718,7 @@ when isMainModule:
   assert match("_______ana", peg"A <- 'ana' / . A")
   assert match("abcs%%%", peg"A <- ..A / .A / '%'")
 
-  var matches: array[0..maxSubpatterns-1, string]
+  var matches: array[0..MaxSubpatterns-1, string]
   if "abc" =~ peg"{'a'}'bc' 'xyz' / {\ident}":
     assert matches[0] == "abc"
   else:

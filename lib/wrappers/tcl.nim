@@ -34,7 +34,7 @@
 
 {.deadCodeElim: on.}
 
-when defined(WIN32):
+when defined(win32):
   const
     dllName = "tcl(85|84|83|82|81|80).dll"
 elif defined(macosx):

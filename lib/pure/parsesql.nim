@@ -139,8 +139,8 @@ proc getEscapedChar(c: var TSqlLexer, tok: var TToken) =
 
 proc handleCRLF(c: var TSqlLexer, pos: int): int =
   case c.buf[pos]
-  of '\c': result = lexbase.HandleCR(c, pos)
-  of '\L': result = lexbase.HandleLF(c, pos)
+  of '\c': result = lexbase.handleCR(c, pos)
+  of '\L': result = lexbase.handleLF(c, pos)
   else: result = pos
 
 proc skip(c: var TSqlLexer) =

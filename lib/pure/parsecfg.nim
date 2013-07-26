@@ -82,7 +82,7 @@ proc open*(c: var TCfgParser, input: PStream, filename: string,
   c.filename = filename
   c.tok.kind = tkInvalid
   c.tok.literal = ""
-  inc(c.linenumber, lineOffset)
+  inc(c.LineNumber, lineOffset)
   rawGetTok(c, c.tok)
 
 proc close*(c: var TCfgParser) {.rtl, extern: "npc$1".} =
@@ -95,7 +95,7 @@ proc getColumn*(c: TCfgParser): int {.rtl, extern: "npc$1".} =
 
 proc getLine*(c: TCfgParser): int {.rtl, extern: "npc$1".} =
   ## get the current line the parser has arrived at.
-  result = c.linenumber
+  result = c.LineNumber
 
 proc getFilename*(c: TCfgParser): string {.rtl, extern: "npc$1".} =
   ## get the filename of the file that the parser processes.
@@ -161,18 +161,18 @@ proc getEscapedChar(c: var TCfgParser, tok: var TToken) =
     var xi = 0
     handleHexChar(c, xi)
     handleHexChar(c, xi)
-    add(tok.literal, Chr(xi))
+    add(tok.literal, chr(xi))
   of '0'..'9':
     var xi = 0
     handleDecChars(c, xi)
-    if (xi <= 255): add(tok.literal, Chr(xi))
+    if (xi <= 255): add(tok.literal, chr(xi))
     else: tok.kind = tkInvalid
   else: tok.kind = tkInvalid
 
 proc handleCRLF(c: var TCfgParser, pos: int): int =
   case c.buf[pos]
-  of '\c': result = lexbase.HandleCR(c, pos)
-  of '\L': result = lexbase.HandleLF(c, pos)
+  of '\c': result = lexbase.handleCR(c, pos)
+  of '\L': result = lexbase.handleLF(c, pos)
   else: result = pos
 
 proc getString(c: var TCfgParser, tok: var TToken, rawMode: bool) =
@@ -183,7 +183,7 @@ proc getString(c: var TCfgParser, tok: var TToken, rawMode: bool) =
     # long string literal:
     inc(pos, 2)               # skip ""
                               # skip leading newline:
-    pos = HandleCRLF(c, pos)
+    pos = handleCRLF(c, pos)
     buf = c.buf
     while true:
       case buf[pos]
@@ -192,7 +192,7 @@ proc getString(c: var TCfgParser, tok: var TToken, rawMode: bool) =
         add(tok.literal, '"')
         inc(pos)
       of '\c', '\L':
-        pos = HandleCRLF(c, pos)
+        pos = handleCRLF(c, pos)
         buf = c.buf
         add(tok.literal, "\n")
       of lexbase.EndOfFile:
@@ -241,7 +241,7 @@ proc skip(c: var TCfgParser) =
     of '#', ';':
       while not (buf[pos] in {'\c', '\L', lexbase.EndOfFile}): inc(pos)
     of '\c', '\L':
-      pos = HandleCRLF(c, pos)
+      pos = handleCRLF(c, pos)
       buf = c.buf
     else:
       break                   # EndOfFile also leaves the loop

@@ -9,7 +9,7 @@
 
 ## Low level system locks and condition vars.
 
-when defined(Windows):
+when defined(windows):
   type
     THandle = int
     TSysLock {.final, pure.} = object # CRITICAL_SECTION in WinApi

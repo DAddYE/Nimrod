@@ -84,7 +84,7 @@ proc storeAny(s: PStream, a: TAny, stored: var TIntSet) =
   of akProc, akPointer, akcstring: s.write($a.getPointer.ptrToInt)
   of akString:
     var x = getString(a)
-    if IsNil(x): s.write("null")
+    if isNil(x): s.write("null")
     else: s.write(escapeJson(x))
   of akInt..akInt64, akUInt..akUInt64: s.write($getBiggestInt(a))
   of akFloat..akFloat128: s.write($getBiggestFloat(a))

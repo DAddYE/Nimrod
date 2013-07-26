@@ -146,7 +146,7 @@ proc randomize*(seed: int)
   ## Note: Does nothing for the JavaScript target,
   ## as JavaScript does not support this.
 
-when not defined(JS):
+when not defined(js):
   proc sqrt*(x: float): float {.importc: "sqrt", header: "<math.h>".}
     ## computes the square root of `x`.
 
@@ -310,7 +310,7 @@ proc standardDeviation*(s: TRunningStat): float =
 {.pop.}
 {.pop.}
 
-when isMainModule and not defined(JS):
+when isMainModule and not defined(js):
   # Verifies random seed initialization.
   let seed = gettime(nil)
   randomize(seed)

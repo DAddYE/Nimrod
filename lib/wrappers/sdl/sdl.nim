@@ -1039,11 +1039,11 @@ type
     data2*: pointer           # User defined data pointer
 
 
-when defined(Unix):
+when defined(unix):
   type                        #These are the various supported subsystems under UNIX
     TSysWm* = enum
       SYSWM_X11
-when defined(WINDOWS):
+when defined(windows):
   type
     PSysWMmsg* = ptr TSysWMmsg
     TSysWMmsg*{.final.} = object
@@ -1053,7 +1053,7 @@ when defined(WINDOWS):
       w_Param*: int32         # WORD message parameter
       lParam*: int32          # LONG message parameter
 
-elif defined(Unix):
+elif defined(unix):
   type                        # The Linux custom event structure
     PSysWMmsg* = ptr TSysWMmsg
     TSysWMmsg*{.final.} = object
@@ -1072,14 +1072,14 @@ else:
 
 # The Windows custom window manager information structure
 
-when defined(WINDOWS):
+when defined(windows):
   type
     PSysWMinfo* = ptr TSysWMinfo
     TSysWMinfo*{.final.} = object
       version*: Tversion
       window*: THandle        # The display window
 
-elif defined(Unix):
+elif defined(unix):
   type
     TX11*{.final.} = object
       when false:
@@ -1253,10 +1253,10 @@ type
   PCond* = ptr TCond
   TCond*{.final.} = object    # SDL_thread.h types
 
-when defined(WINDOWS):
+when defined(windows):
   type
     TSYS_ThreadHandle* = THandle
-when defined(Unix):
+when defined(unix):
   type
     TSYS_ThreadHandle* = pointer
 type                          # This is the system-independent thread info structure
@@ -1323,7 +1323,7 @@ proc wasInit*(flags: int32): int32{.cdecl, importc: "SDL_WasInit",
   # This function cleans up all initialized subsystems and unloads the
   #  dynamically linked library.  You should call it upon all exit conditions.
 proc quit*(){.cdecl, importc: "SDL_Quit", dynlib: LibName.}
-when defined(WINDOWS):
+when defined(windows):
   # This should be called from your WinMain() function, if any
   proc registerApp*(name: cstring, style: int32, h_Inst: pointer): int{.cdecl,
       importc: "SDL_RegisterApp", dynlib: LibName.}

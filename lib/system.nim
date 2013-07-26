@@ -184,7 +184,7 @@ proc `..`*[T](b: T): TSlice[T] {.noSideEffect, inline.} =
 when not defined(niminheritable):
   {.pragma: inheritable.}
 
-when not defined(JS) and not defined(NimrodVM):
+when not defined(js) and not defined(nimrodvm):
   type
     TGenericSeq {.compilerproc, pure, inheritable.} = object
       len, reserved: int
@@ -931,7 +931,7 @@ template sysAssert(cond: bool, msg: string) =
 
 include "system/inclrtl"
 
-when not defined(JS) and not defined(nimrodVm) and hostOS != "standalone":
+when not defined(js) and not defined(nimrodvm) and hostOS != "standalone":
   include "system/cgprocs"
 
 proc add *[T](x: var seq[T], y: T) {.magic: "AppendSeqElem", noSideEffect.}
@@ -1099,7 +1099,7 @@ proc substr*(s: string, first, last: int): string {.
   ## is used instead: This means ``substr`` can also be used to `cut`:idx:
   ## or `limit`:idx: a string's length.
 
-when not defined(nimrodVM):
+when not defined(nimrodvm):
   proc zeroMem*(p: pointer, size: int) {.importc, noDecl.}
     ## overwrites the contents of the memory at ``p`` with the value 0.
     ## Exactly ``size`` bytes will be overwritten. Like any procedure
@@ -1204,8 +1204,8 @@ proc `$` *(x: int64): string {.magic: "Int64ToStr", noSideEffect.}
   ## The stingify operator for an integer argument. Returns `x`
   ## converted to a decimal string.
 
-when not defined(NimrodVM):
-  when not defined(JS) and hostOS != "standalone":
+when not defined(nimrodvm):
+  when not defined(js) and hostOS != "standalone":
     proc `$` *(x: uint64): string {.noSideEffect.}
       ## The stingify operator for an unsigned integer argument. Returns `x`
       ## converted to a decimal string.
@@ -1258,7 +1258,7 @@ const
 
 # GC interface:
 
-when not defined(nimrodVM) and hostOS != "standalone":
+when not defined(nimrodvm) and hostOS != "standalone":
   proc getOccupiedMem*(): int {.rtl.}
     ## returns the number of bytes that are owned by the process and hold data.
 
@@ -1458,8 +1458,8 @@ proc `&` *[T](x: T, y: seq[T]): seq[T] {.noSideEffect.} =
     result[i] = y[i]
   result[y.len] = x
 
-when not defined(NimrodVM):
-  when not defined(JS):
+when not defined(nimrodvm):
+  when not defined(js):
     proc seqToPtr[T](x: seq[T]): pointer {.inline, nosideeffect.} =
       result = cast[pointer](x)
   else:
@@ -1636,7 +1636,7 @@ when false:
 
 # ----------------- GC interface ---------------------------------------------
 
-when not defined(nimrodVM) and hostOS != "standalone":
+when not defined(nimrodvm) and hostOS != "standalone":
   proc GC_disable*() {.rtl, inl.}
     ## disables the GC. If called n-times, n calls to `GC_enable` are needed to
     ## reactivate the GC. Note that in most circumstances one should only disable
@@ -1745,7 +1745,7 @@ type
     filename*: cstring  ## filename of the proc that is currently executing
     len*: int           ## length of the inspectable slots
 
-when defined(JS):
+when defined(js):
   proc add*(x: var string, y: cstring) {.noStackFrame.} =
     asm """
       var len = `x`[0].length-1;
@@ -1817,10 +1817,10 @@ proc getTypeInfo*[T](x: T): pointer {.magic: "GetTypeInfo".}
   ## get type information for `x`. Ordinary code should not use this, but
   ## the `typeinfo` module instead.
 
-when not defined(JS): #and not defined(NimrodVM):
+when not defined(js): #and not defined(nimrodvm):
   {.push stack_trace: off, profiler:off.}
 
-  when not defined(NimrodVM) and hostOS != "standalone":
+  when not defined(nimrodvm) and hostOS != "standalone":
     proc initGC()
     when not defined(boehmgc) and not defined(useMalloc):
       proc initallocator() {.inline.}
@@ -1847,7 +1847,7 @@ when not defined(JS): #and not defined(NimrodVM):
     result = int(c_strcmp(x, y))
 
   const pccHack = if defined(pcc): "_" else: "" # Hack for PCC
-  when not defined(NimrodVM):
+  when not defined(nimrodvm):
     when defined(windows):
       # work-around C's sucking abstraction:
       # BUGFIX: stdin and stdout should be binary files!
@@ -2056,7 +2056,7 @@ when not defined(JS): #and not defined(NimrodVM):
 
   # -------------------------------------------------------------------------
 
-  when not defined(NimrodVM) and hostOS != "standalone":
+  when not defined(nimrodvm) and hostOS != "standalone":
     proc alloccstringArray*(a: openArray[string]): cstringArray =
       ## creates a NULL terminated cstringArray from `a`. The result has to
       ## be freed with `dealloccstringArray` after it's not needed anymore.
@@ -2074,7 +2074,7 @@ when not defined(JS): #and not defined(NimrodVM):
         inc(i)
       dealloc(a)
 
-  when not defined(NimrodVM):
+  when not defined(nimrodvm):
     proc atomicInc*(memLoc: var int, x: int = 1): int {.inline, discardable.}
       ## atomic increment of `memLoc`. Returns the value after the operation.
 
@@ -2097,11 +2097,11 @@ when not defined(JS): #and not defined(NimrodVM):
   when hasThreadSupport:
     include "system/syslocks"
     include "system/threads"
-  elif not defined(nogc) and not defined(NimrodVM) and hostOS != "standalone":
+  elif not defined(nogc) and not defined(nimrodvm) and hostOS != "standalone":
     when not defined(useNimRtl) and not defined(createNimRtl): initStackBottom()
     initGC()
 
-  when not defined(NimrodVM):
+  when not defined(nimrodvm):
     proc setControlCHook*(hook: proc () {.noconv.})
       ## allows you to override the behaviour of your application when CTRL+C
       ## is pressed. Only one such hook is supported.
@@ -2130,9 +2130,9 @@ when not defined(JS): #and not defined(NimrodVM):
     {.pop.} # stack trace
   {.pop.} # stack trace
 
-  when hostOS != "standalone" and not defined(NimrodVM):
+  when hostOS != "standalone" and not defined(nimrodvm):
     include "system/dyncalls"
-  when not defined(NimrodVM):
+  when not defined(nimrodvm):
     include "system/sets"
 
     const
@@ -2183,7 +2183,7 @@ when not defined(JS): #and not defined(NimrodVM):
       var res = TaintedString(newStringOfCap(80))
       while f.readLine(res): yield res
 
-  when hostOS != "standalone" and not defined(NimrodVM):
+  when hostOS != "standalone" and not defined(nimrodvm):
     include "system/assign"
     include "system/repr"
 
@@ -2208,14 +2208,14 @@ when not defined(JS): #and not defined(NimrodVM):
         excHandler.raiseAction = action
 
   {.push stack_trace: off, profiler:off.}
-  when defined(endb) and not defined(NimrodVM):
+  when defined(endb) and not defined(nimrodvm):
     include "system/debugger"
 
   when defined(profiler) or defined(memProfiler):
     include "system/profiler"
   {.pop.} # stacktrace
 
-  when not defined(NimrodVM):
+  when not defined(nimrodvm):
     proc likely*(val: bool): bool {.importc: "likely", nodecl, nosideeffect.}
       ## can be used to mark a condition to be likely. This is a hint for the
       ## optimizer.
@@ -2244,7 +2244,7 @@ when not defined(JS): #and not defined(NimrodVM):
       `result` = *((NI*) `x`.ClEnv) < 0;
       """.}
 
-elif defined(JS):
+elif defined(js):
   # Stubs:
   proc nimGCvisit(d: pointer, op: int) {.compilerRtl.} = nil
 
@@ -2270,10 +2270,10 @@ elif defined(JS):
   proc deallocShared(p: pointer) = nil
   proc reallocShared(p: pointer, newsize: int): pointer = nil
 
-  when defined(JS):
+  when defined(js):
     include "system/jssys"
     include "system/reprjs"
-  elif defined(NimrodVM):
+  elif defined(nimrodvm):
     proc cmp(x, y: string): int =
       if x == y: return 0
       if x < y: return -1
@@ -2550,7 +2550,7 @@ proc shallow*[T](s: var seq[T]) {.noSideEffect, inline.} =
   ## marks a sequence `s` as `shallow`:idx:. Subsequent assignments will not
   ## perform deep copies of `s`. This is only useful for optimization
   ## purposes.
-  when not defined(JS) and not defined(NimrodVM):
+  when not defined(js) and not defined(nimrodvm):
     var s = cast[PGenericSeq](s)
     s.reserved = s.reserved or seqShallowFlag
 
@@ -2558,7 +2558,7 @@ proc shallow*(s: var string) {.noSideEffect, inline.} =
   ## marks a string `s` as `shallow`:idx:. Subsequent assignments will not
   ## perform deep copies of `s`. This is only useful for optimization
   ## purposes.
-  when not defined(JS) and not defined(NimrodVM):
+  when not defined(js) and not defined(nimrodvm):
     var s = cast[PGenericSeq](s)
     s.reserved = s.reserved or seqShallowFlag
 

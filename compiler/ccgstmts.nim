@@ -844,7 +844,7 @@ proc genDiscriminantCheck(p: BProc, a, tmp: TLoc, objtype: PType,
     appcg(p.module, cfsVars, "extern $1",
           discriminatorTableDecl(p.module, t, field))
   lineCg(p, cpsStmts,
-        "#FieldDiscriminantCheck((NI)(NU)($1), (NI)(NU)($2), $3, $4);$n",
+        "#fieldDiscriminantCheck((NI)(NU)($1), (NI)(NU)($2), $3, $4);$n",
         [rdLoc(a), rdLoc(tmp), discriminatorTableName(p.module, t, field),
          intLiteral(L+1)])
 

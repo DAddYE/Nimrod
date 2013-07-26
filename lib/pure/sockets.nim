@@ -35,7 +35,7 @@ from times import epochTime
 when defined(ssl):
   import openssl
 
-when defined(Windows):
+when defined(windows):
   import winlean
 else:
   import posix
@@ -212,7 +212,7 @@ else:
 proc socket*(domain: TDomain = AF_INET, typ: TType = SOCK_STREAM,
              protocol: TProtocol = IPPROTO_TCP, buffered = true): TSocket =
   ## Creates a new socket; returns `InvalidSocket` if an error occurs.
-  when defined(Windows):
+  when defined(windows):
     result = newTSocket(winlean.socket(ord(domain), ord(typ), ord(protocol)), buffered)
   else:
     result = newTSocket(posix.socket(toInt(domain), toInt(typ), toInt(protocol)), buffered)
@@ -414,7 +414,7 @@ proc bindAddr*(socket: TSocket, port = TPort(0), address = "") {.
 
   if address == "":
     var name: Tsockaddr_in
-    when defined(Windows):
+    when defined(windows):
       name.sin_family = int16(ord(AF_INET))
     else:
       name.sin_family = posix.AF_INET
@@ -436,7 +436,7 @@ proc bindAddr*(socket: TSocket, port = TPort(0), address = "") {.
 proc getSockName*(socket: TSocket): TPort =
   ## returns the socket's associated port number.
   var name: Tsockaddr_in
-  when defined(Windows):
+  when defined(windows):
     name.sin_family = int16(ord(AF_INET))
   else:
     name.sin_family = posix.AF_INET
@@ -624,7 +624,7 @@ proc close*(socket: TSocket) =
 
 proc getServByName*(name, proto: string): TServent {.tags: [FReadIO].} =
   ## well-known getservbyname proc.
-  when defined(Windows):
+  when defined(windows):
     var s = winlean.getservbyname(name, proto)
   else:
     var s = posix.getservbyname(name, proto)
@@ -636,7 +636,7 @@ proc getServByName*(name, proto: string): TServent {.tags: [FReadIO].} =
 
 proc getServByPort*(port: TPort, proto: string): TServent {.tags: [FReadIO].} =
   ## well-known getservbyport proc.
-  when defined(Windows):
+  when defined(windows):
     var s = winlean.getservbyport(ze(int16(port)).cint, proto)
   else:
     var s = posix.getservbyport(ze(int16(port)).cint, proto)
@@ -677,7 +677,7 @@ proc getHostByAddr*(ip: string): THostEnt {.tags: [FReadIO].} =
 
 proc getHostByName*(name: string): THostEnt {.tags: [FReadIO].} =
   ## well-known gethostbyname proc.
-  when defined(Windows):
+  when defined(windows):
     var s = winlean.gethostbyname(name)
   else:
     var s = posix.gethostbyname(name)
@@ -1595,7 +1595,7 @@ proc sendTo*(socket: TSocket, address: string, port: TPort,
   ## Friendlier version of the low-level ``sendTo``.
   result = socket.sendTo(address, port, cstring(data), data.len)
 
-when defined(Windows):
+when defined(windows):
   const
     IOCPARM_MASK = 127
     IOC_IN = int(-2147483648)
@@ -1607,7 +1607,7 @@ when defined(Windows):
                    stdcall, importc:"ioctlsocket", dynlib: "ws2_32.dll".}
 
 proc setBlocking(s: TSocket, blocking: bool) =
-  when defined(Windows):
+  when defined(windows):
     var mode = clong(ord(not blocking)) # 1 for non-blocking, 0 for blocking
     if ioctlsocket(TWinSocket(s.fd), FIONBIO, addr(mode)) == -1:
       osError(osLastError())
@@ -1647,7 +1647,7 @@ proc isSSL*(socket: TSocket): bool = return socket.isSSL
 proc getFD*(socket: TSocket): cint = return socket.fd
   ## Returns the socket's file descriptor
 
-when defined(Windows):
+when defined(windows):
   var wsa: TWSADATA
   if WSAStartup(0x0101'i16, addr wsa) != 0: osError(osLastError())
 

@@ -29,7 +29,7 @@ var
   timezone {.importc, header: "<time.h>".}: int
   tzname {.importc, header: "<time.h>" .}: array[0..1, cstring]
 
-when defined(posix) and not defined(JS):
+when defined(posix) and not defined(js):
   type
     TTimeImpl {.importc: "time_t", header: "<sys/time.h>".} = int
     TTime* = distinct TTimeImpl ## distinct type that represents a time
@@ -59,7 +59,7 @@ elif defined(windows):
   type
     TTime* = distinct TTimeImpl
 
-elif defined(JS):
+elif defined(js):
   type
     TTime* {.final, importc.} = object
       getDay: proc (): int {.tags: [], raises: [].}
@@ -188,7 +188,7 @@ proc `==`*(a, b: TTime): bool {.
   ## returns true if ``a == b``, that is if both times represent the same value
   result = a - b == 0
 
-when not defined(JS):
+when not defined(js):
   proc getTzname*(): tuple[nonDST, DST: string] {.tags: [FTime], raises: [].}
     ## returns the local timezone; ``nonDST`` is the name of the local non-DST
     ## timezone, ``DST`` is the name of the local DST timezone.
@@ -274,7 +274,7 @@ proc `-`*(a: TTimeInfo, interval: TTimeInterval): TTimeInfo =
   else:
     result = getLocalTime(fromSeconds(t - secs))
 
-when not defined(JS):
+when not defined(js):
   proc epochTime*(): float {.rtl, extern: "nt$1", tags: [FTime].}
     ## gets time after the UNIX epoch (1970) in seconds. It is a float
     ## because sub-second resolution is likely to be supported (depending
@@ -293,7 +293,7 @@ when not defined(JS):
     ##   doWork()
     ##   echo "CPU time [s] ", cpuTime() - t0
 
-when not defined(JS):
+when not defined(js):
   # C wrapper:
   type
     structTM {.importc: "struct tm", final.} = object
@@ -463,7 +463,7 @@ when not defined(JS):
     proc cpuTime(): float =
       result = toFloat(int(clock())) / toFloat(clocksPerSec)
 
-elif defined(JS):
+elif defined(js):
   proc newDate(): TTime {.importc: "new Date".}
   proc internGetTime(): TTime {.importc: "new Date", tags: [].}
 
@@ -733,7 +733,7 @@ when isMainModule:
     " ss t tt y yy yyy yyyy yyyyy z zz zzz ZZZ") ==
     "27 27 Mon Monday 4 04 16 16 6 06 1 01 Jan January 29 29 P PM 5 75 975 1975 01975 0 00 00:00 UTC"
 
-  when not defined(JS) and sizeof(TTime) == 8:
+  when not defined(js) and sizeof(TTime) == 8:
     var t3 = getGMTime(fromSeconds(889067643645)) # Fri  7 Jun 19:20:45 BST 30143
     assert t3.format("d dd ddd dddd h hh H HH m mm M MM MMM MMMM s" &
       " ss t tt y yy yyy yyyy yyyyy z zz zzz ZZZ") ==

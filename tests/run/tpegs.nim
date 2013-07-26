@@ -522,12 +522,12 @@ proc `$` *(r: TPeg): string {.rtl, extern: "npegsToString".} =
 
 type
   TCaptures* {.final.} = object ## contains the captured substrings.
-    matches: array[0..maxSubpatterns-1, tuple[first, last: int]]
+    matches: array[0..MaxSubpatterns-1, tuple[first, last: int]]
     ml: int
     origStart: int
 
 proc bounds*(c: TCaptures,
-             i: range[0..maxSubpatterns-1]): tuple[first, last: int] =
+             i: range[0..MaxSubpatterns-1]): tuple[first, last: int] =
   ## returns the bounds ``[first..last]`` of the `i`'th capture.
   result = c.matches[i]
 
@@ -695,7 +695,7 @@ proc rawMatch*(s: string, p: TPeg, start: int, c: var TCaptures): int {.
     while start+result < s.len:
       var x = rawMatch(s, p.sons[0], start+result, c)
       if x >= 0:
-        if idx < maxSubpatterns:
+        if idx < MaxSubpatterns:
           c.matches[idx] = (start, start+result-1)
         #else: silently ignore the capture
         inc(result, x)
@@ -739,7 +739,7 @@ proc rawMatch*(s: string, p: TPeg, start: int, c: var TCaptures): int {.
     inc(c.ml)
     result = rawMatch(s, p.sons[0], start, c)
     if result >= 0:
-      if idx < maxSubpatterns:
+      if idx < MaxSubpatterns:
         c.matches[idx] = (start, start+result-1)
       #else: silently ignore the capture
     else:
@@ -866,7 +866,7 @@ template `=~`*(s: string, pattern: TPeg): expr =
   ##     echo("syntax error")
   ##
   when not definedInScope(matches):
-    var matches {.inject.}: array[0..maxSubpatterns-1, string]
+    var matches {.inject.}: array[0..MaxSubpatterns-1, string]
   match(s, pattern, matches)
 
 # ------------------------- more string handling ------------------------------
@@ -907,7 +907,7 @@ proc replacef*(s: string, sub: TPeg, by: string): string {.
   ##   "var1<-keykey; val2<-key2key2"
   result = ""
   var i = 0
-  var caps: array[0..maxSubpatterns-1, string]
+  var caps: array[0..MaxSubpatterns-1, string]
   while i < s.len:
     var x = matchLen(s, sub, caps, i)
     if x <= 0:
@@ -924,7 +924,7 @@ proc replace*(s: string, sub: TPeg, by = ""): string {.
   ## in `by`.
   result = ""
   var i = 0
-  var caps: array[0..maxSubpatterns-1, string]
+  var caps: array[0..MaxSubpatterns-1, string]
   while i < s.len:
     var x = matchLen(s, sub, caps, i)
     if x <= 0:
@@ -942,7 +942,7 @@ proc parallelReplace*(s: string, subs: varargs[
   ## applied in parallel.
   result = ""
   var i = 0
-  var caps: array[0..maxSubpatterns-1, string]
+  var caps: array[0..MaxSubpatterns-1, string]
   while i < s.len:
     block searchSubs:
       for j in 0..high(subs):
@@ -1175,7 +1175,7 @@ proc skip(c: var TPegLexer) =
     of '#':
       while not (buf[pos] in {'\c', '\L', '\0'}): inc(pos)
     of '\c':
-      pos = HandleCR(c, pos)
+      pos = handleCR(c, pos)
       buf = c.buf
     of '\L':
       pos = HandleLF(c, pos)

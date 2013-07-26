@@ -4,7 +4,7 @@
 ## Use the following link to see changes (in uv.h) since then and don't forget to update the information here.
 ## https://github.com/joyent/libuv/compare/9f6024a6fa9d254527b4b59af724257df870288b...master
 
-when defined(Windows):
+when defined(windows):
   import winlean
 else:
   import posix
