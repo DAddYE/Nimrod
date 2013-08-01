@@ -120,7 +120,7 @@ proc openLexer*(lex: var TLexer, filename: string, inputstream: PllStream) =
   lex.fileIdx = filename.fileInfoIdx
 
 proc closeLexer*(lex: var TLexer) =
-  inc(gLinesCompiled, lex.LineNumber)
+  inc(gLinesCompiled, lex.lineNumber)
   closeBaseLexer(lex)
 
 proc getColumn*(L: TLexer): int =
@@ -208,7 +208,7 @@ proc `$`(tok: TToken): string =
   of pxSymbol, pxInvalid, pxStarComment, pxLineComment, pxStrLit: result = tok.s
   of pxIntLit, pxInt64Lit: result = $tok.iNumber
   of pxFloatLit: result = $tok.fNumber
-  else: result = TokKindToStr(tok.xkind)
+  else: result = tokKindToStr(tok.xkind)
 
 proc printTok(tok: TToken) =
   writeln(stdout, $tok)
@@ -220,7 +220,7 @@ proc matchUnderscoreChars(L: var TLexer, tok: var TToken, chars: TcharSet) =
   while true:
     if buf[pos] in chars:
       add(tok.s, buf[pos])
-     inc(pos)
+      inc(pos)
     else:
       break
     if buf[pos] == '_':
@@ -324,7 +324,7 @@ proc getNumber(L: var TLexer, tok: var TToken) =
       tok.fnumber = parseFloat(tok.s)
       tok.xkind = pxFloatLit
     else:
-      tok.iNumber = ParseInt(tok.s)
+      tok.iNumber = parseInt(tok.s)
       if (tok.iNumber < low(int32)) or (tok.iNumber > high(int32)):
         tok.xkind = pxInt64Lit
       else:
@@ -412,9 +412,9 @@ proc getString(L: var TLexer, tok: var TToken) =
       buf = L.buf
     of nimlexbase.EndOfFile:
       var line2 = L.linenumber
-      L.LineNumber = line
+      L.lineNumber = line
       lexMessagePos(L, errClosingQuoteExpected, L.lineStart)
-      L.LineNumber = line2
+      L.lineNumber = line2
       break
     of '\\':
       # we allow an empty \ for line concatenation, but we don't require it
@@ -472,7 +472,7 @@ proc scanStarComment(L: var TLexer, tok: var TToken) =
   while true:
     case buf[pos]
     of CR, LF:
-      pos = HandleCRLF(L, pos)
+      pos = handleCRLF(L, pos)
       buf = L.buf
       add(tok.s, "\n#")
       # skip annoying stars as line prefix: (eg.
@@ -508,12 +508,12 @@ proc skip(L: var TLexer, tok: var TToken) =
       if L.inDirective:
         while buf[pos] in {' ', '\t'}: inc(pos)
         if buf[pos] in {CR, LF}:
-          pos = HandleCRLF(L, pos)
+          pos = handleCRLF(L, pos)
           buf = L.buf
     of ' ', Tabulator:
       inc(pos)                # newline is special:
     of CR, LF:
-      pos = HandleCRLF(L, pos)
+      pos = handleCRLF(L, pos)
       buf = L.buf
       if L.inDirective:
         tok.xkind = pxNewLine

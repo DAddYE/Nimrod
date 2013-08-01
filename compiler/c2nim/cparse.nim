@@ -88,7 +88,7 @@ proc closeParser*(p: var TParser)
 
 proc openParser(p: var TParser, filename: string,
                 inputStream: PLLStream, options = newParserOptions()) =
-  OpenLexer(p.lex, filename, inputStream)
+  openLexer(p.lex, filename, inputStream)
   p.options = options
   p.backtrack = @[]
   new(p.tok)
@@ -96,7 +96,7 @@ proc openParser(p: var TParser, filename: string,
 proc parMessage(p: TParser, msg: TMsgKind, arg = "") =
   lexMessage(p.lex, msg, arg)
 
-proc closeParser(p: var TParser) = CloseLexer(p.lex)
+proc closeParser(p: var TParser) = closeLexer(p.lex)
 proc saveContext(p: var TParser) = p.backtrack.add(p.tok)
 proc closeContext(p: var TParser) = discard p.backtrack.pop()
 proc backtrackContext(p: var TParser) = p.tok = p.backtrack.pop()
@@ -123,7 +123,7 @@ proc findMacro(p: TParser): int =
 
 proc rawEat(p: var TParser, xkind: TTokKind) =
   if p.tok.xkind == xkind: rawGetTok(p)
-  else: parMessage(p, errTokenExpected, TokKindToStr(xkind))
+  else: parMessage(p, errTokenExpected, tokKindToStr(xkind))
 
 proc parseMacroArguments(p: var TParser): seq[seq[ref TToken]] =
   result = @[]
@@ -220,11 +220,11 @@ proc expectIdent(p: TParser) =
 
 proc eat(p: var TParser, xkind: TTokKind, n: PNode) =
   if p.tok.xkind == xkind: getTok(p, n)
-  else: parMessage(p, errTokenExpected, TokKindToStr(xkind))
+  else: parMessage(p, errTokenExpected, tokKindToStr(xkind))
 
 proc eat(p: var TParser, xkind: TTokKind) =
   if p.tok.xkind == xkind: getTok(p)
-  else: parMessage(p, errTokenExpected, TokKindToStr(xkind))
+  else: parMessage(p, errTokenExpected, tokKindToStr(xkind))
 
 proc eat(p: var TParser, tok: string, n: PNode) =
   if p.tok.s == tok: getTok(p, n)
@@ -425,7 +425,7 @@ proc skipConst(p: var TParser) =
 
 proc typeAtom(p: var TParser): PNode =
   skipConst(p)
-  ExpectIdent(p)
+  expectIdent(p)
   case p.tok.s
   of "void":
     result = newNodeP(nkNilLit, p) # little hack
@@ -908,7 +908,7 @@ proc declaration(p: var TParser): PNode =
     result = parseFunctionPointerDecl(p, rettyp)
     eat(p, pxSemicolon)
     return
-  ExpectIdent(p)
+  expectIdent(p)
   var origName = p.tok.s
   getTok(p) # skip identifier
   case p.tok.xkind
@@ -930,7 +930,7 @@ proc declaration(p: var TParser): PNode =
     of pxSemicolon:
       getTok(p)
       addSon(result, ast.emptyNode) # nobody
-      if p.scopeCounter == 0: DoImport(origName, pragmas, p)
+      if p.scopeCounter == 0: doImport(origName, pragmas, p)
     of pxCurlyLe:
       addSon(result, compoundStatement(p))
     else:
@@ -1298,7 +1298,7 @@ proc relationalExpression(p: var TParser): PNode =
   result = shiftExpression(p)
   # Nimrod uses ``<`` and ``<=``, etc. too:
   while p.tok.xkind in {pxLt, pxLe, pxGt, pxGe}:
-    var op = TokKindToStr(p.tok.xkind)
+    var op = tokKindToStr(p.tok.xkind)
     getTok(p, result)
     var a = result
     var b = shiftExpression(p)
@@ -1308,7 +1308,7 @@ proc equalityExpression(p: var TParser): PNode =
   result = relationalExpression(p)
   # Nimrod uses ``==`` and ``!=`` too:
   while p.tok.xkind in {pxEquals, pxNeq}:
-    var op = TokKindToStr(p.tok.xkind)
+    var op = tokKindToStr(p.tok.xkind)
     getTok(p, result)
     var a = result
     var b = relationalExpression(p)

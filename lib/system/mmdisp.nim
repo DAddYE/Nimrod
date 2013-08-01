@@ -25,7 +25,7 @@ const
 
   cycleGC = true # (de)activate the cycle GC
   reallydealloc = true # for debugging purposes this can be set to false
-  eallyOsdealloc = true
+  reallyOsdealloc = true
   coalescRight = true
   coalescLeft = true
 
