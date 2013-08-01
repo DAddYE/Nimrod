@@ -31,7 +31,7 @@ when defined(windows):
     ## Tries to acquire the lock `L`.
 
   proc tryAcquireSys(L: var TSysLock): bool {.inline.} =
-    result = TryAcquireSysAux(L) != 0'i32
+    result = tryAcquireSysAux(L) != 0'i32
 
   proc acquireSys(L: var TSysLock) {.stdcall, noSideEffect,
     dynlib: "kernel32", importc: "EnterCriticalSection".}
@@ -82,7 +82,7 @@ else:
     importc: "pthread_mutex_trylock", header: "<pthread.h>".}
 
   proc tryAcquireSys(L: var TSysLock): bool {.inline.} =
-    result = TryAcquireSysAux(L) == 0'i32
+    result = tryAcquireSysAux(L) == 0'i32
 
   proc releaseSys(L: var TSysLock) {.noSideEffect,
     importc: "pthread_mutex_unlock", header: "<pthread.h>".}
@@ -98,4 +98,3 @@ else:
 
   proc deinitSysCond(cond: var TSysCond) {.
     importc: "pthread_cond_destroy", header: "<pthread.h>".}
-

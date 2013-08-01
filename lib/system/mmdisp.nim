@@ -25,7 +25,7 @@ const
 
   cycleGC = true # (de)activate the cycle GC
   reallydealloc = true # for debugging purposes this can be set to false
-  reallyOsdealloc = true
+  eallyOsdealloc = true
   coalescRight = true
   coalescLeft = true
 
@@ -161,11 +161,11 @@ when defined(boehmgc):
   proc nimGCref(p: pointer) {.compilerproc, inline.} = nil
   proc nimGCunref(p: pointer) {.compilerproc, inline.} = nil
 
-  proc unsureAsgnRef(dest: ppointer, src: pointer) {.compilerproc, inline.} =
+  proc unsureAsgnRef(dest: Ppointer, src: pointer) {.compilerproc, inline.} =
     dest[] = src
-  proc asgnRef(dest: ppointer, src: pointer) {.compilerproc, inline.} =
+  proc asgnRef(dest: Ppointer, src: pointer) {.compilerproc, inline.} =
     dest[] = src
-  proc asgnRefNoCycle(dest: ppointer, src: pointer) {.compilerproc, inline.} =
+  proc asgnRefNoCycle(dest: Ppointer, src: pointer) {.compilerproc, inline.} =
     dest[] = src
 
   type
@@ -236,11 +236,11 @@ elif defined(nogc) and defined(useMalloc):
   proc nimGCref(p: pointer) {.compilerproc, inline.} = nil
   proc nimGCunref(p: pointer) {.compilerproc, inline.} = nil
 
-  proc unsureAsgnRef(dest: ppointer, src: pointer) {.compilerproc, inline.} =
+  proc unsureAsgnRef(dest: Ppointer, src: pointer) {.compilerproc, inline.} =
     dest[] = src
-  proc asgnRef(dest: ppointer, src: pointer) {.compilerproc, inline.} =
+  proc asgnRef(dest: Ppointer, src: pointer) {.compilerproc, inline.} =
     dest[] = src
-  proc asgnRefNoCycle(dest: ppointer, src: pointer) {.compilerproc, inline.} =
+  proc asgnRefNoCycle(dest: Ppointer, src: pointer) {.compilerproc, inline.} =
     dest[] = src
 
   type
@@ -289,11 +289,11 @@ elif defined(nogc):
   proc nimGCref(p: pointer) {.compilerproc, inline.} = nil
   proc nimGCunref(p: pointer) {.compilerproc, inline.} = nil
 
-  proc unsureAsgnRef(dest: ppointer, src: pointer) {.compilerproc, inline.} =
+  proc unsureAsgnRef(dest: Ppointer, src: pointer) {.compilerproc, inline.} =
     dest[] = src
-  proc asgnRef(dest: ppointer, src: pointer) {.compilerproc, inline.} =
+  proc asgnRef(dest: Ppointer, src: pointer) {.compilerproc, inline.} =
     dest[] = src
-  proc asgnRefNoCycle(dest: ppointer, src: pointer) {.compilerproc, inline.} =
+  proc asgnRefNoCycle(dest: Ppointer, src: pointer) {.compilerproc, inline.} =
     dest[] = src
 
   var allocator {.rtlThreadVar.}: TMemRegion

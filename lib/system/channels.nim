@@ -15,7 +15,7 @@
 ## not work with cyclic data structures.
 
 type
-  pbytes = ptr array[0.. 0xffff, byte]
+  pbytes = ptr array[0.. 0xffff, Byte]
   TRawChannel {.pure, final.} = object ## msg queue for a thread
     rd, wr, count, mask: int
     data: pbytes
@@ -70,11 +70,11 @@ proc storeAux(dest, src: pointer, mt: PNimType, t: PRawChannel,
     d = cast[TAddress](dest)
     s = cast[TAddress](src)
   sysAssert(mt != nil, "mt == nil")
-  case mt.Kind
+  case mt.kind
   of tyString:
     if mode == mStore:
-      var x = cast[ppointer](dest)
-      var s2 = cast[ppointer](s)[]
+      var x = cast[Ppointer](dest)
+      var s2 = cast[Ppointer](s)[]
       if s2 == nil:
         x[] = nil
       else:
@@ -83,17 +83,17 @@ proc storeAux(dest, src: pointer, mt: PNimType, t: PRawChannel,
         copyMem(ns, ss, ss.len+1 + GenericSeqSize)
         x[] = ns
     else:
-      var x = cast[ppointer](dest)
-      var s2 = cast[ppointer](s)[]
+      var x = cast[Ppointer](dest)
+      var s2 = cast[Ppointer](s)[]
       if s2 == nil:
         unsureAsgnRef(x, s2)
       else:
         unsureAsgnRef(x, copyString(cast[NimString](s2)))
         dealloc(t.region, s2)
   of tySequence:
-    var s2 = cast[ppointer](src)[]
+    var s2 = cast[Ppointer](src)[]
     var seq = cast[PGenericSeq](s2)
-    var x = cast[ppointer](dest)
+    var x = cast[Ppointer](dest)
     if s2 == nil:
       if mode == mStore:
         x[] = nil
@@ -105,13 +105,13 @@ proc storeAux(dest, src: pointer, mt: PNimType, t: PRawChannel,
         x[] = alloc(t.region, seq.len *% mt.base.size +% GenericSeqSize)
       else:
         unsureAsgnRef(x, newObj(mt, seq.len * mt.base.size + GenericSeqSize))
-      var dst = cast[taddress](cast[ppointer](dest)[])
+      var dst = cast[TAddress](cast[Ppointer](dest)[])
       for i in 0..seq.len-1:
         storeAux(
           cast[pointer](dst +% i*% mt.base.size +% GenericSeqSize),
           cast[pointer](cast[TAddress](s2) +% i *% mt.base.size +%
                         GenericSeqSize),
-          mt.Base, t, mode)
+          mt.base, t, mode)
       var dstseq = cast[PGenericSeq](dst)
       dstseq.len = seq.len
       dstseq.reserved = seq.len
@@ -129,8 +129,8 @@ proc storeAux(dest, src: pointer, mt: PNimType, t: PRawChannel,
       storeAux(cast[pointer](d +% i*% mt.base.size),
                cast[pointer](s +% i*% mt.base.size), mt.base, t, mode)
   of tyRef:
-    var s = cast[ppointer](src)[]
-    var x = cast[ppointer](dest)
+    var s = cast[Ppointer](src)[]
+    var x = cast[Ppointer](dest)
     if s == nil:
       if mode == mStore:
         x[] = nil
@@ -195,7 +195,7 @@ template sendImpl(q: expr) {.immediate.} =
   rawSend(q, addr(m), typ)
   q.elemType = typ
   releaseSys(q.lock)
-  SignalSysCond(q.cond)
+  signalSysCond(q.cond)
 
 proc send*[TMsg](c: var TChannel[TMsg], msg: TMsg) =
   ## sends a message to a thread. `msg` is deeply copied.
@@ -207,7 +207,7 @@ proc llRecv(q: PRawChannel, res: pointer, typ: PNimType) =
   acquireSys(q.lock)
   q.ready = true
   while q.count <= 0:
-    WaitSysCond(q.cond, q.lock)
+    waitSysCond(q.cond, q.lock)
   q.ready = false
   if typ != q.elemType:
     releaseSys(q.lock)
@@ -244,4 +244,3 @@ proc ready*[TMsg](c: var TChannel[TMsg]): bool =
   ## new messages.
   var q = cast[PRawChannel](addr(c))
   result = q.ready
-

@@ -120,7 +120,7 @@ else:
     var a: Ttimespec
     a.tv_sec = msTimeout div 1000
     a.tv_nsec = (msTimeout mod 1000) * 1000
-    var res = AcquireSysTimeoutAux(L, a)
+    var res = acquireSysTimeoutAux(L, a)
     if res != 0'i32: raise newException(EResourceExhausted, $strerror(res))
 
   type
@@ -156,7 +156,7 @@ const
 when emulatedThreadVars:
   # the compiler generates this proc for us, so that we can get the size of
   # the thread local var block; we use this only for sanity checking though
-  proc nimThreadVarsSize(): int {.noconv, importc: "NimThreadVarsSize".}
+  proc nimThreadVarsSize(): int {.noconv, importc: "nimThreadVarsSize".}
 
 # we preallocate a fixed size for thread local storage, so that no heap
 # allocations are needed. Currently less than 7K are used on a 64bit machine.
@@ -181,13 +181,13 @@ type
 # XXX it'd be more efficient to not use a global variable for the
 # thread storage slot, but to rely on the implementation to assign slot X
 # for us... ;-)
-var globalsSlot = ThreadVaralloc()
+var globalsSlot = threadVaralloc()
 #const globalsSlot = TThreadVarSlot(0)
 #sysAssert checkSlot.int == globalsSlot.int
 
 when emulatedThreadVars:
   proc getThreadLocalVars(): pointer {.compilerRtl, inl.} =
-    result = addr(cast[PGcThread](ThreadVarGetValue(globalsSlot)).tls)
+    result = addr(cast[PGcThread](threadVarGetValue(globalsSlot)).tls)
 
 when useStackMaskHack:
   proc maskStackPointer(offset: int): pointer {.compilerRtl, inl.} =
@@ -202,12 +202,12 @@ when not defined(useNimRtl):
 
   when not useStackMaskHack:
     var mainThread: TGcThread
-    ThreadVarSetValue(globalsSlot, addr(mainThread))
+    threadVarSetValue(globalsSlot, addr(mainThread))
     when not defined(createNimRtl): initStackBottom()
     initGC()
 
   when emulatedThreadVars:
-    if NimThreadVarsSize() > sizeof(TThreadLocalStorage):
+    if nimThreadVarsSize() > sizeof(TThreadLocalStorage):
       echo "too large thread local storage size requested"
       quit 1
 
@@ -264,7 +264,7 @@ when not defined(boehmgc) and not hasSharedHeap:
   proc deallocOsPages()
 
 template threadProcWrapperBody(closure: expr) {.immediate.} =
-  when defined(globalsSlot): ThreadVarSetValue(globalsSlot, closure)
+  when defined(globalsSlot): threadVarSetValue(globalsSlot, closure)
   var t = cast[ptr TThread[TArg]](closure)
   when useStackMaskHack:
     var tls: TThreadLocalStorage
@@ -291,11 +291,11 @@ template threadProcWrapperBody(closure: expr) {.immediate.} =
 {.push stack_trace:off.}
 when defined(windows):
   proc threadProcWrapper[TArg](closure: pointer): int32 {.stdcall.} =
-    ThreadProcWrapperBody(closure)
+    threadProcWrapperBody(closure)
     # implicitely return 0
 else:
   proc threadProcWrapper[TArg](closure: pointer) {.noconv.} =
-    ThreadProcWrapperBody(closure)
+    threadProcWrapperBody(closure)
 {.pop.}
 
 proc running*[TArg](t: TThread[TArg]): bool {.inline.} =
@@ -361,7 +361,7 @@ proc threadId*[TArg](t: var TThread[TArg]): TThreadId[TArg] {.inline.} =
 proc myThreadId*[TArg](): TThreadId[TArg] =
   ## returns the thread ID of the thread that calls this proc. This is unsafe
   ## because the type ``TArg`` is not checked for consistency!
-  result = cast[TThreadId[TArg]](ThreadVarGetValue(globalsSlot))
+  result = cast[TThreadId[TArg]](threadVarGetValue(globalsSlot))
 
 when false:
   proc mainThreadId*[TArg](): TThreadId[TArg] =

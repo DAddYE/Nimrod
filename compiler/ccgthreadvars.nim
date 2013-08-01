@@ -21,7 +21,7 @@ proc accessThreadLocalVar(p: BProc, s: PSym) =
     p.module.usesThreadVars = true
     appf(p.procSec(cpsLocals), "\tNimThreadVars* NimTV;$n")
     app(p.procSec(cpsInit),
-      ropecg(p.module, "\tNimTV = (NimThreadVars*) #GetThreadLocalVars();$n"))
+      ropecg(p.module, "\tNimTV = (NimThreadVars*) #getThreadLocalVars();$n"))
 
 var
   nimtv: PRope                 # nimrod thread vars; the struct body
