@@ -1,27 +1,27 @@
 import endians
 
-proc swapEndian16*(outp, inp: pointer) = 
+proc swapEndian16*(outp, inp: Pointer) = 
   ## copies `inp` to `outp` swapping bytes. Both buffers are supposed to
   ## contain at least 2 bytes.
-  var i = cast[cstring](inp)
-  var o = cast[cstring](outp)
+  var i = cast[Cstring](inp)
+  var o = cast[Cstring](outp)
   o[0] = i[1]
   o[1] = i[0]
 when cpuEndian == bigEndian:
   proc bigEndian16(outp, inp: pointer) {.inline.} = copyMem(outp, inp, 2)
 else:
-  proc bigEndian16*(outp, inp: pointer) {.inline.} = swapEndian16(outp, inp)
+  proc bigEndian16*(outp, inp: Pointer) {.inline.} = swapEndian16(outp, inp)
 
 import enet
 
 type
   PBuffer* = ref object
-    data*: string
-    pos: int
+    data*: String
+    pos: Int
 
 proc free(b: PBuffer) =
-  GCunref b.data
-proc newBuffer*(len: int): PBuffer =
+  gCUnref b.data
+proc newBuffer*(len: Int): PBuffer =
   new result, free
   result.data = newString(len)
 proc newBuffer*(pkt: PPacket): PBuffer =
@@ -32,9 +32,9 @@ proc toPacket*(buffer: PBuffer; flags: TPacketFlag): PPacket =
   buffer.data.setLen buffer.pos
   result = createPacket(cstring(buffer.data), buffer.pos, flags)
 
-proc isDirty*(buffer: PBuffer): bool {.inline.} =
+proc isDirty*(buffer: PBuffer): Bool {.inline.} =
   result = (buffer.pos != 0)
-proc atEnd*(buffer: PBuffer): bool {.inline.} =
+proc atEnd*(buffer: PBuffer): Bool {.inline.} =
   result = (buffer.pos == buffer.data.len)
 proc reset*(buffer: PBuffer) {.inline.} =
   buffer.pos = 0
@@ -42,7 +42,7 @@ proc reset*(buffer: PBuffer) {.inline.} =
 proc flush*(buf: PBuffer) =
   buf.pos = 0
   buf.data.setLen(0)
-proc send*(peer: PPeer; channel: cuchar; buf: PBuffer; flags: TPacketFlag): cint {.discardable.} =
+proc send*(peer: PPeer; channel: Cuchar; buf: PBuffer; flags: TPacketFlag): Cint {.discardable.} =
   result = send(peer, channel, buf.toPacket(flags))
 
 proc read*[T: int16|uint16](buffer: PBuffer; outp: var T) =
@@ -76,38 +76,38 @@ proc writeBE*[T: char|int8|uint8|byte|bool](buffer: PBuffer; val: var T) =
   inc buffer.pos, 1
 
 
-proc write*(buffer: PBuffer; val: var string) =
-  var length = len(val).uint16
+proc write*(buffer: PBuffer; val: var String) =
+  var length = len(val).Uint16
   writeBE buffer, length
-  setLen buffer.data, buffer.pos + length.int
-  copyMem(addr buffer.data[buffer.pos], addr val[0], length.int)
-  inc buffer.pos, length.int
+  setLen buffer.data, buffer.pos + length.Int
+  copyMem(addr buffer.data[buffer.pos], addr val[0], length.Int)
+  inc buffer.pos, length.Int
 proc write*[T: TNumber|bool|char|byte](buffer: PBuffer; val: T) =
   var v: T
   shallowCopy v, val
   writeBE buffer, v
 
-proc readInt8*(buffer: PBuffer): int8 =
+proc readInt8*(buffer: PBuffer): Int8 =
   read buffer, result
-proc readInt16*(buffer: PBuffer): int16 =
+proc readInt16*(buffer: PBuffer): Int16 =
   read buffer, result
-proc readInt32*(buffer: PBuffer): int32 =
+proc readInt32*(buffer: PBuffer): Int32 =
   read buffer, result
-proc readInt64*(buffer: PBuffer): int64 =
+proc readInt64*(buffer: PBuffer): Int64 =
   read buffer, result
-proc readFloat32*(buffer: PBuffer): float32 =
+proc readFloat32*(buffer: PBuffer): Float32 =
   read buffer, result
-proc readFloat64*(buffer: PBuffer): float64 =
+proc readFloat64*(buffer: PBuffer): Float64 =
   read buffer, result
-proc readStr*(buffer: PBuffer): string =
-  let len = readInt16(buffer).int
+proc readStr*(buffer: PBuffer): String =
+  let len = readInt16(buffer).Int
   result = ""
   if len > 0:
     result.setLen len
     copyMem(addr result[0], addr buffer.data[buffer.pos], len)
     inc buffer.pos, len
-proc readChar*(buffer: PBuffer): char {.inline.} = return readInt8(buffer).char
-proc readBool*(buffer: PBuffer): bool {.inline.} = return readInt8(buffer).bool
+proc readChar*(buffer: PBuffer): Char {.inline.} = return readInt8(buffer).Char
+proc readBool*(buffer: PBuffer): Bool {.inline.} = return readInt8(buffer).Bool
 
 
 when isMainModule:

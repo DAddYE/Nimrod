@@ -12,10 +12,10 @@
 
 import 
   strutils, os, options, ast, astalgo, msgs, ropes, idents, passes,
-  intsets, strtabs
+  intsets, strtabs, pegs
   
 const
-  removeTP = false # when true, "nimrod pretty" converts TTyp to Typ.
+  removeTP = true # when true, "nimrod pretty" converts TTyp to Typ.
 
 type 
   TGen = object of TPassContext
@@ -23,12 +23,12 @@ type
   PGen = ref TGen
   
   TSourceFile = object
-    lines: seq[string]
-    dirty: bool
-    fullpath: string
+    lines: Seq[String]
+    dirty: Bool
+    fullpath: String
 
 var
-  gSourceFiles: seq[TSourceFile] = @[]
+  gSourceFiles: Seq[TSourceFile] = @[]
   rules: PStringTable
 
 proc loadFile(info: TLineInfo) =
@@ -55,7 +55,7 @@ proc overwriteFiles*() =
     except EIO:
       rawMessage(errCannotOpenFile, newFile)
 
-proc beautifyName(s: string, k: TSymKind): string =
+proc beautifyName(s: String, k: TSymKind): String =
   result = newStringOfCap(s.len)
   var i = 0
   case k
@@ -84,20 +84,20 @@ proc beautifyName(s: string, k: TSymKind): string =
       result.add s[i]
     inc i
 
-proc checkStyle*(info: TLineInfo, s: string, k: TSymKind) =
+proc checkStyle*(info: TLineInfo, s: String, k: TSymKind) =
   let beau = beautifyName(s, k)
   if s != beau:
-    Message(info, errGenerated, 
+    message(info, errGenerated, 
       "name does not adhere to naming convention; should be: " & beau)
 
 const
   Letters = {'a'..'z', 'A'..'Z', '0'..'9', '\x80'..'\xFF', '_'}
 
-proc identLen(line: string, start: int): int =
+proc identLen(line: String, start: Int): Int =
   while start+result < line.len and line[start+result] in Letters:
     inc result
 
-proc differ(line: string, a, b: int, x: string): bool =
+proc differ(line: String, a, b: Int, x: String): Bool =
   let y = line[a..b]
   result = cmpIgnoreStyle(y, x) == 0 and y != x
   when false:
@@ -128,7 +128,7 @@ proc processSym(c: PPassContext, n: PNode): PNode =
     loadFile(n.info)
     
     let line = gSourceFiles[n.info.fileIndex].lines[n.info.line-1]
-    var first = n.info.col.int
+    var first = n.info.col.Int
     if first < 0: return
     #inc first, skipIgnoreCase(line, "proc ", first)
     while first > 0 and line[first-1] in Letters: dec first
@@ -139,14 +139,14 @@ proc processSym(c: PPassContext, n: PNode): PNode =
       # name:
       if newName != s.name.s and newName != s.loc.r.ropeToStr and
           lfFullExternalName notin s.loc.flags:
-        Message(n.info, errGenerated, 
+        message(n.info, errGenerated, 
           "cannot rename $# to $# due to external name" % [s.name.s, newName])
         cannotRename.incl(s.id)
         return
     let last = first+identLen(line, first)-1
     if differ(line, first, last, newName):
       # last-first+1 != newName.len or 
-      var x = line.subStr(0, first-1) & newName & line.substr(last+1)
+      var x = line.substr(0, first-1) & newName & line.substr(last+1)
       when removeTP:
         # the WinAPI module is full of 'TX = X' which after the substitution
         # becomes 'X = X'. We remove those lines:

@@ -7,7 +7,7 @@ discard """
 var
   x = 0
   s = "Hallo"
-  a, b: int = 4
+  a, b: Int = 4
 
 write(stdout, a)
 write(stdout, b) #OUT 44

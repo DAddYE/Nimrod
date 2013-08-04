@@ -8,7 +8,7 @@ import strutils
 {.warning[Uninit]:on.}
 
 proc p =
-  var x, y, z: int
+  var x, y, z: Int
   if stdin.readLine == "true":
     x = 34
     

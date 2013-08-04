@@ -23,25 +23,25 @@ import
   lua
 
 const 
-  COLIBNAME* = "coroutine"
-  TABLIBNAME* = "table"
-  IOLIBNAME* = "io"
-  OSLIBNAME* = "os"
-  STRLINAME* = "string"
-  MATHLIBNAME* = "math"
-  DBLIBNAME* = "debug"
-  LOADLIBNAME* = "package"
+  Colibname* = "coroutine"
+  Tablibname* = "table"
+  Iolibname* = "io"
+  Oslibname* = "os"
+  Strliname* = "string"
+  Mathlibname* = "math"
+  Dblibname* = "debug"
+  Loadlibname* = "package"
 
 {.pragma: ilua, importc: "lua$1".}
 
 {.push callConv: cdecl, dynlib: lua.LIB_NAME.}
-proc open_base*(L: PState): cint{.ilua.}
-proc open_table*(L: PState): cint{.ilua.}
-proc open_io*(L: PState): cint{.ilua.}
-proc open_string*(L: PState): cint{.ilua.}
-proc open_math*(L: PState): cint{.ilua.}
-proc open_debug*(L: PState): cint{.ilua.}
-proc open_package*(L: PState): cint{.ilua.}
+proc open_base*(L: PState): Cint{.ilua.}
+proc open_table*(L: PState): Cint{.ilua.}
+proc open_io*(L: PState): Cint{.ilua.}
+proc open_string*(L: PState): Cint{.ilua.}
+proc open_math*(L: PState): Cint{.ilua.}
+proc open_debug*(L: PState): Cint{.ilua.}
+proc open_package*(L: PState): Cint{.ilua.}
 proc openlibs*(L: PState){.importc: "luaL_openlibs".}
 {.pop.}
 

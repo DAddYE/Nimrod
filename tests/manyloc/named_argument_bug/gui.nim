@@ -12,7 +12,7 @@ type
     wlMain    = 300,
     wlOverlay = 400,
     wlCursor  = 500
-  TWidgetLayerType = TWidgetLayer|int
+  TWidgetLayerType = TWidgetLayer|Int
   TWidgetType* = enum
     wtImg
   PWidget* = ref object

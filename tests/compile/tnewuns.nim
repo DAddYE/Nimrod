@@ -4,9 +4,9 @@ import
   strutils
 
 var
-  x, y: int
+  x, y: Int
 
 x = 1
-y = high(int)
+y = high(Int)
 
 writeln(stdout, $ ( x +% y ) )

@@ -16,7 +16,7 @@ proc evalPattern(c: PContext, n, orig: PNode): PNode =
   # we need to ensure that the resulting AST is semchecked. However, it's
   # aweful to semcheck before macro invocation, so we don't and treat
   # templates and macros as immediate in this context.
-  var rule: string
+  var rule: String
   if optHints in gOptions and hintPattern in gNotes:
     rule = renderTree(n, {renderNoComments})
   let s = n.sons[0].sym
@@ -28,7 +28,7 @@ proc evalPattern(c: PContext, n, orig: PNode): PNode =
   else:
     result = semDirectOp(c, n, {})
   if optHints in gOptions and hintPattern in gNotes:
-    Message(orig.info, hintPattern, rule & " --> '" & 
+    message(orig.info, hintPattern, rule & " --> '" & 
       renderTree(result, {renderNoComments}) & "'")
   # check the resulting AST for optimization rules again:
   result = hlo(c, result)
@@ -46,7 +46,7 @@ proc applyPatterns(c: PContext, n: PNode): PNode =
         assert x.kind in {nkStmtList, nkCall}
         inc(evalTemplateCounter)
         if evalTemplateCounter > 100:
-          GlobalError(n.info, errTemplateInstantiationTooNested)
+          globalError(n.info, errTemplateInstantiationTooNested)
         # deactivate this pattern:
         c.patterns[i] = nil
         if x.kind == nkStmtList:

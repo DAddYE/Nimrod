@@ -8,14 +8,14 @@ import os, streams, parsecsv, strutils, math
 if paramCount() < 1:
   quit("Usage: statcsv filename[.csv]")
 
-var filename = addFileExt(ParamStr(1), "csv")
+var filename = addFileExt(paramStr(1), "csv")
 var s = newFileStream(filename, fmRead)
 if s == nil: quit("cannot open the file " & filename)
 
 var
   x: TCsvParser
-  header: seq[string]
-  res: seq[TRunningStat]
+  header: Seq[String]
+  res: Seq[TRunningStat]
 open(x, s, filename, separator=';', skipInitialSpace = true)
 while readRow(x):
   if processedRows(x) == 1:

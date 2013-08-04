@@ -3,5 +3,5 @@ type TMyObject* = object
 
 const xyz* = 13
 
-proc q*(x: int): int = 6
-proc q*(x: string): string = "8"
+proc q*(x: Int): Int = 6
+proc q*(x: String): String = "8"

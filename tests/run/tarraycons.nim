@@ -8,7 +8,7 @@ type
     eA, eB, eC, eD, eE, eF
     
 const
-  myMapping: array[TEnum, array[0..1, int]] = [
+  myMapping: Array[TEnum, Array[0..1, Int]] = [
     eA: [1, 2],
     eB: [3, 4],
     [5, 6],

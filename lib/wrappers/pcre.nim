@@ -51,10 +51,10 @@ else:
 # The current PCRE version information. 
 
 const 
-  MAJOR* = 8
-  MINOR* = 31
-  PRERELEASE* = true
-  DATE* = "2012-07-06"
+  Major* = 8
+  Minor* = 31
+  Prerelease* = true
+  Date* = "2012-07-06"
 
 # When an application links to a PCRE DLL in Windows, the symbols that are
 # imported have to be identified as such. When building PCRE, the appropriate
@@ -70,169 +70,169 @@ const
 # both, so we keep them all distinct. 
 
 const 
-  CASELESS* = 0x00000001
-  MULTILINE* = 0x00000002
-  DOTALL* = 0x00000004
-  EXTENDED* = 0x00000008
-  ANCHORED* = 0x00000010
-  DOLLAR_ENDONLY* = 0x00000020
-  EXTRA* = 0x00000040
-  NOTBOL* = 0x00000080
-  NOTEOL* = 0x00000100
-  UNGREEDY* = 0x00000200
-  NOTEMPTY* = 0x00000400
-  UTF8* = 0x00000800
-  NO_AUTO_CAPTURE* = 0x00001000
-  NO_UTF8_CHECK* = 0x00002000
-  AUTO_CALLOUT* = 0x00004000
-  PARTIAL_SOFT* = 0x00008000
-  PARTIAL* = 0x00008000       # Backwards compatible synonym 
-  DFA_SHORTEST* = 0x00010000
-  DFA_RESTART* = 0x00020000
-  FIRSTLINE* = 0x00040000
-  DUPNAMES* = 0x00080000
-  NEWLINE_CR* = 0x00100000
-  NEWLINE_LF* = 0x00200000
-  NEWLINE_CRLF* = 0x00300000
-  NEWLINE_ANY* = 0x00400000
-  NEWLINE_ANYCRLF* = 0x00500000
-  BSR_ANYCRLF* = 0x00800000
-  BSR_UNICODE* = 0x01000000
-  JAVASCRIPT_COMPAT* = 0x02000000
-  NO_START_OPTIMIZE* = 0x04000000
-  NO_START_OPTIMISE* = 0x04000000
-  PARTIAL_HARD* = 0x08000000
-  NOTEMPTY_ATSTART* = 0x10000000
-  UCP* = 0x20000000
+  Caseless* = 0x00000001
+  Multiline* = 0x00000002
+  Dotall* = 0x00000004
+  Extended* = 0x00000008
+  Anchored* = 0x00000010
+  DollarEndonly* = 0x00000020
+  Extra* = 0x00000040
+  Notbol* = 0x00000080
+  Noteol* = 0x00000100
+  Ungreedy* = 0x00000200
+  Notempty* = 0x00000400
+  Utf8* = 0x00000800
+  NoAutoCapture* = 0x00001000
+  NoUtf8Check* = 0x00002000
+  AutoCallout* = 0x00004000
+  PartialSoft* = 0x00008000
+  Partial* = 0x00008000       # Backwards compatible synonym 
+  DfaShortest* = 0x00010000
+  DfaRestart* = 0x00020000
+  Firstline* = 0x00040000
+  Dupnames* = 0x00080000
+  NewlineCr* = 0x00100000
+  NewlineLf* = 0x00200000
+  NewlineCrlf* = 0x00300000
+  NewlineAny* = 0x00400000
+  NewlineAnycrlf* = 0x00500000
+  BsrAnycrlf* = 0x00800000
+  BsrUnicode* = 0x01000000
+  JavascriptCompat* = 0x02000000
+  NoStartOptimize* = 0x04000000
+  NoStartOptimise* = 0x04000000
+  PartialHard* = 0x08000000
+  NotemptyAtstart* = 0x10000000
+  Ucp* = 0x20000000
 
 # Exec-time and get/set-time error codes 
 
 const 
-  ERROR_NOMATCH* = (- 1)
-  ERROR_NULL* = (- 2)
-  ERROR_BADOPTION* = (- 3)
-  ERROR_BADMAGIC* = (- 4)
-  ERROR_UNKNOWN_OPCODE* = (- 5)
-  ERROR_UNKNOWN_NODE* = (- 5) # For backward compatibility 
-  ERROR_NOMEMORY* = (- 6)
-  ERROR_NOSUBSTRING* = (- 7)
-  ERROR_MATCHLIMIT* = (- 8)
-  ERROR_CALLOUT* = (- 9)      # Never used by PCRE itself 
-  ERROR_BADUTF8* = (- 10)
-  ERROR_BADUTF8_OFFSET* = (- 11)
-  ERROR_PARTIAL* = (- 12)
-  ERROR_BADPARTIAL* = (- 13)
-  ERROR_INTERNAL* = (- 14)
-  ERROR_BADCOUNT* = (- 15)
-  ERROR_DFA_UITEM* = (- 16)
-  ERROR_DFA_UCOND* = (- 17)
-  ERROR_DFA_UMLIMIT* = (- 18)
-  ERROR_DFA_WSSIZE* = (- 19)
-  ERROR_DFA_RECURSE* = (- 20)
-  ERROR_RECURSIONLIMIT* = (- 21)
-  ERROR_NULLWSLIMIT* = (- 22) # No longer actually used 
-  ERROR_BADNEWLINE* = (- 23)
-  ERROR_BADOFFSET* = (- 24)
-  ERROR_SHORTUTF8* = (- 25)
-  ERROR_RECURSELOOP* = (- 26)
-  ERROR_JIT_STACKLIMIT* = (- 27)
-  ERROR_BADMODE* = (- 28)
-  ERROR_BADENDIANNESS* = (- 29)
-  ERROR_DFA_BADRESTART* = (- 30)
+  ErrorNomatch* = (- 1)
+  ErrorNull* = (- 2)
+  ErrorBadoption* = (- 3)
+  ErrorBadmagic* = (- 4)
+  ErrorUnknownOpcode* = (- 5)
+  ErrorUnknownNode* = (- 5) # For backward compatibility 
+  ErrorNomemory* = (- 6)
+  ErrorNosubstring* = (- 7)
+  ErrorMatchlimit* = (- 8)
+  ErrorCallout* = (- 9)      # Never used by PCRE itself 
+  ErrorBadutf8* = (- 10)
+  ErrorBadutf8Offset* = (- 11)
+  ErrorPartial* = (- 12)
+  ErrorBadpartial* = (- 13)
+  ErrorInternal* = (- 14)
+  ErrorBadcount* = (- 15)
+  ErrorDfaUitem* = (- 16)
+  ErrorDfaUcond* = (- 17)
+  ErrorDfaUmlimit* = (- 18)
+  ErrorDfaWssize* = (- 19)
+  ErrorDfaRecurse* = (- 20)
+  ErrorRecursionlimit* = (- 21)
+  ErrorNullwslimit* = (- 22) # No longer actually used 
+  ErrorBadnewline* = (- 23)
+  ErrorBadoffset* = (- 24)
+  ErrorShortutf8* = (- 25)
+  ErrorRecurseloop* = (- 26)
+  ErrorJitStacklimit* = (- 27)
+  ErrorBadmode* = (- 28)
+  ErrorBadendianness* = (- 29)
+  ErrorDfaBadrestart* = (- 30)
 
 # Specific error codes for UTF-8 validity checks
 
 const
-  UTF8_ERR0* = 0
-  UTF8_ERR1* = 1
-  UTF8_ERR2* = 2
-  UTF8_ERR3* = 3
-  UTF8_ERR4* = 4
-  UTF8_ERR5* = 5
-  UTF8_ERR6* = 6
-  UTF8_ERR7* = 7
-  UTF8_ERR8* = 8
-  UTF8_ERR9* = 9
-  UTF8_ERR10* = 10
-  UTF8_ERR11* = 11
-  UTF8_ERR12* = 12
-  UTF8_ERR13* = 13
-  UTF8_ERR14* = 14
-  UTF8_ERR15* = 15
-  UTF8_ERR16* = 16
-  UTF8_ERR17* = 17
-  UTF8_ERR18* = 18
-  UTF8_ERR19* = 19
-  UTF8_ERR20* = 20
-  UTF8_ERR21* = 21
+  Utf8Err0* = 0
+  Utf8Err1* = 1
+  Utf8Err2* = 2
+  Utf8Err3* = 3
+  Utf8Err4* = 4
+  Utf8Err5* = 5
+  Utf8Err6* = 6
+  Utf8Err7* = 7
+  Utf8Err8* = 8
+  Utf8Err9* = 9
+  Utf8Err10* = 10
+  Utf8Err11* = 11
+  Utf8Err12* = 12
+  Utf8Err13* = 13
+  Utf8Err14* = 14
+  Utf8Err15* = 15
+  Utf8Err16* = 16
+  Utf8Err17* = 17
+  Utf8Err18* = 18
+  Utf8Err19* = 19
+  Utf8Err20* = 20
+  Utf8Err21* = 21
 
 # Request types for pcre_fullinfo() 
 
 const 
-  INFO_OPTIONS* = 0
-  INFO_SIZE* = 1
-  INFO_CAPTURECOUNT* = 2
-  INFO_BACKREFMAX* = 3
-  INFO_FIRSTBYTE* = 4
-  INFO_FIRSTCHAR* = 4         # For backwards compatibility 
-  INFO_FIRSTTABLE* = 5
-  INFO_LASTLITERAL* = 6
-  INFO_NAMEENTRYSIZE* = 7
-  INFO_NAMECOUNT* = 8
-  INFO_NAMETABLE* = 9
-  INFO_STUDYSIZE* = 10
-  INFO_DEFAULT_TABLES* = 11
-  INFO_OKPARTIAL* = 12
-  INFO_JCHANGED* = 13
-  INFO_HASCRORLF* = 14
-  INFO_MINLENGTH* = 15
-  INFO_JIT* = 16
-  INFO_JITSIZE* = 17
-  INFO_MAXLOOKBEHIND* = 18
+  InfoOptions* = 0
+  InfoSize* = 1
+  InfoCapturecount* = 2
+  InfoBackrefmax* = 3
+  InfoFirstbyte* = 4
+  InfoFirstchar* = 4         # For backwards compatibility 
+  InfoFirsttable* = 5
+  InfoLastliteral* = 6
+  InfoNameentrysize* = 7
+  InfoNamecount* = 8
+  InfoNametable* = 9
+  InfoStudysize* = 10
+  InfoDefaultTables* = 11
+  InfoOkpartial* = 12
+  InfoJchanged* = 13
+  InfoHascrorlf* = 14
+  InfoMinlength* = 15
+  InfoJit* = 16
+  InfoJitsize* = 17
+  InfoMaxlookbehind* = 18
 
 # Request types for pcre_config(). Do not re-arrange, in order to remain
 # compatible. 
 
 const 
-  CONFIG_UTF8* = 0
-  CONFIG_NEWLINE* = 1
-  CONFIG_LINK_SIZE* = 2
-  CONFIG_POSIX_MALLOC_THRESHOLD* = 3
-  CONFIG_MATCH_LIMIT* = 4
-  CONFIG_STACKRECURSE* = 5
-  CONFIG_UNICODE_PROPERTIES* = 6
-  CONFIG_MATCH_LIMIT_RECURSION* = 7
-  CONFIG_BSR* = 8
-  CONFIG_JIT* = 9
-  CONFIG_JITTARGET* = 11
+  ConfigUtf8* = 0
+  ConfigNewline* = 1
+  ConfigLinkSize* = 2
+  ConfigPosixMallocThreshold* = 3
+  ConfigMatchLimit* = 4
+  ConfigStackrecurse* = 5
+  ConfigUnicodeProperties* = 6
+  ConfigMatchLimitRecursion* = 7
+  ConfigBsr* = 8
+  ConfigJit* = 9
+  ConfigJittarget* = 11
 
 # Request types for pcre_study(). Do not re-arrange, in order to remain
 # compatible.
 
 const
-  STUDY_JIT_COMPILE* = 0x00000001
-  STUDY_JIT_PARTIAL_SOFT_COMPILE* = 0x00000002
-  STUDY_JIT_PARTIAL_HARD_COMPILE* = 0x00000004
+  StudyJitCompile* = 0x00000001
+  StudyJitPartialSoftCompile* = 0x00000002
+  StudyJitPartialHardCompile* = 0x00000004
 
 # Bit flags for the pcre_extra structure. Do not re-arrange or redefine
 # these bits, just add new ones on the end, in order to remain compatible. 
 
 const 
-  EXTRA_STUDY_DATA* = 0x00000001
-  EXTRA_MATCH_LIMIT* = 0x00000002
-  EXTRA_CALLOUT_DATA* = 0x00000004
-  EXTRA_TABLES* = 0x00000008
-  EXTRA_MATCH_LIMIT_RECURSION* = 0x00000010
-  EXTRA_MARK* = 0x00000020
-  EXTRA_EXECUTABLE_JIT* = 0x00000040
+  ExtraStudyData* = 0x00000001
+  ExtraMatchLimit* = 0x00000002
+  ExtraCalloutData* = 0x00000004
+  ExtraTables* = 0x00000008
+  ExtraMatchLimitRecursion* = 0x00000010
+  ExtraMark* = 0x00000020
+  ExtraExecutableJit* = 0x00000040
 
 # Types 
 
 type 
   TPcre*{.pure, final.} = object
   PPcre* = ptr TPcre
-  Tjit_stack*{.pure, final.} = object
-  Pjit_stack* = ptr Tjit_stack
+  TjitStack*{.pure, final.} = object
+  PjitStack* = ptr TjitStack
 
 # When PCRE is compiled as a C++ library, the subject pointer type can be
 # replaced with a custom type. For conventional use, the public interface is a
@@ -244,14 +244,14 @@ type
 
 type 
   Textra*{.pure, final.} = object 
-    flags*: int                 ## Bits for which fields are set 
-    study_data*: pointer        ## Opaque data from pcre_study() 
-    match_limit*: int           ## Maximum number of calls to match() 
-    callout_data*: pointer      ## Data passed back in callouts 
-    tables*: cstring            ## Pointer to character tables 
-    match_limit_recursion*: int ## Max recursive calls to match() 
-    mark*: ptr cstring          ## For passing back a mark pointer 
-    executable_jit*: pointer    ## Contains a pointer to a compiled jit code
+    flags*: Int                 ## Bits for which fields are set 
+    study_data*: Pointer        ## Opaque data from pcre_study() 
+    match_limit*: Int           ## Maximum number of calls to match() 
+    callout_data*: Pointer      ## Data passed back in callouts 
+    tables*: Cstring            ## Pointer to character tables 
+    match_limit_recursion*: Int ## Max recursive calls to match() 
+    mark*: ptr Cstring          ## For passing back a mark pointer 
+    executable_jit*: Pointer    ## Contains a pointer to a compiled jit code
   
 
 # The structure for passing out data via the pcre_callout_function. We use a
@@ -260,20 +260,20 @@ type
 # without modification. 
 
 type 
-  Tcallout_block*{.pure, final.} = object 
-    version*: cint            ## Identifies version of block 
-    callout_number*: cint     ## Number compiled into pattern 
-    offset_vector*: ptr cint  ## The offset vector 
-    subject*: cstring         ## The subject being matched 
-    subject_length*: cint     ## The length of the subject 
-    start_match*: cint        ## Offset to start of this match attempt 
-    current_position*: cint   ## Where we currently are in the subject 
-    capture_top*: cint        ## Max current capture 
-    capture_last*: cint       ## Most recently closed capture 
-    callout_data*: pointer    ## Data passed in with the call 
-    pattern_position*: cint   ## Offset to next item in the pattern 
-    next_item_length*: cint   ## Length of next item in the pattern
-    mark*: cstring            ## Pointer to current mark or NULL
+  TcalloutBlock*{.pure, final.} = object 
+    version*: Cint            ## Identifies version of block 
+    callout_number*: Cint     ## Number compiled into pattern 
+    offset_vector*: ptr Cint  ## The offset vector 
+    subject*: Cstring         ## The subject being matched 
+    subject_length*: Cint     ## The length of the subject 
+    start_match*: Cint        ## Offset to start of this match attempt 
+    current_position*: Cint   ## Where we currently are in the subject 
+    capture_top*: Cint        ## Max current capture 
+    capture_last*: Cint       ## Most recently closed capture 
+    callout_data*: Pointer    ## Data passed in with the call 
+    pattern_position*: Cint   ## Offset to next item in the pattern 
+    next_item_length*: Cint   ## Length of next item in the pattern
+    mark*: Cstring            ## Pointer to current mark or NULL
 
 # Indirection for store get and free functions. These can be set to
 #alternative malloc/free functions if required. Special ones are used in the
@@ -284,74 +284,74 @@ type
 # User defined callback which provides a stack just before the match starts.
 
 type
-  Tjit_callback* = proc(p: pointer): ptr Tjit_stack{.cdecl.}
+  TjitCallback* = proc(p: Pointer): ptr TjitStack{.cdecl.}
 
 # Exported PCRE functions 
 
-proc compile*(a2: cstring, a3: cint, a4: ptr cstring, a5: ptr cint, 
-              a6: ptr char): ptr TPcre{.cdecl, importc: "pcre_compile", 
+proc compile*(a2: Cstring, a3: Cint, a4: ptr Cstring, a5: ptr Cint, 
+              a6: ptr Char): ptr TPcre{.cdecl, importc: "pcre_compile", 
     pcreImport.}
-proc compile2*(a2: cstring, a3: cint, a4: ptr cint, a5: ptr cstring, 
-               a6: ptr cint, a7: ptr char): ptr TPcre{.cdecl, 
+proc compile2*(a2: Cstring, a3: Cint, a4: ptr Cint, a5: ptr Cstring, 
+               a6: ptr Cint, a7: ptr Char): ptr TPcre{.cdecl, 
     importc: "pcre_compile2", pcreImport.}
-proc config*(a2: cint, a3: pointer): cint{.cdecl, importc: "pcre_config", 
+proc config*(a2: Cint, a3: Pointer): Cint{.cdecl, importc: "pcre_config", 
     pcreImport.}
-proc copy_named_substring*(a2: ptr TPcre, a3: cstring, a4: ptr cint, a5: cint, 
-                           a6: cstring, a7: cstring, a8: cint): cint{.cdecl, 
+proc copyNamedSubstring*(a2: ptr TPcre, a3: Cstring, a4: ptr Cint, a5: Cint, 
+                           a6: Cstring, a7: Cstring, a8: Cint): Cint{.cdecl, 
     importc: "pcre_copy_named_substring", pcreImport.}
-proc copy_substring*(a2: cstring, a3: ptr cint, a4: cint, a5: cint, 
-                     a6: cstring, 
-                     a7: cint): cint{.cdecl, importc: "pcre_copy_substring", 
+proc copySubstring*(a2: Cstring, a3: ptr Cint, a4: Cint, a5: Cint, 
+                     a6: Cstring, 
+                     a7: Cint): Cint{.cdecl, importc: "pcre_copy_substring", 
                                       pcreImport.}
-proc dfa_exec*(a2: ptr TPcre, a3: ptr Textra, a4: cstring, a5: cint, 
-               a6: cint, a7: cint, a8: ptr cint, a9: cint, a10: ptr cint, 
-               a11: cint): cint{.cdecl, importc: "pcre_dfa_exec", 
+proc dfaExec*(a2: ptr TPcre, a3: ptr Textra, a4: Cstring, a5: Cint, 
+               a6: Cint, a7: Cint, a8: ptr Cint, a9: Cint, a10: ptr Cint, 
+               a11: Cint): Cint{.cdecl, importc: "pcre_dfa_exec", 
                                  pcreImport.}
-proc exec*(a2: ptr TPcre, a3: ptr Textra, a4: cstring, a5: cint, a6: cint, 
-           a7: cint, a8: ptr cint, a9: cint): cint {.
+proc exec*(a2: ptr TPcre, a3: ptr Textra, a4: Cstring, a5: Cint, a6: Cint, 
+           a7: Cint, a8: ptr Cint, a9: Cint): Cint {.
            cdecl, importc: "pcre_exec", pcreImport.}
-proc free_substring*(a2: cstring){.cdecl, importc: "pcre_free_substring", 
+proc freeSubstring*(a2: Cstring){.cdecl, importc: "pcre_free_substring", 
                                    pcreImport.}
-proc free_substring_list*(a2: cstringArray){.cdecl, 
+proc freeSubstringList*(a2: CstringArray){.cdecl, 
     importc: "pcre_free_substring_list", pcreImport.}
-proc fullinfo*(a2: ptr TPcre, a3: ptr Textra, a4: cint, a5: pointer): cint{.
+proc fullinfo*(a2: ptr TPcre, a3: ptr Textra, a4: Cint, a5: Pointer): Cint{.
     cdecl, importc: "pcre_fullinfo", pcreImport.}
-proc get_named_substring*(a2: ptr TPcre, a3: cstring, a4: ptr cint, a5: cint, 
-                          a6: cstring, a7: cstringArray): cint{.cdecl, 
+proc getNamedSubstring*(a2: ptr TPcre, a3: Cstring, a4: ptr Cint, a5: Cint, 
+                          a6: Cstring, a7: CstringArray): Cint{.cdecl, 
     importc: "pcre_get_named_substring", pcreImport.}
-proc get_stringnumber*(a2: ptr TPcre, a3: cstring): cint{.cdecl, 
+proc getStringnumber*(a2: ptr TPcre, a3: Cstring): Cint{.cdecl, 
     importc: "pcre_get_stringnumber", pcreImport.}
-proc get_stringtable_entries*(a2: ptr TPcre, a3: cstring, a4: cstringArray, 
-                              a5: cstringArray): cint{.cdecl, 
+proc getStringtableEntries*(a2: ptr TPcre, a3: Cstring, a4: CstringArray, 
+                              a5: CstringArray): Cint{.cdecl, 
     importc: "pcre_get_stringtable_entries", pcreImport.}
-proc get_substring*(a2: cstring, a3: ptr cint, a4: cint, a5: cint, 
-                    a6: cstringArray): cint{.cdecl, 
+proc getSubstring*(a2: Cstring, a3: ptr Cint, a4: Cint, a5: Cint, 
+                    a6: CstringArray): Cint{.cdecl, 
     importc: "pcre_get_substring", pcreImport.}
-proc get_substring_list*(a2: cstring, a3: ptr cint, a4: cint, 
-                         a5: ptr cstringArray): cint{.cdecl, 
+proc getSubstringList*(a2: Cstring, a3: ptr Cint, a4: Cint, 
+                         a5: ptr CstringArray): Cint{.cdecl, 
     importc: "pcre_get_substring_list", pcreImport.}
-proc maketables*(): ptr char{.cdecl, importc: "pcre_maketables", 
+proc maketables*(): ptr Char{.cdecl, importc: "pcre_maketables", 
                                        pcreImport.}
-proc refcount*(a2: ptr TPcre, a3: cint): cint{.cdecl, importc: "pcre_refcount", 
+proc refcount*(a2: ptr TPcre, a3: Cint): Cint{.cdecl, importc: "pcre_refcount", 
     pcreImport.}
-proc study*(a2: ptr TPcre, a3: cint, a4: var cstring): ptr Textra{.cdecl, 
+proc study*(a2: ptr TPcre, a3: Cint, a4: var Cstring): ptr Textra{.cdecl, 
     importc: "pcre_study", pcreImport.}
-proc version*(): cstring{.cdecl, importc: "pcre_version", pcreImport.}
+proc version*(): Cstring{.cdecl, importc: "pcre_version", pcreImport.}
 
 # Utility functions for byte order swaps.
 
-proc pattern_to_host_byte_order*(a2: ptr TPcre, a3: ptr Textra,
-    a4: ptr char): cint{.cdecl, importc: "pcre_pattern_to_host_byte_order",
+proc patternToHostByteOrder*(a2: ptr TPcre, a3: ptr Textra,
+    a4: ptr Char): Cint{.cdecl, importc: "pcre_pattern_to_host_byte_order",
     pcreImport.}
 
 # JIT compiler related functions.
 
-proc jit_stack_alloc*(a2: cint, a3: cint): ptr Tjit_stack{.cdecl,
+proc jitStackAlloc*(a2: Cint, a3: Cint): ptr TjitStack{.cdecl,
     importc: "pcre_jit_stack_alloc", pcreImport.}
-proc jit_stack_free*(a2: ptr Tjit_stack){.cdecl, importc: "pcre_jit_stack_free",
+proc jitStackFree*(a2: ptr TjitStack){.cdecl, importc: "pcre_jit_stack_free",
     pcreImport.}
-proc assign_jit_stack*(a2: ptr Textra, a3: Tjit_callback, a4: pointer){.cdecl,
+proc assignJitStack*(a2: ptr Textra, a3: TjitCallback, a4: Pointer){.cdecl,
     importc: "pcre_assign_jit_stack", pcreImport.}
 
 var 
-  pcre_free*: proc (p: ptr TPcre) {.cdecl.} 
+  pcreFree*: proc (p: ptr TPcre) {.cdecl.} 

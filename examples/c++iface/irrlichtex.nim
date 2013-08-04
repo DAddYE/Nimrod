@@ -36,16 +36,16 @@ type
   PIAnimatedMeshSceneNode = ptr TIAnimatedMeshSceneNode
   PITexture = ptr TITexture
 
-proc dimension2d(x, y: cint): TDimension2d {.
+proc dimension2d(x, y: Cint): TDimension2d {.
   header: irr, importc: "dimension2d<u32>".}
-proc vector3df(x,y,z: cint): Tvector3df {.
+proc vector3df(x,y,z: Cint): Tvector3df {.
   header: irr, importc: "vector3df".}
-proc SColor(r,g,b,a: cint): TColor {.
+proc sColor(r,g,b,a: Cint): TColor {.
   header: irr, importc: "SColor".}
 
 proc createDevice(): PIrrlichtDevice {.
   header: irr, importc: "createDevice".}
-proc run(device: PIrrlichtDevice): bool {.
+proc run(device: PIrrlichtDevice): Bool {.
   header: irr, importcpp: "run".}
 
 proc getVideoDriver(dev: PIrrlichtDevice): PIVideoDriver {.
@@ -55,7 +55,7 @@ proc getSceneManager(dev: PIrrlichtDevice): PISceneManager {.
 proc getGUIEnvironment(dev: PIrrlichtDevice): PIGUIEnvironment {.
   header: irr, importcpp: "getGUIEnvironment".}
 
-proc getMesh(smgr: PISceneManager, path: cstring): PIAnimatedMesh {.
+proc getMesh(smgr: PISceneManager, path: Cstring): PIAnimatedMesh {.
   header: irr, importcpp: "getMesh".}
 
 proc drawAll(smgr: PISceneManager) {.
@@ -66,20 +66,20 @@ proc drawAll(guienv: PIGUIEnvironment) {.
 proc drop(dev: PIrrlichtDevice) {.
   header: irr, importcpp: "drop".}
 
-proc getTexture(driver: PIVideoDriver, path: cstring): PITexture {.
+proc getTexture(driver: PIVideoDriver, path: Cstring): PITexture {.
   header: irr, importcpp: "getTexture".}
 proc endScene(driver: PIVideoDriver) {.
   header: irr, importcpp: "endScene".}
-proc beginScene(driver: PIVideoDriver, a, b: bool, c: TColor) {.
+proc beginScene(driver: PIVideoDriver, a, b: Bool, c: TColor) {.
   header: irr, importcpp: "beginScene".}
 
 proc addAnimatedMeshSceneNode(
   smgr: PISceneManager, mesh: PIAnimatedMesh): PIAnimatedMeshSceneNode {.
   header: irr, importcpp: "addAnimatedMeshSceneNode".}
 
-proc setMaterialTexture(n: PIAnimatedMeshSceneNode, x: cint, t: PITexture) {.
+proc setMaterialTexture(n: PIAnimatedMeshSceneNode, x: Cint, t: PITexture) {.
   header: irr, importcpp: "setMaterialTexture".}
-proc addCameraSceneNode(smgr: PISceneManager, x: cint, a, b: TVector3df) {.
+proc addCameraSceneNode(smgr: PISceneManager, x: Cint, a, b: Tvector3df) {.
   header: irr, importcpp: "addCameraSceneNode".}
 
 
@@ -106,7 +106,7 @@ if node != nil:
 
 smgr.addCameraSceneNode(0, vector3df(0,30,-40), vector3df(0,5,0))
 while device.run():
-  driver.beginScene(true, true, SColor(255,100,101,140))
+  driver.beginScene(true, true, sColor(255,100,101,140))
   smgr.drawAll()
   guienv.drawAll()
   driver.endScene()

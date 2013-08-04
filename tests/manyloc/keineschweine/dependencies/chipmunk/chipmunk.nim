@@ -30,18 +30,18 @@ when defined(CpUseFloat):
   {.hint: "CpUseFloat defined; using float32 as float".}
   type CpFloat* = cfloat
 else:
-  type CpFloat* = cdouble
+  type CpFloat* = Cdouble
 const 
-  CP_BUFFER_BYTES* = (32 * 1024)  
-  CP_MAX_CONTACTS_PER_ARBITER* = 4
+  CpBufferBytes* = (32 * 1024)  
+  CpMaxContactsPerArbiter* = 4
   CpInfinity*: CpFloat = 1.0/0
 {.pragma: pf, pure, final.}
 type 
-  Bool32* = cint  #replace one day with cint-compatible bool
-  CpDataPointer* = pointer
+  Bool32* = Cint  #replace one day with cint-compatible bool
+  CpDataPointer* = Pointer
   TVector* {.final, pure.} = object
     x*, y*: CpFloat
-  TTimestamp* = cuint
+  TTimestamp* = Cuint
   TBodyVelocityFunc* = proc(body: PBody, gravity: TVector,
                             damping: CpFloat; dt: CpFloat){.cdecl.}
   TBodyPositionFunc* = proc(body: PBody; dt: CpFloat){.cdecl.}
@@ -50,10 +50,10 @@ type
     next*: PBody
     idleTime*: CpFloat
   
-  THashValue = cuint  # uintptr_t 
-  TCollisionType* = cuint #uintptr_t
-  TGroup * = cuint #uintptr_t
-  TLayers* = cuint
+  THashValue = Cuint  # uintptr_t 
+  TCollisionType* = Cuint #uintptr_t
+  TGroup * = Cuint #uintptr_t
+  TLayers* = Cuint
   PArray = ptr TArray
   TArray{.pure,final.} = object
   PHashSet = ptr THashSet
@@ -64,18 +64,18 @@ type
   TArbiter*{.pf.} = object 
     e*: CpFloat
     u*: CpFloat 
-    surface_vr*: TVector
+    surfaceVr*: TVector
     a*: PShape
     b*: PShape
     body_a*: PBody
     body_b*: PBody
     thread_a*: TArbiterThread
     thread_b*: TArbiterThread
-    numContacts*: cint
+    numContacts*: Cint
     contacts*: PContact
     stamp*: TTimestamp
     handler*: PCollisionHandler
-    swappedColl*: bool32
+    swappedColl*: Bool32
     state*: TArbiterState
   PCollisionHandler* = ptr TCollisionHandler
   TCollisionHandler*{.pf.} = object 
@@ -85,7 +85,7 @@ type
     preSolve*: TCollisionPreSolveFunc
     postSolve*: TCollisionPostSolveFunc
     separate*: TCollisionSeparateFunc
-    data*: pointer
+    data*: Pointer
   TArbiterState*{.size: sizeof(cint).} = enum 
     ArbiterStateFirstColl,    # Arbiter is active and its not the first collision.
     ArbiterStateNormal,       # Collision has been explicitly ignored.
@@ -103,42 +103,42 @@ type
   #/ A struct that wraps up the important collision data for an arbiter.
   PContactPointSet* = ptr TContactPointSet
   TContactPointSet*{.pf.} = object 
-    count*: cint              #/ The number of contact points in the set.
-    points*: array[0..CP_MAX_CONTACTS_PER_ARBITER - 1, TContactPoint] #/ The array of contact points.
+    count*: Cint              #/ The number of contact points in the set.
+    points*: Array[0..CP_MAX_CONTACTS_PER_ARBITER - 1, TContactPoint] #/ The array of contact points.
   
   #/ Collision begin event function callback type.
   #/ Returning false from a begin callback causes the collision to be ignored until
   #/ the the separate callback is called when the objects stop colliding.
-  TCollisionBeginFunc* = proc (arb: PArbiter; space: PSpace; data: pointer): Bool{.
+  TCollisionBeginFunc* = proc (arb: PArbiter; space: PSpace; data: Pointer): Bool{.
       cdecl.}
   #/ Collision pre-solve event function callback type.
   #/ Returning false from a pre-step callback causes the collision to be ignored until the next step.
   TCollisionPreSolveFunc* = proc (arb: PArbiter; space: PSpace; 
-                                  data: pointer): bool {.cdecl.}
+                                  data: Pointer): Bool {.cdecl.}
   #/ Collision post-solve event function callback type.
   TCollisionPostSolveFunc* = proc (arb: PArbiter; space: PSpace; 
-                                   data: pointer){.cdecl.}
+                                   data: Pointer){.cdecl.}
   #/ Collision separate event function callback type.
   TCollisionSeparateFunc* = proc (arb: PArbiter; space: PSpace; 
-                                  data: pointer){.cdecl.}
+                                  data: Pointer){.cdecl.}
   
   #/ Chipmunk's axis-aligned 2D bounding box type. (left, bottom, right, top)
-  PBB* = ptr TBB
+  Pbb* = ptr TBB
   TBB* {.pf.} = object 
     l*, b*, r*, t*: CpFloat
   
   #/ Spatial index bounding box callback function type.
   #/ The spatial index calls this function and passes you a pointer to an object you added
   #/ when it needs to get the bounding box associated with that object.
-  TSpatialIndexBBFunc* = proc (obj: pointer): TBB{.cdecl.}
+  TSpatialIndexBBFunc* = proc (obj: Pointer): TBB{.cdecl.}
   #/ Spatial index/object iterator callback function type.
-  TSpatialIndexIteratorFunc* = proc (obj: pointer; data: pointer){.cdecl.}
+  TSpatialIndexIteratorFunc* = proc (obj: Pointer; data: Pointer){.cdecl.}
   #/ Spatial query callback function type. 
-  TSpatialIndexQueryFunc* = proc (obj1: pointer; obj2: pointer; data: pointer){.
+  TSpatialIndexQueryFunc* = proc (obj1: Pointer; obj2: Pointer; data: Pointer){.
       cdecl.}
   #/ Spatial segment query callback function type.
-  TSpatialIndexSegmentQueryFunc* = proc (obj1: pointer; obj2: pointer; 
-      data: pointer): CpFloat {.cdecl.}
+  TSpatialIndexSegmentQueryFunc* = proc (obj1: Pointer; obj2: Pointer; 
+      data: Pointer): CpFloat {.cdecl.}
   #/ private
   PSpatialIndex = ptr TSpatialIndex
   TSpatialIndex{.pf.} = object 
@@ -148,30 +148,30 @@ type
     dynamicIndex: PSpatialIndex
 
   TSpatialIndexDestroyImpl* = proc (index: PSpatialIndex){.cdecl.}
-  TSpatialIndexCountImpl* = proc (index: PSpatialIndex): cint{.cdecl.}
+  TSpatialIndexCountImpl* = proc (index: PSpatialIndex): Cint{.cdecl.}
   TSpatialIndexEachImpl* = proc (index: PSpatialIndex; 
-                                 func: TSpatialIndexIteratorFunc; data: pointer){.
+                                 func: TSpatialIndexIteratorFunc; data: Pointer){.
       cdecl.}
-  TSpatialIndexContainsImpl* = proc (index: PSpatialIndex; obj: pointer; 
+  TSpatialIndexContainsImpl* = proc (index: PSpatialIndex; obj: Pointer; 
                                      hashid: THashValue): Bool32 {.cdecl.}
-  TSpatialIndexInsertImpl* = proc (index: PSpatialIndex; obj: pointer; 
+  TSpatialIndexInsertImpl* = proc (index: PSpatialIndex; obj: Pointer; 
                                    hashid: THashValue){.cdecl.}
-  TSpatialIndexRemoveImpl* = proc (index: PSpatialIndex; obj: pointer; 
+  TSpatialIndexRemoveImpl* = proc (index: PSpatialIndex; obj: Pointer; 
                                    hashid: THashValue){.cdecl.}
   TSpatialIndexReindexImpl* = proc (index: PSpatialIndex){.cdecl.}
   TSpatialIndexReindexObjectImpl* = proc (index: PSpatialIndex; 
-      obj: pointer; hashid: THashValue){.cdecl.}
+      obj: Pointer; hashid: THashValue){.cdecl.}
   TSpatialIndexReindexQueryImpl* = proc (index: PSpatialIndex; 
-      func: TSpatialIndexQueryFunc; data: pointer){.cdecl.}
+      func: TSpatialIndexQueryFunc; data: Pointer){.cdecl.}
   TSpatialIndexPointQueryImpl* = proc (index: PSpatialIndex; point: TVector; 
                                        func: TSpatialIndexQueryFunc; 
-                                       data: pointer){.cdecl.}
-  TSpatialIndexSegmentQueryImpl* = proc (index: PSpatialIndex; obj: pointer; 
+                                       data: Pointer){.cdecl.}
+  TSpatialIndexSegmentQueryImpl* = proc (index: PSpatialIndex; obj: Pointer; 
       a: TVector; b: TVector; t_exit: CpFloat; func: TSpatialIndexSegmentQueryFunc; 
-      data: pointer){.cdecl.}
-  TSpatialIndexQueryImpl* = proc (index: PSpatialIndex; obj: pointer; 
+      data: Pointer){.cdecl.}
+  TSpatialIndexQueryImpl* = proc (index: PSpatialIndex; obj: Pointer; 
                                   bb: TBB; func: TSpatialIndexQueryFunc; 
-                                  data: pointer){.cdecl.}
+                                  data: Pointer){.cdecl.}
   PSpatialIndexClass* = ptr TSpatialIndexClass
   TSpatialIndexClass*{.pf.} = object 
     destroy*: TSpatialIndexDestroyImpl
@@ -196,7 +196,7 @@ type
   
   #/ Bounding box tree velocity callback function.
   #/ This function should return an estimate for the object's velocity.
-  TBBTreeVelocityFunc* = proc (obj: pointer): TVector {.cdecl.}
+  TBBTreeVelocityFunc* = proc (obj: Pointer): TVector {.cdecl.}
   
   PContactBufferHeader* = ptr TContentBufferHeader
   TContentBufferHeader* {.pf.} = object
@@ -204,7 +204,7 @@ type
   
   PSpace* = ptr TSpace
   TSpace* {.pf.} = object
-    iterations*: cint 
+    iterations*: Cint 
     gravity*: TVector
     damping*: CpFloat
     idleSpeedThreshold*: CpFloat 
@@ -212,8 +212,8 @@ type
     collisionSlop*: CpFloat 
     collisionBias*: CpFloat
     collisionPersistence*: TTimestamp        
-    enableContactGraph*: cint ##BOOL
-    data*: pointer
+    enableContactGraph*: Cint ##BOOL
+    data*: Pointer
     staticBody*: PBody
     stamp: TTimestamp
     currDT: CpFloat
@@ -228,7 +228,7 @@ type
     pooledArbiters: PArray
     constraints: PArray
     allocatedBuffers: PArray
-    locked: cint
+    locked: Cint
     collisionHandlers: PHashSet
     defaultHandler: TCollisionHandler
     postStepCallbacks: PHashSet
@@ -249,7 +249,7 @@ type
     w*: CpFloat 
     t*: CpFloat 
     rot*: TVector 
-    data*: pointer
+    data*: Pointer
     vLimit*: CpFloat   
     wLimit*: CpFloat
     vBias*: TVector
@@ -261,14 +261,14 @@ type
     node*: TComponentNode
   #/ Body/shape iterator callback function type. 
   TBodyShapeIteratorFunc* = proc (body: PBody; shape: PShape; 
-                                   data: pointer) {.cdecl.}
+                                   data: Pointer) {.cdecl.}
   #/ Body/constraint iterator callback function type. 
   TBodyConstraintIteratorFunc* = proc (body: PBody; 
                                         constraint: PConstraint; 
-                                        data: pointer) {.cdecl.}
+                                        data: Pointer) {.cdecl.}
   #/ Body/arbiter iterator callback function type. 
   TBodyArbiterIteratorFunc* = proc (body: PBody; arbiter: PArbiter; 
-                                     data: pointer) {.cdecl.}
+                                     data: Pointer) {.cdecl.}
   
   PNearestPointQueryInfo* = ptr TNearestPointQueryInfo
   #/ Nearest point query info struct.
@@ -287,7 +287,7 @@ type
     CP_CIRCLE_SHAPE, CP_SEGMENT_SHAPE, CP_POLY_SHAPE, CP_NUM_SHAPES
   TShapeCacheDataImpl* = proc (shape: PShape; p: TVector; rot: TVector): TBB{.cdecl.}
   TShapeDestroyImpl* = proc (shape: PShape){.cdecl.}
-  TShapePointQueryImpl* = proc (shape: PShape; p: TVector): bool32 {.cdecl.}
+  TShapePointQueryImpl* = proc (shape: PShape; p: TVector): Bool32 {.cdecl.}
   TShapeSegmentQueryImpl* = proc (shape: PShape; a: TVector; b: TVector; 
                                   info: PSegmentQueryInfo){.cdecl.}
   PShapeClass* = ptr TShapeClass
@@ -306,9 +306,9 @@ type
                            #/ Sensor shapes call collision callbacks but don't produce collisions.  
     e*: CpFloat            #/ Coefficient of restitution. (elasticity)
     u*: CpFloat            #/ Coefficient of friction.
-    surface_v*: TVector    #/ Surface velocity used when solving for friction.
-    data*: pointer        #/ User definable data pointer. Generally this points to your the game object class so you can access it when given a cpShape reference in a callback.
-    collision_type*: TCollisionType #/ Collision type of this shape used when picking collision handlers.
+    surfaceV*: TVector    #/ Surface velocity used when solving for friction.
+    data*: Pointer        #/ User definable data pointer. Generally this points to your the game object class so you can access it when given a cpShape reference in a callback.
+    collisionType*: TCollisionType #/ Collision type of this shape used when picking collision handlers.
     group*: TGroup      #/ Group of this shape. Shapes in the same group don't collide.
     layers*: TLayers   #/ Layer bitmask for this shape. Shapes only collide if the bitwise and of their layers is non-zero.
     space: PSpace        #PRIVATE
@@ -323,7 +323,7 @@ type
   PPolyShape* = ptr TPolyShape
   TPolyShape*{.pf.} = object
     shape: PShape
-    numVerts: cint
+    numVerts: Cint
     verts, tVerts: TVector
     planes, tPlanes: PSplittingPlane
   PSegmentShape* = ptr TSegmentShape
@@ -339,24 +339,24 @@ type
     d: CpFloat
   
   #/ Post Step callback function type.
-  TPostStepFunc* = proc (space: PSpace; obj: pointer; data: pointer){.cdecl.}
+  TPostStepFunc* = proc (space: PSpace; obj: Pointer; data: Pointer){.cdecl.}
   #/ Point query callback function type.
-  TSpacePointQueryFunc* = proc (shape: PShape; data: pointer){.cdecl.}
+  TSpacePointQueryFunc* = proc (shape: PShape; data: Pointer){.cdecl.}
   #/ Segment query callback function type.
   TSpaceSegmentQueryFunc* = proc (shape: PShape; t: CpFloat; n: TVector; 
-                                  data: pointer){.cdecl.}
+                                  data: Pointer){.cdecl.}
   #/ Rectangle Query callback function type.
-  TSpaceBBQueryFunc* = proc (shape: PShape; data: pointer){.cdecl.}
+  TSpaceBBQueryFunc* = proc (shape: PShape; data: Pointer){.cdecl.}
   #/ Shape query callback function type.
   TSpaceShapeQueryFunc* = proc (shape: PShape; points: PContactPointSet; 
-                                data: pointer){.cdecl.}
+                                data: Pointer){.cdecl.}
   #/ Space/body iterator callback function type.
-  TSpaceBodyIteratorFunc* = proc (body: PBody; data: pointer){.cdecl.}
+  TSpaceBodyIteratorFunc* = proc (body: PBody; data: Pointer){.cdecl.}
   #/ Space/body iterator callback function type.
-  TSpaceShapeIteratorFunc* = proc (shape: PShape; data: pointer){.cdecl.}
+  TSpaceShapeIteratorFunc* = proc (shape: PShape; data: Pointer){.cdecl.}
   #/ Space/constraint iterator callback function type.
   TSpaceConstraintIteratorFunc* = proc (constraint: PConstraint; 
-                                        data: pointer){.cdecl.}
+                                        data: Pointer){.cdecl.}
   #/ Opaque cpConstraint struct.
   PConstraint* = ptr TConstraint
   TConstraint*{.pf.} = object 
@@ -390,13 +390,13 @@ type
     cdecl.}
 
 ##cp property emulators
-template defGetter(otype: typedesc, memberType: typedesc, memberName: expr, procName: expr): stmt {.immediate.} =
+template defGetter(otype: TypeDesc, memberType: TypeDesc, memberName: Expr, procName: Expr): Stmt {.immediate.} =
   proc `get procName`*(obj: otype): memberType {.cdecl.} =
     return obj.memberName
-template defSetter(otype: typedesc, memberType: typedesc, memberName: expr, procName: expr): stmt {.immediate.} =
+template defSetter(otype: TypeDesc, memberType: TypeDesc, memberName: Expr, procName: Expr): Stmt {.immediate.} =
   proc `set procName`*(obj: otype, value: memberType) {.cdecl.} =
     obj.memberName = value
-template defProp(otype: typedesc, memberType: typedesc, memberName: expr, procName: expr): stmt {.immediate.} =
+template defProp(otype: TypeDesc, memberType: TypeDesc, memberName: Expr, procName: Expr): Stmt {.immediate.} =
   defGetter(otype, memberType, memberName, procName)
   defSetter(otype, memberType, memberName, procName)
 
@@ -404,7 +404,7 @@ template defProp(otype: typedesc, memberType: typedesc, memberName: expr, procNa
 ##cpspace.h
 proc allocSpace*(): PSpace {.
   importc: "cpSpaceAlloc", dynlib: Lib.}
-proc Init*(space: PSpace): PSpace {.
+proc init*(space: PSpace): PSpace {.
   importc: "cpSpaceInit", dynlib: Lib.}
 proc newSpace*(): PSpace {.
   importc: "cpSpaceNew", dynlib: Lib.}
@@ -413,7 +413,7 @@ proc destroy*(space: PSpace) {.
 proc free*(space: PSpace) {.
   importc: "cpSpaceFree", dynlib: Lib.}
 
-defProp(PSpace, cint, iterations, Iterations)
+defProp(PSpace, Cint, iterations, Iterations)
 defProp(PSpace, TVector, gravity, Gravity)
 defProp(PSpace, CpFloat, damping, Damping)
 defProp(PSpace, CpFloat, idleSpeedThreshold, IdleSpeedThreshold)
@@ -422,14 +422,14 @@ defProp(PSpace, CpFloat, collisionSlop, CollisionSlop)
 defProp(PSpace, CpFloat, collisionBias, CollisionBias)
 defProp(PSpace, TTimestamp, collisionPersistence, CollisionPersistence)
 defProp(PSpace, Bool32, enableContactGraph, EnableContactGraph)
-defProp(PSpace, pointer, data, UserData)
+defProp(PSpace, Pointer, data, UserData)
 defGetter(PSpace, PBody, staticBody, StaticBody)
 defGetter(PSpace, CpFloat, currDt, CurrentTimeStep)
 
 
 #/ returns true from inside a callback and objects cannot be added/removed.
 proc isLocked*(space: PSpace): Bool{.inline.} = 
-  result = space.locked.bool
+  result = space.locked.Bool
 
 #/ Set a default collision handler for this space.
 #/ The default collision handler is invoked for each colliding pair of shapes
@@ -439,7 +439,7 @@ proc setDefaultCollisionHandler*(space: PSpace; begin: TCollisionBeginFunc;
                                   preSolve: TCollisionPreSolveFunc; 
                                   postSolve: TCollisionPostSolveFunc; 
                                   separate: TCollisionSeparateFunc; 
-                                  data: pointer){.
+                                  data: Pointer){.
   cdecl, importc: "cpSpaceSetDefaultCollisionHandler", dynlib: Lib.}
 #/ Set a collision handler to be used whenever the two shapes with the given collision types collide.
 #/ You can pass NULL for any function you don't want to implement.
@@ -447,7 +447,7 @@ proc addCollisionHandler*(space: PSpace; a, b: TCollisionType;
                            begin: TCollisionBeginFunc; 
                            preSolve: TCollisionPreSolveFunc; 
                            postSolve: TCollisionPostSolveFunc; 
-                           separate: TCollisionSeparateFunc; data: pointer){.
+                           separate: TCollisionSeparateFunc; data: Pointer){.
   cdecl, importc: "cpSpaceAddCollisionHandler", dynlib: Lib.}
 #/ Unset a collision handler.
 proc removeCollisionHandler*(space: PSpace; a: TCollisionType; 
@@ -476,7 +476,7 @@ proc removeStaticShape*(space: PSpace; shape: PShape){.
 proc removeBody*(space: PSpace; body: PBody){.
   cdecl, importc: "cpSpaceRemoveBody", dynlib: Lib.}
 #/ Remove a constraint from the simulation.
-proc RemoveConstraint*(space: PSpace; constraint: PConstraint){.
+proc removeConstraint*(space: PSpace; constraint: PConstraint){.
   cdecl, importc: "cpSpaceRemoveConstraint", dynlib: Lib.}
 #/ Test if a collision shape has been added to the space.
 proc containsShape*(space: PSpace; shape: PShape): Bool{.
@@ -491,12 +491,12 @@ proc containsConstraint*(space: PSpace; constraint: PConstraint): Bool{.
 #/ Schedule a post-step callback to be called when cpSpaceStep() finishes.
 #/ @c obj is used a key, you can only register one callback per unique value for @c obj
 proc addPostStepCallback*(space: PSpace; func: TPostStepFunc; 
-                               obj: pointer; data: pointer){.
+                               obj: Pointer; data: Pointer){.
   cdecl, importc: "cpSpaceAddPostStepCallback", dynlib: Lib.}
                                         
 #/ Query the space at a point and call @c func for each shape found.
 proc pointQuery*(space: PSpace; point: TVector; layers: TLayers; 
-                      group: TGroup; func: TSpacePointQueryFunc; data: pointer){.
+                      group: TGroup; func: TSpacePointQueryFunc; data: Pointer){.
   cdecl, importc: "cpSpacePointQuery", dynlib: Lib.}
 
 #/ Query the space at a point and return the first shape found. Returns NULL if no shapes were found.
@@ -507,7 +507,7 @@ proc pointQueryFirst*(space: PSpace; point: TVector; layers: TLayers;
 #/ Perform a directed line segment query (like a raycast) against the space calling @c func for each shape intersected.
 proc segmentQuery*(space: PSpace; start: TVector; to: TVector; 
                     layers: TLayers; group: TGroup; 
-                    func: TSpaceSegmentQueryFunc; data: pointer){.
+                    func: TSpaceSegmentQueryFunc; data: Pointer){.
   cdecl, importc: "cpSpaceSegmentQuery", dynlib: Lib.}
 #/ Perform a directed line segment query (like a raycast) against the space and return the first shape hit. Returns NULL if no shapes were hit.
 proc segmentQueryFirst*(space: PSpace; start: TVector; to: TVector; 
@@ -517,28 +517,28 @@ proc segmentQueryFirst*(space: PSpace; start: TVector; to: TVector;
 
 #/ Perform a fast rectangle query on the space calling @c func for each shape found.
 #/ Only the shape's bounding boxes are checked for overlap, not their full shape.
-proc BBQuery*(space: PSpace; bb: TBB; layers: TLayers; group: TGroup; 
-                   func: TSpaceBBQueryFunc; data: pointer){.
+proc bBQuery*(space: PSpace; bb: TBB; layers: TLayers; group: TGroup; 
+                   func: TSpaceBBQueryFunc; data: Pointer){.
   cdecl, importc: "cpSpaceBBQuery", dynlib: Lib.}
 
 #/ Query a space for any shapes overlapping the given shape and call @c func for each shape found.
-proc shapeQuery*(space: PSpace; shape: PShape; func: TSpaceShapeQueryFunc; data: pointer): Bool {.
+proc shapeQuery*(space: PSpace; shape: PShape; func: TSpaceShapeQueryFunc; data: Pointer): Bool {.
   cdecl, importc: "cpSpaceShapeQuery", dynlib: Lib.}
 #/ Call cpBodyActivate() for any shape that is overlaps the given shape.
 proc activateShapesTouchingShape*(space: PSpace; shape: PShape){.
     cdecl, importc: "cpSpaceActivateShapesTouchingShape", dynlib: Lib.}
 
 #/ Call @c func for each body in the space.
-proc eachBody*(space: PSpace; func: TSpaceBodyIteratorFunc; data: pointer){.
+proc eachBody*(space: PSpace; func: TSpaceBodyIteratorFunc; data: Pointer){.
   cdecl, importc: "cpSpaceEachBody", dynlib: Lib.}
 
 #/ Call @c func for each shape in the space.
 proc eachShape*(space: PSpace; func: TSpaceShapeIteratorFunc; 
-                     data: pointer){.
+                     data: Pointer){.
   cdecl, importc: "cpSpaceEachShape", dynlib: Lib.}
 #/ Call @c func for each shape in the space.
 proc eachConstraint*(space: PSpace; func: TSpaceConstraintIteratorFunc; 
-                          data: pointer){.
+                          data: Pointer){.
   cdecl, importc: "cpSpaceEachConstraint", dynlib: Lib.}
 #/ Update the collision detection info for the static shapes in the space.
 proc reindexStatic*(space: PSpace){.
@@ -550,7 +550,7 @@ proc reindexShape*(space: PSpace; shape: PShape){.
 proc reindexShapesForBody*(space: PSpace; body: PBody){.
   cdecl, importc: "cpSpaceReindexShapesForBody", dynlib: Lib.}
 #/ Switch the space to use a spatial has as it's spatial index.
-proc SpaceUseSpatialHash*(space: PSpace; dim: CpFloat; count: cint){.
+proc spaceUseSpatialHash*(space: PSpace; dim: CpFloat; count: Cint){.
   cdecl, importc: "cpSpaceUseSpatialHash", dynlib: Lib.}
 #/ Step the space forward in time by @c dt.
 proc step*(space: PSpace; dt: CpFloat) {.
@@ -564,7 +564,7 @@ proc vector*(x, y: CpFloat): TVector {.inline.} =
 proc newVector*(x, y: CpFloat): TVector {.inline.} =
   return vector(x, y)
 #let VectorZero* = newVector(0.0, 0.0)
-var VectorZero* = newVector(0.0, 0.0)
+var vectorZero* = newVector(0.0, 0.0)
 
 #/ Vector dot product.
 proc dot*(v1, v2: TVector): CpFloat {.inline.} = 
@@ -592,11 +592,11 @@ proc toAngle*(v: TVector): CpFloat {.inline.} =
 #/	Returns a string representation of v. Intended mostly for debugging purposes and not production use.
 #/	@attention The string points to a static local and is reset every time the function is called.
 #/	If you want to print more than one vector you will have to split up your printing onto separate lines.
-proc `$`*(v: TVector): cstring {.cdecl, importc: "cpvstr", dynlib: Lib.}
+proc `$`*(v: TVector): Cstring {.cdecl, importc: "cpvstr", dynlib: Lib.}
 
 
 #/ Check if two vectors are equal. (Be careful when comparing floating point numbers!)
-proc `==`*(v1, v2: TVector): bool {.inline.} =
+proc `==`*(v1, v2: TVector): Bool {.inline.} =
   result = v1.x == v2.x and v1.y == v2.y
 
 #/ Add two vectors
@@ -661,7 +661,7 @@ proc normalize*(v: TVector): TVector {.inline.} =
   result = v * (1.0 / v.len)
 #/ Returns a normalized copy of v or cpvzero if v was already cpvzero. Protects against divide by zero errors.
 proc normalizeSafe*(v: TVector): TVector {.inline.} = 
-  result = if v.x == 0.0 and v.y == 0.0: VectorZero else: v.normalize
+  result = if v.x == 0.0 and v.y == 0.0: vectorZero else: v.normalize
 #/ Clamp v to length len.
 proc clamp*(v: TVector; len: CpFloat): TVector {.inline.} = 
   result = if v.dot(v) > len * len: v.normalize * len else: v
@@ -676,7 +676,7 @@ proc distsq*(v1, v2: TVector): CpFloat {.inline.} =
   result = (v1 - v2).lenSq  #vlengthsq(vsub(v1, v2))
 #/ Returns true if the distance between v1 and v2 is less than dist.
 proc near*(v1, v2: TVector; dist: CpFloat): Bool{.inline.} = 
-  result = v1.distSq(v2) < dist * dist
+  result = v1.distsq(v2) < dist * dist
 
 
 
@@ -702,15 +702,15 @@ proc activate*(body: PBody){.importc: "cpBodyActivate", dynlib: Lib.}
 proc activateStatic*(body: PBody; filter: PShape){.
     importc: "cpBodyActivateStatic", dynlib: Lib.}
 #/ Force a body to fall asleep immediately.
-proc Sleep*(body: PBody){.importc: "cpBodySleep", dynlib: Lib.}
+proc sleep*(body: PBody){.importc: "cpBodySleep", dynlib: Lib.}
 #/ Force a body to fall asleep immediately along with other bodies in a group.
-proc SleepWithGroup*(body: PBody; group: PBody){.
+proc sleepWithGroup*(body: PBody; group: PBody){.
     importc: "cpBodySleepWithGroup", dynlib: Lib.}
 #/ Returns true if the body is sleeping.
 proc isSleeping*(body: PBody): Bool {.inline.} = 
   return body.node.root != nil
 #/ Returns true if the body is static.
-proc isStatic*(body: PBody): bool {.inline.} = 
+proc isStatic*(body: PBody): Bool {.inline.} = 
   return body.node.idleTime == CpInfinity
 #/ Returns true if the body has not been added to a space.
 proc isRogue*(body: PBody): Bool {.inline.} = 
@@ -742,7 +742,7 @@ defGetter(PBody, CpFloat, i, Moment)
 when defined(MoreNimrod):
   defSetter(PBody, CpFloat, i, Moment)
 else: 
-  proc SetMoment*(body: PBody; i: CpFloat) {.
+  proc setMoment*(body: PBody; i: CpFloat) {.
     cdecl, importc: "cpBodySetMoment", dynlib: Lib.}
 
 #/ Get the position of a body.
@@ -768,15 +768,15 @@ defProp(PBody, CpFloat, t, Torque)
 defGetter(PBody, TVector, rot, Rot)
 defProp(PBody, CpFloat, v_limit, VelLimit)
 defProp(PBody, CpFloat, w_limit, AngVelLimit)
-defProp(PBody, pointer, data, UserData)
+defProp(PBody, Pointer, data, UserData)
 
 #/ Default Integration functions.
-proc UpdateVelocity*(body: PBody; gravity: TVector; damping: CpFloat; dt: CpFloat){.
+proc updateVelocity*(body: PBody; gravity: TVector; damping: CpFloat; dt: CpFloat){.
   cdecl, importc: "cpBodyUpdateVelocity", dynlib: Lib.}
-proc UpdatePosition*(body: PBody; dt: CpFloat){.
+proc updatePosition*(body: PBody; dt: CpFloat){.
   cdecl, importc: "cpBodyUpdatePosition", dynlib: Lib.}
 #/ Convert body relative/local coordinates to absolute/world coordinates.
-proc Local2World*(body: PBody; v: TVector): TVector{.inline.} = 
+proc local2World*(body: PBody; v: TVector): TVector{.inline.} = 
   result = body.p + v.rotate(body.rot) ##return cpvadd(body.p, cpvrotate(v, body.rot))
 #/ Convert body absolute/world coordinates to  relative/local coordinates.
 proc world2Local*(body: PBody; v: TVector): TVector{.inline.} = 
@@ -805,72 +805,72 @@ proc getVelAtLocalPoint*(body: PBody; point: TVector): TVector{.
 # 	cpFloat wsq = body->w*body->w;
 # 	return (vsq ? vsq*body->m : 0.0f) + (wsq ? wsq*body->i : 0.0f);
 # }
-proc kineticEnergy*(body: PBOdy): CpFloat =
+proc kineticEnergy*(body: PBody): CpFloat =
   result = (body.v.dot(body.v) * body.m) + (body.w * body.w * body.i)
 
 #/ Call @c func once for each shape attached to @c body and added to the space.
 proc eachShape*(body: PBody; func: TBodyShapeIteratorFunc; 
-                      data: pointer){.
+                      data: Pointer){.
   cdecl, importc: "cpBodyEachShape", dynlib: Lib.}
 #/ Call @c func once for each constraint attached to @c body and added to the space.
 proc eachConstraint*(body: PBody; func: TBodyConstraintIteratorFunc; 
-                           data: pointer) {.
+                           data: Pointer) {.
   cdecl, importc: "cpBodyEachConstraint", dynlib: Lib.}
 #/ Call @c func once for each arbiter that is currently active on the body.
 proc eachArbiter*(body: PBody; func: TBodyArbiterIteratorFunc; 
-                        data: pointer){.
+                        data: Pointer){.
   cdecl, importc: "cpBodyEachArbiter", dynlib: Lib.}
 #/ Allocate a spatial hash.
-proc SpaceHashAlloc*(): PSpaceHash{.
+proc spaceHashAlloc*(): PSpaceHash{.
   cdecl, importc: "cpSpaceHashAlloc", dynlib: Lib.}
 #/ Initialize a spatial hash. 
-proc SpaceHashInit*(hash: PSpaceHash; celldim: CpFloat; numcells: cint; 
+proc spaceHashInit*(hash: PSpaceHash; celldim: CpFloat; numcells: Cint; 
                     bbfunc: TSpatialIndexBBFunc; staticIndex: PSpatialIndex): PSpatialIndex{.
   cdecl, importc: "cpSpaceHashInit", dynlib: Lib.}
 #/ Allocate and initialize a spatial hash.
-proc SpaceHashNew*(celldim: CpFloat; cells: cint; bbfunc: TSpatialIndexBBFunc; 
+proc spaceHashNew*(celldim: CpFloat; cells: Cint; bbfunc: TSpatialIndexBBFunc; 
                    staticIndex: PSpatialIndex): PSpatialIndex{.
   cdecl, importc: "cpSpaceHashNew", dynlib: Lib.}
 #/ Change the cell dimensions and table size of the spatial hash to tune it.
 #/ The cell dimensions should roughly match the average size of your objects
 #/ and the table size should be ~10 larger than the number of objects inserted.
 #/ Some trial and error is required to find the optimum numbers for efficiency.
-proc SpaceHashResize*(hash: PSpaceHash; celldim: CpFloat; numcells: cint){.
+proc spaceHashResize*(hash: PSpaceHash; celldim: CpFloat; numcells: Cint){.
   cdecl, importc: "cpSpaceHashResize", dynlib: Lib.}
 #MARK: AABB Tree
 
 
 #/ Allocate a bounding box tree.
-proc BBTreeAlloc*(): PBBTree{.cdecl, importc: "cpBBTreeAlloc", dynlib: Lib.}
+proc bBTreeAlloc*(): PBBTree{.cdecl, importc: "cpBBTreeAlloc", dynlib: Lib.}
 #/ Initialize a bounding box tree.
-proc BBTreeInit*(tree: PBBTree; bbfunc: TSpatialIndexBBFunc; 
+proc bBTreeInit*(tree: PBBTree; bbfunc: TSpatialIndexBBFunc; 
                  staticIndex: ptr TSpatialIndex): ptr TSpatialIndex{.cdecl, 
     importc: "cpBBTreeInit", dynlib: Lib.}
 #/ Allocate and initialize a bounding box tree.
-proc BBTreeNew*(bbfunc: TSpatialIndexBBFunc; staticIndex: PSpatialIndex): PSpatialIndex{.
+proc bBTreeNew*(bbfunc: TSpatialIndexBBFunc; staticIndex: PSpatialIndex): PSpatialIndex{.
     cdecl, importc: "cpBBTreeNew", dynlib: Lib.}
 #/ Perform a static top down optimization of the tree.
-proc BBTreeOptimize*(index: PSpatialIndex){.
+proc bBTreeOptimize*(index: PSpatialIndex){.
   cdecl, importc: "cpBBTreeOptimize", dynlib: Lib.}
 #/ Set the velocity function for the bounding box tree to enable temporal coherence.
 
-proc BBTreeSetVelocityFunc*(index: PSpatialIndex; func: TBBTreeVelocityFunc){.
+proc bBTreeSetVelocityFunc*(index: PSpatialIndex; func: TBBTreeVelocityFunc){.
     cdecl, importc: "cpBBTreeSetVelocityFunc", dynlib: Lib.}
 #MARK: Single Axis Sweep
 
 
 #/ Allocate a 1D sort and sweep broadphase.
 
-proc Sweep1DAlloc*(): ptr TSweep1D{.cdecl, importc: "cpSweep1DAlloc", 
+proc sweep1DAlloc*(): ptr TSweep1D{.cdecl, importc: "cpSweep1DAlloc", 
                                     dynlib: Lib.}
 #/ Initialize a 1D sort and sweep broadphase.
 
-proc Sweep1DInit*(sweep: ptr TSweep1D; bbfunc: TSpatialIndexBBFunc; 
+proc sweep1DInit*(sweep: ptr TSweep1D; bbfunc: TSpatialIndexBBFunc; 
                   staticIndex: ptr TSpatialIndex): ptr TSpatialIndex{.cdecl, 
     importc: "cpSweep1DInit", dynlib: Lib.}
 #/ Allocate and initialize a 1D sort and sweep broadphase.
 
-proc Sweep1DNew*(bbfunc: TSpatialIndexBBFunc; staticIndex: ptr TSpatialIndex): ptr TSpatialIndex{.
+proc sweep1DNew*(bbfunc: TSpatialIndexBBFunc; staticIndex: ptr TSpatialIndex): ptr TSpatialIndex{.
     cdecl, importc: "cpSweep1DNew", dynlib: Lib.}
 
 
@@ -901,7 +901,7 @@ proc ignore*(arb: PArbiter) {.cdecl, importc: "cpArbiterIgnore", dynlib: Lib.}
 #/ The order of their cpSpace.collision_type values will match
 #/ the order set when the collision handler was registered.
 proc getShapes*(arb: PArbiter, a, b: var PShape) {.inline.} =
-  if arb.swappedColl.bool:
+  if arb.swappedColl.Bool:
     a = arb.b
     b = arb.a
   else:
@@ -910,7 +910,7 @@ proc getShapes*(arb: PArbiter, a, b: var PShape) {.inline.} =
 
 #/ A macro shortcut for defining and retrieving the shapes from an arbiter.
 #define CP_ARBITER_GET_SHAPES(arb, a, b) cpShape *a, *b; cpArbiterGetShapes(arb, &a, &b);
-template getShapes*(arb: PArbiter, name1, name2: expr): stmt {.immediate.} =
+template getShapes*(arb: PArbiter, name1, name2: Expr): Stmt {.immediate.} =
   var name1, name2: PShape
   getShapes(arb, name1, name2)
 
@@ -925,35 +925,35 @@ template getShapes*(arb: PArbiter, name1, name2: expr): stmt {.immediate.} =
 
 #/ A macro shortcut for defining and retrieving the bodies from an arbiter.
 #define CP_ARBITER_GET_BODIES(arb, a, b) cpBody *a, *b; cpArbiterGetBodies(arb, &a, &b);
-template getBodies*(arb: PArbiter, name1, name2: expr): stmt {.immediate.} =
+template getBodies*(arb: PArbiter, name1, name2: Expr): Stmt {.immediate.} =
   var name1, name2: PBOdy
   getBodies(arb, name1, name2)
 
-proc isFirstContact*(arb: PArbiter): bool {.inline.} =
+proc isFirstContact*(arb: PArbiter): Bool {.inline.} =
   result = arb.state == ArbiterStateFirstColl
 
-proc getCount*(arb: PArbiter): cint {.inline.} =
+proc getCount*(arb: PArbiter): Cint {.inline.} =
   result = arb.numContacts
 
 #/ Return a contact set from an arbiter.
 proc getContactPointSet*(arb: PArbiter): TContactPointSet {.
   cdecl, importc: "cpArbiterGetContactPointSet", dynlib: Lib.}
 #/ Get the normal of the @c ith contact point.
-proc getNormal*(arb: PArbiter; i: cint): TVector {.
+proc getNormal*(arb: PArbiter; i: Cint): TVector {.
   cdecl, importc: "cpArbiterGetNormal", dynlib: Lib.}
 #/ Get the position of the @c ith contact point.
-proc getPoint*(arb: PArbiter; i: cint): TVector {.
+proc getPoint*(arb: PArbiter; i: Cint): TVector {.
   cdecl, importc: "cpArbiterGetPoint", dynlib: Lib.}
 #/ Get the depth of the @c ith contact point.
-proc getDepth*(arb: PArbiter; i: cint): CpFloat {.
+proc getDepth*(arb: PArbiter; i: Cint): CpFloat {.
   cdecl, importc: "cpArbiterGetDepth", dynlib: Lib.}
 
 ##Shapes
-template defShapeSetter(memberType: typedesc, memberName: expr, procName: expr, activates: bool): stmt {.immediate.} =
+template defShapeSetter(memberType: TypeDesc, memberName: Expr, procName: Expr, activates: Bool): Stmt {.immediate.} =
   proc `set procName`*(obj: PShape, value: memberType) {.cdecl.} =
     if activates and obj.body != nil: obj.body.activate()
     obj.memberName = value
-template defShapeProp(memberType: typedesc, memberName: expr, procName: expr, activates: bool): stmt {.immediate.} =
+template defShapeProp(memberType: TypeDesc, memberName: Expr, procName: Expr, activates: Bool): Stmt {.immediate.} =
   defGetter(PShape, memberType, memberName, procName)
   defShapeSetter(memberType, memberName, procName, activates)
 
@@ -978,7 +978,7 @@ proc pointQuery*(shape: PShape; p: TVector): Bool32 {.
 proc nearestPointQuery*(shape: PShape; p: TVector; res: PNearestPointQueryInfo): CpFloat {.
   cdecl, importc: "cpShapeNearestPointQuery", dynlib: Lib.}
 #/ Perform a segment query against a shape. @c info must be a pointer to a valid cpSegmentQueryInfo structure.
-proc segmentQuery*(shape: PShape, a, b: TVector, info: PSegmentQueryInfo): bool {.
+proc segmentQuery*(shape: PShape, a, b: TVector, info: PSegmentQueryInfo): Bool {.
   cdecl, importc: "cpShapeSegmentQuery", dynlib: Lib.}
 
 #/ Get the hit point for a segment query.
@@ -1002,7 +1002,7 @@ defShapeProp(Bool32, sensor, Sensor, true)
 defShapeProp(CpFloat, e, Elasticity, false)
 defShapeProp(CpFloat, u, Friction, true)
 defShapeProp(TVector, surface_v, SurfaceVelocity, true)
-defShapeProp(pointer, data, UserData, false)
+defShapeProp(Pointer, data, UserData, false)
 defShapeProp(TCollisionType, collision_type, CollisionType, true)
 defShapeProp(TGroup, group, Group, true)
 defShapeProp(TLayers, layers, Layers, true)
@@ -1010,9 +1010,9 @@ defShapeProp(TLayers, layers, Layers, true)
 #/ When initializing a shape, it's hash value comes from a counter.
 #/ Because the hash value may affect iteration order, you can reset the shape ID counter
 #/ when recreating a space. This will make the simulation be deterministic.
-proc resetShapeIdCounter*(): void {.cdecl, importc: "cpResetShapeIdCounter", dynlib: Lib.}
+proc resetShapeIdCounter*(): Void {.cdecl, importc: "cpResetShapeIdCounter", dynlib: Lib.}
 #/ Allocate a circle shape.
-proc CircleShapeAlloc*(): PCircleShape {.cdecl, importc: "cpCircleShapeAlloc", dynlib: Lib.}
+proc circleShapeAlloc*(): PCircleShape {.cdecl, importc: "cpCircleShapeAlloc", dynlib: Lib.}
 #/ Initialize a circle shape.
 proc init*(circle: PCircleShape, body: PBody, radius: CpFloat, offset: TVector): PCircleShape {.
   cdecl, importc: "cpCircleShapeInit", dynlib: Lib.}
@@ -1031,12 +1031,12 @@ proc allocPolyShape*(): PPolyShape {.
   cdecl, importc: "cpPolyShapeAlloc", dynlib: Lib.}
 #/ Initialize a polygon shape.
 #/ A convex hull will be created from the vertexes.
-proc init*(poly: PPolyShape; body: PBody, numVerts: cint;
+proc init*(poly: PPolyShape; body: PBody, numVerts: Cint;
             verts: ptr TVector; offset: TVector): PPolyShape {.
   cdecl, importc: "cpPolyShapeInit", dynlib: Lib.}
 #/ Allocate and initialize a polygon shape.
 #/ A convex hull will be created from the vertexes.
-proc newPolyShape*(body: PBody; numVerts: cint; verts: ptr TVector; 
+proc newPolyShape*(body: PBody; numVerts: Cint; verts: ptr TVector; 
                     offset: TVector): PShape {.
   cdecl, importc: "cpPolyShapeNew", dynlib: Lib.}
 #/ Initialize a box shaped polygon shape.
@@ -1054,13 +1054,13 @@ proc newBoxShape*(body: PBody; box: TBB): PShape {.
 
 #/ Check that a set of vertexes is convex and has a clockwise winding.
 #/ NOTE: Due to floating point precision issues, hulls created with cpQuickHull() are not guaranteed to validate!
-proc validatePoly*(verts: ptr TVector; numVerts: cint): bool {.
+proc validatePoly*(verts: ptr TVector; numVerts: Cint): Bool {.
   cdecl, importc: "cpPolyValidate", dynlib: Lib.}
 #/ Get the number of verts in a polygon shape.
-proc getNumVerts*(shape: PShape): cint {.
+proc getNumVerts*(shape: PShape): Cint {.
   cdecl, importc: "cpPolyShapeGetNumVerts", dynlib: Lib.}
 #/ Get the @c ith vertex of a polygon shape.
-proc getVert*(shape: PShape; index: cint): TVector {.
+proc getVert*(shape: PShape; index: Cint): TVector {.
   cdecl, importc: "cpPolyShapeGetVert", dynlib: Lib.}
 
 #/ Allocate a segment shape.
@@ -1098,33 +1098,33 @@ else:
 
 #/ Calculate area of a hollow circle.
 #/ @c r1 and @c r2 are the inner and outer diameters. A solid circle has an inner diameter of 0.
-proc AreaForCircle*(r1: CpFloat; r2: CpFloat): CpFloat {.
+proc areaForCircle*(r1: CpFloat; r2: CpFloat): CpFloat {.
   cdecl, importc: "cpAreaForCircle", dynlib: Lib.}
 #/ Calculate the moment of inertia for a line segment.
 #/ Beveling radius is not supported.
-proc MomentForSegment*(m: CpFloat; a, b: TVector): CpFloat {.
+proc momentForSegment*(m: CpFloat; a, b: TVector): CpFloat {.
   cdecl, importc: "cpMomentForSegment", dynlib: Lib.}
 #/ Calculate the area of a fattened (capsule shaped) line segment.
-proc AreaForSegment*(a, b: TVector; r: CpFloat): CpFloat {.
+proc areaForSegment*(a, b: TVector; r: CpFloat): CpFloat {.
   cdecl, importc: "cpAreaForSegment", dynlib: Lib.}
 #/ Calculate the moment of inertia for a solid polygon shape assuming it's center of gravity is at it's centroid. The offset is added to each vertex.
-proc MomentForPoly*(m: CpFloat; numVerts: cint; verts: ptr TVector; offset: TVector): CpFloat {.
+proc momentForPoly*(m: CpFloat; numVerts: Cint; verts: ptr TVector; offset: TVector): CpFloat {.
   cdecl, importc: "cpMomentForPoly", dynlib: Lib.}
 #/ Calculate the signed area of a polygon. A Clockwise winding gives positive area.
 #/ This is probably backwards from what you expect, but matches Chipmunk's the winding for poly shapes.
-proc AreaForPoly*(numVerts: cint; verts: ptr TVector): CpFloat {.
+proc areaForPoly*(numVerts: Cint; verts: ptr TVector): CpFloat {.
   cdecl, importc: "cpAreaForPoly", dynlib: Lib.}
 #/ Calculate the natural centroid of a polygon.
-proc CentroidForPoly*(numVerts: cint; verts: ptr TVector): TVector {.
+proc centroidForPoly*(numVerts: Cint; verts: ptr TVector): TVector {.
   cdecl, importc: "cpCentroidForPoly", dynlib: Lib.}
 #/ Center the polygon on the origin. (Subtracts the centroid of the polygon from each vertex)
-proc RecenterPoly*(numVerts: cint; verts: ptr TVector) {.
+proc recenterPoly*(numVerts: Cint; verts: ptr TVector) {.
   cdecl, importc: "cpRecenterPoly", dynlib: Lib.}
 #/ Calculate the moment of inertia for a solid box.
-proc MomentForBox*(m, width, height: CpFloat): CpFloat {.
+proc momentForBox*(m, width, height: CpFloat): CpFloat {.
   cdecl, importc: "cpMomentForBox", dynlib: Lib.}
 #/ Calculate the moment of inertia for a solid box.
-proc MomentForBox2*(m: CpFloat; box: TBB): CpFloat {.
+proc momentForBox2*(m: CpFloat; box: TBB): CpFloat {.
   cdecl, importc: "cpMomentForBox2", dynlib: Lib.}
 
 
@@ -1176,8 +1176,8 @@ type
   TGrooveJoint{.pf.} = object 
     constraint: PConstraint
     grv_n: TVector
-    grv_a: TVector
-    grv_b: TVector
+    grvA: TVector
+    grvB: TVector
     anchr2: TVector
     grv_tn: TVector
     clamp: CpFloat
@@ -1274,11 +1274,11 @@ proc activateBodies(constraint: PConstraint) {.inline.} =
 # 	cpConstraintActivateBodies(constraint); \
 # 	constraint->member = value; \
 # }
-template defConstraintSetter(memberType: typedesc, member: expr, name: expr): stmt {.immediate.} =
+template defConstraintSetter(memberType: TypeDesc, member: Expr, name: Expr): Stmt {.immediate.} =
   proc `set name`*(constraint: PConstraint, value: memberType) {.cdecl.} =
     activateBodies(constraint)
     constraint.member = value
-template defConstraintProp(memberType: typedesc, member: expr, name: expr): stmt {.immediate.} =
+template defConstraintProp(memberType: TypeDesc, member: Expr, name: Expr): Stmt {.immediate.} =
   defGetter(PConstraint, memberType, member, name)
   defConstraintSetter(memberType, member, name)
 # CP_DefineConstraintStructGetter(cpSpace*, CP_PRIVATE(space), Space)
@@ -1308,30 +1308,30 @@ proc getImpulse*(constraint: PConstraint): CpFloat {.inline.} =
 # 	cpConstraintActivateBodies(constraint); \
 # 	((struct *)constraint)->member = value; \
 # }
-template constraintCheckCast(constraint: PConstraint, ctype: expr): stmt {.immediate.} =
+template constraintCheckCast(constraint: PConstraint, ctype: Expr): Stmt {.immediate.} =
   assert(constraint.klass == `ctype getClass`(), "Constraint is the wrong class")
-template defCGetter(ctype: expr, memberType: typedesc, member: expr, name: expr): stmt {.immediate.} = 
+template defCGetter(ctype: Expr, memberType: TypeDesc, member: Expr, name: Expr): Stmt {.immediate.} = 
   proc `get ctype name`*(constraint: PConstraint): memberType {.cdecl.} =
     constraintCheckCast(constraint, ctype)
     result = cast[`P ctype`](constraint).member
-template defCSetter(ctype: expr, memberType: typedesc, member: expr, name: expr): stmt {.immediate.} =
+template defCSetter(ctype: Expr, memberType: TypeDesc, member: Expr, name: Expr): Stmt {.immediate.} =
   proc `set ctype name`*(constraint: PConstraint, value: memberType) {.cdecl.} =
     constraintCheckCast(constraint, ctype)
     activateBodies(constraint)
     cast[`P ctype`](constraint).member = value
-template defCProp(ctype: expr, memberType: typedesc, member: expr, name: expr): stmt {.immediate.} =
+template defCProp(ctype: Expr, memberType: TypeDesc, member: Expr, name: Expr): Stmt {.immediate.} =
   defCGetter(ctype, memberType, member, name)
   defCSetter(ctype, memberType, member, name)
 
-proc PinJointGetClass*(): PConstraintClass{.
+proc pinJointGetClass*(): PConstraintClass{.
   cdecl, importc: "cpPinJointGetClass", dynlib: Lib.}
 #/ @private
 
 #/ Allocate a pin joint.
-proc AllocPinJoint*(): PPinJoint{.
+proc allocPinJoint*(): PPinJoint{.
   cdecl, importc: "cpPinJointAlloc", dynlib: Lib.}
 #/ Initialize a pin joint.
-proc PinJointInit*(joint: PPinJoint; a: PBody; b: PBody; anchr1: TVector; 
+proc pinJointInit*(joint: PPinJoint; a: PBody; b: PBody; anchr1: TVector; 
                    anchr2: TVector): PPinJoint{.
   cdecl, importc: "cpPinJointInit", dynlib: Lib.}
 #/ Allocate and initialize a pin joint.
@@ -1342,10 +1342,10 @@ defCProp(PinJoint, TVector, anchr1, Anchr1)
 defCProp(PinJoint, TVector, anchr2, Anchr2)
 defCProp(PinJoint, CpFloat, dist, Dist)
 
-proc SlideJointGetClass*(): PConstraintClass{.
+proc slideJointGetClass*(): PConstraintClass{.
   cdecl, importc: "cpSlideJointGetClass", dynlib: Lib.}
 #/ Allocate a slide joint.
-proc AllocSlideJoint*(): PSlideJoint{.
+proc allocSlideJoint*(): PSlideJoint{.
   cdecl, importc: "cpSlideJointAlloc", dynlib: Lib.}
 #/ Initialize a slide joint.
 proc init*(joint: PSlideJoint; a, b: PBody; anchr1, anchr2: TVector;
@@ -1380,13 +1380,13 @@ defCProp(PivotJoint, TVector, anchr1, Anchr1)
 defCProp(PivotJoint, TVector, anchr2, Anchr2)
 
 
-proc GrooveJointGetClass*(): PConstraintClass{.
+proc grooveJointGetClass*(): PConstraintClass{.
   cdecl, importc: "cpGrooveJointGetClass", dynlib: Lib.}
 #/ Allocate a groove joint.
-proc GrooveJointAlloc*(): ptr TGrooveJoint{.
+proc grooveJointAlloc*(): ptr TGrooveJoint{.
   cdecl, importc: "cpGrooveJointAlloc", dynlib: Lib.}
 #/ Initialize a groove joint.
-proc Init*(joint: PGrooveJoint; a, b: PBody; groove_a, groove_b, anchr2: TVector): PGrooveJoint{.
+proc init*(joint: PGrooveJoint; a, b: PBody; groove_a, groove_b, anchr2: TVector): PGrooveJoint{.
   cdecl, importc: "cpGrooveJointInit", dynlib: Lib.}
 #/ Allocate and initialize a groove joint.
 proc newGrooveJoint*(a, b: PBody; groove_a, groove_b, anchr2: TVector): PConstraint{.
@@ -1395,17 +1395,17 @@ proc newGrooveJoint*(a, b: PBody; groove_a, groove_b, anchr2: TVector): PConstra
 defCGetter(GrooveJoint, TVector, grv_a, GrooveA)
 defCGetter(GrooveJoint, TVector, grv_b, GrooveB)
 # /// Set endpoint a of a groove joint's groove
-proc SetGrooveA*(constraint: PConstraint, value: TVector) {.
+proc setGrooveA*(constraint: PConstraint, value: TVector) {.
   cdecl, importc: "cpGrooveJointSetGrooveA", dynlib: Lib.}
 # /// Set endpoint b of a groove joint's groove
-proc SetGrooveB*(constraint: PConstraint, value: TVector) {.
+proc setGrooveB*(constraint: PConstraint, value: TVector) {.
   cdecl, importc: "cpGrooveJointSetGrooveB", dynlib: Lib.}
 defCProp(GrooveJoint, TVector, anchr2, Anchr2)
 
-proc DampedSpringGetClass*(): PConstraintClass{.
+proc dampedSpringGetClass*(): PConstraintClass{.
   cdecl, importc: "cpDampedSpringGetClass", dynlib: Lib.}
 #/ Allocate a damped spring.
-proc AllocDampedSpring*(): PDampedSpring{.
+proc allocDampedSpring*(): PDampedSpring{.
   cdecl, importc: "cpDampedSpringAlloc", dynlib: Lib.}
 #/ Initialize a damped spring.
 proc init*(joint: PDampedSpring; a, b: PBody; anchr1, anchr2: TVector;
@@ -1425,18 +1425,18 @@ defCProp(DampedSpring, CpFloat, damping, Damping)
 defCProp(DampedSpring, TDampedSpringForceFunc, springForceFunc, SpringForceFunc)
 
 
-proc DampedRotarySpringGetClass*(): PConstraintClass{.
+proc dampedRotarySpringGetClass*(): PConstraintClass{.
   cdecl, importc: "cpDampedRotarySpringGetClass", dynlib: Lib.}
 
 #/ Allocate a damped rotary spring.
-proc DampedRotarySpringAlloc*(): PDampedRotarySpring{.
+proc dampedRotarySpringAlloc*(): PDampedRotarySpring{.
   cdecl, importc: "cpDampedRotarySpringAlloc", dynlib: Lib.}
 #/ Initialize a damped rotary spring.
 proc init*(joint: PDampedRotarySpring; a, b: PBody; 
             restAngle, stiffness, damping: CpFloat): PDampedRotarySpring{.
   cdecl, importc: "cpDampedRotarySpringInit", dynlib: Lib.}
 #/ Allocate and initialize a damped rotary spring.
-proc DampedRotarySpringNew*(a, b: PBody; restAngle, stiffness, damping: CpFloat): PConstraint{.
+proc dampedRotarySpringNew*(a, b: PBody; restAngle, stiffness, damping: CpFloat): PConstraint{.
   cdecl, importc: "cpDampedRotarySpringNew", dynlib: Lib.}
 
 defCProp(DampedRotarySpring, CpFloat, restAngle, RestAngle)
@@ -1445,7 +1445,7 @@ defCProp(DampedRotarySpring, CpFloat, damping, Damping)
 defCProp(DampedRotarySpring, TDampedRotarySpringTorqueFunc, springTorqueFunc, SpringTorqueFunc)
 
 
-proc RotaryLimitJointGetClass*(): PConstraintClass{.
+proc rotaryLimitJointGetClass*(): PConstraintClass{.
   cdecl, importc: "cpRotaryLimitJointGetClass", dynlib: Lib.}
 #/ Allocate a damped rotary limit joint.
 proc allocRotaryLimitJoint*(): PRotaryLimitJoint{.
@@ -1461,16 +1461,16 @@ defCProp(RotaryLimitJoint, CpFloat, min, Min)
 defCProp(RotaryLimitJoint, CpFloat, max, Max)
 
 
-proc RatchetJointGetClass*(): PConstraintClass{.
+proc ratchetJointGetClass*(): PConstraintClass{.
   cdecl, importc: "cpRatchetJointGetClass", dynlib: Lib.}
 #/ Allocate a ratchet joint.
-proc AllocRatchetJoint*(): PRatchetJoint{.
+proc allocRatchetJoint*(): PRatchetJoint{.
   cdecl, importc: "cpRatchetJointAlloc", dynlib: Lib.}
 #/ Initialize a ratched joint.
 proc init*(joint: PRatchetJoint; a, b: PBody; phase, ratchet: CpFloat): PRatchetJoint{.
   cdecl, importc: "cpRatchetJointInit", dynlib: Lib.}
 #/ Allocate and initialize a ratchet joint.
-proc NewRatchetJoint*(a, b: PBody; phase, ratchet: CpFloat): PConstraint{.
+proc newRatchetJoint*(a, b: PBody; phase, ratchet: CpFloat): PConstraint{.
   cdecl, importc: "cpRatchetJointNew", dynlib: Lib.}
 
 defCProp(RatchetJoint, CpFloat, angle, Angle)
@@ -1478,29 +1478,29 @@ defCProp(RatchetJoint, CpFloat, phase, Phase)
 defCProp(RatchetJoint, CpFloat, ratchet, Ratchet)
 
 
-proc GearJointGetClass*(): PConstraintClass{.cdecl, 
+proc gearJointGetClass*(): PConstraintClass{.cdecl, 
     importc: "cpGearJointGetClass", dynlib: Lib.}
 #/ Allocate a gear joint.
-proc AllocGearJoint*(): PGearJoint{.
+proc allocGearJoint*(): PGearJoint{.
   cdecl, importc: "cpGearJointAlloc", dynlib: Lib.}
 #/ Initialize a gear joint.
 proc init*(joint: PGearJoint; a, b: PBody, phase, ratio: CpFloat): PGearJoint{.
   cdecl, importc: "cpGearJointInit", dynlib: Lib.}
 #/ Allocate and initialize a gear joint.
-proc NewGearJoint*(a, b: PBody; phase, ratio: CpFloat): PConstraint{.
+proc newGearJoint*(a, b: PBody; phase, ratio: CpFloat): PConstraint{.
   cdecl, importc: "cpGearJointNew", dynlib: Lib.}
 
 defCProp(GearJoint, CpFloat, phase, Phase)
 defCGetter(GearJoint, CpFloat, ratio, Ratio)
 #/ Set the ratio of a gear joint.
-proc GearJointSetRatio*(constraint: PConstraint; value: CpFloat){.
+proc gearJointSetRatio*(constraint: PConstraint; value: CpFloat){.
   cdecl, importc: "cpGearJointSetRatio", dynlib: Lib.}
 
 
-proc SimpleMotorGetClass*(): PConstraintClass{.
+proc simpleMotorGetClass*(): PConstraintClass{.
   cdecl, importc: "cpSimpleMotorGetClass", dynlib: Lib.}
 #/ Allocate a simple motor.
-proc AllocSimpleMotor*(): PSimpleMotor{.
+proc allocSimpleMotor*(): PSimpleMotor{.
   cdecl, importc: "cpSimpleMotorAlloc", dynlib: Lib.}
 #/ initialize a simple motor.
 proc init*(joint: PSimpleMotor; a, b: PBody; 

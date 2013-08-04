@@ -7,9 +7,9 @@
 #    distribution, for details about the copyright.
 #
 
-proc reprInt(x: int64): string {.compilerproc.} = return $x
+proc reprInt(x: Int64): String {.compilerproc.} = return $x
 
-proc reprEnum(e: int, typ: PNimType): string {.compilerRtl.} =
+proc reprEnum(e: Int, typ: PNimType): String {.compilerRtl.} =
   if ntfEnumHole notin typ.flags:
     if e <% typ.node.len:
       return $typ.node.sons[e].name

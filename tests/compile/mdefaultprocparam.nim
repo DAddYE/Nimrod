@@ -1,5 +1,5 @@
 
 
-proc p*(f = (proc(): string = "hi")) =
+proc p*(f = (proc(): String = "hi")) =
   echo f()
 

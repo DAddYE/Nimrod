@@ -3,16 +3,16 @@ import
   tri_engine/config
 
 type
-  TV2*[T:TNumber=TR] = array[0..1, T]
-  TV3*[T:TNumber=TR] = array[0..2, T]
-  TV4*[T:TNumber=TR] = array[0..3, T]
+  TV2*[T:TNumber=TR] = Array[0..1, T]
+  TV3*[T:TNumber=TR] = Array[0..2, T]
+  TV4*[T:TNumber=TR] = Array[0..3, T]
   TVT*[T:TNumber=TR] = TV2|TV3|TV4
   #TV2* = array[0..1, TR]
   #TV3* = array[0..2, TR]
   #TV4* = array[0..3, TR]
 
 # TODO: Change to TVT when compiler issue is resolved.
-proc `$`*[T](o: TV2[T]): string =
+proc `$`*[T](o: TV2[T]): String =
   result = "("
   for i in 0 .. <o.len:
     result &= $o[0]

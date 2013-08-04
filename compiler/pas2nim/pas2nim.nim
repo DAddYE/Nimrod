@@ -25,8 +25,8 @@ Options:
   -h, --help             show this help
 """
 
-proc main(infile, outfile: string, flags: set[TParserFlag]) =
-  var stream = LLStreamOpen(infile, fmRead)
+proc main(infile, outfile: String, flags: Set[TParserFlag]) =
+  var stream = lLStreamOpen(infile, fmRead)
   if stream == nil: rawMessage(errCannotOpenFile, infile)
   var p: TParser
   openParser(p, infile, stream, flags)
@@ -37,7 +37,7 @@ proc main(infile, outfile: string, flags: set[TParserFlag]) =
 var
   infile = ""
   outfile = ""
-  flags: set[TParserFlag] = {}
+  flags: Set[TParserFlag] = {}
 for kind, key, val in getopt():
   case kind
   of cmdArgument: infile = key

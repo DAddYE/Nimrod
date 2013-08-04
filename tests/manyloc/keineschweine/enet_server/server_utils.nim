@@ -2,20 +2,20 @@ import enet, sg_packets, estreams, md5, zlib_helpers, client_helpers, strutils,
   idgen, sg_assets, tables, os
 type
   PClient* = ref object
-    id*: int32
-    auth*: bool
-    alias*: string
+    id*: Int32
+    auth*: Bool
+    alias*: String
     peer*: PPeer
   
   FileChallengePair* = tuple[challenge: ScFileChallenge; file: TChecksumFile]
   PFileChallengeSequence* = ref TFileChallengeSequence 
   TFileChallengeSequence = object
-    index: int  #which file is active
+    index: Int  #which file is active
     transfer: ScFileTransfer
     file: ptr FileChallengePair
 var
   clientID = newIdGen[int32]()
-  myAssets*: seq[FileChallengePair] = @[]
+  myAssets*: Seq[FileChallengePair] = @[]
   fileChallenges = initTable[int32, PFileChallengeSequence](32)
 const FileChunkSize = 256
 
@@ -28,21 +28,21 @@ proc newClient*(): PClient =
   result.id = clientID.next()
   result.alias = "billy"
 
-proc `$`*(client: PClient): string =
+proc `$`*(client: PClient): String =
   result = "$1:$2".format(client.id, client.alias)
 
-proc send*[T](client: PClient; pktType: char; pkt: var T) =
+proc send*[T](client: PClient; pktType: Char; pkt: var T) =
   var buf = newBuffer(128)
   buf.write pktType
   buf.pack pkt
   discard client.peer.send(0.cuchar, buf, flagReliable)
 
-proc sendMessage*(client: PClient; txt: string) =
+proc sendMessage*(client: PClient; txt: String) =
   var m = newScChat(CSystem, text = txt)
-  client.send HChat, m
-proc sendError*(client: PClient; error: string) =
+  client.send hChat, m
+proc sendError*(client: PClient; error: String) =
   var m = newScChat(CError, text = error)
-  client.send HChat, m
+  client.send hChat, m
 
 
 
@@ -66,7 +66,7 @@ proc next*(challenge: PFileChallengeSequence, client: PClient) =
   else:
     echo myAssets.len, "assets"
   challenge.file = addr myAssets[challenge.index]
-  client.send HFileChallenge, challenge.file.challenge # :rolleyes:
+  client.send hFileChallenge, challenge.file.challenge # :rolleyes:
   echo "sent challenge"
 
 proc sendChunk*(challenge: PFileChallengeSequence, client: PClient) =
@@ -76,7 +76,7 @@ proc sendChunk*(challenge: PFileChallengeSequence, client: PClient) =
     addr challenge.transfer.data[0], 
     addr challenge.file.file.compressed[challenge.transfer.pos],
     size)
-  client.send HFileTransfer, challenge.transfer
+  client.send hFileTransfer, challenge.transfer
   echo "chunk sent"
 
 proc startSend*(challenge: PFileChallengeSequence, client: PClient) =
@@ -111,10 +111,10 @@ proc handleFileChallengeResp*(client: PClient; buffer: PBuffer) =
     if fcResp.checksum == fcSeq.file.file.sum: ##client is good
       client.sendMessage "Checksum is good. "&index
       resp.status = true
-      client.send HChallengeResult, resp
+      client.send hChallengeResult, resp
       fcSeq.next(client)
     else:
       client.sendMessage "Checksum is bad, sending file... "&index
-      client.send HChallengeResult, resp
+      client.send hChallengeResult, resp
       fcSeq.startSend(client)
 

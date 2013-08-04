@@ -14,10 +14,10 @@ proc semIsPartOf(c: PContext, n: PNode, flags: TExprFlags): PNode =
   var r = isPartOf(n[1], n[2])
   result = newIntNodeT(ord(r), n)
   
-proc expectIntLit(c: PContext, n: PNode): int =
+proc expectIntLit(c: PContext, n: PNode): Int =
   let x = c.semConstExpr(c, n)
   case x.kind
-  of nkIntLit..nkInt64Lit: result = int(x.intVal)
+  of nkIntLit..nkInt64Lit: result = Int(x.intVal)
   else: LocalError(n.info, errIntLiteralExpected)
 
 proc semInstantiationInfo(c: PContext, n: PNode): PNode =
@@ -61,7 +61,7 @@ proc semBindSym(c: PContext, n: PNode): PNode =
   
   let isMixin = semConstExpr(c, n.sons[2])
   if isMixin.kind != nkIntLit or isMixin.intVal < 0 or
-      isMixin.intVal > high(TSymChoiceRule).int:
+      isMixin.intVal > high(tSymChoiceRule).Int:
     LocalError(n.sons[2].info, errConstExprExpected)
     return errorNode(c, n)
   

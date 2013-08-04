@@ -40,159 +40,159 @@ type
     event*: ref TEvent
     history*: ref THistory
     location*: ref TLocation
-    closed*: bool
-    defaultStatus*: cstring
-    innerHeight*, innerWidth*: int
+    closed*: Bool
+    defaultStatus*: Cstring
+    innerHeight*, innerWidth*: Int
     locationbar*: ref TLocationBar
     menubar*: ref TMenuBar
-    name*: cstring
-    outerHeight*, outerWidth*: int
-    pageXOffset*, pageYOffset*: int
+    name*: Cstring
+    outerHeight*, outerWidth*: Int
+    pageXOffset*, pageYOffset*: Int
     personalbar*: ref TPersonalBar
     scrollbars*: ref TScrollBars
     statusbar*: ref TStatusBar
-    status*: cstring
+    status*: Cstring
     toolbar*: ref TToolBar
 
-    alert*: proc (msg: cstring) {.nimcall.}
+    alert*: proc (msg: Cstring) {.nimcall.}
     back*: proc () {.nimcall.}
     blur*: proc () {.nimcall.}
-    captureEvents*: proc (eventMask: int) {.nimcall.}
+    captureEvents*: proc (eventMask: Int) {.nimcall.}
     clearInterval*: proc (interval: ref TInterval) {.nimcall.}
     clearTimeout*: proc (timeout: ref TTimeOut) {.nimcall.}
     close*: proc () {.nimcall.}
-    confirm*: proc (msg: cstring): bool {.nimcall.}
+    confirm*: proc (msg: Cstring): Bool {.nimcall.}
     disableExternalCapture*: proc () {.nimcall.}
     enableExternalCapture*: proc () {.nimcall.}
-    find*: proc (text: cstring, caseSensitive = false, 
+    find*: proc (text: Cstring, caseSensitive = false, 
                  backwards = false) {.nimcall.}
     focus*: proc () {.nimcall.}
     forward*: proc () {.nimcall.}
     handleEvent*: proc (e: ref TEvent) {.nimcall.}
     home*: proc () {.nimcall.}
-    moveBy*: proc (x, y: int) {.nimcall.}
-    moveTo*: proc (x, y: int) {.nimcall.}
-    open*: proc (uri, windowname: cstring,
-                 properties: cstring = nil): ref TWindow {.nimcall.}
+    moveBy*: proc (x, y: Int) {.nimcall.}
+    moveTo*: proc (x, y: Int) {.nimcall.}
+    open*: proc (uri, windowname: Cstring,
+                 properties: Cstring = nil): ref TWindow {.nimcall.}
     print*: proc () {.nimcall.}
-    prompt*: proc (text, default: cstring): cstring {.nimcall.}
-    releaseEvents*: proc (eventMask: int) {.nimcall.}
-    resizeBy*: proc (x, y: int) {.nimcall.}
-    resizeTo*: proc (x, y: int) {.nimcall.}
+    prompt*: proc (text, default: Cstring): Cstring {.nimcall.}
+    releaseEvents*: proc (eventMask: Int) {.nimcall.}
+    resizeBy*: proc (x, y: Int) {.nimcall.}
+    resizeTo*: proc (x, y: Int) {.nimcall.}
     routeEvent*: proc (event: ref TEvent) {.nimcall.}
-    scrollBy*: proc (x, y: int) {.nimcall.}
-    scrollTo*: proc (x, y: int) {.nimcall.}
-    setInterval*: proc (code: cstring, pause: int): ref TInterval {.nimcall.}
-    setTimeout*: proc (code: cstring, pause: int): ref TTimeOut {.nimcall.}
+    scrollBy*: proc (x, y: Int) {.nimcall.}
+    scrollTo*: proc (x, y: Int) {.nimcall.}
+    setInterval*: proc (code: Cstring, pause: Int): ref TInterval {.nimcall.}
+    setTimeout*: proc (code: Cstring, pause: Int): ref TTimeOut {.nimcall.}
     stop*: proc () {.nimcall.}
-    frames*: seq[TFrame]
+    frames*: Seq[TFrame]
 
   TFrame* {.importc.} = object of TWindow
 
   TDocument* {.importc.} = object of TEventHandlers
-    alinkColor*: cstring
-    bgColor*: cstring
-    charset*: cstring
-    cookie*: cstring
-    defaultCharset*: cstring
-    fgColor*: cstring
-    lastModified*: cstring
-    linkColor*: cstring
-    referrer*: cstring
-    title*: cstring
-    URL*: cstring
-    vlinkColor*: cstring
-    captureEvents*: proc (eventMask: int) {.nimcall.}
-    createAttribute*: proc (identifier: cstring): ref TNode {.nimcall.}
-    createElement*: proc (identifier: cstring): ref TNode {.nimcall.}
-    createTextNode*: proc (identifier: cstring): ref TNode {.nimcall.}
-    getElementById*: proc (id: cstring): ref TNode {.nimcall.}
-    getElementsByName*: proc (name: cstring): seq[ref TNode] {.nimcall.}
-    getElementsByTagName*: proc (name: cstring): seq[ref TNode] {.nimcall.}
-    getSelection*: proc (): cstring {.nimcall.}
+    alinkColor*: Cstring
+    bgColor*: Cstring
+    charset*: Cstring
+    cookie*: Cstring
+    defaultCharset*: Cstring
+    fgColor*: Cstring
+    lastModified*: Cstring
+    linkColor*: Cstring
+    referrer*: Cstring
+    title*: Cstring
+    URL*: Cstring
+    vlinkColor*: Cstring
+    captureEvents*: proc (eventMask: Int) {.nimcall.}
+    createAttribute*: proc (identifier: Cstring): ref TNode {.nimcall.}
+    createElement*: proc (identifier: Cstring): ref TNode {.nimcall.}
+    createTextNode*: proc (identifier: Cstring): ref TNode {.nimcall.}
+    getElementById*: proc (id: Cstring): ref TNode {.nimcall.}
+    getElementsByName*: proc (name: Cstring): Seq[ref TNode] {.nimcall.}
+    getElementsByTagName*: proc (name: Cstring): Seq[ref TNode] {.nimcall.}
+    getSelection*: proc (): Cstring {.nimcall.}
     handleEvent*: proc (event: ref TEvent) {.nimcall.}
     open*: proc () {.nimcall.}
-    releaseEvents*: proc (eventMask: int) {.nimcall.}
+    releaseEvents*: proc (eventMask: Int) {.nimcall.}
     routeEvent*: proc (event: ref TEvent) {.nimcall.}
-    write*: proc (text: cstring) {.nimcall.}
-    writeln*: proc (text: cstring) {.nimcall.}
-    anchors*: seq[ref TAnchor]
-    forms*: seq[ref TForm]
-    images*: seq[ref TImage]
-    applets*: seq[ref TApplet]
-    embeds*: seq[ref TEmbed]
-    links*: seq[ref TLink]
+    write*: proc (text: Cstring) {.nimcall.}
+    writeln*: proc (text: Cstring) {.nimcall.}
+    anchors*: Seq[ref TAnchor]
+    forms*: Seq[ref TForm]
+    images*: Seq[ref TImage]
+    applets*: Seq[ref TApplet]
+    embeds*: Seq[ref TEmbed]
+    links*: Seq[ref TLink]
 
   TLink* {.importc.} = object of TObject
-    name*: cstring
-    target*: cstring
-    text*: cstring
-    x*: int
-    y*: int
+    name*: Cstring
+    target*: Cstring
+    text*: Cstring
+    x*: Int
+    y*: Int
 
   TEmbed* {.importc.} = object of TObject
-    height*: int
-    hspace*: int
-    name*: cstring
-    src*: cstring
-    width*: int
-    `type`*: cstring
-    vspace*: int
+    height*: Int
+    hspace*: Int
+    name*: Cstring
+    src*: Cstring
+    width*: Int
+    `type`*: Cstring
+    vspace*: Int
     play*: proc () {.nimcall.}
     stop*: proc () {.nimcall.}
 
   TAnchor* {.importc.} = object of TObject
-    name*: cstring
-    text*: cstring
-    x*, y*: int
+    name*: Cstring
+    text*: Cstring
+    x*, y*: Int
 
   TApplet* {.importc.} = object of TObject
 
   TElement* {.importc.} = object of TEventHandlers
-    checked*: bool
-    defaultChecked*: bool
-    defaultValue*: cstring
-    disabled*: bool
+    checked*: Bool
+    defaultChecked*: Bool
+    defaultValue*: Cstring
+    disabled*: Bool
     form*: ref TForm
-    name*: cstring
-    readOnly*: bool
-    `type`*: cstring
-    value*: cstring
+    name*: Cstring
+    readOnly*: Bool
+    `type`*: Cstring
+    value*: Cstring
     blur*: proc () {.nimcall.}
     click*: proc () {.nimcall.}
     focus*: proc () {.nimcall.}
     handleEvent*: proc (event: ref TEvent) {.nimcall.}
     select*: proc () {.nimcall.}
-    options*: seq[ref TOption]
+    options*: Seq[ref TOption]
 
   TOption* {.importc.} = object of TObject
-    defaultSelected*: bool
-    selected*: bool
-    selectedIndex*: int
-    text*: cstring
-    value*: cstring
+    defaultSelected*: Bool
+    selected*: Bool
+    selectedIndex*: Int
+    text*: Cstring
+    value*: Cstring
 
   TForm* {.importc.} = object of TEventHandlers
-    action*: cstring
-    encoding*: cstring
-    `method`*: cstring
-    name*: cstring
-    target*: cstring
+    action*: Cstring
+    encoding*: Cstring
+    `method`*: Cstring
+    name*: Cstring
+    target*: Cstring
     handleEvent*: proc (event: ref TEvent) {.nimcall.}
     reset*: proc () {.nimcall.}
     submit*: proc () {.nimcall.}
-    elements*: seq[ref TElement]
+    elements*: Seq[ref TElement]
 
   TImage* {.importc.} = object of TEventHandlers
-    border*: int
-    complete*: bool
-    height*: int
-    hspace*: int
-    lowsrc*: cstring
-    name*: cstring
-    src*: cstring
-    vspace*: int
-    width*: int
+    border*: Int
+    complete*: Bool
+    height*: Int
+    hspace*: Int
+    lowsrc*: Cstring
+    name*: Cstring
+    src*: Cstring
+    vspace*: Int
+    width*: Int
     handleEvent*: proc (event: ref TEvent) {.nimcall.}
 
   TNodeType* = enum
@@ -209,211 +209,211 @@ type
     DocumentFragmentNode,
     NotationNode
   TNode* {.importc.} = object of TObject
-    attributes*: seq[ref TNode]
-    childNodes*: seq[ref TNode]
-    data*: cstring
+    attributes*: Seq[ref TNode]
+    childNodes*: Seq[ref TNode]
+    data*: Cstring
     firstChild*: ref TNode
     lastChild*: ref TNode
     nextSibling*: ref TNode
-    nodeName*: cstring
+    nodeName*: Cstring
     nodeType*: TNodeType
-    nodeValue*: cstring
+    nodeValue*: Cstring
     parentNode*: ref TNode
     previousSibling*: ref TNode
     appendChild*: proc (child: ref TNode) {.nimcall.}
-    appendData*: proc (data: cstring) {.nimcall.}
-    cloneNode*: proc (copyContent: bool) {.nimcall.}
-    deleteData*: proc (start, len: int) {.nimcall.}
-    getAttribute*: proc (attr: cstring): cstring {.nimcall.}
-    getAttributeNode*: proc (attr: cstring): ref TNode {.nimcall.}
-    getElementsByTagName*: proc (): seq[ref TNode] {.nimcall.}
-    hasChildNodes*: proc (): bool {.nimcall.}
-    innerHTML*: cstring
+    appendData*: proc (data: Cstring) {.nimcall.}
+    cloneNode*: proc (copyContent: Bool) {.nimcall.}
+    deleteData*: proc (start, len: Int) {.nimcall.}
+    getAttribute*: proc (attr: Cstring): Cstring {.nimcall.}
+    getAttributeNode*: proc (attr: Cstring): ref TNode {.nimcall.}
+    getElementsByTagName*: proc (): Seq[ref TNode] {.nimcall.}
+    hasChildNodes*: proc (): Bool {.nimcall.}
+    innerHTML*: Cstring
     insertBefore*: proc (newNode, before: ref TNode) {.nimcall.}
-    insertData*: proc (position: int, data: cstring) {.nimcall.}
-    removeAttribute*: proc (attr: cstring) {.nimcall.}
+    insertData*: proc (position: Int, data: Cstring) {.nimcall.}
+    removeAttribute*: proc (attr: Cstring) {.nimcall.}
     removeAttributeNode*: proc (attr: ref TNode) {.nimcall.}
     removeChild*: proc (child: ref TNode) {.nimcall.}
     replaceChild*: proc (newNode, oldNode: ref TNode) {.nimcall.}
-    replaceData*: proc (start, len: int, text: cstring) {.nimcall.}
-    setAttribute*: proc (name, value: cstring) {.nimcall.}
+    replaceData*: proc (start, len: Int, text: Cstring) {.nimcall.}
+    setAttribute*: proc (name, value: Cstring) {.nimcall.}
     setAttributeNode*: proc (attr: ref TNode) {.nimcall.}
     style*: ref TStyle
 
   TStyle* {.importc.} = object of TObject
-    background*: cstring
-    backgroundAttachment*: cstring
-    backgroundColor*: cstring
-    backgroundImage*: cstring
-    backgroundPosition*: cstring
-    backgroundRepeat*: cstring
-    border*: cstring
-    borderBottom*: cstring
-    borderBottomColor*: cstring
-    borderBottomStyle*: cstring
-    borderBottomWidth*: cstring
-    borderColor*: cstring
-    borderLeft*: cstring
-    borderLeftColor*: cstring
-    borderLeftStyle*: cstring
-    borderLeftWidth*: cstring
-    borderRight*: cstring
-    borderRightColor*: cstring
-    borderRightStyle*: cstring
-    borderRightWidth*: cstring
-    borderStyle*: cstring
-    borderTop*: cstring
-    borderTopColor*: cstring
-    borderTopStyle*: cstring
-    borderTopWidth*: cstring
-    borderWidth*: cstring
-    bottom*: cstring
-    captionSide*: cstring
-    clear*: cstring
-    clip*: cstring
-    color*: cstring
-    cursor*: cstring
-    direction*: cstring
-    display*: cstring
-    emptyCells*: cstring
-    cssFloat*: cstring
-    font*: cstring
-    fontFamily*: cstring
-    fontSize*: cstring
-    fontStretch*: cstring
-    fontStyle*: cstring
-    fontVariant*: cstring
-    fontWeight*: cstring
-    height*: cstring
-    left*: cstring
-    letterSpacing*: cstring
-    lineHeight*: cstring
-    listStyle*: cstring
-    listStyleImage*: cstring
-    listStylePosition*: cstring
-    listStyleType*: cstring
-    margin*: cstring
-    marginBottom*: cstring
-    marginLeft*: cstring
-    marginRight*: cstring
-    marginTop*: cstring
-    maxHeight*: cstring
-    maxWidth*: cstring
-    minHeight*: cstring
-    minWidth*: cstring
-    overflow*: cstring
-    padding*: cstring
-    paddingBottom*: cstring
-    paddingLeft*: cstring
-    paddingRight*: cstring
-    paddingTop*: cstring
-    pageBreakAfter*: cstring
-    pageBreakBefore*: cstring
-    position*: cstring
-    right*: cstring
-    scrollbar3dLightColor*: cstring
-    scrollbarArrowColor*: cstring
-    scrollbarBaseColor*: cstring
-    scrollbarDarkshadowColor*: cstring
-    scrollbarFaceColor*: cstring
-    scrollbarHighlightColor*: cstring
-    scrollbarShadowColor*: cstring
-    scrollbarTrackColor*: cstring
-    tableLayout*: cstring
-    textAlign*: cstring
-    textDecoration*: cstring
-    textIndent*: cstring
-    textTransform*: cstring
-    top*: cstring
-    verticalAlign*: cstring
-    visibility*: cstring
-    width*: cstring
-    wordSpacing*: cstring
-    zIndex*: int
-    getAttribute*: proc (attr: cstring, caseSensitive=false): cstring {.nimcall.}
-    removeAttribute*: proc (attr: cstring, caseSensitive=false) {.nimcall.}
-    setAttribute*: proc (attr, value: cstring, caseSensitive=false) {.nimcall.}
+    background*: Cstring
+    backgroundAttachment*: Cstring
+    backgroundColor*: Cstring
+    backgroundImage*: Cstring
+    backgroundPosition*: Cstring
+    backgroundRepeat*: Cstring
+    border*: Cstring
+    borderBottom*: Cstring
+    borderBottomColor*: Cstring
+    borderBottomStyle*: Cstring
+    borderBottomWidth*: Cstring
+    borderColor*: Cstring
+    borderLeft*: Cstring
+    borderLeftColor*: Cstring
+    borderLeftStyle*: Cstring
+    borderLeftWidth*: Cstring
+    borderRight*: Cstring
+    borderRightColor*: Cstring
+    borderRightStyle*: Cstring
+    borderRightWidth*: Cstring
+    borderStyle*: Cstring
+    borderTop*: Cstring
+    borderTopColor*: Cstring
+    borderTopStyle*: Cstring
+    borderTopWidth*: Cstring
+    borderWidth*: Cstring
+    bottom*: Cstring
+    captionSide*: Cstring
+    clear*: Cstring
+    clip*: Cstring
+    color*: Cstring
+    cursor*: Cstring
+    direction*: Cstring
+    display*: Cstring
+    emptyCells*: Cstring
+    cssFloat*: Cstring
+    font*: Cstring
+    fontFamily*: Cstring
+    fontSize*: Cstring
+    fontStretch*: Cstring
+    fontStyle*: Cstring
+    fontVariant*: Cstring
+    fontWeight*: Cstring
+    height*: Cstring
+    left*: Cstring
+    letterSpacing*: Cstring
+    lineHeight*: Cstring
+    listStyle*: Cstring
+    listStyleImage*: Cstring
+    listStylePosition*: Cstring
+    listStyleType*: Cstring
+    margin*: Cstring
+    marginBottom*: Cstring
+    marginLeft*: Cstring
+    marginRight*: Cstring
+    marginTop*: Cstring
+    maxHeight*: Cstring
+    maxWidth*: Cstring
+    minHeight*: Cstring
+    minWidth*: Cstring
+    overflow*: Cstring
+    padding*: Cstring
+    paddingBottom*: Cstring
+    paddingLeft*: Cstring
+    paddingRight*: Cstring
+    paddingTop*: Cstring
+    pageBreakAfter*: Cstring
+    pageBreakBefore*: Cstring
+    position*: Cstring
+    right*: Cstring
+    scrollbar3dLightColor*: Cstring
+    scrollbarArrowColor*: Cstring
+    scrollbarBaseColor*: Cstring
+    scrollbarDarkshadowColor*: Cstring
+    scrollbarFaceColor*: Cstring
+    scrollbarHighlightColor*: Cstring
+    scrollbarShadowColor*: Cstring
+    scrollbarTrackColor*: Cstring
+    tableLayout*: Cstring
+    textAlign*: Cstring
+    textDecoration*: Cstring
+    textIndent*: Cstring
+    textTransform*: Cstring
+    top*: Cstring
+    verticalAlign*: Cstring
+    visibility*: Cstring
+    width*: Cstring
+    wordSpacing*: Cstring
+    zIndex*: Int
+    getAttribute*: proc (attr: Cstring, caseSensitive=false): Cstring {.nimcall.}
+    removeAttribute*: proc (attr: Cstring, caseSensitive=false) {.nimcall.}
+    setAttribute*: proc (attr, value: Cstring, caseSensitive=false) {.nimcall.}
 
   TEvent* {.importc.} = object of TObject
-    altKey*, ctrlKey*, shiftKey*: bool
-    button*: int
-    clientX*, clientY*: int
-    keyCode*: int
-    layerX*, layerY*: int
-    modifiers*: int
-    ALT_MASK*, CONTROL_MASK*, SHIFT_MASK*, META_MASK*: int
-    offsetX*, offsetY*: int
-    pageX*, pageY*: int
-    screenX*, screenY*: int
-    which*: int
-    `type`*: cstring
-    x*, y*: int
-    ABORT*: int
-    BLUR*: int
-    CHANGE*: int
-    CLICK*: int
-    DBLCLICK*: int
-    DRAGDROP*: int
-    ERROR*: int
-    FOCUS*: int
-    KEYDOWN*: int
-    KEYPRESS*: int
-    KEYUP*: int
-    LOAD*: int
-    MOUSEDOWN*: int
-    MOUSEMOVE*: int
-    MOUSEOUT*: int
-    MOUSEOVER*: int
-    MOUSEUP*: int
-    MOVE*: int
-    RESET*: int
-    RESIZE*: int
-    SELECT*: int
-    SUBMIT*: int
-    UNLOAD*: int
+    altKey*, ctrlKey*, shiftKey*: Bool
+    button*: Int
+    clientX*, clientY*: Int
+    keyCode*: Int
+    layerX*, layerY*: Int
+    modifiers*: Int
+    ALT_MASK*, CONTROL_MASK*, SHIFT_MASK*, META_MASK*: Int
+    offsetX*, offsetY*: Int
+    pageX*, pageY*: Int
+    screenX*, screenY*: Int
+    which*: Int
+    `type`*: Cstring
+    x*, y*: Int
+    ABORT*: Int
+    BLUR*: Int
+    CHANGE*: Int
+    CLICK*: Int
+    DBLCLICK*: Int
+    DRAGDROP*: Int
+    ERROR*: Int
+    FOCUS*: Int
+    KEYDOWN*: Int
+    KEYPRESS*: Int
+    KEYUP*: Int
+    LOAD*: Int
+    MOUSEDOWN*: Int
+    MOUSEMOVE*: Int
+    MOUSEOUT*: Int
+    MOUSEOVER*: Int
+    MOUSEUP*: Int
+    MOVE*: Int
+    RESET*: Int
+    RESIZE*: Int
+    SELECT*: Int
+    SUBMIT*: Int
+    UNLOAD*: Int
 
   TLocation* {.importc.} = object of TObject
-    hash*: cstring
-    host*: cstring
-    hostname*: cstring
-    href*: cstring
-    pathname*: cstring
-    port*: cstring
-    protocol*: cstring
-    search*: cstring
+    hash*: Cstring
+    host*: Cstring
+    hostname*: Cstring
+    href*: Cstring
+    pathname*: Cstring
+    port*: Cstring
+    protocol*: Cstring
+    search*: Cstring
     reload*: proc () {.nimcall.}
-    replace*: proc (s: cstring) {.nimcall.}
+    replace*: proc (s: Cstring) {.nimcall.}
 
   THistory* {.importc.} = object of TObject
-    length*: int
+    length*: Int
     back*: proc () {.nimcall.}
     forward*: proc () {.nimcall.}
-    go*: proc (pagesToJump: int) {.nimcall.}
+    go*: proc (pagesToJump: Int) {.nimcall.}
 
   TNavigator* {.importc.} = object of TObject
-    appCodeName*: cstring
-    appName*: cstring
-    appVersion*: cstring
-    cookieEnabled*: bool
-    language*: cstring
-    platform*: cstring
-    userAgent*: cstring
-    javaEnabled*: proc (): bool {.nimcall.}
-    mimeTypes*: seq[ref TMimeType]
+    appCodeName*: Cstring
+    appName*: Cstring
+    appVersion*: Cstring
+    cookieEnabled*: Bool
+    language*: Cstring
+    platform*: Cstring
+    userAgent*: Cstring
+    javaEnabled*: proc (): Bool {.nimcall.}
+    mimeTypes*: Seq[ref TMimeType]
 
   TPlugin* {.importc.} = object of TObject
-    description*: cstring
-    filename*: cstring
-    name*: cstring
+    description*: Cstring
+    filename*: Cstring
+    name*: Cstring
 
   TMimeType* {.importc.} = object of TObject
-    description*: cstring
+    description*: Cstring
     enabledPlugin*: ref TPlugin
-    suffixes*: seq[cstring]
-    `type`*: cstring
+    suffixes*: Seq[Cstring]
+    `type`*: Cstring
 
   TLocationBar* {.importc.} = object of TObject
-    visible*: bool
+    visible*: Bool
   TMenuBar* = TLocationBar
   TPersonalBar* = TLocationBar
   TScrollBars* = TLocationBar
@@ -421,12 +421,12 @@ type
   TStatusBar* = TLocationBar
 
   TScreen* {.importc.} = object of TObject
-    availHeight*: int
-    availWidth*: int
-    colorDepth*: int
-    height*: int
-    pixelDepth*: int
-    width*: int
+    availHeight*: Int
+    availWidth*: Int
+    colorDepth*: Int
+    height*: Int
+    pixelDepth*: Int
+    width*: Int
 
   TTimeOut* {.importc.} = object of TObject
   TInterval* {.importc.} = object of TObject
@@ -437,15 +437,15 @@ var
   navigator* {.importc, nodecl.}: ref TNavigator
   screen* {.importc, nodecl.}: ref TScreen
 
-proc decodeURI*(uri: cstring): cstring {.importc, nodecl.}
-proc encodeURI*(uri: cstring): cstring {.importc, nodecl.}
+proc decodeURI*(uri: Cstring): Cstring {.importc, nodecl.}
+proc encodeURI*(uri: Cstring): Cstring {.importc, nodecl.}
 
-proc escape*(uri: cstring): cstring {.importc, nodecl.}
-proc unescape*(uri: cstring): cstring {.importc, nodecl.}
+proc escape*(uri: Cstring): Cstring {.importc, nodecl.}
+proc unescape*(uri: Cstring): Cstring {.importc, nodecl.}
 
-proc decodeURIComponent*(uri: cstring): cstring {.importc, nodecl.}
-proc encodeURIComponent*(uri: cstring): cstring {.importc, nodecl.}
-proc isFinite*(x: biggestFloat): bool {.importc, nodecl.}
-proc isNaN*(x: biggestFloat): bool {.importc, nodecl.}
-proc parseFloat*(s: cstring): biggestFloat {.importc, nodecl.}
-proc parseInt*(s: cstring): int {.importc, nodecl.}
+proc decodeURIComponent*(uri: Cstring): Cstring {.importc, nodecl.}
+proc encodeURIComponent*(uri: Cstring): Cstring {.importc, nodecl.}
+proc isFinite*(x: BiggestFloat): Bool {.importc, nodecl.}
+proc isNaN*(x: BiggestFloat): Bool {.importc, nodecl.}
+proc parseFloat*(s: Cstring): BiggestFloat {.importc, nodecl.}
+proc parseInt*(s: Cstring): Int {.importc, nodecl.}

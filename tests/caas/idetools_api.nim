@@ -1,48 +1,48 @@
 import unicode, sequtils, macros, re
 
-proc test_enums() =
+proc testEnums() =
   var o: Tfile
   if o.open("files " & "test.txt", fmWrite):
     o.write("test")
     o.close()
 
-proc test_iterators(filename = "tests.nim") =
+proc testIterators(filename = "tests.nim") =
   let
     input = readFile(filename)
-    letters = toSeq(runes(string(input)))
-  for letter in letters: echo int(letter)
+    letters = toSeq(runes(String(input)))
+  for letter in letters: echo Int(letter)
 
-const SOME_SEQUENCE = @[1, 2]
+const SomeSequence = @[1, 2]
 type
-  bad_string = distinct string
+  BadString = distinct String
   TPerson = object of TObject
-    name*: bad_string
-    age: int
+    name*: BadString
+    age: Int
 
-proc adder(a, b: int): int =
+proc adder(a, b: Int): Int =
   result = a + b
 
 type
   PExpr = ref object of TObject ## abstract base class for an expression
   PLiteral = ref object of PExpr
-    x: int
+    x: Int
   PPlusExpr = ref object of PExpr
     a, b: PExpr
 
 # watch out: 'eval' relies on dynamic binding
-method eval(e: PExpr): int =
+method eval(e: PExpr): Int =
   # override this base method
   quit "to override!"
 
-method eval(e: PLiteral): int = e.x
-method eval(e: PPlusExpr): int = eval(e.a) + eval(e.b)
+method eval(e: PLiteral): Int = e.x
+method eval(e: PPlusExpr): Int = eval(e.a) + eval(e.b)
 
-proc newLit(x: int): PLiteral = PLiteral(x: x)
+proc newLit(x: Int): PLiteral = PLiteral(x: x)
 proc newPlus(a, b: PExpr): PPlusExpr = PPlusExpr(a: a, b: b)
 
 echo eval(newPlus(newPlus(newLit(1), newLit(2)), newLit(4)))
 
-proc findVowelPosition(text: string) =
+proc findVowelPosition(text: String) =
   var found = -1
   block loops:
     for i, letter in pairs(text):
@@ -54,11 +54,11 @@ proc findVowelPosition(text: string) =
 
 findVowelPosition("Zerg") # should output 1, position of vowel.
 
-macro expect*(exceptions: varargs[expr], body: stmt): stmt {.immediate.} =
+macro expect*(exceptions: Varargs[Expr], body: Stmt): Stmt {.immediate.} =
   ## Expect docstrings
   let exp = callsite()
-  template expectBody(errorTypes, lineInfoLit: expr,
-                      body: stmt): PNimrodNode {.dirty.} =
+  template expectBody(errorTypes, lineInfoLit: Expr,
+                      body: Stmt): PNimrodNode {.dirty.} =
     try:
       body
       assert false

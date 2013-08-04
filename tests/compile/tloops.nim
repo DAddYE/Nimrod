@@ -3,15 +3,15 @@
 proc andTest() =
   var a = 0 == 5 and 6 == 6
 
-proc incx(x: var int) = # is built-in proc
+proc incx(x: var Int) = # is built-in proc
   x = x + 1
 
-proc decx(x: var int) =
+proc decx(x: var Int) =
   x = x - 1
 
-proc First(y: var int) =
-  var x: int
-  i_ncx(x)
+proc first(y: var Int) =
+  var x: Int
+  incx(x)
   if x == 10:
     y = 0
   else:
@@ -20,8 +20,8 @@ proc First(y: var int) =
     else:
       x=11
 
-proc TestLoops() =
-  var i, j: int
+proc testLoops() =
+  var i, j: Int
   while i >= 0:
     if i mod 3 == 0:
       break
@@ -31,15 +31,15 @@ proc TestLoops() =
       break
     break
 
-  while True:
+  while true:
     break
 
 
-proc Foo(n: int): int =
+proc foo(n: Int): Int =
     var
-        a, old: int
-        b, c: bool
-    F_irst(a)
+        a, old: Int
+        b, c: Bool
+    first(a)
     if a == 10:
         a = 30
     elif a == 11:
@@ -61,14 +61,14 @@ proc Foo(n: int): int =
 
 
 # We should come till here :-)
-discard Foo(345)
+discard foo(345)
 
 # test the new type symbol lookup feature:
 
 type
   MyType[T] = tuple[
     x, y, z: T]
-  MyType2 = tuple[x, y: float]
+  MyType2 = tuple[x, y: Float]
 
 proc main[T]() =
   var myType: MyType[T]

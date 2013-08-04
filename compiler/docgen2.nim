@@ -45,5 +45,5 @@ proc myOpen(module: PSym): PPassContext =
 
 const docgen2Pass* = makePass(open = myOpen, process = processNode, close = close)
 
-proc finishDoc2Pass*(project: string) = 
+proc finishDoc2Pass*(project: String) = 
   nil

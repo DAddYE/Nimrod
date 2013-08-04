@@ -26,7 +26,7 @@ import
 #  `opened` here could be an overloaded proc which any type can define.
 #  A common practice can be returing an Optional[Resource] obj for which
 #  `opened` is defined to `optional.hasValue`
-macro using(e: expr): stmt {.immediate.} =
+macro using(e: Expr): Stmt {.immediate.} =
   let e = callsite()
   if e.len != 3:
     error "Using statement: unexpected number of arguments. Got " &
@@ -36,8 +36,8 @@ macro using(e: expr): stmt {.immediate.} =
   var body = e[2]
   
   var 
-    variables : seq[PNimrodNode]
-    closingCalls : seq[PNimrodNode]
+    variables : Seq[PNimrodNode]
+    closingCalls : Seq[PNimrodNode]
 
   newSeq(variables, 0)
   newSeq(closingCalls, 0)
@@ -86,9 +86,9 @@ macro using(e: expr): stmt {.immediate.} =
 
 type 
   TResource* = object
-    field*: string
+    field*: String
 
-proc openResource(param: string): TResource =
+proc openResource(param: String): TResource =
   result.field = param
 
 proc close(r: var TResource) =

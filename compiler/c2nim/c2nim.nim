@@ -35,9 +35,9 @@ Options:
   -h, --help             show this help
 """
 
-proc main(infile, outfile: string, options: PParserOptions) =
+proc main(infile, outfile: String, options: PParserOptions) =
   var start = getTime()
-  var stream = LLStreamOpen(infile, fmRead)
+  var stream = lLStreamOpen(infile, fmRead)
   if stream == nil: rawMessage(errCannotOpenFile, infile)
   var p: TParser
   openParser(p, infile, stream, options)

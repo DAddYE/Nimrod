@@ -17,186 +17,186 @@ import                        # Data structure templates
 const
   psapiDll = "psapi.dll"
 
-proc EnumProcesses*(lpidProcess: ptr DWORD, cb: DWORD, 
-                    cbNeeded: ptr DWORD): WINBOOL {.stdcall,
+proc enumProcesses*(lpidProcess: ptr Dword, cb: Dword, 
+                    cbNeeded: ptr Dword): Winbool {.stdcall,
     dynlib: psapiDll, importc: "EnumProcesses".}
-proc EnumProcessModules*(hProcess: HANDLE, lphModule: ptr HMODULE, cb: DWORD, lpcbNeeded: LPDWORD): WINBOOL {.stdcall,
+proc enumProcessModules*(hProcess: Handle, lphModule: ptr Hmodule, cb: Dword, lpcbNeeded: Lpdword): Winbool {.stdcall,
     dynlib: psapiDll, importc: "EnumProcessModules".}
 
-proc GetModuleBaseNameA*(hProcess: HANDLE, hModule: HMODULE, lpBaseName: LPSTR, nSize: DWORD): DWORD {.stdcall,
+proc getModuleBaseNameA*(hProcess: Handle, hModule: Hmodule, lpBaseName: Lpstr, nSize: Dword): Dword {.stdcall,
     dynlib: psapiDll, importc: "GetModuleBaseNameA".}
-proc GetModuleBaseNameW*(hProcess: HANDLE, hModule: HMODULE, lpBaseName: LPWSTR, nSize: DWORD): DWORD {.stdcall,
+proc getModuleBaseNameW*(hProcess: Handle, hModule: Hmodule, lpBaseName: Lpwstr, nSize: Dword): Dword {.stdcall,
     dynlib: psapiDll, importc: "GetModuleBaseNameW".}
 when defined(winUnicode):
   proc GetModuleBaseName*(hProcess: HANDLE, hModule: HMODULE, lpBaseName: LPWSTR, nSize: DWORD): DWORD {.stdcall,
       dynlib: psapiDll, importc: "GetModuleBaseNameW".}
 else:
-  proc GetModuleBaseName*(hProcess: HANDLE, hModule: HMODULE, lpBaseName: LPSTR, nSize: DWORD): DWORD {.stdcall,
+  proc getModuleBaseName*(hProcess: Handle, hModule: Hmodule, lpBaseName: Lpstr, nSize: Dword): Dword {.stdcall,
       dynlib: psapiDll, importc: "GetModuleBaseNameA".}
 
-proc GetModuleFileNameExA*(hProcess: HANDLE, hModule: HMODULE, lpFileNameEx: LPSTR, nSize: DWORD): DWORD {.stdcall,
+proc getModuleFileNameExA*(hProcess: Handle, hModule: Hmodule, lpFileNameEx: Lpstr, nSize: Dword): Dword {.stdcall,
     dynlib: psapiDll, importc: "GetModuleFileNameExA".}
-proc GetModuleFileNameExW*(hProcess: HANDLE, hModule: HMODULE, lpFileNameEx: LPWSTR, nSize: DWORD): DWORD {.stdcall,
+proc getModuleFileNameExW*(hProcess: Handle, hModule: Hmodule, lpFileNameEx: Lpwstr, nSize: Dword): Dword {.stdcall,
     dynlib: psapiDll, importc: "GetModuleFileNameExW".}
 when defined(winUnicode):
   proc GetModuleFileNameEx*(hProcess: HANDLE, hModule: HMODULE, lpFileNameEx: LPWSTR, nSize: DWORD): DWORD {.stdcall,
       dynlib: psapiDll, importc: "GetModuleFileNameExW".}
 else:
-  proc GetModuleFileNameEx*(hProcess: HANDLE, hModule: HMODULE, lpFileNameEx: LPSTR, nSize: DWORD): DWORD {.stdcall,
+  proc getModuleFileNameEx*(hProcess: Handle, hModule: Hmodule, lpFileNameEx: Lpstr, nSize: Dword): Dword {.stdcall,
       dynlib: psapiDll, importc: "GetModuleFileNameExA".}
 
 type
-  MODULEINFO* {.final.} = object
-    lpBaseOfDll*: LPVOID
-    SizeOfImage*: DWORD
-    EntryPoint*: LPVOID
-  LPMODULEINFO* = ptr MODULEINFO
+  Moduleinfo* {.final.} = object
+    lpBaseOfDll*: Lpvoid
+    SizeOfImage*: Dword
+    EntryPoint*: Lpvoid
+  Lpmoduleinfo* = ptr Moduleinfo
 
-proc GetModuleInformation*(hProcess: HANDLE, hModule: HMODULE, lpmodinfo: LPMODULEINFO, cb: DWORD): WINBOOL {.stdcall,
+proc getModuleInformation*(hProcess: Handle, hModule: Hmodule, lpmodinfo: Lpmoduleinfo, cb: Dword): Winbool {.stdcall,
     dynlib: psapiDll, importc: "GetModuleInformation".}
-proc EmptyWorkingSet*(hProcess: HANDLE): WINBOOL {.stdcall,
+proc emptyWorkingSet*(hProcess: Handle): Winbool {.stdcall,
     dynlib: psapiDll, importc: "EmptyWorkingSet".}
-proc QueryWorkingSet*(hProcess: HANDLE, pv: PVOID, cb: DWORD): WINBOOL {.stdcall,
+proc queryWorkingSet*(hProcess: Handle, pv: Pvoid, cb: Dword): Winbool {.stdcall,
     dynlib: psapiDll, importc: "QueryWorkingSet".}
-proc QueryWorkingSetEx*(hProcess: HANDLE, pv: PVOID, cb: DWORD): WINBOOL {.stdcall,
+proc queryWorkingSetEx*(hProcess: Handle, pv: Pvoid, cb: Dword): Winbool {.stdcall,
     dynlib: psapiDll, importc: "QueryWorkingSetEx".}
-proc InitializeProcessForWsWatch*(hProcess: HANDLE): WINBOOL {.stdcall,
+proc initializeProcessForWsWatch*(hProcess: Handle): Winbool {.stdcall,
     dynlib: psapiDll, importc: "InitializeProcessForWsWatch".}
 
 type
-  PSAPI_WS_WATCH_INFORMATION* {.final.} = object
-    FaultingPc*: LPVOID
-    FaultingVa*: LPVOID
-  PPSAPI_WS_WATCH_INFORMATION* = ptr PSAPI_WS_WATCH_INFORMATION
+  PsapiWsWatchInformation* {.final.} = object
+    FaultingPc*: Lpvoid
+    FaultingVa*: Lpvoid
+  PpsapiWsWatchInformation* = ptr PsapiWsWatchInformation
 
-proc GetWsChanges*(hProcess: HANDLE, lpWatchInfo: PPSAPI_WS_WATCH_INFORMATION, cb: DWORD): WINBOOL {.stdcall,
+proc getWsChanges*(hProcess: Handle, lpWatchInfo: PpsapiWsWatchInformation, cb: Dword): Winbool {.stdcall,
     dynlib: psapiDll, importc: "GetWsChanges".}
 
-proc GetMappedFileNameA*(hProcess: HANDLE, lpv: LPVOID, lpFilename: LPSTR, nSize: DWORD): DWORD {.stdcall,
+proc getMappedFileNameA*(hProcess: Handle, lpv: Lpvoid, lpFilename: Lpstr, nSize: Dword): Dword {.stdcall,
     dynlib: psapiDll, importc: "GetMappedFileNameA".}
-proc GetMappedFileNameW*(hProcess: HANDLE, lpv: LPVOID, lpFilename: LPWSTR, nSize: DWORD): DWORD {.stdcall,
+proc getMappedFileNameW*(hProcess: Handle, lpv: Lpvoid, lpFilename: Lpwstr, nSize: Dword): Dword {.stdcall,
     dynlib: psapiDll, importc: "GetMappedFileNameW".}
 when defined(winUnicode):
   proc GetMappedFileName*(hProcess: HANDLE, lpv: LPVOID, lpFilename: LPWSTR, nSize: DWORD): DWORD {.stdcall,
       dynlib: psapiDll, importc: "GetMappedFileNameW".}
 else:
-  proc GetMappedFileName*(hProcess: HANDLE, lpv: LPVOID, lpFilename: LPSTR, nSize: DWORD): DWORD {.stdcall,
+  proc getMappedFileName*(hProcess: Handle, lpv: Lpvoid, lpFilename: Lpstr, nSize: Dword): Dword {.stdcall,
       dynlib: psapiDll, importc: "GetMappedFileNameA".}
 
-proc EnumDeviceDrivers*(lpImageBase: LPVOID, cb: DWORD, lpcbNeeded: LPDWORD): WINBOOL {.stdcall,
+proc enumDeviceDrivers*(lpImageBase: Lpvoid, cb: Dword, lpcbNeeded: Lpdword): Winbool {.stdcall,
     dynlib: psapiDll, importc: "EnumDeviceDrivers".}
 
-proc GetDeviceDriverBaseNameA*(ImageBase: LPVOID, lpBaseName: LPSTR, nSize: DWORD): DWORD {.stdcall,
+proc getDeviceDriverBaseNameA*(ImageBase: Lpvoid, lpBaseName: Lpstr, nSize: Dword): Dword {.stdcall,
     dynlib: psapiDll, importc: "GetDeviceDriverBaseNameA".}
-proc GetDeviceDriverBaseNameW*(ImageBase: LPVOID, lpBaseName: LPWSTR, nSize: DWORD): DWORD {.stdcall,
+proc getDeviceDriverBaseNameW*(ImageBase: Lpvoid, lpBaseName: Lpwstr, nSize: Dword): Dword {.stdcall,
     dynlib: psapiDll, importc: "GetDeviceDriverBaseNameW".}
 when defined(winUnicode):
   proc GetDeviceDriverBaseName*(ImageBase: LPVOID, lpBaseName: LPWSTR, nSize: DWORD): DWORD {.stdcall,
       dynlib: psapiDll, importc: "GetDeviceDriverBaseNameW".}
 else:
-  proc GetDeviceDriverBaseName*(ImageBase: LPVOID, lpBaseName: LPSTR, nSize: DWORD): DWORD {.stdcall,
+  proc getDeviceDriverBaseName*(ImageBase: Lpvoid, lpBaseName: Lpstr, nSize: Dword): Dword {.stdcall,
       dynlib: psapiDll, importc: "GetDeviceDriverBaseNameA".}
 
-proc GetDeviceDriverFileNameA*(ImageBase: LPVOID, lpFileName: LPSTR, nSize: DWORD): DWORD {.stdcall,
+proc getDeviceDriverFileNameA*(ImageBase: Lpvoid, lpFileName: Lpstr, nSize: Dword): Dword {.stdcall,
     dynlib: psapiDll, importc: "GetDeviceDriverFileNameA".}
-proc GetDeviceDriverFileNameW*(ImageBase: LPVOID, lpFileName: LPWSTR, nSize: DWORD): DWORD {.stdcall,
+proc getDeviceDriverFileNameW*(ImageBase: Lpvoid, lpFileName: Lpwstr, nSize: Dword): Dword {.stdcall,
     dynlib: psapiDll, importc: "GetDeviceDriverFileNameW".}
 when defined(winUnicode):
   proc GetDeviceDriverFileName*(ImageBase: LPVOID, lpFileName: LPWSTR, nSize: DWORD): DWORD {.stdcall,
       dynlib: psapiDll, importc: "GetDeviceDriverFileNameW".}
 else:
-  proc GetDeviceDriverFileName*(ImageBase: LPVOID, lpFileName: LPSTR, nSize: DWORD): DWORD {.stdcall,
+  proc getDeviceDriverFileName*(ImageBase: Lpvoid, lpFileName: Lpstr, nSize: Dword): Dword {.stdcall,
       dynlib: psapiDll, importc: "GetDeviceDriverFileNameA".}
 
 type
-  PROCESS_MEMORY_COUNTERS* {.final.} = object
-    cb*: DWORD
-    PageFaultCount*: DWORD
-    PeakWorkingSetSize: SIZE_T
-    WorkingSetSize: SIZE_T
-    QuotaPeakPagedPoolUsage: SIZE_T
-    QuotaPagedPoolUsage: SIZE_T
-    QuotaPeakNonPagedPoolUsage: SIZE_T
-    QuotaNonPagedPoolUsage: SIZE_T
-    PagefileUsage: SIZE_T
-    PeakPagefileUsage: SIZE_T
-  PPROCESS_MEMORY_COUNTERS* = ptr PROCESS_MEMORY_COUNTERS
+  ProcessMemoryCounters* {.final.} = object
+    cb*: Dword
+    PageFaultCount*: Dword
+    PeakWorkingSetSize: SizeT
+    WorkingSetSize: SizeT
+    QuotaPeakPagedPoolUsage: SizeT
+    QuotaPagedPoolUsage: SizeT
+    QuotaPeakNonPagedPoolUsage: SizeT
+    QuotaNonPagedPoolUsage: SizeT
+    PagefileUsage: SizeT
+    PeakPagefileUsage: SizeT
+  PprocessMemoryCounters* = ptr ProcessMemoryCounters
 
 type
-  PROCESS_MEMORY_COUNTERS_EX* {.final.} = object
-    cb*: DWORD
-    PageFaultCount*: DWORD
-    PeakWorkingSetSize: SIZE_T
-    WorkingSetSize: SIZE_T
-    QuotaPeakPagedPoolUsage: SIZE_T
-    QuotaPagedPoolUsage: SIZE_T
-    QuotaPeakNonPagedPoolUsage: SIZE_T
-    QuotaNonPagedPoolUsage: SIZE_T
-    PagefileUsage: SIZE_T
-    PeakPagefileUsage: SIZE_T
-    PrivateUsage: SIZE_T
-  PPROCESS_MEMORY_COUNTERS_EX* = ptr PROCESS_MEMORY_COUNTERS_EX
+  ProcessMemoryCountersEx* {.final.} = object
+    cb*: Dword
+    PageFaultCount*: Dword
+    PeakWorkingSetSize: SizeT
+    WorkingSetSize: SizeT
+    QuotaPeakPagedPoolUsage: SizeT
+    QuotaPagedPoolUsage: SizeT
+    QuotaPeakNonPagedPoolUsage: SizeT
+    QuotaNonPagedPoolUsage: SizeT
+    PagefileUsage: SizeT
+    PeakPagefileUsage: SizeT
+    PrivateUsage: SizeT
+  PprocessMemoryCountersEx* = ptr ProcessMemoryCountersEx
 
-proc GetProcessMemoryInfo*(hProcess: HANDLE, ppsmemCounters: PPROCESS_MEMORY_COUNTERS, cb: DWORD): WINBOOL {.stdcall,
+proc getProcessMemoryInfo*(hProcess: Handle, ppsmemCounters: PprocessMemoryCounters, cb: Dword): Winbool {.stdcall,
     dynlib: psapiDll, importc: "GetProcessMemoryInfo".}
 
 type
-  PERFORMANCE_INFORMATION* {.final.} = object
-    cb*: DWORD
-    CommitTotal: SIZE_T
-    CommitLimit: SIZE_T
-    CommitPeak: SIZE_T
-    PhysicalTotal: SIZE_T
-    PhysicalAvailable: SIZE_T
-    SystemCache: SIZE_T
-    KernelTotal: SIZE_T
-    KernelPaged: SIZE_T
-    KernelNonpaged: SIZE_T
-    PageSize: SIZE_T
-    HandleCount*: DWORD
-    ProcessCount*: DWORD
-    ThreadCount*: DWORD
-  PPERFORMANCE_INFORMATION* = ptr PERFORMANCE_INFORMATION
+  PerformanceInformation* {.final.} = object
+    cb*: Dword
+    CommitTotal: SizeT
+    CommitLimit: SizeT
+    CommitPeak: SizeT
+    PhysicalTotal: SizeT
+    PhysicalAvailable: SizeT
+    SystemCache: SizeT
+    KernelTotal: SizeT
+    KernelPaged: SizeT
+    KernelNonpaged: SizeT
+    PageSize: SizeT
+    HandleCount*: Dword
+    ProcessCount*: Dword
+    ThreadCount*: Dword
+  PperformanceInformation* = ptr PerformanceInformation
   # Skip definition of PERFORMACE_INFORMATION...
 
-proc GetPerformanceInfo*(pPerformanceInformation: PPERFORMANCE_INFORMATION, cb: DWORD): WINBOOL {.stdcall,
+proc getPerformanceInfo*(pPerformanceInformation: PperformanceInformation, cb: Dword): Winbool {.stdcall,
     dynlib: psapiDll, importc: "GetPerformanceInfo".}
 
 type
-  ENUM_PAGE_FILE_INFORMATION* {.final.} = object
-    cb*: DWORD
-    Reserved*: DWORD
-    TotalSize: SIZE_T
-    TotalInUse: SIZE_T
-    PeakUsage: SIZE_T
-  PENUM_PAGE_FILE_INFORMATION* = ptr ENUM_PAGE_FILE_INFORMATION
+  EnumPageFileInformation* {.final.} = object
+    cb*: Dword
+    Reserved*: Dword
+    TotalSize: SizeT
+    TotalInUse: SizeT
+    PeakUsage: SizeT
+  PenumPageFileInformation* = ptr EnumPageFileInformation
 
 # Callback procedure
 type
-  PENUM_PAGE_FILE_CALLBACKW* = proc (pContext: LPVOID, pPageFileInfo: PENUM_PAGE_FILE_INFORMATION, lpFilename: LPCWSTR): WINBOOL{.stdcall.}
-  PENUM_PAGE_FILE_CALLBACKA* = proc (pContext: LPVOID, pPageFileInfo: PENUM_PAGE_FILE_INFORMATION, lpFilename: LPCSTR): WINBOOL{.stdcall.}
+  PenumPageFileCallbackw* = proc (pContext: Lpvoid, pPageFileInfo: PenumPageFileInformation, lpFilename: Lpcwstr): Winbool{.stdcall.}
+  PenumPageFileCallbacka* = proc (pContext: Lpvoid, pPageFileInfo: PenumPageFileInformation, lpFilename: Lpcstr): Winbool{.stdcall.}
 
 #TODO
-proc EnumPageFilesA*(pCallBackRoutine: PENUM_PAGE_FILE_CALLBACKA, pContext: LPVOID): WINBOOL {.stdcall,
+proc enumPageFilesA*(pCallBackRoutine: PenumPageFileCallbacka, pContext: Lpvoid): Winbool {.stdcall,
     dynlib: psapiDll, importc: "EnumPageFilesA".}
-proc EnumPageFilesW*(pCallBackRoutine: PENUM_PAGE_FILE_CALLBACKW, pContext: LPVOID): WINBOOL {.stdcall,
+proc enumPageFilesW*(pCallBackRoutine: PenumPageFileCallbackw, pContext: Lpvoid): Winbool {.stdcall,
     dynlib: psapiDll, importc: "EnumPageFilesW".}
 when defined(winUnicode):
   proc EnumPageFiles*(pCallBackRoutine: PENUM_PAGE_FILE_CALLBACKW, pContext: LPVOID): WINBOOL {.stdcall,
       dynlib: psapiDll, importc: "EnumPageFilesW".}
   type PENUM_PAGE_FILE_CALLBACK* = proc (pContext: LPVOID, pPageFileInfo: PENUM_PAGE_FILE_INFORMATION, lpFilename: LPCWSTR): WINBOOL{.stdcall.}
 else:
-  proc EnumPageFiles*(pCallBackRoutine: PENUM_PAGE_FILE_CALLBACKA, pContext: LPVOID): WINBOOL {.stdcall,
+  proc enumPageFiles*(pCallBackRoutine: PenumPageFileCallbacka, pContext: Lpvoid): Winbool {.stdcall,
       dynlib: psapiDll, importc: "EnumPageFilesA".}
-  type PENUM_PAGE_FILE_CALLBACK* = proc (pContext: LPVOID, pPageFileInfo: PENUM_PAGE_FILE_INFORMATION, lpFilename: LPCSTR): WINBOOL{.stdcall.}
+  type PenumPageFileCallback* = proc (pContext: Lpvoid, pPageFileInfo: PenumPageFileInformation, lpFilename: Lpcstr): Winbool{.stdcall.}
 
-proc GetProcessImageFileNameA*(hProcess: HANDLE, lpImageFileName: LPSTR, nSize: DWORD): DWORD {.stdcall,
+proc getProcessImageFileNameA*(hProcess: Handle, lpImageFileName: Lpstr, nSize: Dword): Dword {.stdcall,
     dynlib: psapiDll, importc: "GetProcessImageFileNameA".}
-proc GetProcessImageFileNameW*(hProcess: HANDLE, lpImageFileName: LPWSTR, nSize: DWORD): DWORD {.stdcall,
+proc getProcessImageFileNameW*(hProcess: Handle, lpImageFileName: Lpwstr, nSize: Dword): Dword {.stdcall,
     dynlib: psapiDll, importc: "GetProcessImageFileNameW".}
 when defined(winUnicode):
   proc GetProcessImageFileName*(hProcess: HANDLE, lpImageFileName: LPWSTR, nSize: DWORD): DWORD {.stdcall,
       dynlib: psapiDll, importc: "GetProcessImageFileNameW".}
 else:
-  proc GetProcessImageFileName*(hProcess: HANDLE, lpImageFileName: LPSTR, nSize: DWORD): DWORD {.stdcall,
+  proc getProcessImageFileName*(hProcess: Handle, lpImageFileName: Lpstr, nSize: Dword): Dword {.stdcall,
       dynlib: psapiDll, importc: "GetProcessImageFileNameA".}

@@ -1,4 +1,4 @@
-proc `*` *(a, b: seq[int]): seq[int] = 
+proc `*` *(a, b: Seq[Int]): Seq[Int] = 
   # allocate a new sequence:
   newSeq(result, len(a))
   # multiply two int sequences:

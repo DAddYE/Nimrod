@@ -7,13 +7,13 @@ discard """
 import
   strutils
 
-proc testSets(s: var set[char]) =
+proc testSets(s: var Set[Char]) =
   s = {'A', 'B', 'C', 'E'..'G'} + {'Z'} + s
 
 # test sets if the first element is different from 0:
 type
-  TAZ = range['a'..'z']
-  TAZset = set[TAZ]
+  TAZ = Range['a'..'z']
+  TAZset = Set[TAZ]
 
   TTokType* = enum 
     tkInvalid, tkEof,
@@ -34,15 +34,15 @@ type
     tkComma, tkSemiColon, tkColon, tkEquals, tkDot, tkDotDot, tkHat, tkOpr, 
     tkComment, tkAccent, tkInd, tkSad, tkDed,
     tkSpaces, tkInfixOpr, tkPrefixOpr, tkPostfixOpr
-  TTokTypeRange = range[tkSymbol..tkDed]
-  TTokTypes* = set[TTokTypeRange]
+  TTokTypeRange = Range[tkSymbol..tkDed]
+  TTokTypes* = Set[TTokTypeRange]
 
 const
   toktypes: TTokTypes = {TTokTypeRange(tkSymbol)..pred(tkIntLit), 
                          tkStrLit..tkTripleStrLit}
 
 var
-  s: set[char]
+  s: Set[Char]
   a: TAZset
 s = {'0'..'9'}
 testSets(s)

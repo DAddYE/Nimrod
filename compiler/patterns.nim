@@ -17,10 +17,10 @@ import
 type
   TPatternContext = object
     owner: PSym
-    mapping: seq[PNode]  # maps formal parameters to nodes
-    formals: int
+    mapping: Seq[PNode]  # maps formal parameters to nodes
+    formals: Int
     c: PContext
-    subMatch: bool       # subnode matches are special
+    subMatch: Bool       # subnode matches are special
   PPatternContext = var TPatternContext
 
 proc getLazy(c: PPatternContext, sym: PSym): PNode =
@@ -31,7 +31,7 @@ proc putLazy(c: PPatternContext, sym: PSym, n: PNode) =
   if isNil(c.mapping): newSeq(c.mapping, c.formals)
   c.mapping[sym.position] = n
 
-proc matches(c: PPatternContext, p, n: PNode): bool
+proc matches(c: PPatternContext, p, n: PNode): Bool
 
 proc canonKind(n: PNode): TNodeKind =
   ## nodekind canonilization for pattern matching
@@ -42,10 +42,10 @@ proc canonKind(n: PNode): TNodeKind =
   of nkFastAsgn: result = nkAsgn
   else: nil
 
-proc sameKinds(a, b: PNode): bool {.inline.} =
+proc sameKinds(a, b: PNode): Bool {.inline.} =
   result = a.kind == b.kind or a.canonKind == b.canonKind
 
-proc sameTrees(a, b: PNode): bool =
+proc sameTrees(a, b: PNode): Bool =
   if sameKinds(a, b):
     case a.kind
     of nkSym: result = a.sym == b.sym
@@ -61,7 +61,7 @@ proc sameTrees(a, b: PNode): bool =
           if not sameTrees(a.sons[i], b.sons[i]): return
         result = true
 
-proc inSymChoice(sc, x: PNode): bool =
+proc inSymChoice(sc, x: PNode): Bool =
   if sc.kind == nkClosedSymChoice:
     for i in 0.. <sc.len:
       if sc.sons[i].sym == x.sym: return true
@@ -69,7 +69,7 @@ proc inSymChoice(sc, x: PNode): bool =
     # same name suffices for open sym choices!
     result = sc.sons[0].sym.name.id == x.sym.name.id
   
-proc checkTypes(c: PPatternContext, p: PSym, n: PNode): bool =
+proc checkTypes(c: PPatternContext, p: PSym, n: PNode): Bool =
   # check param constraints first here as this is quite optimized:
   if p.constraint != nil:
     result = matchNodeKinds(p.constraint, n)
@@ -79,35 +79,35 @@ proc checkTypes(c: PPatternContext, p: PSym, n: PNode): bool =
   else:
     result = sigmatch.argtypeMatches(c.c, p.typ, n.typ)
 
-proc isPatternParam(c: PPatternContext, p: PNode): bool {.inline.} =
+proc isPatternParam(c: PPatternContext, p: PNode): Bool {.inline.} =
   result = p.kind == nkSym and p.sym.kind == skParam and p.sym.owner == c.owner
 
-proc matchChoice(c: PPatternContext, p, n: PNode): bool =
+proc matchChoice(c: PPatternContext, p, n: PNode): Bool =
   for i in 1 .. <p.len:
     if matches(c, p.sons[i], n): return true
 
-proc bindOrCheck(c: PPatternContext, param: PSym, n: PNode): bool =
-  var pp = GetLazy(c, param)
+proc bindOrCheck(c: PPatternContext, param: PSym, n: PNode): Bool =
+  var pp = getLazy(c, param)
   if pp != nil:
     # check if we got the same pattern (already unified):
     result = sameTrees(pp, n) #matches(c, pp, n)
   elif n.kind == nkArgList or checkTypes(c, param, n):
-    PutLazy(c, param, n)
+    putLazy(c, param, n)
     result = true
 
 proc gather(c: PPatternContext, param: PSym, n: PNode) =
-  var pp = GetLazy(c, param)
+  var pp = getLazy(c, param)
   if pp != nil and pp.kind == nkArgList:
     pp.add(n)
   else:
     pp = newNodeI(nkArgList, n.info, 1)
     pp.sons[0] = n
-    PutLazy(c, param, pp)
+    putLazy(c, param, pp)
 
-proc matchNested(c: PPatternContext, p, n: PNode, rpn: bool): bool =
+proc matchNested(c: PPatternContext, p, n: PNode, rpn: Bool): Bool =
   # match ``op * param`` or ``op *| param``
   proc matchStarAux(c: PPatternContext, op, n, arglist: PNode,
-                    rpn: bool): bool =
+                    rpn: Bool): Bool =
     result = true
     if n.kind in nkCallKinds and matches(c, op.sons[1], n.sons[0]):
       for i in 1..sonsLen(n)-1:
@@ -148,7 +148,7 @@ proc matches(c: PPatternContext, p, n: PNode): bool =
     of "*": result = matchNested(c, p, n, rpn=false)
     of "**": result = matchNested(c, p, n, rpn=true)
     of "~": result = not matches(c, p.sons[1], n)
-    else: InternalError(p.info, "invalid pattern")
+    else: internalError(p.info, "invalid pattern")
     # template {add(a, `&` * b)}(a: string{noalias}, b: varargs[string]) = 
     #   add(a, b)
   elif p.kind == nkCurlyExpr:
@@ -203,7 +203,7 @@ proc matches(c: PPatternContext, p, n: PNode): bool =
         result = true
 
 proc matchStmtList(c: PPatternContext, p, n: PNode): PNode =
-  proc matchRange(c: PPatternContext, p, n: PNode, i: int): bool =
+  proc matchRange(c: PPatternContext, p, n: PNode, i: Int): Bool =
     for j in 0 .. <p.len:
       if not matches(c, p.sons[j], n.sons[i+j]):
         # we need to undo any bindings:
@@ -225,7 +225,7 @@ proc matchStmtList(c: PPatternContext, p, n: PNode): PNode =
   elif matches(c, p, n):
     result = n
 
-proc aliasAnalysisRequested(params: PNode): bool =
+proc aliasAnalysisRequested(params: PNode): Bool =
   if params.len >= 2:
     for i in 1 .. < params.len:
       let param = params.sons[i].sym
@@ -265,7 +265,7 @@ proc applyRule*(c: PContext, s: PSym, n: PNode): PNode =
     args = newNodeI(nkArgList, n.info)
   for i in 1 .. < params.len:
     let param = params.sons[i].sym
-    let x = GetLazy(ctx, param)
+    let x = getLazy(ctx, param)
     # couldn't bind parameter:
     if isNil(x): return nil
     result.add(x)

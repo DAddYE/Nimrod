@@ -6,18 +6,18 @@ type
   TRadixNode = object {.inheritable.}
     kind: TRadixNodeKind
   TRadixNodeLinear = object of TRadixNode
-    len: int8
-    keys: array [0..31, char]
-    vals: array [0..31, PRadixNode]  
+    len: Int8
+    keys: Array [0..31, Char]
+    vals: Array [0..31, PRadixNode]  
   TRadixNodeFull = object of TRadixNode
-    b: array [char, PRadixNode]
+    b: Array [char, PRadixNode]
   TRadixNodeLeaf = object of TRadixNode
-    s: string
+    s: String
   PRadixNodeLinear = ref TRadixNodeLinear
   PRadixNodeFull = ref TRadixNodeFull
   PRadixNodeLeaf = ref TRadixNodeLeaf
     
-proc search(r: PRadixNode, s: string): PRadixNode =
+proc search(r: PRadixNode, s: String): PRadixNode =
   var r = r
   var i = 0
   while r != nil:
@@ -47,15 +47,15 @@ proc search(r: PRadixNode, s: string): PRadixNode =
         inc(j)
         inc(i)
 
-proc contains*(r: PRadixNode, s: string): bool =
+proc contains*(r: PRadixNode, s: String): Bool =
   return search(r, s) != nil
 
-proc testOrincl*(r: var PRadixNode, s: string): bool =
+proc testOrincl*(r: var PRadixNode, s: String): Bool =
   nil
     
-proc incl*(r: var PRadixNode, s: string) = discard testOrIncl(r, s)
+proc incl*(r: var PRadixNode, s: String) = discard testOrincl(r, s)
 
-proc excl*(r: var PRadixNode, s: string) =
+proc excl*(r: var PRadixNode, s: String) =
   var x = search(r, s)
   if x == nil: return
   case x.kind

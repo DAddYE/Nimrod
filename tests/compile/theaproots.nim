@@ -1,13 +1,13 @@
 type 
   Bar = object
-    x: int
+    x: Int
   
   Foo = object
     rheap: ref Bar
     rmaybe: ref Bar
     rstack: ref Bar
-    list: seq[ref Bar]
-    listarr: array[0..5, ref Bar]
+    list: Seq[ref Bar]
+    listarr: Array[0..5, ref Bar]
     nestedtup: Tup
     inner: TInner
     inref: ref TInner
@@ -23,8 +23,8 @@ proc acc(x: var Foo): var ref Bar =
   result = x.rheap
 
 proc test(maybeFoo: var Foo,
-          maybeSeq: var seq[ref Bar],
-          bars: var openarray[ref Bar],
+          maybeSeq: var Seq[ref Bar],
+          bars: var Openarray[ref Bar],
           maybeTup: var Tup) =
   var bb: ref Bar
   maybeFoo.rmaybe = bb
@@ -49,10 +49,10 @@ proc test(maybeFoo: var Foo,
   heapFoo.inner.inref = bb
   heapFoo.inref.inref = bb
 
-  var locseq: seq[ref Bar]
+  var locseq: Seq[ref Bar]
   locseq[3] = bb
 
-  var locarr: array[0..4, ref Bar]
+  var locarr: Array[0..4, ref Bar]
   locarr[3] = bb
 
   maybeSeq[3] = bb
@@ -64,7 +64,7 @@ proc test(maybeFoo: var Foo,
 var
   ff: ref Foo
   tt: Tup
-  gseq: seq[ref Bar]
+  gseq: Seq[ref Bar]
 
 new(ff)
 

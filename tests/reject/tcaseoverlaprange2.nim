@@ -6,7 +6,7 @@ discard """
 
 
 
-proc checkDuplicates(myval: int32): bool = 
+proc checkDuplicates(myval: Int32): Bool = 
   case myval
   of 0x7B:
     echo "this should not compile"

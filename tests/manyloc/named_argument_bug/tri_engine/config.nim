@@ -3,4 +3,4 @@ when defined(doublePrecision):
     TR* = float64
 else:
   type
-    TR* = float32
+    TR* = Float32

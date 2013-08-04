@@ -8,7 +8,7 @@ type
     anim*: PAnimation
 
 
-proc `$`*(obj: PGameObject): string =
+proc `$`*(obj: PGameObject): String =
   result = "<Object "
   result.add obj.record.name
   result.add ' '
@@ -28,7 +28,7 @@ proc newObject*(record: PObjectRecord): PGameObject =
   result.body = newBody(result.record.physics.mass, 10.0)
   result.shape = chipmunk.newCircleShape(result.body, result.record.physics.radius, vectorZero)
   result.body.setPos(vector(100, 100))
-proc newObject*(name: string): PGameObject =
+proc newObject*(name: String): PGameObject =
   result = newObject(fetchObj(name))
 proc draw*(window: PRenderWindow, obj: PGameObject) {.inline.} =
   window.draw(obj.anim.sprite)

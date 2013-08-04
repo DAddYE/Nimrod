@@ -5,7 +5,7 @@ discard """
 # simple check for one dimensional arrays
 
 type
-  TMyArray = array[0..2, int]
+  TMyArray = Array[0..2, Int]
 
   TObj = object
     arr: TMyarray

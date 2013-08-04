@@ -6,7 +6,7 @@ discard """
 # Tests a special bug
 
 var
-  x: ref openarray[string] #ERROR_MSG invalid type
+  x: ref Openarray[String] #ERROR_MSG invalid type
 
 
 

@@ -4,7 +4,7 @@ discard """
 true true true'''
 """
 type 
-  TSubRange = range[1 .. 10]
+  TSubRange = Range[1 .. 10]
   TEnum = enum A, B, C
 var sr: TSubRange = 5
 echo("TSubRange: " & $sr & " from " & $low(TSubRange) & " to " & 

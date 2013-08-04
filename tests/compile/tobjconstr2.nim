@@ -1,7 +1,7 @@
 type TFoo{.exportc.} = object
- x:int
+ x:Int
 
-var s{.exportc.}: seq[TFoo] = @[]
+var s{.exportc.}: Seq[TFoo] = @[]
 
 s.add TFoo(x: 42)
 

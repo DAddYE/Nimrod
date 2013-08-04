@@ -2,9 +2,9 @@ discard """
   output: '''abc232'''
 """
 
-var t, s: tuple[x: string, c: int]
+var t, s: tuple[x: String, c: Int]
 
-proc ugh: seq[tuple[x: string, c: int]] = 
+proc ugh: Seq[tuple[x: String, c: Int]] = 
   result = @[("abc", 232)]
 
 t = ugh()[0]

@@ -14,7 +14,7 @@ from unsigned import
 type
   TColor* = tuple[r, g, b, a: TR]
 
-converter toColor*(o: uint32): TColor =
+converter toColor*(o: Uint32): TColor =
   ## Convert an integer to a color. This is mostly useful when the integer is specified as a hex
   ## literal such as 0xFF00007F, which is 100% red, with 50% alpha.
   ## TODO: turn this into a template that can take either 4 or 8 characters?
@@ -50,8 +50,8 @@ proc cyan*(gb, a: TR=1.0): TColor =
 proc purple*(rb, a: TR=1.0): TColor =
   newColor(r=rb, b=rb, a=a)
 
-proc `$`*(o: TColor): string =
-  proc f(f: float): string =
+proc `$`*(o: TColor): String =
+  proc f(f: Float): String =
     f.formatFloat(precision=2, format=ffDecimal)
 
   "(r: $#, g: $#, b: $#, s: $#)" % [f(o.r), f(o.g), f(o.b), f(o.a)]

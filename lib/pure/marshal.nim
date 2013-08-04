@@ -31,8 +31,8 @@
 
 import streams, typeinfo, json, intsets, tables
 
-proc ptrToInt(x: pointer): int {.inline.} =
-  result = cast[int](x) # don't skip alignment
+proc ptrToInt(x: Pointer): Int {.inline.} =
+  result = cast[Int](x) # don't skip alignment
 
 proc storeAny(s: PStream, a: TAny, stored: var TIntSet) =
   case a.kind
@@ -84,12 +84,12 @@ proc storeAny(s: PStream, a: TAny, stored: var TIntSet) =
   of akProc, akPointer, akCString: s.write($a.getPointer.ptrToInt)
   of akString:
     var x = getString(a)
-    if IsNil(x): s.write("null")
+    if isNil(x): s.write("null")
     else: s.write(escapeJson(x))
   of akInt..akInt64, akUInt..akUInt64: s.write($getBiggestInt(a))
   of akFloat..akFloat128: s.write($getBiggestFloat(a))
 
-proc loadAny(p: var TJsonParser, a: TAny, t: var TTable[biggestInt, pointer]) =
+proc loadAny(p: var TJsonParser, a: TAny, t: var TTable[BiggestInt, Pointer]) =
   case a.kind
   of akNone: assert false
   of akBool: 
@@ -155,7 +155,7 @@ proc loadAny(p: var TJsonParser, a: TAny, t: var TTable[biggestInt, pointer]) =
     next(p)
     while p.kind != jsonArrayEnd and p.kind != jsonEof:
       if p.kind != jsonInt: raiseParseErr(p, "int expected for a set")
-      inclSetElement(a, p.getInt.int)
+      inclSetElement(a, p.getInt.Int)
       next(p)
     if p.kind == jsonArrayEnd: next(p)
     else: raiseParseErr(p, "']' end of array expected")
@@ -185,7 +185,7 @@ proc loadAny(p: var TJsonParser, a: TAny, t: var TTable[biggestInt, pointer]) =
       setPointer(a, nil)
       next(p)
     of jsonInt:
-      setPointer(a, cast[pointer](p.getInt.int))
+      setPointer(a, cast[Pointer](p.getInt.Int))
       next(p)
     else: raiseParseErr(p, "int for pointer type expected")
   of akString:
@@ -211,7 +211,7 @@ proc loadAny(p: var TJsonParser, a: TAny, t: var TTable[biggestInt, pointer]) =
     raiseParseErr(p, "float expected")
   of akRange: loadAny(p, a.skipRange, t)
 
-proc loadAny(s: PStream, a: TAny, t: var TTable[biggestInt, pointer]) =
+proc loadAny(s: PStream, a: TAny, t: var TTable[BiggestInt, Pointer]) =
   var p: TJsonParser
   open(p, s, "unknown file")
   next(p)
@@ -220,7 +220,7 @@ proc loadAny(s: PStream, a: TAny, t: var TTable[biggestInt, pointer]) =
 
 proc load*[T](s: PStream, data: var T) =
   ## loads `data` from the stream `s`. Raises `EIO` in case of an error.
-  var tab = initTable[biggestInt, pointer]()
+  var tab = initTable[BiggestInt, Pointer]()
   loadAny(s, toAny(data), tab)
 
 proc store*[T](s: PStream, data: T) =
@@ -230,7 +230,7 @@ proc store*[T](s: PStream, data: T) =
   shallowCopy(d, data)
   storeAny(s, toAny(d), stored)
 
-proc `$$`*[T](x: T): string =
+proc `$$`*[T](x: T): String =
   ## returns a string representation of `x`.
   var stored = initIntSet()
   var d: T
@@ -239,9 +239,9 @@ proc `$$`*[T](x: T): string =
   storeAny(s, toAny(d), stored)
   result = s.data
 
-proc to*[T](data: string): T =
+proc to*[T](data: String): T =
   ## reads data and transforms it to a ``T``.
-  var tab = initTable[biggestInt, pointer]()
+  var tab = initTable[BiggestInt, Pointer]()
   loadAny(newStringStream(data), toAny(result), tab)
   
 when isMainModule:

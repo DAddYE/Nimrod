@@ -23,8 +23,8 @@ proc hashTree(n: PNode): THash =
   of nkSym:
     result = result !& n.sym.name.h
   of nkCharLit..nkUInt64Lit: 
-    if (n.intVal >= low(int)) and (n.intVal <= high(int)): 
-      result = result !& int(n.intVal)
+    if (n.intVal >= low(Int)) and (n.intVal <= high(Int)): 
+      result = result !& Int(n.intVal)
   of nkFloatLit..nkFloat64Lit:
     if (n.floatVal >= - 1000000.0) and (n.floatVal <= 1000000.0): 
       result = result !& toInt(n.floatVal)
@@ -34,7 +34,7 @@ proc hashTree(n: PNode): THash =
     for i in countup(0, sonsLen(n) - 1): 
       result = result !& hashTree(n.sons[i])
   
-proc TreesEquivalent(a, b: PNode): bool = 
+proc treesEquivalent(a, b: PNode): Bool = 
   if a == b: 
     result = true
   elif (a != nil) and (b != nil) and (a.kind == b.kind): 
@@ -48,25 +48,25 @@ proc TreesEquivalent(a, b: PNode): bool =
     else: 
       if sonsLen(a) == sonsLen(b): 
         for i in countup(0, sonsLen(a) - 1): 
-          if not TreesEquivalent(a.sons[i], b.sons[i]): return 
+          if not treesEquivalent(a.sons[i], b.sons[i]): return 
         result = true
     if result: result = sameTypeOrNil(a.typ, b.typ)
   
-proc NodeTableRawGet(t: TNodeTable, k: THash, key: PNode): int = 
+proc nodeTableRawGet(t: TNodeTable, k: THash, key: PNode): Int = 
   var h: THash = k and high(t.data)
   while t.data[h].key != nil: 
-    if (t.data[h].h == k) and TreesEquivalent(t.data[h].key, key): 
+    if (t.data[h].h == k) and treesEquivalent(t.data[h].key, key): 
       return h
     h = nextTry(h, high(t.data))
   result = -1
 
-proc NodeTableGet*(t: TNodeTable, key: PNode): int = 
-  var index = NodeTableRawGet(t, hashTree(key), key)
+proc nodeTableGet*(t: TNodeTable, key: PNode): Int = 
+  var index = nodeTableRawGet(t, hashTree(key), key)
   if index >= 0: result = t.data[index].val
-  else: result = low(int)
+  else: result = low(Int)
   
-proc NodeTableRawInsert(data: var TNodePairSeq, k: THash, key: PNode, 
-                        val: int) = 
+proc nodeTableRawInsert(data: var TNodePairSeq, k: THash, key: PNode, 
+                        val: Int) = 
   var h: THash = k and high(data)
   while data[h].key != nil: h = nextTry(h, high(data))
   assert(data[h].key == nil)
@@ -74,10 +74,10 @@ proc NodeTableRawInsert(data: var TNodePairSeq, k: THash, key: PNode,
   data[h].key = key
   data[h].val = val
 
-proc NodeTablePut*(t: var TNodeTable, key: PNode, val: int) = 
+proc nodeTablePut*(t: var TNodeTable, key: PNode, val: Int) = 
   var n: TNodePairSeq
   var k: THash = hashTree(key)
-  var index = NodeTableRawGet(t, k, key)
+  var index = nodeTableRawGet(t, k, key)
   if index >= 0: 
     assert(t.data[index].key != nil)
     t.data[index].val = val
@@ -86,15 +86,15 @@ proc NodeTablePut*(t: var TNodeTable, key: PNode, val: int) =
       newSeq(n, len(t.data) * growthFactor)
       for i in countup(0, high(t.data)): 
         if t.data[i].key != nil: 
-          NodeTableRawInsert(n, t.data[i].h, t.data[i].key, t.data[i].val)
+          nodeTableRawInsert(n, t.data[i].h, t.data[i].key, t.data[i].val)
       swap(t.data, n)
-    NodeTableRawInsert(t.data, k, key, val)
+    nodeTableRawInsert(t.data, k, key, val)
     inc(t.counter)
 
-proc NodeTableTestOrSet*(t: var TNodeTable, key: PNode, val: int): int = 
+proc nodeTableTestOrSet*(t: var TNodeTable, key: PNode, val: Int): Int = 
   var n: TNodePairSeq
   var k: THash = hashTree(key)
-  var index = NodeTableRawGet(t, k, key)
+  var index = nodeTableRawGet(t, k, key)
   if index >= 0: 
     assert(t.data[index].key != nil)
     result = t.data[index].val
@@ -103,8 +103,8 @@ proc NodeTableTestOrSet*(t: var TNodeTable, key: PNode, val: int): int =
       newSeq(n, len(t.data) * growthFactor)
       for i in countup(0, high(t.data)): 
         if t.data[i].key != nil: 
-          NodeTableRawInsert(n, t.data[i].h, t.data[i].key, t.data[i].val)
+          nodeTableRawInsert(n, t.data[i].h, t.data[i].key, t.data[i].val)
       swap(t.data, n)
-    NodeTableRawInsert(t.data, k, key, val)
+    nodeTableRawInsert(t.data, k, key, val)
     result = val
     inc(t.counter)

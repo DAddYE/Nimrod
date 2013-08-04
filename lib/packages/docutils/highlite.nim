@@ -25,18 +25,18 @@ type
     gtReference, gtOther
   TGeneralTokenizer* = object of TObject
     kind*: TTokenClass
-    start*, length*: int
-    buf: cstring
-    pos: int
+    start*, length*: Int
+    buf: Cstring
+    pos: Int
     state: TTokenClass
 
   TSourceLanguage* = enum 
     langNone, langNimrod, langCpp, langCsharp, langC, langJava
 
 const 
-  sourceLanguageToStr*: array[TSourceLanguage, string] = ["none", "Nimrod", 
+  sourceLanguageToStr*: Array[TSourceLanguage, String] = ["none", "Nimrod", 
     "C++", "C#", "C", "Java"]
-  tokenClassToStr*: array[TTokenClass, string] = ["Eof", "None", "Whitespace", 
+  tokenClassToStr*: Array[TTokenClass, String] = ["Eof", "None", "Whitespace", 
     "DecNumber", "BinNumber", "HexNumber", "OctNumber", "FloatNumber", 
     "Identifier", "Keyword", "StringLit", "LongStringLit", "CharLit", 
     "EscapeSequence", "Operator", "Punctation", "Comment", "LongComment", 
@@ -56,14 +56,14 @@ const
     "template", "try", "tuple", "type", "var", "when", "while", "with",
     "without", "xor", "yield"]
 
-proc getSourceLanguage*(name: string): TSourceLanguage = 
+proc getSourceLanguage*(name: String): TSourceLanguage = 
   for i in countup(succ(low(TSourceLanguage)), high(TSourceLanguage)): 
     if cmpIgnoreStyle(name, sourceLanguageToStr[i]) == 0: 
       return i
   result = langNone
 
-proc initGeneralTokenizer*(g: var TGeneralTokenizer, buf: string) = 
-  g.buf = cstring(buf)
+proc initGeneralTokenizer*(g: var TGeneralTokenizer, buf: String) = 
+  g.buf = Cstring(buf)
   g.kind = low(TTokenClass)
   g.start = 0
   g.length = 0
@@ -75,7 +75,7 @@ proc initGeneralTokenizer*(g: var TGeneralTokenizer, buf: string) =
 proc deinitGeneralTokenizer*(g: var TGeneralTokenizer) = 
   nil
 
-proc nimGetKeyword(id: string): TTokenClass = 
+proc nimGetKeyword(id: String): TTokenClass = 
   for k in nimrodKeywords:
     if cmpIgnoreStyle(id, k) == 0: return gtKeyword
   result = gtIdentifier
@@ -87,7 +87,7 @@ proc nimGetKeyword(id: string): TTokenClass =
     else: 
       result = gtIdentifier
   
-proc nimNumberPostfix(g: var TGeneralTokenizer, position: int): int = 
+proc nimNumberPostfix(g: var TGeneralTokenizer, position: Int): Int = 
   var pos = position
   if g.buf[pos] == '\'': 
     inc(pos)
@@ -105,7 +105,7 @@ proc nimNumberPostfix(g: var TGeneralTokenizer, position: int): int =
       nil
   result = pos
 
-proc nimNumber(g: var TGeneralTokenizer, position: int): int = 
+proc nimNumber(g: var TGeneralTokenizer, position: Int): Int = 
   const decChars = {'0'..'9', '_'}
   var pos = position
   g.kind = gtDecNumber
@@ -273,7 +273,7 @@ proc nimNextToken(g: var TGeneralTokenizer) =
     assert false, "nimNextToken: produced an empty token"
   g.pos = pos
 
-proc generalNumber(g: var TGeneralTokenizer, position: int): int = 
+proc generalNumber(g: var TGeneralTokenizer, position: Int): Int = 
   const decChars = {'0'..'9'}
   var pos = position
   g.kind = gtDecNumber
@@ -289,7 +289,7 @@ proc generalNumber(g: var TGeneralTokenizer, position: int): int =
     while g.buf[pos] in decChars: inc(pos)
   result = pos
 
-proc generalStrLit(g: var TGeneralTokenizer, position: int): int = 
+proc generalStrLit(g: var TGeneralTokenizer, position: Int): Int = 
   const 
     decChars = {'0'..'9'}
     hexChars = {'0'..'9', 'A'..'F', 'a'..'f'}
@@ -321,7 +321,7 @@ proc generalStrLit(g: var TGeneralTokenizer, position: int): int =
         inc(pos)
   result = pos
 
-proc isKeyword(x: openarray[string], y: string): int = 
+proc isKeyword(x: Openarray[String], y: String): Int = 
   var a = 0
   var b = len(x) - 1
   while a <= b: 
@@ -335,7 +335,7 @@ proc isKeyword(x: openarray[string], y: string): int =
       return mid
   result = - 1
 
-proc isKeywordIgnoreCase(x: openarray[string], y: string): int = 
+proc isKeywordIgnoreCase(x: Openarray[String], y: String): Int = 
   var a = 0
   var b = len(x) - 1
   while a <= b: 
@@ -352,9 +352,9 @@ proc isKeywordIgnoreCase(x: openarray[string], y: string): int =
 type 
   TTokenizerFlag = enum 
     hasPreprocessor, hasNestedComments
-  TTokenizerFlags = set[TTokenizerFlag]
+  TTokenizerFlags = Set[TTokenizerFlag]
 
-proc clikeNextToken(g: var TGeneralTokenizer, keywords: openarray[string], 
+proc clikeNextToken(g: var TGeneralTokenizer, keywords: Openarray[String], 
                     flags: TTokenizerFlags) = 
   const 
     hexChars = {'0'..'9', 'A'..'F', 'a'..'f'}
@@ -490,7 +490,7 @@ proc clikeNextToken(g: var TGeneralTokenizer, keywords: openarray[string],
 
 proc cNextToken(g: var TGeneralTokenizer) = 
   const 
-    keywords: array[0..36, string] = ["_Bool", "_Complex", "_Imaginary", "auto", 
+    keywords: Array[0..36, String] = ["_Bool", "_Complex", "_Imaginary", "auto", 
       "break", "case", "char", "const", "continue", "default", "do", "double", 
       "else", "enum", "extern", "float", "for", "goto", "if", "inline", "int", 
       "long", "register", "restrict", "return", "short", "signed", "sizeof", 
@@ -500,7 +500,7 @@ proc cNextToken(g: var TGeneralTokenizer) =
 
 proc cppNextToken(g: var TGeneralTokenizer) = 
   const 
-    keywords: array[0..47, string] = ["asm", "auto", "break", "case", "catch", 
+    keywords: Array[0..47, String] = ["asm", "auto", "break", "case", "catch", 
       "char", "class", "const", "continue", "default", "delete", "do", "double", 
       "else", "enum", "extern", "float", "for", "friend", "goto", "if", 
       "inline", "int", "long", "new", "operator", "private", "protected", 
@@ -511,7 +511,7 @@ proc cppNextToken(g: var TGeneralTokenizer) =
 
 proc csharpNextToken(g: var TGeneralTokenizer) = 
   const 
-    keywords: array[0..76, string] = ["abstract", "as", "base", "bool", "break", 
+    keywords: Array[0..76, String] = ["abstract", "as", "base", "bool", "break", 
       "byte", "case", "catch", "char", "checked", "class", "const", "continue", 
       "decimal", "default", "delegate", "do", "double", "else", "enum", "event", 
       "explicit", "extern", "false", "finally", "fixed", "float", "for", 
@@ -526,7 +526,7 @@ proc csharpNextToken(g: var TGeneralTokenizer) =
 
 proc javaNextToken(g: var TGeneralTokenizer) = 
   const 
-    keywords: array[0..52, string] = ["abstract", "assert", "boolean", "break", 
+    keywords: Array[0..52, String] = ["abstract", "assert", "boolean", "break", 
       "byte", "case", "catch", "char", "class", "const", "continue", "default", 
       "do", "double", "else", "enum", "extends", "false", "final", "finally", 
       "float", "for", "goto", "if", "implements", "import", "instanceof", "int", 

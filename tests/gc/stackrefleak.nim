@@ -5,7 +5,7 @@ discard """
 type
   Cyclic = object
     sibling: PCyclic
-    data: array[0..200, char]
+    data: Array[0..200, Char]
 
   PCyclic = ref Cyclic
 
@@ -17,9 +17,9 @@ proc makePair: PCyclic =
 proc loop =
   for i in 0..10000:
     var x = makePair()
-    GC_fullCollect()
+    gCFullCollect()
     x = nil
-    GC_fullCollect()
+    gCFullCollect()
 
   if getOccupiedMem() > 300_000:
     echo "still a leak! ", getOccupiedMem()

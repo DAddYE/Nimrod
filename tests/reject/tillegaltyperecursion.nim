@@ -11,27 +11,27 @@ import os
 
 type
     TMessageReceivedEventArgs = object of TEventArgs
-        Nick*: string
-        Message*: string
+        Nick*: String
+        Message*: String
     TIRC = object
-        EventEmitter: TEventEmitter
-        MessageReceivedHandler*: TEventHandler
-        Socket: TSocket
-        Thread: TThread[TIRC]
+        eventEmitter: TEventEmitter
+        messageReceivedHandler*: TEventHandler
+        socket: TSocket
+        thread: TThread[TIRC]
         
 proc initIRC*(): TIRC =
     result.Socket = socket()
     result.EventEmitter = initEventEmitter()
     result.MessageReceivedHandler = initEventHandler("MessageReceived")
 
-proc IsConnected*(irc: var TIRC): bool =
+proc isConnected*(irc: var TIRC): Bool =
     return running(irc.Thread)
   
    
-proc sendRaw*(irc: var TIRC, message: string) =
+proc sendRaw*(irc: var TIRC, message: String) =
     irc.Socket.send(message & "\r\L")
 proc handleData(irc: TIRC) {.thread.} =
-    var connected = False
+    var connected = false
     while connected:
         var tup = @[irc.Socket]
         var o = select(tup, 200)
@@ -39,16 +39,16 @@ proc handleData(irc: TIRC) {.thread.} =
         echo($len(tup))
         if len(tup) == 1:
             #Connected
-            connected = True
+            connected = true
             
             #Parse data here
             
         else:
             #Disconnected
-            connected = False
+            connected = false
             return
    
-proc Connect*(irc: var TIRC, nick: string, host: string, port: int = 6667) =
+proc connect*(irc: var TIRC, nick: String, host: String, port: Int = 6667) =
     connect(irc.Socket ,host ,TPort(port),TDomain.AF_INET)
     send(irc.Socket,"USER " & nick & " " & nick & " " & nick & " " & nick &"\r\L")
     send(irc.Socket,"NICK " & nick & "\r\L")
@@ -61,6 +61,6 @@ proc Connect*(irc: var TIRC, nick: string, host: string, port: int = 6667) =
         
 when isMainModule:
     var irc = initIRC()
-    irc.Connect("AmryBot[Nim]","irc.freenode.net",6667)
+    irc.connect("AmryBot[Nim]","irc.freenode.net",6667)
     irc.sendRaw("JOIN #nimrod")
     os.Sleep(4000)

@@ -13,10 +13,10 @@ type
     optStyleCheck, optOptimizeSpeed, optOptimizeSize, optGenDynLib,
     optGenGuiApp, optStackTrace
 
-  TOptionset = set[TOption]
+  TOptionset = Set[TOption]
 
 var
   gOptions: TOptionset = {optRefcGC, optRangeCheck, optBoundsCheck,
     optOverflowCheck, optAssert, optWarns, optHints, optLineDir, optStackTrace}
-  compilerArgs: int
-  gExitcode: int8
+  compilerArgs: Int
+  gExitcode: Int8

@@ -4,10 +4,10 @@ discard """
 """
 
 proc outer() = 
-  var A: int
+  var a: Int
 
   proc ugh[T](x: T) {.cdecl.} =
-    echo "ugha", A, x
+    echo "ugha", a, x
     
   ugh[int](12)
 

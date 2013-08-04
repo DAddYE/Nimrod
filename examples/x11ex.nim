@@ -1,18 +1,18 @@
 import xlib, xutil, x, keysym
 
 const
-  WINDOW_WIDTH = 400
-  WINDOW_HEIGHT = 300
+  WindowWidth = 400
+  WindowHeight = 300
   
 var
-  width, height: cuint
+  width, height: Cuint
   display: PDisplay
-  screen: cint
-  depth: int
+  screen: Cint
+  depth: Int
   win: TWindow
   sizeHints: TXSizeHints
 
-proc create_window = 
+proc createWindow = 
   width = WINDOW_WIDTH
   height = WINDOW_HEIGHT
 
@@ -28,44 +28,44 @@ proc create_window =
                             width, height, 5,
                             XBlackPixel(display, screen),
                             XWhitePixel(display, screen))
-  size_hints.flags = PSize or PMinSize or PMaxSize
-  size_hints.min_width =  width.cint
-  size_hints.max_width =  width.cint
-  size_hints.min_height = height.cint
-  size_hints.max_height = height.cint
+  sizeHints.flags = PSize or PMinSize or PMaxSize
+  sizeHints.min_width =  width.Cint
+  sizeHints.max_width =  width.Cint
+  sizeHints.min_height = height.Cint
+  sizeHints.max_height = height.Cint
   discard XSetStandardProperties(display, win, "Simple Window", "window",
-                         0, nil, 0, addr(size_hints))
+                         0, nil, 0, addr(sizeHints))
   discard XSelectInput(display, win, ButtonPressMask or KeyPressMask or 
                                      PointerMotionMask)
   discard XMapWindow(display, win)
 
-proc close_window =
+proc closeWindow =
   discard XDestroyWindow(display, win)
   discard XCloseDisplay(display)
     
 var
   xev: TXEvent
 
-proc process_event =
+proc processEvent =
   var key: TKeySym
-  case int(xev.theType)
+  case Int(xev.theType)
   of KeyPress:
     key = XLookupKeysym(cast[ptr TXKeyEvent](addr(xev)), 0)
-    if key.int != 0:
+    if key.Int != 0:
       echo("keyboard event")
   of ButtonPressMask, PointerMotionMask:
-    Echo("Mouse event")
+    echo("Mouse event")
   else: nil
 
 proc eventloop =
   discard XFlush(display)
-  var num_events = int(XPending(display))
-  while num_events != 0:
-    dec(num_events)
+  var numEvents = Int(XPending(display))
+  while numEvents != 0:
+    dec(numEvents)
     discard XNextEvent(display, addr(xev))
-    process_event()
+    processEvent()
 
-create_window()
+createWindow()
 while true:
   eventloop()
-close_window()
+closeWindow()

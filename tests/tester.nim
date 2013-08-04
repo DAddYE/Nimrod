@@ -44,30 +44,30 @@ type
 
   TSpec = object
     action: TTestAction
-    file, cmd: string
-    outp: string
-    line, exitCode: int
-    msg: string
-    ccodeCheck: string
+    file, cmd: String
+    outp: String
+    line, exitCode: Int
+    msg: String
+    ccodeCheck: String
     err: TResultEnum
-    substr: bool
+    substr: Bool
   TResults = object
-    total, passed, skipped: int
-    data: string
+    total, passed, skipped: Int
+    data: String
 
 # ----------------------- Spec parser ----------------------------------------
 
 when not defined(parseCfgBool):
   # candidate for the stdlib:
-  proc parseCfgBool(s: string): bool =
+  proc parseCfgBool(s: String): Bool =
     case normalize(s)
     of "y", "yes", "true", "1", "on": result = true
     of "n", "no", "false", "0", "off": result = false
     else: raise newException(EInvalidValue, "cannot interpret as a bool: " & s)
 
-proc extractSpec(filename: string): string =
+proc extractSpec(filename: String): String =
   const tripleQuote = "\"\"\""
-  var x = readFile(filename).string
+  var x = readFile(filename).String
   var a = x.find(tripleQuote)
   var b = x.find(tripleQuote, a+3)
   # look for """ only in the first section
@@ -80,7 +80,7 @@ proc extractSpec(filename: string): string =
 when not defined(nimhygiene):
   {.pragma: inject.}
 
-template parseSpecAux(fillResult: stmt) {.immediate.} =
+template parseSpecAux(fillResult: Stmt) {.immediate.} =
   var ss = newStringStream(extractSpec(filename))
   var p {.inject.}: TCfgParser
   open(p, ss, filename, 1)
@@ -94,7 +94,7 @@ template parseSpecAux(fillResult: stmt) {.immediate.} =
       fillResult
   close(p)
 
-proc parseSpec(filename: string): TSpec =
+proc parseSpec(filename: String): TSpec =
   result.file = filename
   result.msg = ""
   result.outp = ""
@@ -132,7 +132,7 @@ let
   pegSuccess = peg"'Hint: operation successful'.*"
   pegOfInterest = pegLineError / pegOtherError
 
-proc callCompiler(cmdTemplate, filename, options: string): TSpec =
+proc callCompiler(cmdTemplate, filename, options: String): TSpec =
   let c = parseCmdLine(cmdTemplate % [options, filename])
   var p = startProcess(command=c[0], args=c[1.. -1],
                        options={poStdErrToStdOut, poUseShell})
@@ -166,18 +166,18 @@ proc initResults: TResults =
   result.skipped = 0
   result.data = ""
 
-proc readResults(filename: string): TResults =
-  result = marshal.to[TResults](readFile(filename).string)
+proc readResults(filename: String): TResults =
+  result = marshal.to[TResults](readFile(filename).String)
 
-proc writeResults(filename: string, r: TResults) =
+proc writeResults(filename: String, r: TResults) =
   writeFile(filename, $$r)
 
-proc `$`(x: TResults): string =
+proc `$`(x: TResults): String =
   result = ("Tests passed: $1 / $3 <br />\n" &
             "Tests skipped: $2 / $3 <br />\n") %
             [$x.passed, $x.skipped, $x.total]
 
-proc colorResult(r: TResultEnum): string =
+proc colorResult(r: TResultEnum): String =
   case r
   of reIgnored: result = "<span style=\"color:fuchsia\">ignored</span>"
   of reSuccess: result = "<span style=\"color:green\">yes</span>"
@@ -203,18 +203,18 @@ const
   
   HtmlEnd = "</body></html>"
 
-proc td(s: string): string =
-  result = s.substr(0, 200).XMLEncode
+proc td(s: String): String =
+  result = s.substr(0, 200).xMLencode
 
-proc addResult(r: var TResults, test, expected, given: string,
+proc addResult(r: var TResults, test, expected, given: String,
                success: TResultEnum) =
   r.data.addf("<tr><td>$#</td><td>$#</td><td>$#</td><td>$#</td></tr>\n", [
-    XMLEncode(test), td(expected), td(given), success.colorResult])
+    xMLencode(test), td(expected), td(given), success.colorResult])
 
-proc addResult(r: var TResults, test, given: string,
+proc addResult(r: var TResults, test, given: String,
                success: TResultEnum) =
   r.data.addf("<tr><td>$#</td><td>$#</td><td>$#</td></tr>\n", [
-    XMLEncode(test), td(given), success.colorResult])
+    xMLencode(test), td(given), success.colorResult])
 
 proc listResults(reject, compile, run: TResults) =
   var s = HtmlBegin
@@ -230,7 +230,7 @@ proc listResults(reject, compile, run: TResults) =
   s.add(HtmlEnd)
   writeFile(resultsFile, s)
 
-proc cmpMsgs(r: var TResults, expected, given: TSpec, test: string) =
+proc cmpMsgs(r: var TResults, expected, given: TSpec, test: String) =
   if strip(expected.msg) notin strip(given.msg):
     r.addResult(test, expected.msg, given.msg, reMsgsDiffer)
   elif extractFilename(expected.file) != extractFilename(given.file) and
@@ -242,7 +242,7 @@ proc cmpMsgs(r: var TResults, expected, given: TSpec, test: string) =
     r.addResult(test, expected.msg, given.msg, reSuccess)
     inc(r.passed)
 
-proc rejectSingleTest(r: var TResults, test, options: string) =
+proc rejectSingleTest(r: var TResults, test, options: String) =
   let test = test.addFileExt(".nim")
   var t = extractFilename(test)
   inc(r.total)
@@ -255,16 +255,16 @@ proc rejectSingleTest(r: var TResults, test, options: string) =
     var given = callCompiler(expected.cmd, test, options)
     cmpMsgs(r, expected, given, t)
 
-proc reject(r: var TResults, dir, options: string) =
+proc reject(r: var TResults, dir, options: String) =
   ## handle all the tests that the compiler should reject
   for test in os.walkFiles(dir / "t*.nim"): rejectSingleTest(r, test, options)
 
-proc codegenCheck(test, check, ext: string, given: var TSpec) =
+proc codegenCheck(test, check, ext: String, given: var TSpec) =
   if check.len > 0:
     try:
       let (path, name, ext2) = test.splitFile
       echo path / "nimcache" / name.changeFileExt(ext)
-      let contents = readFile(path / "nimcache" / name.changeFileExt(ext)).string
+      let contents = readFile(path / "nimcache" / name.changeFileExt(ext)).String
       if contents.find(check.peg) < 0:
         given.err = reCodegenFailure
     except EInvalidValue:
@@ -272,10 +272,10 @@ proc codegenCheck(test, check, ext: string, given: var TSpec) =
     except EIO:
       given.err = reCodeNotFound
   
-proc codegenChecks(test: string, expected: TSpec, given: var TSpec) =
+proc codegenChecks(test: String, expected: TSpec, given: var TSpec) =
   codegenCheck(test, expected.ccodeCheck, ".c", given)
   
-proc compile(r: var TResults, pattern, options: string) =
+proc compile(r: var TResults, pattern, options: String) =
   for test in os.walkFiles(pattern):
     let t = extractFilename(test)
     echo t
@@ -291,7 +291,7 @@ proc compile(r: var TResults, pattern, options: string) =
       r.addResult(t, given.msg, given.err)
       if given.err == reSuccess: inc(r.passed)
 
-proc compileSingleTest(r: var TResults, test, options: string) =
+proc compileSingleTest(r: var TResults, test, options: String) =
   # does not extract the spec because the file is not supposed to have any
   let test = test.addFileExt(".nim")
   let t = extractFilename(test)
@@ -301,7 +301,7 @@ proc compileSingleTest(r: var TResults, test, options: string) =
   r.addResult(t, given.msg, given.err)
   if given.err == reSuccess: inc(r.passed)
 
-proc runSingleTest(r: var TResults, test, options: string, target: TTarget) =
+proc runSingleTest(r: var TResults, test, options: String, target: TTarget) =
   var test = test.addFileExt(".nim")
   var t = extractFilename(test)
   echo t
@@ -315,7 +315,7 @@ proc runSingleTest(r: var TResults, test, options: string, target: TTarget) =
     if given.err != reSuccess:
       r.addResult(t, "", given.msg, given.err)
     else:
-      var exeFile: string
+      var exeFile: String
       if target == targetC:
         exeFile = changeFileExt(test, ExeExt)
       else:
@@ -327,27 +327,27 @@ proc runSingleTest(r: var TResults, test, options: string, target: TTarget) =
           (if target==targetJS: "node " else: "") & exeFile)
         if exitCode != expected.ExitCode:
           r.addResult(t, "exitcode: " & $expected.ExitCode,
-                         "exitcode: " & $exitCode, reExitCodesDiffer)
+                         "exitcode: " & $exitCode, reExitcodesDiffer)
         else:
-          if strip(buf.string) != strip(expected.outp):
-            if not (expected.substr and expected.outp in buf.string):
+          if strip(buf.String) != strip(expected.outp):
+            if not (expected.substr and expected.outp in buf.String):
               given.err = reOutputsDiffer
           if given.err == reSuccess:
-            codeGenChecks(test, expected, given)
+            codegenChecks(test, expected, given)
           if given.err == reSuccess: inc(r.passed)
-          r.addResult(t, expected.outp, buf.string, given.err)
+          r.addResult(t, expected.outp, buf.String, given.err)
       else:
         r.addResult(t, expected.outp, "executable not found", reExeNotFound)
 
-proc runSingleTest(r: var TResults, test, options: string) =
+proc runSingleTest(r: var TResults, test, options: String) =
   runSingleTest(r, test, options, targetC)
 
-proc run(r: var TResults, dir, options: string) =
+proc run(r: var TResults, dir, options: String) =
   for test in os.walkFiles(dir / "t*.nim"): runSingleTest(r, test, options)
 
 include specials
 
-proc compileExample(r: var TResults, pattern, options: string) =
+proc compileExample(r: var TResults, pattern, options: String) =
   for test in os.walkFiles(pattern): compileSingleTest(r, test, options)
 
 proc toJson(res: TResults): PJsonNode =
@@ -382,43 +382,43 @@ proc main() =
   var p = initOptParser()
   p.next()
   if p.kind == cmdLongoption:
-    case p.key.string
+    case p.key.String
     of "print": optPrintResults = true
-    else: quit usage
+    else: quit Usage
     p.next()
-  if p.kind != cmdArgument: quit usage
-  var action = p.key.string.normalize
+  if p.kind != cmdArgument: quit Usage
+  var action = p.key.String.normalize
   p.next()
   var r = initResults()
   case action
   of "reject":
-    reject(r, "tests/reject", p.cmdLineRest.string)
-    rejectSpecialTests(r, p.cmdLineRest.string)
+    reject(r, "tests/reject", p.cmdLineRest.String)
+    rejectSpecialTests(r, p.cmdLineRest.String)
     writeResults(rejectJson, r)
   of "compile":
-    compile(r, "tests/compile/t*.nim", p.cmdLineRest.string)
-    compile(r, "tests/ccg/t*.nim", p.cmdLineRest.string)
-    compile(r, "tests/js.nim", p.cmdLineRest.string)
-    compileExample(r, "lib/pure/*.nim", p.cmdLineRest.string)
-    compileExample(r, "examples/*.nim", p.cmdLineRest.string)
-    compileExample(r, "examples/gtk/*.nim", p.cmdLineRest.string)
-    compileSpecialTests(r, p.cmdLineRest.string)
+    compile(r, "tests/compile/t*.nim", p.cmdLineRest.String)
+    compile(r, "tests/ccg/t*.nim", p.cmdLineRest.String)
+    compile(r, "tests/js.nim", p.cmdLineRest.String)
+    compileExample(r, "lib/pure/*.nim", p.cmdLineRest.String)
+    compileExample(r, "examples/*.nim", p.cmdLineRest.String)
+    compileExample(r, "examples/gtk/*.nim", p.cmdLineRest.String)
+    compileSpecialTests(r, p.cmdLineRest.String)
     writeResults(compileJson, r)
   of "run":
-    run(r, "tests/run", p.cmdLineRest.string)
-    runSpecialTests(r, p.cmdLineRest.string)
+    run(r, "tests/run", p.cmdLineRest.String)
+    runSpecialTests(r, p.cmdLineRest.String)
     writeResults(runJson, r)
   of "special":
-    runSpecialTests(r, p.cmdLineRest.string)
+    runSpecialTests(r, p.cmdLineRest.String)
     runCaasTests(r)
     writeResults(runJson, r)
   of "rodfiles":
-    runRodFiles(r, p.cmdLineRest.string)
+    runRodFiles(r, p.cmdLineRest.String)
     writeResults(runJson, r)
   of "js":
-    if existsFile(runJSon):
+    if existsFile(runJson):
       r = readResults(runJson)
-    runJsTests(r, p.cmdLineRest.string)
+    runJsTests(r, p.cmdLineRest.String)
     writeResults(runJson, r)
   of "merge":
     var rejectRes = readResults(rejectJson)
@@ -427,30 +427,30 @@ proc main() =
     listResults(rejectRes, compileRes, runRes)
     outputJSON(rejectRes, compileRes, runRes)
   of "dll":
-    runDLLTests r, p.cmdLineRest.string
+    runDLLTests r, p.cmdLineRest.String
   of "gc":
-    runGCTests(r, p.cmdLineRest.string)
+    runGcTests(r, p.cmdLineRest.String)
   of "test":
-    if p.kind != cmdArgument: quit usage
-    var testFile = p.key.string
+    if p.kind != cmdArgument: quit Usage
+    var testFile = p.key.String
     p.next()
-    runSingleTest(r, testFile, p.cmdLineRest.string)
+    runSingleTest(r, testFile, p.cmdLineRest.String)
   of "comp", "rej":
-    if p.kind != cmdArgument: quit usage
-    var testFile = p.key.string
+    if p.kind != cmdArgument: quit Usage
+    var testFile = p.key.String
     p.next()
     if peg"'/reject/'" in testFile or action == "rej":
-      rejectSingleTest(r, testFile, p.cmdLineRest.string)
+      rejectSingleTest(r, testFile, p.cmdLineRest.String)
     elif peg"'/compile/'" in testFile or action == "comp":
-      compileSingleTest(r, testFile, p.cmdLineRest.string)
+      compileSingleTest(r, testFile, p.cmdLineRest.String)
     else:
-      runSingleTest(r, testFile, p.cmdLineRest.string)
+      runSingleTest(r, testFile, p.cmdLineRest.String)
   else:
-    quit usage
+    quit Usage
 
   if optPrintResults: echo r, r.data
 
 if paramCount() == 0:
-  quit usage
+  quit Usage
 main()
 

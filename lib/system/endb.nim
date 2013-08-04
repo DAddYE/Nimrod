@@ -21,8 +21,8 @@ const
 
 type
   TStaticStr = object
-    len: int
-    data: array[0..100, char]
+    len: Int
+    data: Array[0..100, Char]
 
   TBreakpointFilename = object
     b: ptr TBreakpoint
@@ -43,43 +43,43 @@ var
   dbgState: TDbgState   # state of debugger
   dbgSkipToFrame: PFrame # frame to be skipped to
 
-  maxDisplayRecDepth: int = 5 # do not display too much data!
+  maxDisplayRecDepth: Int = 5 # do not display too much data!
 
-  brkPoints: array[0..127, TBreakpointFilename]
+  brkPoints: Array[0..127, TBreakpointFilename]
 
 proc setLen(s: var TStaticStr, newLen=0) =
   s.len = newLen
   s.data[newLen] = '\0'
 
-proc add(s: var TStaticStr, c: char) =
+proc add(s: var TStaticStr, c: Char) =
   if s.len < high(s.data)-1:
     s.data[s.len] = c
     s.data[s.len+1] = '\0'
     inc s.len
 
-proc add(s: var TStaticStr, c: cstring) =
+proc add(s: var TStaticStr, c: Cstring) =
   var i = 0
   while c[i] != '\0':
     add s, c[i]
     inc i
 
-proc assign(s: var TStaticStr, c: cstring) =
+proc assign(s: var TStaticStr, c: Cstring) =
   setLen(s)
   add s, c
 
-proc `==`(a, b: TStaticStr): bool =
+proc `==`(a, b: TStaticStr): Bool =
   if a.len == b.len:
     for i in 0 .. a.len-1:
       if a.data[i] != b.data[i]: return false
     return true
 
-proc `==`(a: TStaticStr, b: cstring): bool =
+proc `==`(a: TStaticStr, b: Cstring): Bool =
   result = c_strcmp(a.data, b) == 0
 
 proc write(f: TFile, s: TStaticStr) =
-  write(f, cstring(s.data))
+  write(f, Cstring(s.data))
 
-proc ListBreakPoints() =
+proc listBreakPoints() =
   write(stdout, EndbBeg)
   write(stdout, "| Breakpoints:\n")
   for b in listBreakpoints():
@@ -95,13 +95,13 @@ proc ListBreakPoints() =
       write(stdout, "\n")
   write(stdout, EndbEnd)
 
-proc openAppend(filename: cstring): TFile =
-  var p: pointer = fopen(filename, "ab")
+proc openAppend(filename: Cstring): TFile =
+  var p: Pointer = fopen(filename, "ab")
   if p != nil:
     result = cast[TFile](p)
     write(result, "----------------------------------------\n")
 
-proc dbgRepr(p: pointer, typ: PNimType): string =
+proc dbgRepr(p: Pointer, typ: PNimType): String =
   var cl: TReprClosure
   initReprClosure(cl)
   cl.recDepth = maxDisplayRecDepth
@@ -117,7 +117,7 @@ proc writeVariable(stream: TFile, slot: TVarSlot) =
   write(stream, " = ")
   writeln(stream, dbgRepr(slot.address, slot.typ))
 
-proc ListFrame(stream: TFile, f: PFrame) =
+proc listFrame(stream: TFile, f: PFrame) =
   write(stream, EndbBeg)
   write(stream, "| Frame (")
   write(stream, f.len)
@@ -126,7 +126,7 @@ proc ListFrame(stream: TFile, f: PFrame) =
     writeln(stream, getLocal(f, i).name)
   write(stream, EndbEnd)
 
-proc ListLocals(stream: TFile, f: PFrame) =
+proc listLocals(stream: TFile, f: PFrame) =
   write(stream, EndbBeg)
   write(stream, "| Frame (")
   write(stream, f.len)
@@ -135,14 +135,14 @@ proc ListLocals(stream: TFile, f: PFrame) =
     writeVariable(stream, getLocal(f, i))
   write(stream, EndbEnd)
 
-proc ListGlobals(stream: TFile) =
+proc listGlobals(stream: TFile) =
   write(stream, EndbBeg)
   write(stream, "| Globals:\n")
   for i in 0 .. getGlobalLen()-1:
     writeln(stream, getGlobal(i).name)
   write(stream, EndbEnd)
 
-proc debugOut(msg: cstring) =
+proc debugOut(msg: Cstring) =
   # the *** *** markers are for easy recognition of debugger
   # output for external frontends.
   write(stdout, EndbBeg)
@@ -150,7 +150,7 @@ proc debugOut(msg: cstring) =
   write(stdout, msg)
   write(stdout, EndbEnd)
 
-proc dbgFatal(msg: cstring) =
+proc dbgFatal(msg: Cstring) =
   debugOut(msg)
   dbgAborting = True # the debugger wants to abort
   quit(1)
@@ -172,11 +172,11 @@ proc dbgShowExecutionPoint() =
   write(stdout, framePtr.procname)
   write(stdout, " ***\n")
 
-proc scanAndAppendWord(src: cstring, a: var TStaticStr, start: int): int =
+proc scanAndAppendWord(src: Cstring, a: var TStaticStr, start: Int): Int =
   result = start
   # skip whitespace:
   while src[result] in {'\t', ' '}: inc(result)
-  while True:
+  while true:
     case src[result]
     of 'a'..'z', '0'..'9': add(a, src[result])
     of '_': nil # just skip it
@@ -184,11 +184,11 @@ proc scanAndAppendWord(src: cstring, a: var TStaticStr, start: int): int =
     else: break
     inc(result)
 
-proc scanWord(src: cstring, a: var TStaticStr, start: int): int =
-  setlen(a)
+proc scanWord(src: Cstring, a: var TStaticStr, start: Int): Int =
+  setLen(a)
   result = scanAndAppendWord(src, a, start)
 
-proc scanFilename(src: cstring, a: var TStaticStr, start: int): int =
+proc scanFilename(src: Cstring, a: var TStaticStr, start: Int): Int =
   result = start
   setLen a
   while src[result] in {'\t', ' '}: inc(result)
@@ -196,7 +196,7 @@ proc scanFilename(src: cstring, a: var TStaticStr, start: int): int =
     add(a, src[result])
     inc(result)
 
-proc scanNumber(src: cstring, a: var int, start: int): int =
+proc scanNumber(src: Cstring, a: var Int, start: Int): Int =
   result = start
   a = 0
   while src[result] in {'\t', ' '}: inc(result)
@@ -240,17 +240,17 @@ g, globals              display available global variables
 maxdisplay <integer>    set the display's recursion maximum
 """)
 
-proc InvalidCommand() =
+proc invalidCommand() =
   debugOut("[Warning] invalid command ignored (type 'h' for help) ")
 
-proc hasExt(s: cstring): bool =
+proc hasExt(s: Cstring): Bool =
   # returns true if s has a filename extension
   var i = 0
   while s[i] != '\0':
     if s[i] == '.': return true
     inc i
 
-proc parseBreakpoint(s: cstring, start: int): TBreakpoint =
+proc parseBreakpoint(s: Cstring, start: Int): TBreakpoint =
   var dbgTemp: TStaticStr
   var i = scanNumber(s, result.low, start)
   if result.low == 0: result.low = framePtr.line
@@ -259,27 +259,27 @@ proc parseBreakpoint(s: cstring, start: int): TBreakpoint =
   i = scanFilename(s, dbgTemp, i)
   if dbgTemp.len != 0:
     if not hasExt(dbgTemp.data): add(dbgTemp, ".nim")
-    result.filename = canonFilename(dbgTemp.data.cstring)
+    result.filename = canonFilename(dbgTemp.data.Cstring)
     if result.filename.isNil:
       debugOut("[Warning] no breakpoint could be set; unknown filename ")
       return
   else:
     result.filename = framePtr.filename
 
-proc createBreakPoint(s: cstring, start: int) =
+proc createBreakPoint(s: Cstring, start: Int) =
   let br = parseBreakpoint(s, start)
   if not br.filename.isNil:
     if not addBreakpoint(br.filename, br.low, br.high):
       debugOut("[Warning] no breakpoint could be set; out of breakpoint space ")
 
-proc BreakpointToggle(s: cstring, start: int) =
+proc breakpointToggle(s: Cstring, start: Int) =
   var a = parseBreakpoint(s, start)
   if not a.filename.isNil:
     var b = checkBreakpoints(a.filename, a.low)
     if not b.isNil: b.flip
     else: debugOut("[Warning] unknown breakpoint ")
 
-proc dbgEvaluate(stream: TFile, s: cstring, start: int, f: PFrame) =
+proc dbgEvaluate(stream: TFile, s: Cstring, start: Int, f: PFrame) =
   var dbgTemp: tstaticstr
   var i = scanWord(s, dbgTemp, start)
   while s[i] in {' ', '\t'}: inc(i)
@@ -298,11 +298,11 @@ proc dbgEvaluate(stream: TFile, s: cstring, start: int, f: PFrame) =
       if c_strcmp(v.name, dbgTemp.data) == 0:
         writeVariable(stream, v)  
 
-proc dbgOut(s: cstring, start: int, currFrame: PFrame) =
+proc dbgOut(s: Cstring, start: Int, currFrame: PFrame) =
   var dbgTemp: tstaticstr
   var i = scanFilename(s, dbgTemp, start)
   if dbgTemp.len == 0:
-    InvalidCommand()
+    invalidCommand()
     return
   var stream = openAppend(dbgTemp.data)
   if stream == nil:
@@ -311,22 +311,22 @@ proc dbgOut(s: cstring, start: int, currFrame: PFrame) =
   dbgEvaluate(stream, s, i, currFrame)
   close(stream)
 
-proc dbgStackFrame(s: cstring, start: int, currFrame: PFrame) =
+proc dbgStackFrame(s: Cstring, start: Int, currFrame: PFrame) =
   var dbgTemp: TStaticStr
   var i = scanFilename(s, dbgTemp, start)
   if dbgTemp.len == 0:
     # just write it to stdout:
-    ListFrame(stdout, currFrame)
+    listFrame(stdout, currFrame)
   else:
     var stream = openAppend(dbgTemp.data)
     if stream == nil:
       debugOut("[Warning] could not open or create file ")
       return
-    ListFrame(stream, currFrame)
+    listFrame(stream, currFrame)
     close(stream)
 
-proc readLine(f: TFile, line: var TStaticStr): bool =
-  while True:
+proc readLine(f: TFile, line: var TStaticStr): Bool =
+  while true:
     var c = fgetc(f)
     if c < 0'i32:
       if line.len > 0: break
@@ -336,10 +336,10 @@ proc readLine(f: TFile, line: var TStaticStr): bool =
       c = fgetc(f) # is the next char LF?
       if c != 10'i32: ungetc(c, f) # no, put the character back
       break
-    add line, chr(int(c))
+    add line, chr(Int(c))
   result = true
 
-proc ListFilenames() =
+proc listFilenames() =
   write(stdout, EndbBeg)
   write(stdout, "| Files:\n")
   var i = 0
@@ -352,10 +352,10 @@ proc ListFilenames() =
   write(stdout, EndbEnd)
 
 proc dbgWriteStackTrace(f: PFrame)
-proc CommandPrompt() =
+proc commandPrompt() =
   # if we return from this routine, user code executes again
   var
-    again = True
+    again = true
     dbgFramePtr = framePtr # for going down and up the stack
     dbgDown = 0 # how often we did go down
     dbgTemp: TStaticStr
@@ -368,7 +368,7 @@ proc CommandPrompt() =
     if dbgUser.len == 0: dbgUser.len = oldLen
     # now look what we have to do:
     var i = scanWord(dbgUser.data, dbgTemp, 0)
-    template `?`(x: expr): expr = dbgTemp == cstring(x)
+    template `?`(x: Expr): Expr = dbgTemp == Cstring(x)
     if ?"s" or ?"step":
       dbgState = dbStepInto
       again = false
@@ -402,9 +402,9 @@ proc CommandPrompt() =
     elif ?"w" or ?"where":
       dbgShowExecutionPoint()
     elif ?"l" or ?"locals":
-      ListLocals(stdout, dbgFramePtr)
+      listLocals(stdout, dbgFramePtr)
     elif ?"g" or ?"globals":
-      ListGlobals(stdout)
+      listGlobals(stdout)
     elif ?"u" or ?"up":
       if dbgDown <= 0:
         debugOut("[Warning] cannot go up any further ")
@@ -426,27 +426,27 @@ proc CommandPrompt() =
     elif ?"b" or ?"break":
       createBreakPoint(dbgUser.data, i)
     elif ?"breakpoints":
-      ListBreakPoints()
+      listBreakPoints()
     elif ?"toggle":
-      BreakpointToggle(dbgUser.data, i)
+      breakpointToggle(dbgUser.data, i)
     elif ?"filenames":
-      ListFilenames()
+      listFilenames()
     elif ?"maxdisplay":
-      var parsed: int
+      var parsed: Int
       i = scanNumber(dbgUser.data, parsed, i)
       if dbgUser.data[i-1] in {'0'..'9'}:
         if parsed == 0: maxDisplayRecDepth = -1
         else: maxDisplayRecDepth = parsed
       else:
-        InvalidCommand()
-    else: InvalidCommand()
+        invalidCommand()
+    else: invalidCommand()
 
 proc endbStep() =
   # we get into here if an unhandled exception has been raised
   # XXX: do not allow the user to run the program any further?
   # XXX: BUG: the frame is lost here!
   dbgShowExecutionPoint()
-  CommandPrompt()
+  commandPrompt()
 
 proc dbgWriteStackTrace(f: PFrame) =
   const
@@ -455,7 +455,7 @@ proc dbgWriteStackTrace(f: PFrame) =
     it = f
     i = 0
     total = 0
-    tempFrames: array [0..127, PFrame]
+    tempFrames: Array [0..127, PFrame]
   # setup long head:
   while it != nil and i <= high(tempFrames)-firstCalls:
     tempFrames[i] = it
@@ -506,18 +506,18 @@ proc checkForBreakpoint =
     write(stdout, ") ")
     write(stdout, framePtr.procname)
     write(stdout, " ***\n")
-    CommandPrompt()
+    commandPrompt()
 
 proc lineHookImpl() {.nimcall.} =
   case dbgState
   of dbStepInto:
     # we really want the command prompt here:
     dbgShowExecutionPoint()
-    CommandPrompt()
+    commandPrompt()
   of dbSkipCurrent, dbStepOver: # skip current routine
     if framePtr == dbgSkipToFrame:
       dbgShowExecutionPoint()
-      CommandPrompt()
+      commandPrompt()
     else:
       # breakpoints are wanted though (I guess)
       checkForBreakpoint()
@@ -526,7 +526,7 @@ proc lineHookImpl() {.nimcall.} =
     checkForBreakpoint()
   else: nil
 
-proc watchpointHookImpl(name: cstring) {.nimcall.} =
+proc watchpointHookImpl(name: Cstring) {.nimcall.} =
   dbgWriteStackTrace(framePtr)
   debugOut(name)
 

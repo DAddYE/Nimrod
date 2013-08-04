@@ -6,12 +6,12 @@ discard """
 type
   TObj = object {.pure, inheritable.}
   TObjB = object of TObj
-    a, b, c: string
-    fn: proc (): int {.tags: [].}
+    a, b, c: String
+    fn: proc (): Int {.tags: [].}
   
-  EIO2 = ref object of EIO
+  Eio2 = ref object of Eio
   
-proc raiser(): int {.tags: [TObj, FWriteIO].} =
+proc raiser(): Int {.tags: [TObj, FWriteIO].} =
   writeln stdout, "arg"
 
 var o: TObjB

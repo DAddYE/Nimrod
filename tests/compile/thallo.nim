@@ -15,7 +15,7 @@ proc fac[T](x: T): T =
   if x <= 1: return 1
   else: return x.`*`(fac(x-1))
 
-macro macrotest(n: expr): stmt {.immediate.} =
+macro macrotest(n: Expr): Stmt {.immediate.} =
   let n = callsite()
   expectKind(n, nnkCall)
   expectMinLen(n, 2)
@@ -24,7 +24,7 @@ macro macrotest(n: expr): stmt {.immediate.} =
     result.add(newCall("write", n[1], n[i]))
   result.add(newCall("writeln", n[1], newStrLitNode("")))
 
-macro debug(n: expr): stmt {.immediate.} =
+macro debug(n: Expr): Stmt {.immediate.} =
   let n = callsite()
   result = newNimNode(nnkStmtList, n)
   for i in 1..n.len-1:
@@ -48,7 +48,7 @@ var `name` = readLine(stdin)
 echo("Hi " & thallo.name & "!\n")
 debug(name)
 
-var testseq: seq[string] = @[
+var testseq: Seq[String] = @[
   "a", "b", "c", "d", "e"
 ]
 echo(repr(testseq))
@@ -63,7 +63,7 @@ for x, y in items([(1, 2), (3, 4), (6, 1), (5, 2)]):
   echo x
   echo y
 
-proc simpleConst(): int = return 34
+proc simpleConst(): Int = return 34
 
 # test constant evaluation:
 const

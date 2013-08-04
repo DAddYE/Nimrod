@@ -2,41 +2,41 @@
 import 
   glib2, pango
 
-proc split_file_list*(str: cstring): PPchar{.cdecl, dynlib: lib, 
+proc splitFileList*(str: Cstring): PPchar{.cdecl, dynlib: lib, 
     importc: "pango_split_file_list".}
-proc trim_string*(str: cstring): cstring{.cdecl, dynlib: lib, 
+proc trimString*(str: Cstring): Cstring{.cdecl, dynlib: lib, 
     importc: "pango_trim_string".}
-proc read_line*(stream: TFile, str: PGString): gint{.cdecl, dynlib: lib, 
+proc readLine*(stream: TFile, str: PGString): Gint{.cdecl, dynlib: lib, 
     importc: "pango_read_line".}
-proc skip_space*(pos: PPchar): gboolean{.cdecl, dynlib: lib, 
+proc skipSpace*(pos: PPchar): Gboolean{.cdecl, dynlib: lib, 
     importc: "pango_skip_space".}
-proc scan_word*(pos: PPchar, OutStr: PGString): gboolean{.cdecl, dynlib: lib, 
+proc scanWord*(pos: PPchar, OutStr: PGString): Gboolean{.cdecl, dynlib: lib, 
     importc: "pango_scan_word".}
-proc scan_string*(pos: PPchar, OutStr: PGString): gboolean{.cdecl, dynlib: lib, 
+proc scanString*(pos: PPchar, OutStr: PGString): Gboolean{.cdecl, dynlib: lib, 
     importc: "pango_scan_string".}
-proc scan_int*(pos: PPchar, OutInt: ptr int32): gboolean{.cdecl, dynlib: lib, 
+proc scanInt*(pos: PPchar, OutInt: ptr Int32): Gboolean{.cdecl, dynlib: lib, 
     importc: "pango_scan_int".}
-proc config_key_get*(key: cstring): cstring{.cdecl, dynlib: lib, 
+proc configKeyGet*(key: Cstring): Cstring{.cdecl, dynlib: lib, 
     importc: "pango_config_key_get".}
-proc lookup_aliases*(fontname: cstring, families: PPPchar, n_families: ptr int32){.
+proc lookupAliases*(fontname: Cstring, families: PPPchar, n_families: ptr Int32){.
     cdecl, dynlib: lib, importc: "pango_lookup_aliases".}
-proc parse_style*(str: cstring, style: PStyle, warn: gboolean): gboolean{.cdecl, 
+proc parseStyle*(str: Cstring, style: PStyle, warn: Gboolean): Gboolean{.cdecl, 
     dynlib: lib, importc: "pango_parse_style".}
-proc parse_variant*(str: cstring, variant: PVariant, warn: gboolean): gboolean{.
+proc parseVariant*(str: Cstring, variant: PVariant, warn: Gboolean): Gboolean{.
     cdecl, dynlib: lib, importc: "pango_parse_variant".}
-proc parse_weight*(str: cstring, weight: PWeight, warn: gboolean): gboolean{.
+proc parseWeight*(str: Cstring, weight: PWeight, warn: Gboolean): Gboolean{.
     cdecl, dynlib: lib, importc: "pango_parse_weight".}
-proc parse_stretch*(str: cstring, stretch: PStretch, warn: gboolean): gboolean{.
+proc parseStretch*(str: Cstring, stretch: PStretch, warn: Gboolean): Gboolean{.
     cdecl, dynlib: lib, importc: "pango_parse_stretch".}
-proc get_sysconf_subdirectory*(): cstring{.cdecl, dynlib: lib, 
+proc getSysconfSubdirectory*(): Cstring{.cdecl, dynlib: lib, 
     importc: "pango_get_sysconf_subdirectory".}
-proc get_lib_subdirectory*(): cstring{.cdecl, dynlib: lib, 
+proc getLibSubdirectory*(): Cstring{.cdecl, dynlib: lib, 
                                       importc: "pango_get_lib_subdirectory".}
-proc log2vis_get_embedding_levels*(str: Pgunichar, len: int32, 
+proc log2visGetEmbeddingLevels*(str: Pgunichar, len: Int32, 
                                    pbase_dir: PDirection, 
-                                   embedding_level_list: Pguint8): gboolean{.
+                                   embedding_level_list: Pguint8): Gboolean{.
     cdecl, dynlib: lib, importc: "pango_log2vis_get_embedding_levels".}
-proc get_mirror_char*(ch: gunichar, mirrored_ch: Pgunichar): gboolean{.cdecl, 
+proc getMirrorChar*(ch: Gunichar, mirrored_ch: Pgunichar): Gboolean{.cdecl, 
     dynlib: lib, importc: "pango_get_mirror_char".}
-proc get_sample_string*(language: PLanguage): cstring{.cdecl, 
+proc getSampleString*(language: PLanguage): Cstring{.cdecl, 
     dynlib: lib, importc: "pango_language_get_sample_string".}

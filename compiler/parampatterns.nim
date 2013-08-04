@@ -36,13 +36,13 @@ type
     ppLocal,
     ppSideEffect,
     ppNoSideEffect
-  TPatternCode = string
+  TPatternCode = String
 
 const
   MaxStackSize* = 64 ## max required stack size by the VM
 
 proc patternError(n: PNode) = 
-  LocalError(n.info, errIllFormedAstX, renderTree(n, {renderNoComments}))
+  localError(n.info, errIllFormedAstX, renderTree(n, {renderNoComments}))
 
 proc add(code: var TPatternCode, op: TOpcode) {.inline.} =
   add(code, chr(ord(op)))
@@ -125,7 +125,7 @@ proc semNodeKindConstraints*(p: PNode): PNode =
     for i in 1.. <p.len:
       compileConstraints(p.sons[i], result.strVal)
     if result.strVal.len > maxStackSize-1:
-      InternalError(p.info, "parameter pattern too complex")
+      internalError(p.info, "parameter pattern too complex")
   else:
     patternError(p)
   result.strVal.add(ppEof)
@@ -218,15 +218,15 @@ proc isAssignable*(owner: PSym, n: PNode): TAssignableResult =
   else:
     nil
 
-proc matchNodeKinds*(p, n: PNode): bool =
+proc matchNodeKinds*(p, n: PNode): Bool =
   # matches the parameter constraint 'p' against the concrete AST 'n'. 
   # Efficiency matters here.
-  var stack {.noinit.}: array[0..maxStackSize, bool]
+  var stack {.noinit.}: Array[0..maxStackSize, Bool]
   # empty patterns are true:
   stack[0] = true
   var sp = 1
   
-  template push(x: bool) =
+  template push(x: Bool) =
     stack[sp] = x
     inc sp
   

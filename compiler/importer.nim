@@ -16,13 +16,13 @@ import
 proc evalImport*(c: PContext, n: PNode): PNode
 proc evalFrom*(c: PContext, n: PNode): PNode
 
-proc getModuleName*(n: PNode): string =
+proc getModuleName*(n: PNode): String =
   # This returns a short relative module name without the nim extension
   # e.g. like "system", "importer" or "somepath/module"
   # The proc won't perform any checks that the path is actually valid
   case n.kind
   of nkStrLit, nkRStrLit, nkTripleStrLit:
-    result = UnixToNativePath(n.strVal)
+    result = unixToNativePath(n.strVal)
   of nkIdent:
     result = n.ident.s
   of nkSym:
@@ -34,12 +34,12 @@ proc getModuleName*(n: PNode): string =
     #  "invalide module name: '$1'" % renderTree(n))
     #result = ""
 
-proc checkModuleName*(n: PNode): int32 =
+proc checkModuleName*(n: PNode): Int32 =
   # This returns the full canonical path for a given module import
   let modulename = n.getModuleName
   let fullPath = findModule(modulename)
   if fullPath.len == 0:
-    LocalError(n.info, errCannotOpenFile, modulename)
+    localError(n.info, errCannotOpenFile, modulename)
     result = InvalidFileIDX
   else:
     result = fullPath.fileInfoIdx
@@ -48,32 +48,32 @@ proc rawImportSymbol(c: PContext, s: PSym) =
   # This does not handle stubs, because otherwise loading on demand would be
   # pointless in practice. So importing stubs is fine here!
   # check if we have already a symbol of the same name:
-  var check = StrTableGet(c.importTable.symbols, s.name)
+  var check = strTableGet(c.importTable.symbols, s.name)
   if check != nil and check.id != s.id:
     if s.kind notin OverloadableSyms:
       # s and check need to be qualified:
-      Incl(c.AmbiguousSymbols, s.id)
-      Incl(c.AmbiguousSymbols, check.id)
+      incl(c.AmbiguousSymbols, s.id)
+      incl(c.AmbiguousSymbols, check.id)
   # thanks to 'export' feature, it could be we import the same symbol from
   # multiple sources, so we need to call 'StrTableAdd' here:
-  StrTableAdd(c.importTable.symbols, s)
+  strTableAdd(c.importTable.symbols, s)
   if s.kind == skType:
     var etyp = s.typ
     if etyp.kind in {tyBool, tyEnum} and sfPure notin s.flags:
       for j in countup(0, sonsLen(etyp.n) - 1):
         var e = etyp.n.sons[j].sym
         if e.Kind != skEnumField: 
-          InternalError(s.info, "rawImportSymbol") 
+          internalError(s.info, "rawImportSymbol") 
           # BUGFIX: because of aliases for enums the symbol may already
           # have been put into the symbol table
           # BUGFIX: but only iff they are the same symbols!
         var it: TIdentIter 
-        check = InitIdentIter(it, c.importTable.symbols, e.name)
+        check = initIdentIter(it, c.importTable.symbols, e.name)
         while check != nil:
           if check.id == e.id:
             e = nil
             break
-          check = NextIdentIter(it, c.importTable.symbols)
+          check = nextIdentIter(it, c.importTable.symbols)
         if e != nil:
           rawImportSymbol(c, e)
   else:
@@ -83,36 +83,36 @@ proc rawImportSymbol(c: PContext, s: PSym) =
 
 proc importSymbol(c: PContext, n: PNode, fromMod: PSym) = 
   let ident = lookups.considerAcc(n)
-  let s = StrTableGet(fromMod.tab, ident)
+  let s = strTableGet(fromMod.tab, ident)
   if s == nil:
-    LocalError(n.info, errUndeclaredIdentifier, ident.s)
+    localError(n.info, errUndeclaredIdentifier, ident.s)
   else:
     if s.kind == skStub: loadStub(s)
     if s.Kind notin ExportableSymKinds:
-      InternalError(n.info, "importSymbol: 2")
+      internalError(n.info, "importSymbol: 2")
     # for an enumeration we have to add all identifiers
     case s.Kind
     of skProc, skMethod, skIterator, skMacro, skTemplate, skConverter:
       # for a overloadable syms add all overloaded routines
       var it: TIdentIter
-      var e = InitIdentIter(it, fromMod.tab, s.name)
+      var e = initIdentIter(it, fromMod.tab, s.name)
       while e != nil:
-        if e.name.id != s.Name.id: InternalError(n.info, "importSymbol: 3")
+        if e.name.id != s.Name.id: internalError(n.info, "importSymbol: 3")
         rawImportSymbol(c, e)
-        e = NextIdentIter(it, fromMod.tab)
+        e = nextIdentIter(it, fromMod.tab)
     else: rawImportSymbol(c, s)
 
 proc importAllSymbolsExcept(c: PContext, fromMod: PSym, exceptSet: TIntSet) =
   var i: TTabIter
-  var s = InitTabIter(i, fromMod.tab)
+  var s = initTabIter(i, fromMod.tab)
   while s != nil:
     if s.kind != skModule:
       if s.kind != skEnumField:
         if s.Kind notin ExportableSymKinds:
-          InternalError(s.info, "importAllSymbols: " & $s.kind)
+          internalError(s.info, "importAllSymbols: " & $s.kind)
         if exceptSet.empty or s.name.id notin exceptSet:
           rawImportSymbol(c, s)
-    s = NextIter(i, fromMod.tab)
+    s = nextIter(i, fromMod.tab)
 
 proc importAllSymbols*(c: PContext, fromMod: PSym) =
   var exceptSet: TIntSet
@@ -143,7 +143,7 @@ proc evalImport(c: PContext, n: PNode): PNode =
     if f != InvalidFileIDX:
       var m = gImportModule(c.module, f)
       if sfDeprecated in m.flags: 
-        Message(n.sons[i].info, warnDeprecated, m.name.s) 
+        message(n.sons[i].info, warnDeprecated, m.name.s) 
       # ``addDecl`` needs to be done before ``importAllSymbols``!
       addDecl(c, m)             # add symbol to symbol table of module
       importAllSymbolsExcept(c, m, emptySet)

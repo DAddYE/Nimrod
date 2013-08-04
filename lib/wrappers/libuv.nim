@@ -10,36 +10,36 @@ else:
   import posix
 
 type
-  TPort* = distinct int16  ## port type
+  TPort* = distinct Int16  ## port type
 
-  cssize = int
-  coff = int
-  csize = int
+  Cssize = Int
+  Coff = Int
+  Csize = Int
 
-  AllocProc* = proc (handle: PHandle, suggested_size: csize): TBuf {.cdecl.}
-  ReadProc* = proc (stream: PStream, nread: cssize, buf: TBuf) {.cdecl.}
-  ReadProc2* = proc (stream: PPipe, nread: cssize, buf: TBuf, pending: THandleType) {.cdecl.}
-  WriteProc* = proc (req: PWrite, status: cint) {.cdecl.}
-  ConnectProc* = proc (req: PConnect, status: cint) {.cdecl.}
-  ShutdownProc* = proc (req: PShutdown, status: cint) {.cdecl.}
-  ConnectionProc* = proc (server: PStream, status: cint) {.cdecl.}
+  AllocProc* = proc (handle: PHandle, suggested_size: Csize): TBuf {.cdecl.}
+  ReadProc* = proc (stream: PStream, nread: Cssize, buf: TBuf) {.cdecl.}
+  ReadProc2* = proc (stream: PPipe, nread: Cssize, buf: TBuf, pending: THandleType) {.cdecl.}
+  WriteProc* = proc (req: PWrite, status: Cint) {.cdecl.}
+  ConnectProc* = proc (req: PConnect, status: Cint) {.cdecl.}
+  ShutdownProc* = proc (req: PShutdown, status: Cint) {.cdecl.}
+  ConnectionProc* = proc (server: PStream, status: Cint) {.cdecl.}
   CloseProc* = proc (handle: PHandle) {.cdecl.}
-  TimerProc* = proc (handle: PTimer, status: cint) {.cdecl.}
-  AsyncProc* = proc (handle: PAsync, status: cint) {.cdecl.}
-  PrepareProc* = proc (handle: PPrepare, status: cint) {.cdecl.}
-  CheckProc* = proc (handle: PCheck, status: cint) {.cdecl.}
-  IdleProc* = proc (handle: PIdle, status: cint) {.cdecl.}
+  TimerProc* = proc (handle: PTimer, status: Cint) {.cdecl.}
+  AsyncProc* = proc (handle: PAsync, status: Cint) {.cdecl.}
+  PrepareProc* = proc (handle: PPrepare, status: Cint) {.cdecl.}
+  CheckProc* = proc (handle: PCheck, status: Cint) {.cdecl.}
+  IdleProc* = proc (handle: PIdle, status: Cint) {.cdecl.}
 
   PSockAddr* = ptr TSockAddr
 
-  GetAddrInfoProc* = proc (handle: PGetAddrInfo, status: cint, res: ptr TAddrInfo)
+  GetAddrInfoProc* = proc (handle: PGetAddrInfo, status: Cint, res: ptr Taddrinfo)
 
-  ExitProc* = proc (a2: PProcess, exit_status: cint, term_signal: cint)
-  FsProc* = proc (req: pFS)
+  ExitProc* = proc (a2: PProcess, exit_status: Cint, term_signal: Cint)
+  FsProc* = proc (req: PFS)
   WorkProc* = proc (req: PWork)
   AfterWorkProc* = proc (req: PWork)
 
-  FsEventProc* = proc (handle: PFsEvent, filename: cstring, events: cint, status: cint)
+  FsEventProc* = proc (handle: PFsEvent, filename: Cstring, events: Cint, status: Cint)
 
   TErrorCode* {.size: sizeof(cint).} = enum
     UNKNOWN = - 1, OK = 0, EOF, EACCESS, EAGAIN, EADDRINUSE, EADDRNOTAVAIL,
@@ -70,7 +70,7 @@ type
 
   TErr* {.pure, final, importc: "uv_err_t", header: "uv.h".} = object
     code* {.importc: "code".}: TErrorCode
-    sys_errno* {.importc: "sys_errno_".}: cint
+    sys_errno* {.importc: "sys_errno_".}: Cint
 
   TFsEventType* = enum
     evRENAME = 1,
@@ -80,8 +80,8 @@ type
     loop* {.importc: "loop".}: PLoop
     typ* {.importc: "type".}: THandleType
     close_cb* {.importc: "close_cb".}: CloseProc
-    data* {.importc: "data".}: pointer
-    filename {.importc: "filename".}: cstring
+    data* {.importc: "data".}: Pointer
+    filename {.importc: "filename".}: Cstring
 
   PFsEvent* = ptr TFsEvent
 
@@ -89,12 +89,12 @@ type
     loop* {.importc: "loop".}: PLoop
     typ* {.importc: "type".}: THandleType
     close_cb* {.importc: "close_cb".}: CloseProc
-    data* {.importc: "data".}: pointer
-    filename* {.importc: "filename".}: cstring
+    data* {.importc: "data".}: Pointer
+    filename* {.importc: "filename".}: Cstring
 
   TBuf* {.pure, final, importc: "uv_buf_t", header: "uv.h"} = object
-    base* {.importc: "base".}: cstring
-    len* {.importc: "len".}: csize
+    base* {.importc: "base".}: Cstring
+    len* {.importc: "len".}: Csize
 
   TAnyHandle* {.pure, final, importc: "uv_any_handle", header: "uv.h".} = object
     tcp* {.importc: "tcp".}: TTcp
@@ -112,28 +112,28 @@ type
     write* {.importc: "write".}: TWrite
     connect* {.importc: "connect".}: TConnect
     shutdown* {.importc: "shutdown".}: TShutdown
-    fs_req* {.importc: "fs_req".}: Tfs
+    fs_req* {.importc: "fs_req".}: TFS
     work_req* {.importc: "work_req".}: TWork
 
   ## better import this
-  uint64 = int64
+  Uint64 = Int64
 
   TCounters* {.pure, final, importc: "uv_counters_t", header: "uv.h".} = object
-    eio_init* {.importc: "eio_init".}: uint64
-    req_init* {.importc: "req_init".}: uint64
-    handle_init* {.importc: "handle_init".}: uint64
-    stream_init* {.importc: "stream_init".}: uint64
-    tcp_init* {.importc: "tcp_init".}: uint64
-    udp_init* {.importc: "udp_init".}: uint64
-    pipe_init* {.importc: "pipe_init".}: uint64
-    tty_init* {.importc: "tty_init".}: uint64
-    prepare_init* {.importc: "prepare_init".}: uint64
-    check_init* {.importc: "check_init".}: uint64
-    idle_init* {.importc: "idle_init".}: uint64
-    async_init* {.importc: "async_init".}: uint64
-    timer_init* {.importc: "timer_init".}: uint64
-    process_init* {.importc: "process_init".}: uint64
-    fs_event_init* {.importc: "fs_event_init".}: uint64
+    eio_init* {.importc: "eio_init".}: Uint64
+    req_init* {.importc: "req_init".}: Uint64
+    handle_init* {.importc: "handle_init".}: Uint64
+    stream_init* {.importc: "stream_init".}: Uint64
+    tcp_init* {.importc: "tcp_init".}: Uint64
+    udp_init* {.importc: "udp_init".}: Uint64
+    pipe_init* {.importc: "pipe_init".}: Uint64
+    tty_init* {.importc: "tty_init".}: Uint64
+    prepare_init* {.importc: "prepare_init".}: Uint64
+    check_init* {.importc: "check_init".}: Uint64
+    idle_init* {.importc: "idle_init".}: Uint64
+    async_init* {.importc: "async_init".}: Uint64
+    timer_init* {.importc: "timer_init".}: Uint64
+    process_init* {.importc: "process_init".}: Uint64
+    fs_event_init* {.importc: "fs_event_init".}: Uint64
 
   TLoop* {.pure, final, importc: "uv_loop_t", header: "uv.h".} = object
     # ares_handles_* {.importc: "uv_ares_handles_".}: pointer # XXX: This seems to be a private field? 
@@ -142,13 +142,13 @@ type
     eio_poller* {.importc: "uv_eio_poller".}: TIdle
     counters* {.importc: "counters".}: TCounters
     last_err* {.importc: "last_err".}: TErr
-    data* {.importc: "data".}: pointer
+    data* {.importc: "data".}: Pointer
 
   PLoop* = ptr TLoop
 
   TShutdown* {.pure, final, importc: "uv_shutdown_t", header: "uv.h".} = object
     typ* {.importc: "type".}: TReqType
-    data* {.importc: "data".}: pointer
+    data* {.importc: "data".}: Pointer
     handle* {.importc: "handle".}: PStream
     cb* {.importc: "cb".}: ShutdownProc
 
@@ -158,7 +158,7 @@ type
     loop* {.importc: "loop".}: PLoop
     typ* {.importc: "type".}: THandleType
     close_cb* {.importc: "close_cb".}: CloseProc
-    data* {.importc: "data".}: pointer
+    data* {.importc: "data".}: Pointer
 
   PHandle* = ptr THandle
 
@@ -169,14 +169,14 @@ type
     read_cb* {.importc: "read_cb".}: ReadProc
     read2_cb* {.importc: "read2_cb".}: ReadProc2
     close_cb* {.importc: "close_cb".}: CloseProc
-    data* {.importc: "data".}: pointer
-    write_queue_size* {.importc: "write_queue_size".}: csize
+    data* {.importc: "data".}: Pointer
+    write_queue_size* {.importc: "write_queue_size".}: Csize
 
   PStream* = ptr TStream
 
   TWrite* {.pure, final, importc: "uv_write_t", header: "uv.h".} = object
     typ* {.importc: "type".}: TReqType
-    data* {.importc: "data".}: pointer
+    data* {.importc: "data".}: Pointer
     cb* {.importc: "cb".}: WriteProc
     send_handle* {.importc: "send_handle".}: PStream
     handle* {.importc: "handle".}: PStream
@@ -190,14 +190,14 @@ type
     read_cb* {.importc: "read_cb".}: ReadProc
     read2_cb* {.importc: "read2_cb".}: ReadProc2
     close_cb* {.importc: "close_cb".}: CloseProc
-    data* {.importc: "data".}: pointer
-    write_queue_size* {.importc: "write_queue_size".}: csize
+    data* {.importc: "data".}: Pointer
+    write_queue_size* {.importc: "write_queue_size".}: Csize
 
   PTcp* = ptr TTcp
 
   TConnect* {.pure, final, importc: "uv_connect_t", header: "uv.h".} = object
     typ* {.importc: "type".}: TReqType
-    data* {.importc: "data".}: pointer
+    data* {.importc: "data".}: Pointer
     cb* {.importc: "cb".}: ConnectProc
     handle* {.importc: "handle".}: PStream
 
@@ -207,38 +207,38 @@ type
     UDP_IPV6ONLY = 1, UDP_PARTIAL = 2
 
   ## XXX: better import this
-  cunsigned = int
+  Cunsigned = Int
 
-  UdpSendProc* = proc (req: PUdpSend, status: cint)
-  UdpRecvProc* = proc (handle: PUdp, nread: cssize, buf: TBuf, adr: ptr TSockAddr, flags: cunsigned)
+  UdpSendProc* = proc (req: PUdpSend, status: Cint)
+  UdpRecvProc* = proc (handle: PUdp, nread: Cssize, buf: TBuf, adr: ptr TSockAddr, flags: Cunsigned)
 
   TUdp* {.pure, final, importc: "uv_udp_t", header: "uv.h".} = object
     loop* {.importc: "loop".}: PLoop
     typ* {.importc: "type".}: THandleType
     close_cb* {.importc: "close_cb".}: CloseProc
-    data* {.importc: "data".}: pointer
+    data* {.importc: "data".}: Pointer
 
   PUdp* = ptr TUdp
 
   TUdpSend* {.pure, final, importc: "uv_udp_send_t", header: "uv.h".} = object
     typ* {.importc: "type".}: TReqType
-    data* {.importc: "data".}: pointer
+    data* {.importc: "data".}: Pointer
     handle* {.importc: "handle".}: PUdp
     cb* {.importc: "cb".}: UdpSendProc
 
   PUdpSend* = ptr TUdpSend
 
-  tTTy* {.pure, final, importc: "uv_tty_t", header: "uv.h".} = object
+  TTTy* {.pure, final, importc: "uv_tty_t", header: "uv.h".} = object
     loop* {.importc: "loop".}: PLoop
     typ* {.importc: "type".}: THandleType
     alloc_cb* {.importc: "alloc_cb".}: AllocProc
     read_cb* {.importc: "read_cb".}: ReadProc
     read2_cb* {.importc: "read2_cb".}: ReadProc2
     close_cb* {.importc: "close_cb".}: CloseProc
-    data* {.importc: "data".}: pointer
-    write_queue_size* {.importc: "write_queue_size".}: csize
+    data* {.importc: "data".}: Pointer
+    write_queue_size* {.importc: "write_queue_size".}: Csize
 
-  pTTy* = ptr tTTy
+  PTTy* = ptr TTTy
 
   TPipe* {.pure, final, importc: "uv_pipe_t", header: "uv.h".} = object
     loop* {.importc: "loop".}: PLoop
@@ -247,9 +247,9 @@ type
     read_cb* {.importc: "read_cb".}: ReadProc
     read2_cb* {.importc: "read2_cb".}: ReadProc2
     close_cb* {.importc: "close_cb".}: CloseProc
-    data* {.importc: "data".}: pointer
-    write_queue_size* {.importc: "write_queue_size".}: csize
-    ipc {.importc: "ipc".}: int
+    data* {.importc: "data".}: Pointer
+    write_queue_size* {.importc: "write_queue_size".}: Csize
+    ipc {.importc: "ipc".}: Int
 
   PPipe* = ptr TPipe
 
@@ -257,7 +257,7 @@ type
     loop* {.importc: "loop".}: PLoop
     typ* {.importc: "type".}: THandleType
     close_cb* {.importc: "close_cb".}: CloseProc
-    data* {.importc: "data".}: pointer
+    data* {.importc: "data".}: Pointer
 
   PPrepare* = ptr TPrepare
 
@@ -265,7 +265,7 @@ type
     loop* {.importc: "loop".}: PLoop
     typ* {.importc: "type".}: THandleType
     close_cb* {.importc: "close_cb".}: CloseProc
-    data* {.importc: "data".}: pointer
+    data* {.importc: "data".}: Pointer
 
   PCheck* = ptr TCheck
 
@@ -273,7 +273,7 @@ type
     loop* {.importc: "loop".}: PLoop
     typ* {.importc: "type".}: THandleType
     close_cb* {.importc: "close_cb".}: CloseProc
-    data* {.importc: "data".}: pointer
+    data* {.importc: "data".}: Pointer
 
   PIdle* = ptr TIdle
 
@@ -281,7 +281,7 @@ type
     loop* {.importc: "loop".}: PLoop
     typ* {.importc: "type".}: THandleType
     close_cb* {.importc: "close_cb".}: CloseProc
-    data* {.importc: "data".}: pointer
+    data* {.importc: "data".}: Pointer
 
   PAsync* = ptr TAsync
 
@@ -289,24 +289,24 @@ type
     loop* {.importc: "loop".}: PLoop
     typ* {.importc: "type".}: THandleType
     close_cb* {.importc: "close_cb".}: CloseProc
-    data* {.importc: "data".}: pointer
+    data* {.importc: "data".}: Pointer
 
   PTimer* = ptr TTimer
 
   TGetAddrInfo* {.pure, final, importc: "uv_getaddrinfo_t", header: "uv.h".} = object
     typ* {.importc: "type".}: TReqType
-    data* {.importc: "data".}: pointer
+    data* {.importc: "data".}: Pointer
     loop* {.importc: "loop".}: PLoop
 
   PGetAddrInfo* = ptr TGetAddrInfo
 
   TProcessOptions* {.pure, final, importc: "uv_process_options_t", header: "uv.h".} = object
     exit_cb* {.importc: "exit_cb".}: ExitProc
-    file* {.importc: "file".}: cstring
-    args* {.importc: "args".}: cstringArray
-    env* {.importc: "env".}: cstringArray
-    cwd* {.importc: "cwd".}: cstring
-    windows_verbatim_arguments* {.importc: "windows_verbatim_arguments".}: cint
+    file* {.importc: "file".}: Cstring
+    args* {.importc: "args".}: CstringArray
+    env* {.importc: "env".}: CstringArray
+    cwd* {.importc: "cwd".}: Cstring
+    windows_verbatim_arguments* {.importc: "windows_verbatim_arguments".}: Cint
     stdin_stream* {.importc: "stdin_stream".}: PPipe
     stdout_stream* {.importc: "stdout_stream".}: PPipe
     stderr_stream* {.importc: "stderr_stream".}: PPipe
@@ -317,15 +317,15 @@ type
     loop* {.importc: "loop".}: PLoop
     typ* {.importc: "type".}: THandleType
     close_cb* {.importc: "close_cb".}: CloseProc
-    data* {.importc: "data".}: pointer
+    data* {.importc: "data".}: Pointer
     exit_cb* {.importc: "exit_cb".}: ExitProc
-    pid* {.importc: "pid".}: cint
+    pid* {.importc: "pid".}: Cint
 
   PProcess* = ptr TProcess
 
   TWork* {.pure, final, importc: "uv_work_t", header: "uv.h".} = object
     typ* {.importc: "type".}: TReqType
-    data* {.importc: "data".}: pointer
+    data* {.importc: "data".}: Pointer
     loop* {.importc: "loop".}: PLoop
     work_cb* {.importc: "work_cb".}: WorkProc
     after_work_cb* {.importc: "after_work_cb".}: AfterWorkProc
@@ -338,39 +338,39 @@ type
     FS_CHMOD, FS_FCHMOD, FS_FSYNC, FS_FDATASYNC, FS_UNLINK, FS_RMDIR, FS_MKDIR,
     FS_RENAME, FS_READDIR, FS_LINK, FS_SYMLINK, FS_READLINK, FS_CHOWN, FS_FCHOWN
 
-  tFS* {.pure, final, importc: "uv_fs_t", header: "uv.h".} = object
+  TFS* {.pure, final, importc: "uv_fs_t", header: "uv.h".} = object
     typ* {.importc: "type".}: TReqType
-    data* {.importc: "data".}: pointer
+    data* {.importc: "data".}: Pointer
     loop* {.importc: "loop".}: PLoop
     fs_type* {.importc: "fs_type".}: TFsType
     cb* {.importc: "cb".}: FsProc
-    result* {.importc: "result".}: cssize
-    fsPtr* {.importc: "ptr".}: pointer
-    path* {.importc: "path".}: cstring
-    errorno* {.importc: "errorno".}: cint
+    result* {.importc: "result".}: Cssize
+    fsPtr* {.importc: "ptr".}: Pointer
+    path* {.importc: "path".}: Cstring
+    errorno* {.importc: "errorno".}: Cint
 
-  pFS* = ptr tFS
+  PFS* = ptr TFS
 
   TReq* {.pure, final, importc: "uv_req_t", header: "uv.h".} = object
     typ* {.importc: "type".}: TReqType
-    data* {.importc: "data".}: pointer
+    data* {.importc: "data".}: Pointer
 
   PReq* = ptr TReq
 
   TAresOptions* {.pure, final, importc: "ares_options", header: "uv.h".} = object
-    flags* {.importc: "flags".}: int
-    timeout* {.importc: "timeout".}: int
-    tries* {.importc: "tries".}: int
-    ndots* {.importc: "ndots".}: int
+    flags* {.importc: "flags".}: Int
+    timeout* {.importc: "timeout".}: Int
+    tries* {.importc: "tries".}: Int
+    ndots* {.importc: "ndots".}: Int
     udp_port* {.importc: "udp_port".}: TPort
     tcp_port* {.importc: "tcp_port".}: TPort
-    socket_send_buffer_size* {.importc: "socket_send_buffer_size".}: int
-    socket_recv_buffer_size* {.importc: "socket_receive_buffer_size".}: int
+    socket_send_buffer_size* {.importc: "socket_send_buffer_size".}: Int
+    socket_recv_buffer_size* {.importc: "socket_receive_buffer_size".}: Int
     servers* {.importc: "servers".}: ptr TInAddr
-    nservers* {.importc: "nservers".}: int
-    domains* {.importc: "domains".}: ptr cstring
-    ndomains* {.importc: "ndomains".}: int
-    lookups* {.importc: "lookups".}: cstring
+    nservers* {.importc: "nservers".}: Int
+    domains* {.importc: "domains".}: ptr Cstring
+    ndomains* {.importc: "ndomains".}: Int
+    lookups* {.importc: "lookups".}: Cstring
 
   #XXX: not yet exported
   #ares_sock_state_cb sock_state_cb;
@@ -379,18 +379,18 @@ type
   #int nsort;
 
   PAresOptions* = ptr TAresOptions
-  PAresChannel* = pointer
+  PAresChannel* = Pointer
 
-proc loop_new*(): PLoop{.
+proc loopNew*(): PLoop{.
     importc: "uv_loop_new", header: "uv.h".}
 
-proc loop_delete*(a2: PLoop){.
+proc loopDelete*(a2: PLoop){.
     importc: "uv_loop_delete", header: "uv.h".}
 
-proc default_loop*(): PLoop{.
+proc defaultLoop*(): PLoop{.
     importc: "uv_default_loop", header: "uv.h".}
 
-proc run*(a2: PLoop): cint{.
+proc run*(a2: PLoop): Cint{.
     importc: "uv_run", header: "uv.h".}
 
 proc addref*(a2: PLoop){.
@@ -399,303 +399,303 @@ proc addref*(a2: PLoop){.
 proc unref*(a2: PLoop){.
     importc: "uv_unref", header: "uv.h".}
 
-proc update_time*(a2: PLoop){.
+proc updateTime*(a2: PLoop){.
     importc: "uv_update_time", header: "uv.h".}
 
-proc now*(a2: PLoop): int64{.
+proc now*(a2: PLoop): Int64{.
     importc: "uv_now", header: "uv.h".}
 
-proc last_error*(a2: PLoop): TErr{.
+proc lastError*(a2: PLoop): TErr{.
     importc: "uv_last_error", header: "uv.h".}
 
-proc strerror*(err: TErr): cstring{.
+proc strerror*(err: TErr): Cstring{.
     importc: "uv_strerror", header: "uv.h".}
 
-proc err_name*(err: TErr): cstring{.
+proc errName*(err: TErr): Cstring{.
     importc: "uv_err_name", header: "uv.h".}
 
-proc shutdown*(req: PShutdown, handle: PStream, cb: ShutdownProc): cint{.
+proc shutdown*(req: PShutdown, handle: PStream, cb: ShutdownProc): Cint{.
     importc: "uv_shutdown", header: "uv.h".}
 
-proc is_active*(handle: PHandle): cint{.
+proc isActive*(handle: PHandle): Cint{.
     importc: "uv_is_active", header: "uv.h".}
 
 proc close*(handle: PHandle, close_cb: CloseProc){.
     importc: "uv_close", header: "uv.h".}
 
-proc buf_init*(base: cstring, len: csize): TBuf{.
+proc bufInit*(base: Cstring, len: Csize): TBuf{.
     importc: "uv_buf_init", header: "uv.h".}
 
-proc listen*(stream: PStream, backlog: cint, cb: ConnectionProc): cint{.
+proc listen*(stream: PStream, backlog: Cint, cb: ConnectionProc): Cint{.
     importc: "uv_listen", header: "uv.h".}
 
-proc accept*(server: PStream, client: PStream): cint{.
+proc accept*(server: PStream, client: PStream): Cint{.
     importc: "uv_accept", header: "uv.h".}
 
-proc read_start*(a2: PStream, alloc_cb: AllocProc, read_cb: ReadProc): cint{.
+proc readStart*(a2: PStream, alloc_cb: AllocProc, read_cb: ReadProc): Cint{.
     importc: "uv_read_start", header: "uv.h".}
 
-proc read_start*(a2: PStream, alloc_cb: AllocProc, read_cb: ReadProc2): cint{.
+proc readStart*(a2: PStream, alloc_cb: AllocProc, read_cb: ReadProc2): Cint{.
     importc: "uv_read2_start", header: "uv.h".}
 
-proc read_stop*(a2: PStream): cint{.
+proc readStop*(a2: PStream): Cint{.
     importc: "uv_read_stop", header: "uv.h".}
 
-proc write*(req: PWrite, handle: PStream, bufs: ptr TBuf, bufcnt: cint, cb: WriteProc): cint{.
+proc write*(req: PWrite, handle: PStream, bufs: ptr TBuf, bufcnt: Cint, cb: WriteProc): Cint{.
     importc: "uv_write", header: "uv.h".}
 
-proc write*(req: PWrite, handle: PStream, bufs: ptr TBuf, bufcnt: cint, send_handle: PStream, cb: WriteProc): cint{.
+proc write*(req: PWrite, handle: PStream, bufs: ptr TBuf, bufcnt: Cint, send_handle: PStream, cb: WriteProc): Cint{.
     importc: "uv_write2", header: "uv.h".}
 
-proc tcp_init*(a2: PLoop, handle: PTcp): cint{.
+proc tcpInit*(a2: PLoop, handle: PTcp): Cint{.
     importc: "uv_tcp_init", header: "uv.h".}
 
-proc tcp_bind*(handle: PTcp, a3: TSockAddrIn): cint{.
+proc tcpBind*(handle: PTcp, a3: TsockaddrIn): Cint{.
     importc: "uv_tcp_bind", header: "uv.h".}
 
-proc tcp_bind6*(handle: PTcp, a3: TSockAddrIn6): cint{.
+proc tcpBind6*(handle: PTcp, a3: TsockaddrIn6): Cint{.
     importc: "uv_tcp_bind6", header: "uv.h".}
 
-proc tcp_getsockname*(handle: PTcp, name: ptr TSockAddr, namelen: var cint): cint{.
+proc tcpGetsockname*(handle: PTcp, name: ptr TSockAddr, namelen: var Cint): Cint{.
     importc: "uv_tcp_getsockname", header: "uv.h".}
 
-proc tcp_getpeername*(handle: PTcp, name: ptr TSockAddr, namelen: var cint): cint{.
+proc tcpGetpeername*(handle: PTcp, name: ptr TSockAddr, namelen: var Cint): Cint{.
     importc: "uv_tcp_getpeername", header: "uv.h".}
 
-proc tcp_connect*(req: PConnect, handle: PTcp, address: TSockAddrIn, cb: ConnectProc): cint{.
+proc tcpConnect*(req: PConnect, handle: PTcp, address: TsockaddrIn, cb: ConnectProc): Cint{.
     importc: "uv_tcp_connect", header: "uv.h".}
 
-proc tcp_connect6*(req: PConnect, handle: PTcp, address: TSockAddrIn6, cb: ConnectProc): cint{.
+proc tcpConnect6*(req: PConnect, handle: PTcp, address: TsockaddrIn6, cb: ConnectProc): Cint{.
     importc: "uv_tcp_connect6", header: "uv.h".}
 
-proc udp_init*(a2: PLoop, handle: PUdp): cint{.
+proc udpInit*(a2: PLoop, handle: PUdp): Cint{.
     importc: "uv_udp_init", header: "uv.h".}
 
-proc udp_bind*(handle: PUdp, adr: TSockAddrIn, flags: cunsigned): cint{.
+proc udpBind*(handle: PUdp, adr: TsockaddrIn, flags: Cunsigned): Cint{.
     importc: "uv_udp_bind", header: "uv.h".}
 
-proc udp_bind6*(handle: PUdp, adr: TSockAddrIn6, flags: cunsigned): cint{.
+proc udpBind6*(handle: PUdp, adr: TsockaddrIn6, flags: Cunsigned): Cint{.
     importc: "uv_udp_bind6", header: "uv.h".}
 
-proc udp_getsockname*(handle: PUdp, name: ptr TSockAddr, namelen: var cint): cint{.
+proc udpGetsockname*(handle: PUdp, name: ptr TSockAddr, namelen: var Cint): Cint{.
     importc: "uv_udp_getsockname", header: "uv.h".}
 
-proc udp_send*(req: PUdpSend, handle: PUdp, bufs: ptr TBuf, bufcnt: cint, adr: TSockAddrIn, send_cb: UdpSendProc): cint{.
+proc udpSend*(req: PUdpSend, handle: PUdp, bufs: ptr TBuf, bufcnt: Cint, adr: TsockaddrIn, send_cb: UdpSendProc): Cint{.
     importc: "uv_udp_send", header: "uv.h".}
 
-proc udp_send6*(req: PUdpSend, handle: PUdp, bufs: ptr TBuf, bufcnt: cint, adr: TSockAddrIn6, send_cb: UdpSendProc): cint{.
+proc udpSend6*(req: PUdpSend, handle: PUdp, bufs: ptr TBuf, bufcnt: Cint, adr: TsockaddrIn6, send_cb: UdpSendProc): Cint{.
     importc: "uv_udp_send6", header: "uv.h".}
 
-proc udp_recv_start*(handle: PUdp, alloc_cb: AllocProc, recv_cb: UdpRecvProc): cint{.
+proc udpRecvStart*(handle: PUdp, alloc_cb: AllocProc, recv_cb: UdpRecvProc): Cint{.
     importc: "uv_udp_recv_start", header: "uv.h".}
 
-proc udp_recv_stop*(handle: PUdp): cint{.
+proc udpRecvStop*(handle: PUdp): Cint{.
     importc: "uv_udp_recv_stop", header: "uv.h".}
 
-proc tty_init*(a2: PLoop, a3: pTTy, fd: TFile): cint{.
+proc ttyInit*(a2: PLoop, a3: PTTy, fd: TFile): Cint{.
     importc: "uv_tty_init", header: "uv.h".}
 
-proc tty_set_mode*(a2: pTTy, mode: cint): cint{.
+proc ttySetMode*(a2: PTTy, mode: Cint): Cint{.
     importc: "uv_tty_set_mode", header: "uv.h".}
 
-proc tty_get_winsize*(a2: pTTy, width: var cint, height: var cint): cint{.
+proc ttyGetWinsize*(a2: PTTy, width: var Cint, height: var Cint): Cint{.
     importc: "uv_tty_get_winsize", header: "uv.h".}
 
-proc tty_reset_mode*() {.
+proc ttyResetMode*() {.
     importc: "uv_tty_reset_mode", header: "uv.h".}
 
-proc guess_handle*(file: TFile): THandleType{.
+proc guessHandle*(file: TFile): THandleType{.
     importc: "uv_guess_handle", header: "uv.h".}
 
-proc pipe_init*(a2: PLoop, handle: PPipe, ipc: int): cint{.
+proc pipeInit*(a2: PLoop, handle: PPipe, ipc: Int): Cint{.
     importc: "uv_pipe_init", header: "uv.h".}
 
-proc pipe_open*(a2: PPipe, file: TFile){.
+proc pipeOpen*(a2: PPipe, file: TFile){.
     importc: "uv_pipe_open", header: "uv.h".}
 
-proc pipe_bind*(handle: PPipe, name: cstring): cint{.
+proc pipeBind*(handle: PPipe, name: Cstring): Cint{.
     importc: "uv_pipe_bind", header: "uv.h".}
 
-proc pipe_connect*(req: PConnect, handle: PPipe, name: cstring, cb: ConnectProc): cint{.
+proc pipeConnect*(req: PConnect, handle: PPipe, name: Cstring, cb: ConnectProc): Cint{.
     importc: "uv_pipe_connect", header: "uv.h".}
 
-proc prepare_init*(a2: PLoop, prepare: PPrepare): cint{.
+proc prepareInit*(a2: PLoop, prepare: PPrepare): Cint{.
     importc: "uv_prepare_init", header: "uv.h".}
 
-proc prepare_start*(prepare: PPrepare, cb: PrepareProc): cint{.
+proc prepareStart*(prepare: PPrepare, cb: PrepareProc): Cint{.
     importc: "uv_prepare_start", header: "uv.h".}
 
-proc prepare_stop*(prepare: PPrepare): cint{.
+proc prepareStop*(prepare: PPrepare): Cint{.
     importc: "uv_prepare_stop", header: "uv.h".}
 
-proc check_init*(a2: PLoop, check: PCheck): cint{.
+proc checkInit*(a2: PLoop, check: PCheck): Cint{.
     importc: "uv_check_init", header: "uv.h".}
 
-proc check_start*(check: PCheck, cb: CheckProc): cint{.
+proc checkStart*(check: PCheck, cb: CheckProc): Cint{.
     importc: "uv_check_start", header: "uv.h".}
 
-proc check_stop*(check: PCheck): cint{.
+proc checkStop*(check: PCheck): Cint{.
     importc: "uv_check_stop", header: "uv.h".}
 
-proc idle_init*(a2: PLoop, idle: PIdle): cint{.
+proc idleInit*(a2: PLoop, idle: PIdle): Cint{.
     importc: "uv_idle_init", header: "uv.h".}
 
-proc idle_start*(idle: PIdle, cb: IdleProc): cint{.
+proc idleStart*(idle: PIdle, cb: IdleProc): Cint{.
     importc: "uv_idle_start", header: "uv.h".}
 
-proc idle_stop*(idle: PIdle): cint{.
+proc idleStop*(idle: PIdle): Cint{.
     importc: "uv_idle_stop", header: "uv.h".}
 
-proc async_init*(a2: PLoop, async: PAsync, async_cb: AsyncProc): cint{.
+proc asyncInit*(a2: PLoop, async: PAsync, async_cb: AsyncProc): Cint{.
     importc: "uv_async_init", header: "uv.h".}
 
-proc async_send*(async: PAsync): cint{.
+proc asyncSend*(async: PAsync): Cint{.
     importc: "uv_async_send", header: "uv.h".}
 
-proc timer_init*(a2: PLoop, timer: PTimer): cint{.
+proc timerInit*(a2: PLoop, timer: PTimer): Cint{.
     importc: "uv_timer_init", header: "uv.h".}
 
-proc timer_start*(timer: PTimer, cb: TimerProc, timeout: int64, repeat: int64): cint{.
+proc timerStart*(timer: PTimer, cb: TimerProc, timeout: Int64, repeat: Int64): Cint{.
     importc: "uv_timer_start", header: "uv.h".}
 
-proc timer_stop*(timer: PTimer): cint{.
+proc timerStop*(timer: PTimer): Cint{.
     importc: "uv_timer_stop", header: "uv.h".}
 
-proc timer_again*(timer: PTimer): cint{.
+proc timerAgain*(timer: PTimer): Cint{.
     importc: "uv_timer_again", header: "uv.h".}
 
-proc timer_set_repeat*(timer: PTimer, repeat: int64){.
+proc timerSetRepeat*(timer: PTimer, repeat: Int64){.
     importc: "uv_timer_set_repeat", header: "uv.h".}
 
-proc timer_get_repeat*(timer: PTimer): int64{.
+proc timerGetRepeat*(timer: PTimer): Int64{.
     importc: "uv_timer_get_repeat", header: "uv.h".}
 
-proc ares_init_options*(a2: PLoop, channel: PAresChannel, options: PAresOptions, optmask: cint): cint{.
+proc aresInitOptions*(a2: PLoop, channel: PAresChannel, options: PAresOptions, optmask: Cint): Cint{.
     importc: "uv_ares_init_options", header: "uv.h".}
 
-proc ares_destroy*(a2: PLoop, channel: PAresChannel){.
+proc aresDestroy*(a2: PLoop, channel: PAresChannel){.
     importc: "uv_ares_destroy", header: "uv.h".}
 
-proc getaddrinfo*(a2: PLoop, handle: PGetAddrInfo,getaddrinfo_cb: GetAddrInfoProc, node: cstring, service: cstring, hints: ptr TAddrInfo): cint{.
+proc getaddrinfo*(a2: PLoop, handle: PGetAddrInfo,getaddrinfo_cb: GetAddrInfoProc, node: Cstring, service: Cstring, hints: ptr Taddrinfo): Cint{.
     importc: "uv_getaddrinfo", header: "uv.h".}
 
-proc freeaddrinfo*(ai: ptr TAddrInfo){.
+proc freeaddrinfo*(ai: ptr Taddrinfo){.
     importc: "uv_freeaddrinfo", header: "uv.h".}
 
-proc spawn*(a2: PLoop, a3: PProcess, options: TProcessOptions): cint{.
+proc spawn*(a2: PLoop, a3: PProcess, options: TProcessOptions): Cint{.
     importc: "uv_spawn", header: "uv.h".}
 
-proc process_kill*(a2: PProcess, signum: cint): cint{.
+proc processKill*(a2: PProcess, signum: Cint): Cint{.
     importc: "uv_process_kill", header: "uv.h".}
 
-proc queue_work*(loop: PLoop, req: PWork, work_cb: WorkProc, after_work_cb: AfterWorkProc): cint{.
+proc queueWork*(loop: PLoop, req: PWork, work_cb: WorkProc, after_work_cb: AfterWorkProc): Cint{.
     importc: "uv_queue_work", header: "uv.h".}
 
-proc req_cleanup*(req: pFS){.
+proc reqCleanup*(req: PFS){.
     importc: "uv_fs_req_cleanup", header: "uv.h".}
 
-proc close*(loop: PLoop, req: pFS, file: TFile, cb: FsProc): cint{.
+proc close*(loop: PLoop, req: PFS, file: TFile, cb: FsProc): Cint{.
     importc: "uv_fs_close", header: "uv.h".}
 
-proc open*(loop: PLoop, req: pFS, path: cstring, flags: cint, mode: cint, cb: FsProc): cint{.
+proc open*(loop: PLoop, req: PFS, path: Cstring, flags: Cint, mode: Cint, cb: FsProc): Cint{.
     importc: "uv_fs_open", header: "uv.h".}
 
-proc read*(loop: PLoop, req: pFS, file: TFile, buf: pointer, length: csize, offset: coff, cb: FsProc): cint{.
+proc read*(loop: PLoop, req: PFS, file: TFile, buf: Pointer, length: Csize, offset: Coff, cb: FsProc): Cint{.
     importc: "uv_fs_read", header: "uv.h".}
 
-proc unlink*(loop: PLoop, req: pFS, path: cstring, cb: FsProc): cint{.
+proc unlink*(loop: PLoop, req: PFS, path: Cstring, cb: FsProc): Cint{.
     importc: "uv_fs_unlink", header: "uv.h".}
 
-proc write*(loop: PLoop, req: pFS, file: TFile, buf: pointer, length: csize, offset: coff, cb: FsProc): cint{.
+proc write*(loop: PLoop, req: PFS, file: TFile, buf: Pointer, length: Csize, offset: Coff, cb: FsProc): Cint{.
     importc: "uv_fs_write", header: "uv.h".}
 
-proc mkdir*(loop: PLoop, req: pFS, path: cstring, mode: cint, cb: FsProc): cint{.
+proc mkdir*(loop: PLoop, req: PFS, path: Cstring, mode: Cint, cb: FsProc): Cint{.
     importc: "uv_fs_mkdir", header: "uv.h".}
 
-proc rmdir*(loop: PLoop, req: pFS, path: cstring, cb: FsProc): cint{.
+proc rmdir*(loop: PLoop, req: PFS, path: Cstring, cb: FsProc): Cint{.
     importc: "uv_fs_rmdir", header: "uv.h".}
 
-proc readdir*(loop: PLoop, req: pFS, path: cstring, flags: cint, cb: FsProc): cint{.
+proc readdir*(loop: PLoop, req: PFS, path: Cstring, flags: Cint, cb: FsProc): Cint{.
     importc: "uv_fs_readdir", header: "uv.h".}
 
-proc stat*(loop: PLoop, req: pFS, path: cstring, cb: FsProc): cint{.
+proc stat*(loop: PLoop, req: PFS, path: Cstring, cb: FsProc): Cint{.
     importc: "uv_fs_stat", header: "uv.h".}
 
-proc fstat*(loop: PLoop, req: pFS, file: TFile, cb: FsProc): cint{.
+proc fstat*(loop: PLoop, req: PFS, file: TFile, cb: FsProc): Cint{.
     importc: "uv_fs_fstat", header: "uv.h".}
 
-proc rename*(loop: PLoop, req: pFS, path: cstring, new_path: cstring, cb: FsProc): cint{.
+proc rename*(loop: PLoop, req: PFS, path: Cstring, new_path: Cstring, cb: FsProc): Cint{.
     importc: "uv_fs_rename", header: "uv.h".}
 
-proc fsync*(loop: PLoop, req: pFS, file: TFile, cb: FsProc): cint{.
+proc fsync*(loop: PLoop, req: PFS, file: TFile, cb: FsProc): Cint{.
     importc: "uv_fs_fsync", header: "uv.h".}
 
-proc fdatasync*(loop: PLoop, req: pFS, file: TFile, cb: FsProc): cint{.
+proc fdatasync*(loop: PLoop, req: PFS, file: TFile, cb: FsProc): Cint{.
     importc: "uv_fs_fdatasync", header: "uv.h".}
 
-proc ftruncate*(loop: PLoop, req: pFS, file: TFile, offset: coff, cb: FsProc): cint{.
+proc ftruncate*(loop: PLoop, req: PFS, file: TFile, offset: Coff, cb: FsProc): Cint{.
     importc: "uv_fs_ftruncate", header: "uv.h".}
 
-proc sendfile*(loop: PLoop, req: pFS, out_fd: TFile, in_fd: TFile, in_offset: coff, length: csize, cb: FsProc): cint{.
+proc sendfile*(loop: PLoop, req: PFS, out_fd: TFile, in_fd: TFile, in_offset: Coff, length: Csize, cb: FsProc): Cint{.
     importc: "uv_fs_sendfile", header: "uv.h".}
 
-proc chmod*(loop: PLoop, req: pFS, path: cstring, mode: cint, cb: FsProc): cint{.
+proc chmod*(loop: PLoop, req: PFS, path: Cstring, mode: Cint, cb: FsProc): Cint{.
     importc: "uv_fs_chmod", header: "uv.h".}
 
-proc utime*(loop: PLoop, req: pFS, path: cstring, atime: cdouble, mtime: cdouble, cb: FsProc): cint{.
+proc utime*(loop: PLoop, req: PFS, path: Cstring, atime: Cdouble, mtime: Cdouble, cb: FsProc): Cint{.
     importc: "uv_fs_utime", header: "uv.h".}
 
-proc futime*(loop: PLoop, req: pFS, file: TFile, atime: cdouble, mtime: cdouble, cb: FsProc): cint{.
+proc futime*(loop: PLoop, req: PFS, file: TFile, atime: Cdouble, mtime: Cdouble, cb: FsProc): Cint{.
     importc: "uv_fs_futime", header: "uv.h".}
 
-proc lstat*(loop: PLoop, req: pFS, path: cstring, cb: FsProc): cint{.
+proc lstat*(loop: PLoop, req: PFS, path: Cstring, cb: FsProc): Cint{.
     importc: "uv_fs_lstat", header: "uv.h".}
 
-proc link*(loop: PLoop, req: pFS, path: cstring, new_path: cstring, cb: FsProc): cint{.
+proc link*(loop: PLoop, req: PFS, path: Cstring, new_path: Cstring, cb: FsProc): Cint{.
     importc: "uv_fs_link", header: "uv.h".}
 
-proc symlink*(loop: PLoop, req: pFS, path: cstring, new_path: cstring, flags: cint, cb: FsProc): cint{.
+proc symlink*(loop: PLoop, req: PFS, path: Cstring, new_path: Cstring, flags: Cint, cb: FsProc): Cint{.
     importc: "uv_fs_symlink", header: "uv.h".}
 
-proc readlink*(loop: PLoop, req: pFS, path: cstring, cb: FsProc): cint{.
+proc readlink*(loop: PLoop, req: PFS, path: Cstring, cb: FsProc): Cint{.
     importc: "uv_fs_readlink", header: "uv.h".}
 
-proc fchmod*(loop: PLoop, req: pFS, file: TFile, mode: cint, cb: FsProc): cint{.
+proc fchmod*(loop: PLoop, req: PFS, file: TFile, mode: Cint, cb: FsProc): Cint{.
     importc: "uv_fs_fchmod", header: "uv.h".}
 
-proc chown*(loop: PLoop, req: pFS, path: cstring, uid: cint, gid: cint, cb: FsProc): cint{.
+proc chown*(loop: PLoop, req: PFS, path: Cstring, uid: Cint, gid: Cint, cb: FsProc): Cint{.
     importc: "uv_fs_chown", header: "uv.h".}
 
-proc fchown*(loop: PLoop, req: pFS, file: TFile, uid: cint, gid: cint, cb: FsProc): cint{.
+proc fchown*(loop: PLoop, req: PFS, file: TFile, uid: Cint, gid: Cint, cb: FsProc): Cint{.
     importc: "uv_fs_fchown", header: "uv.h".}
 
-proc event_init*(loop: PLoop, handle: PFsEvent, filename: cstring, cb: FsEventProc): cint{.
+proc eventInit*(loop: PLoop, handle: PFsEvent, filename: Cstring, cb: FsEventProc): Cint{.
     importc: "uv_fs_event_init", header: "uv.h".}
 
-proc ip4_addr*(ip: cstring, port: cint): TSockAddrIn{.
+proc ip4Addr*(ip: Cstring, port: Cint): TsockaddrIn{.
     importc: "uv_ip4_addr", header: "uv.h".}
 
-proc ip6_addr*(ip: cstring, port: cint): TSockAddrIn6{.
+proc ip6Addr*(ip: Cstring, port: Cint): TsockaddrIn6{.
     importc: "uv_ip6_addr", header: "uv.h".}
 
-proc ip4_name*(src: ptr TSockAddrIn, dst: cstring, size: csize): cint{.
+proc ip4Name*(src: ptr TsockaddrIn, dst: Cstring, size: Csize): Cint{.
     importc: "uv_ip4_name", header: "uv.h".}
 
-proc ip6_name*(src: ptr TSockAddrIn6, dst: cstring, size: csize): cint{.
+proc ip6Name*(src: ptr TsockaddrIn6, dst: Cstring, size: Csize): Cint{.
     importc: "uv_ip6_name", header: "uv.h".}
 
-proc exepath*(buffer: cstring, size: var csize): cint{.
+proc exepath*(buffer: Cstring, size: var Csize): Cint{.
     importc: "uv_exepath", header: "uv.h".}
 
-proc hrtime*(): uint64{.
+proc hrtime*(): Uint64{.
     importc: "uv_hrtime", header: "uv.h".}
 
-proc loadavg*(load: var array[0..2, cdouble]) {.
+proc loadavg*(load: var Array[0..2, Cdouble]) {.
     importc: "uv_loadavg", header: "uv.h"}
 
-proc get_free_memory*(): cdouble {.
+proc getFreeMemory*(): Cdouble {.
     importc: "uv_get_free_memory", header: "uv.h".}
 
-proc get_total_memory*(): cdouble {.
+proc getTotalMemory*(): Cdouble {.
     importc: "uv_get_total_memory", header: "uv.h".}
 

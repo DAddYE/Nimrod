@@ -8,12 +8,12 @@ import hashes
 type
   TSlotEnum = enum seEmpty, seFilled, seDeleted
   TKeyValuePair[A, B] = tuple[slot: TSlotEnum, key: A, val: B]
-  TKeyValuePairSeq[A, B] = seq[TKeyValuePair[A, B]]
+  TKeyValuePairSeq[A, B] = Seq[TKeyValuePair[A, B]]
   TTable* {.final.}[A, B] = object
     data: TKeyValuePairSeq[A, B]
-    counter: int
+    counter: Int
 
-iterator mycountup(a, b: int): int =
+iterator mycountup(a, b: Int): Int =
   var res = a
   while res <= b:
     yield res
@@ -38,7 +38,7 @@ proc initTable*[A, B](initialSize=64): TTable[A, B] =
   result.counter = 0
   newSeq(result.data, initialSize)
 
-block Test1:
+block test1:
   # generic cache does not instantiate the same iterator[types] twice. This
   # means we have only one instantiation of 'h'. However, this is the same for
   # a non-generic iterator!

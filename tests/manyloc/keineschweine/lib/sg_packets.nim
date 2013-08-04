@@ -2,9 +2,9 @@ import genpacket_enet, sockets, md5, enet
 defPacketImports()
 
 type
-  PacketID* = char
+  PacketID* = Char
 
-template idpacket(pktName, id, s2c, c2s: expr): stmt {.immediate, dirty.} =
+template idpacket(pktName, id, s2c, c2s: Expr): Stmt {.immediate, dirty.} =
   let `H pktName`* {.inject.} = id
   defPacket(`Sc pktName`, s2c)
   defPacket(`Cs pktName`, c2s)
@@ -17,7 +17,7 @@ idPacket(Login, 'a',
   tuple[id: int32; alias: string; sessionKey: string],
   tuple[alias: string, passwd: string])
 
-let HZoneJoinReq* = 'j'
+let hZoneJoinReq* = 'j'
 defPacket(CsZoneJoinReq, tuple[session: ScLogin])
 
 defPacket(ScZoneRecord, tuple[
@@ -27,7 +27,7 @@ idPacket(ZoneList, 'z',
   tuple[network: string = "", zones: seq[ScZoneRecord]],
   tuple[time: string])
 
-let HPoing* = 'p'
+let hPoing* = 'p'
 defPacket(Poing, tuple[id: int32, time: float32])
 
 type ChatType* = enum
@@ -41,14 +41,14 @@ idPacket(Hello, 'h',
   tuple[resp: string],
   tuple[i: int8 = 14])
 
-let HPlayerList* = 'P'
+let hPlayerList* = 'P'
 defPacket(ScPlayerRec, tuple[id: int32; alias: string = ""])
 defPacket(ScPlayerList, tuple[players: seq[ScPlayerRec]])
 
-let HTeamList* = 'T'
+let hTeamList* = 'T'
 defPacket(ScTeam, tuple[id: int8; name: string = ""])
 defPacket(ScTeamList, tuple[teams: seq[ScTeam]])
-let HTeamChange* = 't'
+let hTeamChange* = 't'
 
 idPacket(ZoneQuery, 'Q',
   tuple[playerCount: Uint16], ##i should include a time here or something
@@ -76,20 +76,20 @@ idPacket(FileChallenge, 'F',
   tuple[needFile: bool; checksum: MD5Digest])
 
 
-let HChallengeResult* = '('
+let hChallengeResult* = '('
 defPacket(ScChallengeResult, tuple[status: bool])
 
-let HFileTransfer* = 'f'
+let hFileTransfer* = 'f'
 defPacket(ScFileTransfer, tuple[fileSize: int32; pos: int32; data: string])
 defPacket(CsFilepartAck, tuple[lastpos: int32])
 
 ##dir server messages
-let HZoneLogin* = 'u'
+let hZoneLogin* = 'u'
 defPacket(SdZoneLogin, tuple[name: string; key: string; record: ScZoneRecord])
 defPacket(DsZoneLogin, tuple[status: bool])
-let HDsMsg* = 'c'
+let hDsMsg* = 'c'
 defPacket(DsMsg, tuple[msg: string])
-let HVerifyClient* = 'v'
+let hVerifyClient* = 'v'
 defPacket(SdVerifyClient, tuple[session: ScLogin])
 
 when isMainModule:

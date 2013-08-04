@@ -8,12 +8,12 @@ type
     getProc: proc(property: TProperty[T]): T {.nimcall.}
     setProc: proc(property: var TProperty[T], value: T) {.nimcall.}
     value: T
-    ValueChanged*: TEventHandler
-    Binders: seq[TProperty[T]]
-    EEmitter: TEventEmitter
+    valueChanged*: TEventHandler
+    binders: Seq[TProperty[T]]
+    eEmitter: TEventEmitter
   # Not a descriptive name but it was that or TPropertyValueChangeEventArgs.
   TValueEventArgs[T] = object of TEventArgs
-    Property*: TProperty[T]
+    property*: TProperty[T]
 
 
 proc newProperty*[T](value: T): TProperty[T] =
@@ -50,7 +50,7 @@ proc `~=`[T] (p: var TProperty[T], v: T) =
   # Assuming this is setting the value.
   p.setProc(p, v)
 
-proc `$`[T] (p: TProperty[T]): string =
+proc `$`[T] (p: TProperty[T]): String =
   var value = p.getProc(p)
   return $value
 
@@ -86,7 +86,7 @@ when isMainModule:
   # Binding testing
 
   var prop1 = newProperty(9)
-  var prop2: TProperty[int]
+  var prop2: TProperty[Int]
 
   prop2 -> prop1 # Binds prop2 to prop1
 

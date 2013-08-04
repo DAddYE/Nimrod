@@ -10,6 +10,6 @@
 ## This module defines compile-time reflection procs for
 ## working with types
 
-proc name*(t: typedesc): string {.magic: "TypeTrait".}
+proc name*(t: TypeDesc): String {.magic: "TypeTrait".}
   ## Returns the name of the given type
 

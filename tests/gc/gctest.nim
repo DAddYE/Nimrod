@@ -11,40 +11,40 @@ type
   PNode = ref TNode
   TNode {.final.} = object
     le, ri: PNode
-    data: string
+    data: String
 
   TTable {.final.} = object
-    counter, max: int
-    data: seq[string]
+    counter, max: Int
+    data: Seq[String]
 
   TBNode {.final.} = object
     other: PNode  # a completely different tree
-    data: string
-    sons: seq[TBNode] # directly embedded!
+    data: String
+    sons: Seq[TBNode] # directly embedded!
     t: TTable
     
   TCaseKind = enum nkStr, nkWhole, nkList
   PCaseNode = ref TCaseNode
   TCaseNode {.final.} = object
     case kind: TCaseKind
-    of nkStr: data: string
-    of nkList: sons: seq[PCaseNode]
-    else: unused: seq[string]
+    of nkStr: data: String
+    of nkList: sons: Seq[PCaseNode]
+    else: unused: Seq[String]
 
   TIdObj* = object of TObject
-    id*: int  # unique id; use this for comparisons and not the pointers
+    id*: Int  # unique id; use this for comparisons and not the pointers
   
   PIdObj* = ref TIdObj
   PIdent* = ref TIdent
   TIdent*{.acyclic.} = object of TIdObj
-    s*: string
+    s*: String
     next*: PIdent             # for hash-table chaining
-    h*: int                   # hash value of s
+    h*: Int                   # hash value of s
 
 var
-  flip: int
+  flip: Int
 
-proc newCaseNode(data: string): PCaseNode =
+proc newCaseNode(data: String): PCaseNode =
   new(result)
   if flip == 0:
     result.kind = nkStr
@@ -59,7 +59,7 @@ proc newCaseNode(a, b: PCaseNode): PCaseNode =
   result.kind = nkList
   result.sons = @[a, b]
   
-proc caseTree(lvl: int = 0): PCaseNode =
+proc caseTree(lvl: Int = 0): PCaseNode =
   if lvl == 3: result = newCaseNode("data item")
   else: result = newCaseNode(caseTree(lvl+1), caseTree(lvl+1))
 
@@ -71,7 +71,7 @@ proc finalizeNode(n: PNode) =
   else: writeln(stdout, n.data)
 
 var
-  id: int = 1
+  id: Int = 1
 
 proc buildTree(depth = 1): PNode =
   if depth == 7: return nil
@@ -124,7 +124,7 @@ proc setSons(n: var TBNode) =
   n.sons = @[] # free memory of the sons
   n.t.data = @[]
   var
-    m: seq[string]
+    m: Seq[String]
   m = @[]
   setLen(m, len(n.t.data) * 2)
   for i in 0..high(m):
@@ -147,7 +147,7 @@ proc buildBTree(father: var TBNode) =
     father.t.data = @["ha", "lets", "stress", "it"]
   setSons(father)
 
-proc getIdent(identifier: cstring, length: int, h: int): PIdent = 
+proc getIdent(identifier: Cstring, length: Int, h: Int): PIdent = 
   new(result)
   result.h = h
   result.s = newString(length)
@@ -173,7 +173,7 @@ proc main() =
     t2 = buildTree()
   printTree(t2)
   write(stdout, "now test sequences of strings:")
-  var s: seq[string] = @[]
+  var s: Seq[String] = @[]
   for i in 1..100:
     add s, "hohoho" # test reallocation
   writeln(stdout, s[89])
@@ -181,7 +181,7 @@ proc main() =
 
 var
     father: TBNode
-    s: string
+    s: String
 s = ""
 s = ""
 writeln(stdout, repr(caseTree()))
@@ -195,8 +195,8 @@ write(stdout, repr(father))
 write(stdout, "starting main...\n")
 main()
 
-GC_fullCollect()
-GC_fullCollect()
-writeln(stdout, GC_getStatistics())
+gCFullCollect()
+gCFullCollect()
+writeln(stdout, gCGetStatistics())
 write(stdout, "finished\n")
 

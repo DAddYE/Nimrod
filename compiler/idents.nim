@@ -16,18 +16,18 @@ import
 
 type 
   TIdObj* = object of TObject
-    id*: int # unique id; use this for comparisons and not the pointers
+    id*: Int # unique id; use this for comparisons and not the pointers
   
   PIdObj* = ref TIdObj
   PIdent* = ref TIdent
   TIdent*{.acyclic.} = object of TIdObj
-    s*: string
+    s*: String
     next*: PIdent             # for hash-table chaining
     h*: THash                 # hash value of s
   
-var buckets*: array[0..4096 * 2 - 1, PIdent]
+var buckets*: Array[0..4096 * 2 - 1, PIdent]
 
-proc cmpIgnoreStyle(a, b: cstring, blen: int): int =
+proc cmpIgnoreStyle(a, b: Cstring, blen: Int): Int =
   var i = 0
   var j = 0
   result = 1
@@ -46,7 +46,7 @@ proc cmpIgnoreStyle(a, b: cstring, blen: int): int =
   if result == 0:
     if a[i] != '\0': result = 1
   
-proc cmpExact(a, b: cstring, blen: int): int =
+proc cmpExact(a, b: Cstring, blen: Int): Int =
   var i = 0
   var j = 0
   result = 1
@@ -62,20 +62,20 @@ proc cmpExact(a, b: cstring, blen: int): int =
 
 var wordCounter = 1
 
-proc getIdent*(identifier: cstring, length: int, h: THash): PIdent =
+proc getIdent*(identifier: Cstring, length: Int, h: THash): PIdent =
   var idx = h and high(buckets)
   result = buckets[idx]
   var last: PIdent = nil
   var id = 0
   while result != nil: 
-    if cmpExact(cstring(result.s), identifier, length) == 0: 
+    if cmpExact(Cstring(result.s), identifier, length) == 0: 
       if last != nil: 
         # make access to last looked up identifier faster:
         last.next = result.next
         result.next = buckets[idx]
         buckets[idx] = result
       return 
-    elif cmpIgnoreStyle(cstring(result.s), identifier, length) == 0:
+    elif cmpIgnoreStyle(Cstring(result.s), identifier, length) == 0:
       assert((id == 0) or (id == result.id))
       id = result.id
     last = result
@@ -92,14 +92,14 @@ proc getIdent*(identifier: cstring, length: int, h: THash): PIdent =
   else: 
     result.id = id
 
-proc getIdent*(identifier: string): PIdent = 
-  result = getIdent(cstring(identifier), len(identifier), 
+proc getIdent*(identifier: String): PIdent = 
+  result = getIdent(Cstring(identifier), len(identifier), 
                     hashIgnoreStyle(identifier))
 
-proc getIdent*(identifier: string, h: THash): PIdent = 
-  result = getIdent(cstring(identifier), len(identifier), h)
+proc getIdent*(identifier: String, h: THash): PIdent = 
+  result = getIdent(Cstring(identifier), len(identifier), h)
 
-proc IdentEq*(id: PIdent, name: string): bool = 
+proc identEq*(id: PIdent, name: String): Bool = 
   result = id.id == getIdent(name).id
 
 var idAnon* = getIdent":anonymous"

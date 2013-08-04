@@ -11,7 +11,7 @@ definition'''
 import critbits
 
 when isMainModule:
-  var r: TCritBitTree[void]
+  var r: TCritBitTree[Void]
   r.incl "abc"
   r.incl "xyz"
   r.incl "def"

@@ -5,7 +5,7 @@ discard """
 # Test the register usage of the virtual machine and
 # the blocks in var statements
 
-proc main(a, b: int) =
+proc main(a, b: Int) =
   var x = 0
   write(stdout, x)
   if x == 0:

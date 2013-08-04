@@ -9,13 +9,13 @@ const
 
 type
   TRec {.final.} = object
-    x, y: int
-    s: string
-    seq: seq[string]
-  TRecSeq = seq[TRec]
+    x, y: Int
+    s: String
+    seq: Seq[String]
+  TRecSeq = Seq[TRec]
 
 proc test() =
-  var s, b: seq[string]
+  var s, b: Seq[String]
   s = @[]
   add(s, "Hi")
   add(s, "there, ")
@@ -33,7 +33,7 @@ proc test() =
 when nestedFixed:
   proc nested() =
     var
-      s: seq[seq[string]]
+      s: Seq[Seq[String]]
     for i in 0..10_000: # test if the garbage collector
       # now works with sequences
       s = @[

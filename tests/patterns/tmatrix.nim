@@ -6,16 +6,16 @@ import macros
 
 type
   TMat = object
-    dummy: int
+    dummy: Int
 
 proc `*`(a, b: TMat): TMat = nil
 proc `+`(a, b: TMat): TMat = nil
 proc `-`(a, b: TMat): TMat = nil
-proc `$`(a: TMat): string = result = $a.dummy
+proc `$`(a: TMat): String = result = $a.dummy
 proc mat21(): TMat =
   result.dummy = 21
 
-macro optOps{ (`+`|`-`|`*`) ** a }(a: TMat): expr =
+macro optOps{ (`+`|`-`|`*`) ** a }(a: TMat): Expr =
   echo treeRepr(a)
   result = newCall(bindSym"mat21")
 

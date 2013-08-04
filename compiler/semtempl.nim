@@ -124,7 +124,7 @@ proc getIdentNode(c: var TemplCtx, n: PNode): PNode =
     illFormedAst(n)
     result = n
 
-proc isTemplParam(c: TemplCtx, n: PNode): bool {.inline.} =
+proc isTemplParam(c: TemplCtx, n: PNode): Bool {.inline.} =
   result = n.kind == nkSym and n.sym.kind == skParam and
            n.sym.owner == c.owner
 
@@ -177,7 +177,7 @@ proc semRoutineInTemplBody(c: var TemplCtx, n: PNode, k: TSymKind): PNode =
   closeScope(c)
 
 proc semTemplSomeDecl(c: var TemplCtx, n: PNode, symKind: TSymKind) =
-  for i in countup(ord(symkind == skConditional), sonsLen(n) - 1):
+  for i in countup(ord(symKind == skConditional), sonsLen(n) - 1):
     var a = n.sons[i]
     if a.kind == nkCommentStmt: continue
     if (a.kind != nkIdentDefs) and (a.kind != nkVarTuple): IllFormedAst(a)
@@ -198,7 +198,7 @@ proc semTemplBody(c: var TemplCtx, n: PNode): PNode =
       if s.owner == c.owner and s.kind == skParam:
         incl(s.flags, sfUsed)
         result = newSymNode(s, n.info)
-      elif Contains(c.toBind, s.id):
+      elif contains(c.toBind, s.id):
         result = symChoice(c.c, n, s, scClosed)
       elif s.owner == c.owner and sfGenSym in s.flags:
         # template tmp[T](x: var seq[T]) =
@@ -316,7 +316,7 @@ proc semTemplBody(c: var TemplCtx, n: PNode): PNode =
     if n.kind == nkDotExpr or n.kind == nkAccQuoted:
       let s = QualifiedLookUp(c.c, n, {})
       if s != nil:
-        if Contains(c.toBind, s.id):
+        if contains(c.toBind, s.id):
           return symChoice(c.c, n, s, scClosed)
     result = n
     for i in countup(0, sonsLen(n) - 1):
@@ -330,7 +330,7 @@ proc semTemplBodyDirty(c: var TemplCtx, n: PNode): PNode =
     if s != nil:
       if s.owner == c.owner and s.kind == skParam:
         result = newSymNode(s, n.info)
-      elif Contains(c.toBind, s.id):
+      elif contains(c.toBind, s.id):
         result = symChoice(c.c, n, s, scClosed)
   of nkBind:
     result = semTemplBodyDirty(c, n.sons[0])
@@ -343,14 +343,14 @@ proc semTemplBodyDirty(c: var TemplCtx, n: PNode): PNode =
     # so we use the generic code for nkDotExpr too
     if n.kind == nkDotExpr or n.kind == nkAccQuoted:
       let s = QualifiedLookUp(c.c, n, {})
-      if s != nil and Contains(c.toBind, s.id):
+      if s != nil and contains(c.toBind, s.id):
         return symChoice(c.c, n, s, scClosed)
     result = n
     for i in countup(0, sonsLen(n) - 1):
       result.sons[i] = semTemplBodyDirty(c, n.sons[i])
   
 proc transformToExpr(n: PNode): PNode = 
-  var realStmt: int
+  var realStmt: Int
   result = n
   case n.kind
   of nkStmtList: 
@@ -437,7 +437,7 @@ proc semTemplateDef(c: PContext, n: PNode): PNode =
     c.patterns.add(s)
 
 proc semPatternBody(c: var TemplCtx, n: PNode): PNode =
-  template templToExpand(s: expr): expr =
+  template templToExpand(s: Expr): Expr =
     s.kind == skTemplate and (s.typ.len == 1 or sfImmediate in s.flags)
   
   proc newParam(c: var TemplCtx, n: PNode, s: PSym): PNode =
@@ -455,7 +455,7 @@ proc semPatternBody(c: var TemplCtx, n: PNode): PNode =
     if s != nil:
       if s.owner == c.owner and s.kind == skParam:
         result = newParam(c, n, s)
-      elif Contains(c.toBind, s.id):
+      elif contains(c.toBind, s.id):
         result = symChoice(c.c, n, s, scClosed)
       elif templToExpand(s):
         result = semPatternBody(c, semTemplateExpr(c.c, n, s, false))
@@ -501,7 +501,7 @@ proc semPatternBody(c: var TemplCtx, n: PNode): PNode =
     let s = QualifiedLookUp(c.c, n.sons[0], {})
     if s != nil:
       if s.owner == c.owner and s.kind == skParam: nil
-      elif Contains(c.toBind, s.id): nil
+      elif contains(c.toBind, s.id): nil
       elif templToExpand(s):
         return semPatternBody(c, semTemplateExpr(c.c, n, s, false))
     
@@ -539,7 +539,7 @@ proc semPatternBody(c: var TemplCtx, n: PNode): PNode =
     of nkDotExpr, nkAccQuoted:
       let s = QualifiedLookUp(c.c, n, {})
       if s != nil:
-        if Contains(c.toBind, s.id):
+        if contains(c.toBind, s.id):
           return symChoice(c.c, n, s, scClosed)
         else:
           return newIdentNode(s.name, n.info)

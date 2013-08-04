@@ -4,7 +4,7 @@ discard """
 """
 
 
-type TTestArr = array[0..1, int16]
+type TTestArr = Array[0..1, Int16]
 var f: TTestArr
 f[0] = 30
 f[1] = 40

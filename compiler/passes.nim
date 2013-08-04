@@ -17,7 +17,7 @@ import
 
 type  
   TPassContext* = object of TObject # the pass's context
-    fromCache*: bool  # true if created by "openCached"
+    fromCache*: Bool  # true if created by "openCached"
    
   PPassContext* = ref TPassContext
 
@@ -30,8 +30,8 @@ type
   TPass* = tuple[open: TPassOpen, openCached: TPassOpenCached,
                  process: TPassProcess, close: TPassClose]
 
-  TPassData* = tuple[input: PNode, closeOutput: Pnode]
-  TPasses* = openarray[TPass]
+  TPassData* = tuple[input: PNode, closeOutput: PNode]
+  TPasses* = Openarray[TPass]
 
 # a pass is a tuple of procedure vars ``TPass.close`` may produce additional 
 # nodes. These are passed to the other close procedures. 
@@ -54,18 +54,18 @@ proc processModule*(module: PSym, stream: PLLStream, rd: PRodReader)
 
 # the semantic checker needs these:
 var 
-  gImportModule*: proc (m: PSym, fileIdx: int32): PSym {.nimcall.}
-  gIncludeFile*: proc (m: PSym, fileIdx: int32): PNode {.nimcall.}
+  gImportModule*: proc (m: PSym, fileIdx: Int32): PSym {.nimcall.}
+  gIncludeFile*: proc (m: PSym, fileIdx: Int32): PNode {.nimcall.}
 
 # implementation
 
-proc skipCodegen*(n: PNode): bool {.inline.} = 
+proc skipCodegen*(n: PNode): Bool {.inline.} = 
   # can be used by codegen passes to determine whether they should do 
   # something with `n`. Currently, this ignores `n` and uses the global
   # error count instead.
   result = msgs.gErrorCounter > 0
 
-proc astNeeded*(s: PSym): bool = 
+proc astNeeded*(s: PSym): Bool = 
   # The ``rodwrite`` module uses this to determine if the body of a proc
   # needs to be stored. The passes manager frees s.sons[codePos] when
   # appropriate to free the procedure body's memory. This is important
@@ -82,11 +82,11 @@ const
   maxPasses = 10
 
 type 
-  TPassContextArray = array[0..maxPasses - 1, PPassContext]
+  TPassContextArray = Array[0..maxPasses - 1, PPassContext]
 
 var 
-  gPasses: array[0..maxPasses - 1, TPass]
-  gPassesLen*: int
+  gPasses: Array[0..maxPasses - 1, TPass]
+  gPassesLen*: Int
 
 proc clearPasses* =
   gPassesLen = 0
@@ -128,7 +128,7 @@ proc closePasses(a: var TPassContextArray) =
     if not isNil(gPasses[i].close): m = gPasses[i].close(a[i], m)
     a[i] = nil                # free the memory here
   
-proc processTopLevelStmt(n: PNode, a: var TPassContextArray): bool = 
+proc processTopLevelStmt(n: PNode, a: var TPassContextArray): Bool = 
   # this implements the code transformation pipeline
   var m = n
   for i in countup(0, gPassesLen - 1): 
@@ -150,7 +150,7 @@ proc closePassesCached(a: var TPassContextArray) =
       m = gPasses[i].close(a[i], m)
     a[i] = nil                # free the memory here
   
-proc processImplicits(implicits: seq[string], nodeKind: TNodeKind,
+proc processImplicits(implicits: Seq[String], nodeKind: TNodeKind,
                       a: var TPassContextArray) =
   for module in items(implicits):
     var importStmt = newNodeI(nodeKind, gCmdLineInfo)
@@ -169,7 +169,7 @@ proc processModule(module: PSym, stream: PLLStream, rd: PRodReader) =
     openPasses(a, module)
     if stream == nil: 
       let filename = fileIdx.toFullPath
-      s = LLStreamOpen(filename, fmRead)
+      s = lLStreamOpen(filename, fmRead)
       if s == nil: 
         rawMessage(errCannotOpenFile, filename)
         return
@@ -195,7 +195,7 @@ proc processModule(module: PSym, stream: PLLStream, rd: PRodReader) =
       if s.kind != llsStdIn: break 
     closePasses(a)
     # id synchronization point for more consistent code generation:
-    IDsynchronizationPoint(1000)
+    iDsynchronizationPoint(1000)
   else:
     openPassesCached(a, module, rd)
     var n = loadInitSection(rd)

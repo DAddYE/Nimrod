@@ -6,35 +6,35 @@ type
     CServer = 0'i8, CPlayer, CUnknown
   PClient* = ref TClient
   TClient* = object of TObject
-    id*: int32
+    id*: Int32
     addy*: TupAddress
-    clientID*: uint16
-    auth*: bool
+    clientID*: Uint16
+    auth*: Bool
     outputBuf*: PStringStream
     case kind*: TClientType
     of CPlayer:
-      alias*: string
-      session*: string
-      lastPing*: float
-      failedPings*: int
+      alias*: String
+      session*: String
+      lastPing*: Float
+      failedPings*: Int
     of CServer:
       record*: ScZoneRecord
       cfg*: TChecksumFile
     of CUnknown: nil
   TChecksumFile* = object
-    unpackedSize*: int
+    unpackedSize*: Int
     sum*: MD5Digest
-    compressed*: string
-  TupAddress* = tuple[host: string, port: int16]
+    compressed*: String
+  TupAddress* = tuple[host: String, port: Int16]
   PIDGen*[T: Ordinal] = ref TIDGen[T]
   TIDGen[T: Ordinal] = object
     max: T
-    freeIDs: seq[T]
+    freeIDs: Seq[T]
 var cliID = newIdGen[int32]()
 
-proc sendMessage*(client: PClient; txt: string)
-proc sendError*(client: PClient; txt: string)
-proc `$`*(client: PClient): string
+proc sendMessage*(client: PClient; txt: String)
+proc sendError*(client: PClient; txt: String)
+proc `$`*(client: PClient): String
 
 proc newIncomingBuffer*(size = 1024): PStringStream =
   result = newStringStream("")
@@ -58,7 +58,7 @@ proc newClient*(addy: TupAddress): PClient =
     stream.setPosition 0
     PStringStream(stream).data.setLen 0
 
-proc loginPlayer*(client: PClient; login: CsLogin): bool =
+proc loginPlayer*(client: PClient; login: CsLogin): Bool =
   if client.auth:
     client.sendError("You are already logged in.")
     return
@@ -75,23 +75,23 @@ proc `$`*(client: PClient): string =
   of CPlayer: result = client.alias
   of CServer: result = client.record.name
   else: result = $client.addy
-proc send*[T](client: PClient; pktType: char; pkt: var T) =
+proc send*[T](client: PClient; pktType: Char; pkt: var T) =
   client.outputBuf.write(pktType)
   pkt.pack(client.outputBuf)
 
 proc sendMessage*(client: PClient; txt: string) =
   var m = newScChat(CSystem, text = txt)
-  client.send HChat, m
+  client.send hChat, m
 proc sendError*(client: PClient; txt: string) =
   var m = newScChat(CError, text = txt)
-  client.send HChat, m
+  client.send hChat, m
 
-proc checksumFile*(filename: string): TChecksumFile =
+proc checksumFile*(filename: String): TChecksumFile =
   let fullText = readFile(filename)
   result.unpackedSize = fullText.len
   result.sum = toMD5(fullText)
   result.compressed = compress(fullText)
-proc checksumStr*(str: string): TChecksumFile =
+proc checksumStr*(str: String): TChecksumFile =
   result.unpackedSize = str.len
   result.sum = toMD5(str)
   result.compressed = compress(str)

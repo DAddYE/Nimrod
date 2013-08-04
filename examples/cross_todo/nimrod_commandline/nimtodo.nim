@@ -3,7 +3,7 @@
 import backend, db_sqlite, os, parseopt, parseutils, strutils, times
 
 const
-  USAGE = """nimtodo - Nimrod cross platform todo manager
+  Usage = """nimtodo - Nimrod cross platform todo manager
 
 Usage:
   nimtodo [command] [list options]
@@ -45,9 +45,9 @@ type
   TParamConfig = object
     # Structure containing the parsed options from the commandline.
     command: TCommand         # Store the type of operation
-    addPriority: int          # Only valid with cmdAdd, stores priority.
-    addText: seq[string]      # Only valid with cmdAdd, stores todo text.
-    todoId: int64             # The todo id for operations like check or delete.
+    addPriority: Int          # Only valid with cmdAdd, stores priority.
+    addText: Seq[String]      # Only valid with cmdAdd, stores todo text.
+    todoId: Int64             # The todo id for operations like check or delete.
     listParams: TPagedParams  # Uses the backend structure directly for params.
 
 
@@ -59,13 +59,13 @@ proc initDefaults(params: var TParamConfig) =
   params.addText = @[]
 
 
-proc abort(message: string, value: int) =
+proc abort(message: String, value: Int) =
   # Simple wrapper to abort also displaying the help to the user.
-  stdout.write(USAGE)
+  stdout.write(Usage)
   quit(message, value)
 
 
-template parseTodoIdAndSetCommand(newCommand: TCommand): stmt =
+template parseTodoIdAndSetCommand(newCommand: TCommand): Stmt =
   ## Helper to parse a big todo identifier into todoId and set command.
   try:
     let numChars = val.parseBiggestInt(newId)
@@ -76,7 +76,7 @@ template parseTodoIdAndSetCommand(newCommand: TCommand): stmt =
     raise newException(EInvalidValue, "Value $1 too big" % val)
 
 
-template verifySingleCommand(actions: stmt): stmt =
+template verifySingleCommand(actions: Stmt): Stmt =
   ## Helper to make sure only one command has been specified so far.
   if specifiedCommand:
     abort("Only one command can be specified at a time! (extra:$1)" % [key], 2)
@@ -85,7 +85,7 @@ template verifySingleCommand(actions: stmt): stmt =
     specifiedCommand = true
 
 
-proc parsePlusMinus(val: string, debugText: string): bool =
+proc parsePlusMinus(val: String, debugText: String): Bool =
   ## Helper to process a plus or minus character from the commandline.
   ##
   ## Pass the string to parse and the type of parameter for debug errors.
@@ -111,7 +111,7 @@ proc parseCmdLine(): TParamConfig =
     usesListParams = false
     p = initOptParser()
     key, val: TaintedString
-    newId: biggestInt
+    newId: BiggestInt
 
   result.initDefaults
 
@@ -130,7 +130,7 @@ proc parseCmdLine(): TParamConfig =
       of cmdLongOption, cmdShortOption:
         case normalize(key)
         of "help", "h":
-          stdout.write(USAGE)
+          stdout.write(Usage)
           quit(0)
         of "a":
           verifySingleCommand:
@@ -223,7 +223,7 @@ proc listDatabaseContents(conn: TDbConn; listParams: TPagedParams) =
 
   echo("Todo id, is done, priority, last modification date, text:")
   # First detect how long should be our columns for formatting.
-  var cols: array[0..2, int]
+  var cols: Array[0..2, Int]
   for todo in todos:
     cols[0] = max(cols[0], ($todo.getId).len)
     cols[1] = max(cols[1], ($todo.priority).len)
@@ -239,7 +239,7 @@ proc listDatabaseContents(conn: TDbConn; listParams: TPagedParams) =
       todo.text])
 
 
-proc deleteOneTodo(conn: TDbConn; todoId: int64) =
+proc deleteOneTodo(conn: TDbConn; todoId: Int64) =
   ## Deletes a single todo entry from the database.
   let numDeleted = conn.deleteTodo(todoId)
   if numDeleted > 0:
@@ -255,7 +255,7 @@ proc deleteAllTodos(conn: TDbConn) =
   ## on the database, but for the sake of the example we will restrict
   ## ourselfves to the API exported by backend.
   var
-    counter: int64
+    counter: Int64
     params: TPagedParams
 
   params.initDefaults
@@ -273,7 +273,7 @@ proc deleteAllTodos(conn: TDbConn) =
   echo("Deleted $1 todo entries from database." % $counter)
 
 
-proc setTodoCheck(conn: TDbConn; todoId: int64; value: bool) =
+proc setTodoCheck(conn: TDbConn; todoId: Int64; value: Bool) =
   ## Changes the check state of a todo entry to the specified value.
   let
     newState = if value: "checked" else: "unchecked"
@@ -293,7 +293,7 @@ proc setTodoCheck(conn: TDbConn; todoId: int64; value: bool) =
     quit("Error updating todo id $1 to $2." % [$todoId, newState])
 
 
-proc addTodo(conn: TDbConn; priority: int; tokens: seq[string]) =
+proc addTodo(conn: TDbConn; priority: Int; tokens: Seq[String]) =
   ## Adds to the database a todo with the specified priority.
   ##
   ## The tokens are joined as a single string using the space character. The

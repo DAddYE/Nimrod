@@ -59,191 +59,191 @@ else:
   {.pragma: mydll.}
 
 type 
-  Tzip_source_cmd* = int32
+  TzipSourceCmd* = Int32
 
-  Tzip_source_callback* = proc (state: pointer, data: pointer, length: int, 
-                                cmd: Tzip_source_cmd): int {.cdecl.}
-  Pzip_stat* = ptr Tzip_stat
-  Tzip_stat* = object ## the 'zip_stat' struct
-    name*: cstring            ## name of the file  
-    index*: int32             ## index within archive  
-    crc*: int32               ## crc of file data  
+  TzipSourceCallback* = proc (state: Pointer, data: Pointer, length: Int, 
+                                cmd: TzipSourceCmd): Int {.cdecl.}
+  PzipStat* = ptr TzipStat
+  TzipStat* = object ## the 'zip_stat' struct
+    name*: Cstring            ## name of the file  
+    index*: Int32             ## index within archive  
+    crc*: Int32               ## crc of file data  
     mtime*: TTime             ## modification time  
-    size*: int                ## size of file (uncompressed)  
-    comp_size*: int           ## size of file (compressed)  
-    comp_method*: int16       ## compression method used  
-    encryption_method*: int16 ## encryption method used  
+    size*: Int                ## size of file (uncompressed)  
+    comp_size*: Int           ## size of file (compressed)  
+    comp_method*: Int16       ## compression method used  
+    encryption_method*: Int16 ## encryption method used  
   
   Tzip = object
-  Tzip_source = object 
-  Tzip_file = object
+  TzipSource = object 
+  TzipFile = object
 
   Pzip* = ptr Tzip ## represents a zip archive
-  Pzip_file* = ptr Tzip_file ## represents a file within an archive
-  Pzip_source* = ptr Tzip_source ## represents a source for an archive
+  PzipFile* = ptr TzipFile ## represents a file within an archive
+  PzipSource* = ptr TzipSource ## represents a source for an archive
 
 
 # flags for zip_name_locate, zip_fopen, zip_stat, ...  
 const 
-  ZIP_CREATE* = 1'i32
-  ZIP_EXCL* = 2'i32
-  ZIP_CHECKCONS* = 4'i32 
-  ZIP_FL_NOCASE* = 1'i32        ## ignore case on name lookup  
-  ZIP_FL_NODIR* = 2'i32         ## ignore directory component  
-  ZIP_FL_COMPRESSED* = 4'i32    ## read compressed data  
-  ZIP_FL_UNCHANGED* = 8'i32     ## use original data, ignoring changes  
-  ZIP_FL_RECOMPRESS* = 16'i32   ## force recompression of data  
+  ZipCreate* = 1'i32
+  ZipExcl* = 2'i32
+  ZipCheckcons* = 4'i32 
+  ZipFlNocase* = 1'i32        ## ignore case on name lookup  
+  ZipFlNodir* = 2'i32         ## ignore directory component  
+  ZipFlCompressed* = 4'i32    ## read compressed data  
+  ZipFlUnchanged* = 8'i32     ## use original data, ignoring changes  
+  ZipFlRecompress* = 16'i32   ## force recompression of data  
 
 const  # archive global flags flags  
-  ZIP_AFL_TORRENT* = 1'i32      ##  torrent zipped  
+  ZipAflTorrent* = 1'i32      ##  torrent zipped  
 
 const # libzip error codes  
-  ZIP_ER_OK* = 0'i32            ## N No error  
-  ZIP_ER_MULTIDISK* = 1'i32     ## N Multi-disk zip archives not supported  
-  ZIP_ER_RENAME* = 2'i32        ## S Renaming temporary file failed  
-  ZIP_ER_CLOSE* = 3'i32         ## S Closing zip archive failed  
-  ZIP_ER_SEEK* = 4'i32          ## S Seek error  
-  ZIP_ER_READ* = 5'i32          ## S Read error  
-  ZIP_ER_WRITE* = 6'i32         ## S Write error  
-  ZIP_ER_CRC* = 7'i32           ## N CRC error  
-  ZIP_ER_ZIPCLOSED* = 8'i32     ## N Containing zip archive was closed  
-  ZIP_ER_NOENT* = 9'i32         ## N No such file  
-  ZIP_ER_EXISTS* = 10'i32       ## N File already exists  
-  ZIP_ER_OPEN* = 11'i32         ## S Can't open file  
-  ZIP_ER_TMPOPEN* = 12'i32      ## S Failure to create temporary file  
-  ZIP_ER_ZLIB* = 13'i32         ## Z Zlib error  
-  ZIP_ER_MEMORY* = 14'i32       ## N Malloc failure  
-  ZIP_ER_CHANGED* = 15'i32      ## N Entry has been changed  
-  ZIP_ER_COMPNOTSUPP* = 16'i32  ## N Compression method not supported  
-  ZIP_ER_EOF* = 17'i32          ## N Premature EOF  
-  ZIP_ER_INVAL* = 18'i32        ## N Invalid argument  
-  ZIP_ER_NOZIP* = 19'i32        ## N Not a zip archive  
-  ZIP_ER_INTERNAL* = 20'i32     ## N Internal error  
-  ZIP_ER_INCONS* = 21'i32       ## N Zip archive inconsistent  
-  ZIP_ER_REMOVE* = 22'i32       ## S Can't remove file  
-  ZIP_ER_DELETED* = 23'i32      ## N Entry has been deleted  
+  ZipErOk* = 0'i32            ## N No error  
+  ZipErMultidisk* = 1'i32     ## N Multi-disk zip archives not supported  
+  ZipErRename* = 2'i32        ## S Renaming temporary file failed  
+  ZipErClose* = 3'i32         ## S Closing zip archive failed  
+  ZipErSeek* = 4'i32          ## S Seek error  
+  ZipErRead* = 5'i32          ## S Read error  
+  ZipErWrite* = 6'i32         ## S Write error  
+  ZipErCrc* = 7'i32           ## N CRC error  
+  ZipErZipclosed* = 8'i32     ## N Containing zip archive was closed  
+  ZipErNoent* = 9'i32         ## N No such file  
+  ZipErExists* = 10'i32       ## N File already exists  
+  ZipErOpen* = 11'i32         ## S Can't open file  
+  ZipErTmpopen* = 12'i32      ## S Failure to create temporary file  
+  ZipErZlib* = 13'i32         ## Z Zlib error  
+  ZipErMemory* = 14'i32       ## N Malloc failure  
+  ZipErChanged* = 15'i32      ## N Entry has been changed  
+  ZipErCompnotsupp* = 16'i32  ## N Compression method not supported  
+  ZipErEof* = 17'i32          ## N Premature EOF  
+  ZipErInval* = 18'i32        ## N Invalid argument  
+  ZipErNozip* = 19'i32        ## N Not a zip archive  
+  ZipErInternal* = 20'i32     ## N Internal error  
+  ZipErIncons* = 21'i32       ## N Zip archive inconsistent  
+  ZipErRemove* = 22'i32       ## S Can't remove file  
+  ZipErDeleted* = 23'i32      ## N Entry has been deleted  
    
 const # type of system error value  
-  ZIP_ET_NONE* = 0'i32          ## sys_err unused  
-  ZIP_ET_SYS* = 1'i32           ## sys_err is errno  
-  ZIP_ET_ZLIB* = 2'i32          ## sys_err is zlib error code  
+  ZipEtNone* = 0'i32          ## sys_err unused  
+  ZipEtSys* = 1'i32           ## sys_err is errno  
+  ZipEtZlib* = 2'i32          ## sys_err is zlib error code  
 
 const # compression methods  
-  ZIP_CM_DEFAULT* = -1'i32      ## better of deflate or store  
-  ZIP_CM_STORE* = 0'i32         ## stored (uncompressed)  
-  ZIP_CM_SHRINK* = 1'i32        ## shrunk  
-  ZIP_CM_REDUCE_1* = 2'i32      ## reduced with factor 1  
-  ZIP_CM_REDUCE_2* = 3'i32      ## reduced with factor 2  
-  ZIP_CM_REDUCE_3* = 4'i32      ## reduced with factor 3  
-  ZIP_CM_REDUCE_4* = 5'i32      ## reduced with factor 4  
-  ZIP_CM_IMPLODE* = 6'i32       ## imploded  
+  ZipCmDefault* = -1'i32      ## better of deflate or store  
+  ZipCmStore* = 0'i32         ## stored (uncompressed)  
+  ZipCmShrink* = 1'i32        ## shrunk  
+  ZipCmReduce1* = 2'i32      ## reduced with factor 1  
+  ZipCmReduce2* = 3'i32      ## reduced with factor 2  
+  ZipCmReduce3* = 4'i32      ## reduced with factor 3  
+  ZipCmReduce4* = 5'i32      ## reduced with factor 4  
+  ZipCmImplode* = 6'i32       ## imploded  
                                 ## 7 - Reserved for Tokenizing compression algorithm  
-  ZIP_CM_DEFLATE* = 8'i32       ## deflated  
-  ZIP_CM_DEFLATE64* = 9'i32     ## deflate64  
-  ZIP_CM_PKWARE_IMPLODE* = 10'i32 ## PKWARE imploding  
+  ZipCmDeflate* = 8'i32       ## deflated  
+  ZipCmDeflate64* = 9'i32     ## deflate64  
+  ZipCmPkwareImplode* = 10'i32 ## PKWARE imploding  
                                   ## 11 - Reserved by PKWARE  
-  ZIP_CM_BZIP2* = 12'i32        ## compressed using BZIP2 algorithm  
+  ZipCmBzip2* = 12'i32        ## compressed using BZIP2 algorithm  
                                 ## 13 - Reserved by PKWARE  
-  ZIP_CM_LZMA* = 14'i32         ## LZMA (EFS)  
+  ZipCmLzma* = 14'i32         ## LZMA (EFS)  
                                 ## 15-17 - Reserved by PKWARE  
-  ZIP_CM_TERSE* = 18'i32        ## compressed using IBM TERSE (new)  
-  ZIP_CM_LZ77* = 19'i32         ## IBM LZ77 z Architecture (PFS)  
-  ZIP_CM_WAVPACK* = 97'i32      ## WavPack compressed data  
-  ZIP_CM_PPMD* = 98'i32         ## PPMd version I, Rev 1  
+  ZipCmTerse* = 18'i32        ## compressed using IBM TERSE (new)  
+  ZipCmLz77* = 19'i32         ## IBM LZ77 z Architecture (PFS)  
+  ZipCmWavpack* = 97'i32      ## WavPack compressed data  
+  ZipCmPpmd* = 98'i32         ## PPMd version I, Rev 1  
 
 const  # encryption methods                              
-  ZIP_EM_NONE* = 0'i32            ## not encrypted  
-  ZIP_EM_TRAD_PKWARE* = 1'i32     ## traditional PKWARE encryption 
+  ZipEmNone* = 0'i32            ## not encrypted  
+  ZipEmTradPkware* = 1'i32     ## traditional PKWARE encryption 
 
 const 
-  ZIP_EM_UNKNOWN* = 0x0000FFFF'i32 ## unknown algorithm  
+  ZipEmUnknown* = 0x0000FFFF'i32 ## unknown algorithm  
 
 const 
-  ZIP_SOURCE_OPEN* = 0'i32        ## prepare for reading  
-  ZIP_SOURCE_READ* = 1'i32        ## read data  
-  ZIP_SOURCE_CLOSE* = 2'i32       ## reading is done  
-  ZIP_SOURCE_STAT* = 3'i32        ## get meta information  
-  ZIP_SOURCE_ERROR* = 4'i32       ## get error information  
-  constZIP_SOURCE_FREE* = 5'i32   ## cleanup and free resources  
+  ZipSourceOpen* = 0'i32        ## prepare for reading  
+  ZipSourceRead* = 1'i32        ## read data  
+  ZipSourceClose* = 2'i32       ## reading is done  
+  ZipSourceStat* = 3'i32        ## get meta information  
+  ZipSourceError* = 4'i32       ## get error information  
+  constZIPSOURCEFREE* = 5'i32   ## cleanup and free resources  
 
-proc zip_add*(para1: Pzip, para2: cstring, para3: Pzip_source): int32 {.cdecl, 
+proc zipAdd*(para1: Pzip, para2: Cstring, para3: PzipSource): Int32 {.cdecl, 
     importc: "zip_add", mydll.}
-proc zip_add_dir*(para1: Pzip, para2: cstring): int32 {.cdecl,  
+proc zipAddDir*(para1: Pzip, para2: Cstring): Int32 {.cdecl,  
     importc: "zip_add_dir", mydll.}
-proc zip_close*(para1: Pzip) {.cdecl, importc: "zip_close", mydll.}
-proc zip_delete*(para1: Pzip, para2: int32): int32 {.cdecl, mydll,
+proc zipClose*(para1: Pzip) {.cdecl, importc: "zip_close", mydll.}
+proc zipDelete*(para1: Pzip, para2: Int32): Int32 {.cdecl, mydll,
     importc: "zip_delete".}
-proc zip_error_clear*(para1: Pzip) {.cdecl, importc: "zip_error_clear", mydll.}
-proc zip_error_get*(para1: Pzip, para2: ptr int32, para3: ptr int32) {.cdecl, 
+proc zipErrorClear*(para1: Pzip) {.cdecl, importc: "zip_error_clear", mydll.}
+proc zipErrorGet*(para1: Pzip, para2: ptr Int32, para3: ptr Int32) {.cdecl, 
     importc: "zip_error_get", mydll.}
-proc zip_error_get_sys_type*(para1: int32): int32 {.cdecl, mydll,
+proc zipErrorGetSysType*(para1: Int32): Int32 {.cdecl, mydll,
     importc: "zip_error_get_sys_type".}
-proc zip_error_to_str*(para1: cstring, para2: int, para3: int32, 
-                       para4: int32): int32 {.cdecl, mydll,
+proc zipErrorToStr*(para1: Cstring, para2: Int, para3: Int32, 
+                       para4: Int32): Int32 {.cdecl, mydll,
     importc: "zip_error_to_str".}
-proc zip_fclose*(para1: Pzip_file) {.cdecl, mydll,
+proc zipFclose*(para1: PzipFile) {.cdecl, mydll,
     importc: "zip_fclose".}
-proc zip_file_error_clear*(para1: Pzip_file) {.cdecl, mydll,
+proc zipFileErrorClear*(para1: PzipFile) {.cdecl, mydll,
     importc: "zip_file_error_clear".}
-proc zip_file_error_get*(para1: Pzip_file, para2: ptr int32, para3: ptr int32) {.
+proc zipFileErrorGet*(para1: PzipFile, para2: ptr Int32, para3: ptr Int32) {.
     cdecl, mydll, importc: "zip_file_error_get".}
-proc zip_file_strerror*(para1: Pzip_file): cstring {.cdecl, mydll,
+proc zipFileStrerror*(para1: PzipFile): Cstring {.cdecl, mydll,
     importc: "zip_file_strerror".}
-proc zip_fopen*(para1: Pzip, para2: cstring, para3: int32): Pzip_file {.cdecl, 
+proc zipFopen*(para1: Pzip, para2: Cstring, para3: Int32): PzipFile {.cdecl, 
     mydll, importc: "zip_fopen".}
-proc zip_fopen_index*(para1: Pzip, para2: int32, para3: int32): Pzip_file {.
+proc zipFopenIndex*(para1: Pzip, para2: Int32, para3: Int32): PzipFile {.
     cdecl, mydll, importc: "zip_fopen_index".}
-proc zip_fread*(para1: Pzip_file, para2: pointer, para3: int): int {.
+proc zipFread*(para1: PzipFile, para2: Pointer, para3: Int): Int {.
     cdecl, mydll, importc: "zip_fread".}
-proc zip_get_archive_comment*(para1: Pzip, para2: ptr int32, para3: int32): cstring {.
+proc zipGetArchiveComment*(para1: Pzip, para2: ptr Int32, para3: Int32): Cstring {.
     cdecl, mydll, importc: "zip_get_archive_comment".}
-proc zip_get_archive_flag*(para1: Pzip, para2: int32, para3: int32): int32 {.
+proc zipGetArchiveFlag*(para1: Pzip, para2: Int32, para3: Int32): Int32 {.
     cdecl, mydll, importc: "zip_get_archive_flag".}
-proc zip_get_file_comment*(para1: Pzip, para2: int32, para3: ptr int32, 
-                           para4: int32): cstring {.cdecl, mydll,
+proc zipGetFileComment*(para1: Pzip, para2: Int32, para3: ptr Int32, 
+                           para4: Int32): Cstring {.cdecl, mydll,
     importc: "zip_get_file_comment".}
-proc zip_get_name*(para1: Pzip, para2: int32, para3: int32): cstring {.cdecl, 
+proc zipGetName*(para1: Pzip, para2: Int32, para3: Int32): Cstring {.cdecl, 
     mydll, importc: "zip_get_name".}
-proc zip_get_num_files*(para1: Pzip): int32 {.cdecl,
+proc zipGetNumFiles*(para1: Pzip): Int32 {.cdecl,
     mydll, importc: "zip_get_num_files".}
-proc zip_name_locate*(para1: Pzip, para2: cstring, para3: int32): int32 {.cdecl, 
+proc zipNameLocate*(para1: Pzip, para2: Cstring, para3: Int32): Int32 {.cdecl, 
     mydll, importc: "zip_name_locate".}
-proc zip_open*(para1: cstring, para2: int32, para3: ptr int32): Pzip {.cdecl, 
+proc zipOpen*(para1: Cstring, para2: Int32, para3: ptr Int32): Pzip {.cdecl, 
     mydll, importc: "zip_open".}
-proc zip_rename*(para1: Pzip, para2: int32, para3: cstring): int32 {.cdecl, 
+proc zipRename*(para1: Pzip, para2: Int32, para3: Cstring): Int32 {.cdecl, 
     mydll, importc: "zip_rename".}
-proc zip_replace*(para1: Pzip, para2: int32, para3: Pzip_source): int32 {.cdecl, 
+proc zipReplace*(para1: Pzip, para2: Int32, para3: PzipSource): Int32 {.cdecl, 
     mydll, importc: "zip_replace".}
-proc zip_set_archive_comment*(para1: Pzip, para2: cstring, para3: int32): int32 {.
+proc zipSetArchiveComment*(para1: Pzip, para2: Cstring, para3: Int32): Int32 {.
     cdecl, mydll, importc: "zip_set_archive_comment".}
-proc zip_set_archive_flag*(para1: Pzip, para2: int32, para3: int32): int32 {.
+proc zipSetArchiveFlag*(para1: Pzip, para2: Int32, para3: Int32): Int32 {.
     cdecl, mydll, importc: "zip_set_archive_flag".}
-proc zip_set_file_comment*(para1: Pzip, para2: int32, para3: cstring, 
-                           para4: int32): int32 {.cdecl, mydll,
+proc zipSetFileComment*(para1: Pzip, para2: Int32, para3: Cstring, 
+                           para4: Int32): Int32 {.cdecl, mydll,
     importc: "zip_set_file_comment".}
-proc zip_source_buffer*(para1: Pzip, para2: pointer, para3: int, para4: int32): Pzip_source {.
+proc zipSourceBuffer*(para1: Pzip, para2: Pointer, para3: Int, para4: Int32): PzipSource {.
     cdecl, mydll, importc: "zip_source_buffer".}
-proc zip_source_file*(para1: Pzip, para2: cstring, para3: int, para4: int): Pzip_source {.
+proc zipSourceFile*(para1: Pzip, para2: Cstring, para3: Int, para4: Int): PzipSource {.
     cdecl, mydll, importc: "zip_source_file".}
-proc zip_source_filep*(para1: Pzip, para2: TFile, para3: int, para4: int): Pzip_source {.
+proc zipSourceFilep*(para1: Pzip, para2: TFile, para3: Int, para4: Int): PzipSource {.
     cdecl, mydll, importc: "zip_source_filep".}
-proc zip_source_free*(para1: Pzip_source) {.cdecl, mydll,
+proc zipSourceFree*(para1: PzipSource) {.cdecl, mydll,
     importc: "zip_source_free".}
-proc zip_source_function*(para1: Pzip, para2: Tzip_source_callback, 
-                          para3: pointer): Pzip_source {.cdecl, mydll,
+proc zipSourceFunction*(para1: Pzip, para2: TzipSourceCallback, 
+                          para3: Pointer): PzipSource {.cdecl, mydll,
     importc: "zip_source_function".}
-proc zip_source_zip*(para1: Pzip, para2: Pzip, para3: int32, para4: int32, 
-                     para5: int, para6: int): Pzip_source {.cdecl, mydll,
+proc zipSourceZip*(para1: Pzip, para2: Pzip, para3: Int32, para4: Int32, 
+                     para5: Int, para6: Int): PzipSource {.cdecl, mydll,
     importc: "zip_source_zip".}
-proc zip_stat*(para1: Pzip, para2: cstring, para3: int32, para4: Pzip_stat): int32 {.
+proc zipStat*(para1: Pzip, para2: Cstring, para3: Int32, para4: PzipStat): Int32 {.
     cdecl, mydll, importc: "zip_stat".}
-proc zip_stat_index*(para1: Pzip, para2: int32, para3: int32, para4: Pzip_stat): int32 {.
+proc zipStatIndex*(para1: Pzip, para2: Int32, para3: Int32, para4: PzipStat): Int32 {.
     cdecl, mydll, importc: "zip_stat_index".}
-proc zip_stat_init*(para1: Pzip_stat) {.cdecl, mydll, importc: "zip_stat_init".}
-proc zip_strerror*(para1: Pzip): cstring {.cdecl, mydll, importc: "zip_strerror".}
-proc zip_unchange*(para1: Pzip, para2: int32): int32 {.cdecl, mydll,
+proc zipStatInit*(para1: PzipStat) {.cdecl, mydll, importc: "zip_stat_init".}
+proc zipStrerror*(para1: Pzip): Cstring {.cdecl, mydll, importc: "zip_strerror".}
+proc zipUnchange*(para1: Pzip, para2: Int32): Int32 {.cdecl, mydll,
     importc: "zip_unchange".}
-proc zip_unchange_all*(para1: Pzip): int32 {.cdecl, mydll,
+proc zipUnchangeAll*(para1: Pzip): Int32 {.cdecl, mydll,
     importc: "zip_unchange_all".}
-proc zip_unchange_archive*(para1: Pzip): int32 {.cdecl, mydll,
+proc zipUnchangeArchive*(para1: Pzip): Int32 {.cdecl, mydll,
     importc: "zip_unchange_archive".}

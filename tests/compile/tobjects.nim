@@ -1,34 +1,34 @@
 type
   TBase = object of TObject
-    x, y: int
+    x, y: Int
 
   TSubclassKind = enum ka, kb, kc, kd, ke, kf
   TSubclass = object of TBase
     case c: TSubclassKind
     of ka, kb, kc, kd:
-      a, b: int
+      a, b: Int
     of ke:
-      d, e, f: char
+      d, e, f: Char
     else: nil
-    n: bool
+    n: Bool
 
 type
   TMyObject = object of TObject
-    case disp: range[0..4]:
-      of 0: arg: char
-      of 1: s: string
-      else: wtf: bool
+    case disp: Range[0..4]:
+      of 0: arg: Char
+      of 1: s: String
+      else: wtf: Bool
       
 var
   x: TMyObject
 
 var
-  global: int
+  global: Int
 
 var
-  s: string
-  r: float = 0.0
-  i: int = 500 + 400
+  s: String
+  r: Float = 0.0
+  i: Int = 500 + 400
 
 case i
 of 500..999: write(stdout, "ha!\n")

@@ -3,7 +3,7 @@
 import
   "../../lib/pure/os.nim", ../../ lib / pure / times
 
-proc main(filter: string) =
+proc main(filter: String) =
   for filename in walkFiles(filter):
     writeln(stdout, filename)
 

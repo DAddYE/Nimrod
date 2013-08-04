@@ -14,7 +14,7 @@ proc init(f: var TFigure) =
 
 type
   TCircle = object of TFigure
-    radius: int
+    radius: Int
   
 proc drawCircle(my: var TCircle) = stdout.writeln("o " & $my.radius)
 
@@ -25,7 +25,7 @@ proc init(my: var TCircle) =
 
 type
   TRectangle = object of TFigure
-    width, height: int
+    width, height: Int
 
 proc drawRectangle(my: var TRectangle) = stdout.write("[]")
 
@@ -35,7 +35,7 @@ proc init(my: var TRectangle) =
   my.height = 10
   my.draw = cast[proc (my: var TFigure) {.nimcall.}](drawRectangle)
 
-macro `!` (n: expr): stmt {.immediate.} = 
+macro `!` (n: Expr): Stmt {.immediate.} = 
   let n = callsite()
   result = newNimNode(nnkCall, n)
   var dot = newNimNode(nnkDotExpr, n)
@@ -57,15 +57,15 @@ macro `!` (n: expr): stmt {.immediate.} =
 
 type
   TSocket* = object of TObject
-    FHost: int # cannot be accessed from the outside of the module
+    fHost: Int # cannot be accessed from the outside of the module
                # the `F` prefix is a convention to avoid clashes since
                # the accessors are named `host`
                
-proc `host=`*(s: var TSocket, value: int) {.inline.} = 
+proc `host=`*(s: var TSocket, value: Int) {.inline.} = 
   ## setter of hostAddr
   s.FHost = value
 
-proc host*(s: TSocket): int {.inline.} =
+proc host*(s: TSocket): Int {.inline.} =
   ## getter of hostAddr
   return s.FHost
   

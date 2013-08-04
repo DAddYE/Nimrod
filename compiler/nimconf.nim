@@ -21,8 +21,8 @@ proc ppGetTok(L: var TLexer, tok: var TToken) =
   rawGetTok(L, tok)
   while tok.tokType in {tkComment}: rawGetTok(L, tok)
   
-proc parseExpr(L: var TLexer, tok: var TToken): bool
-proc parseAtom(L: var TLexer, tok: var TToken): bool = 
+proc parseExpr(L: var TLexer, tok: var TToken): Bool
+proc parseAtom(L: var TLexer, tok: var TToken): Bool = 
   if tok.tokType == tkParLe: 
     ppGetTok(L, tok)
     result = parseExpr(L, tok)
@@ -35,7 +35,7 @@ proc parseAtom(L: var TLexer, tok: var TToken): bool =
     result = isDefined(tok.ident)
     ppGetTok(L, tok)
 
-proc parseAndExpr(L: var TLexer, tok: var TToken): bool = 
+proc parseAndExpr(L: var TLexer, tok: var TToken): Bool = 
   result = parseAtom(L, tok)
   while tok.ident.id == ord(wAnd): 
     ppGetTok(L, tok)          # skip "and"
@@ -49,18 +49,18 @@ proc parseExpr(L: var TLexer, tok: var TToken): bool =
     var b = parseAndExpr(L, tok)
     result = result or b
 
-proc EvalppIf(L: var TLexer, tok: var TToken): bool = 
+proc evalppIf(L: var TLexer, tok: var TToken): Bool = 
   ppGetTok(L, tok)            # skip 'if' or 'elif'
   result = parseExpr(L, tok)
   if tok.tokType == tkColon: ppGetTok(L, tok)
   else: lexMessage(L, errTokenExpected, "\':\'")
   
-var condStack: seq[bool] = @[]
+var condStack: Seq[Bool] = @[]
 
 proc doEnd(L: var TLexer, tok: var TToken) = 
   if high(condStack) < 0: lexMessage(L, errTokenExpected, "@if")
   ppGetTok(L, tok)            # skip 'end'
-  setlen(condStack, high(condStack))
+  setLen(condStack, high(condStack))
 
 type 
   TJumpDest = enum 
@@ -75,18 +75,18 @@ proc doElse(L: var TLexer, tok: var TToken) =
   
 proc doElif(L: var TLexer, tok: var TToken) = 
   if high(condStack) < 0: lexMessage(L, errTokenExpected, "@if")
-  var res = EvalppIf(L, tok)
+  var res = evalppIf(L, tok)
   if condStack[high(condStack)] or not res: jumpToDirective(L, tok, jdElseEndif)
   else: condStack[high(condStack)] = true
   
 proc jumpToDirective(L: var TLexer, tok: var TToken, dest: TJumpDest) = 
   var nestedIfs = 0
-  while True: 
+  while true: 
     if (tok.ident != nil) and (tok.ident.s == "@"): 
       ppGetTok(L, tok)
       case whichKeyword(tok.ident)
       of wIf: 
-        Inc(nestedIfs)
+        inc(nestedIfs)
       of wElse: 
         if (dest == jdElseEndif) and (nestedIfs == 0): 
           doElse(L, tok)
@@ -99,7 +99,7 @@ proc jumpToDirective(L: var TLexer, tok: var TToken, dest: TJumpDest) =
         if nestedIfs == 0: 
           doEnd(L, tok)
           break 
-        if nestedIfs > 0: Dec(nestedIfs)
+        if nestedIfs > 0: dec(nestedIfs)
       else: 
         nil
       ppGetTok(L, tok)
@@ -112,8 +112,8 @@ proc parseDirective(L: var TLexer, tok: var TToken) =
   ppGetTok(L, tok)            # skip @
   case whichKeyword(tok.ident)
   of wIf:
-    setlen(condStack, len(condStack) + 1)
-    var res = EvalppIf(L, tok)
+    setLen(condStack, len(condStack) + 1)
+    var res = evalppIf(L, tok)
     condStack[high(condStack)] = res
     if not res: jumpToDirective(L, tok, jdElseEndif)
   of wElif: doElif(L, tok)
@@ -191,12 +191,12 @@ proc parseAssignment(L: var TLexer, tok: var TToken) =
       confTok(L, tok)
   processSwitch(s, val, passPP, info)
 
-proc readConfigFile(filename: string) =
+proc readConfigFile(filename: String) =
   var
     L: TLexer
     tok: TToken
     stream: PLLStream
-  stream = LLStreamOpen(filename, fmRead)
+  stream = lLStreamOpen(filename, fmRead)
   if stream != nil:
     initToken(tok)
     openLexer(L, filename, stream)
@@ -207,16 +207,16 @@ proc readConfigFile(filename: string) =
     closeLexer(L)
     if gVerbosity >= 1: rawMessage(hintConf, filename)
 
-proc getUserConfigPath(filename: string): string =
+proc getUserConfigPath(filename: String): String =
   result = joinPath(getConfigDir(), filename)
 
-proc getSystemConfigPath(filename: string): string =
+proc getSystemConfigPath(filename: String): String =
   # try standard configuration file (installation did not distribute files
   # the UNIX way)
   result = joinPath([getPrefixDir(), "config", filename])
-  if not ExistsFile(result): result = "/etc/" & filename
+  if not existsFile(result): result = "/etc/" & filename
 
-proc LoadConfigs*(cfg: string) =
+proc loadConfigs*(cfg: String) =
   # set default value (can be overwritten):
   if libpath == "": 
     # choose default libpath:

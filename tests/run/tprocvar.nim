@@ -14,9 +14,9 @@ const
   algos = [pa, pb, pc, pd, pe]
 
 var
-  x: proc (a, b: int): int {.cdecl.}
+  x: proc (a, b: Int): Int {.cdecl.}
 
-proc ha(c, d: int): int {.cdecl.} =
+proc ha(c, d: Int): Int {.cdecl.} =
   echo(c + d)
   result = c + d
 

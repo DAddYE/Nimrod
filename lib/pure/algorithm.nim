@@ -13,7 +13,7 @@ type
   TSortOrder* = enum   ## sort order
     Descending, Ascending 
 
-proc `*`*(x: int, order: TSortOrder): int {.inline.} = 
+proc `*`*(x: Int, order: TSortOrder): Int {.inline.} = 
   ## flips `x` if ``order == Descending``;
   ## if ``order == Ascending`` then `x` is returned.
   ## `x` is supposed to be the result of a comparator, ie ``< 0`` for 
@@ -21,7 +21,7 @@ proc `*`*(x: int, order: TSortOrder): int {.inline.} =
   var y = order.ord - 1
   result = (x xor y) - y
 
-proc reverse*[T](a: var openArray[T], first, last: int) =
+proc reverse*[T](a: var Openarray[T], first, last: Int) =
   ## reverses the array ``a[first..last]``.
   var x = first
   var y = last
@@ -30,11 +30,11 @@ proc reverse*[T](a: var openArray[T], first, last: int) =
     dec(y)
     inc(x)
 
-proc reverse*[T](a: var openArray[T]) =
+proc reverse*[T](a: var Openarray[T]) =
   ## reverses the array `a`.
   reverse(a, 0, a.high)
 
-proc binarySearch*[T](a: openarray[T], key: T): int =
+proc binarySearch*[T](a: Openarray[T], key: T): Int =
   ## binary search for `key` in `a`. Returns -1 if not found.
   var b = len(a)
   while result < b:
@@ -43,7 +43,7 @@ proc binarySearch*[T](a: openarray[T], key: T): int =
     else: b = mid
   if result >= len(a) or a[result] != key: result = -1
 
-proc smartBinarySearch*[T](a: openArray[T], key: T): int =
+proc smartBinarySearch*[T](a: Openarray[T], key: T): Int =
   ## ``a.len`` must be a power of 2 for this to work.
   var step = a.len div 2
   while step > 0:
@@ -55,9 +55,9 @@ proc smartBinarySearch*[T](a: openArray[T], key: T): int =
 const
   onlySafeCode = true
 
-proc merge[T](a, b: var openArray[T], lo, m, hi: int, 
-              cmp: proc (x, y: T): int {.closure.}, order: TSortOrder) =
-  template `<-` (a, b: expr) = 
+proc merge[T](a, b: var Openarray[T], lo, m, hi: Int, 
+              cmp: proc (x, y: T): Int {.closure.}, order: TSortOrder) =
+  template `<-` (a, b: Expr) = 
     when false:
       a = b
     elif onlySafeCode:
@@ -79,7 +79,7 @@ proc merge[T](a, b: var openArray[T], lo, m, hi: int,
       inc(bb)
       inc(j)
   else:
-    CopyMem(addr(b[0]), addr(a[j]), sizeof(T)*(m-j+1))
+    copyMem(addr(b[0]), addr(a[j]), sizeof(T)*(m-j+1))
     j = m+1
   var i = 0
   var k = lo
@@ -101,8 +101,8 @@ proc merge[T](a, b: var openArray[T], lo, m, hi: int,
   else:
     if k < j: copyMem(addr(a[k]), addr(b[i]), sizeof(T)*(j-k))
 
-proc sort*[T](a: var openArray[T],
-              cmp: proc (x, y: T): int {.closure.},
+proc sort*[T](a: var Openarray[T],
+              cmp: proc (x, y: T): Int {.closure.},
               order = TSortOrder.Ascending) =
   ## Default Nimrod sort. The sorting is guaranteed to be stable and 
   ## the worst case is guaranteed to be O(n log n).
@@ -121,7 +121,7 @@ proc sort*[T](a: var openArray[T],
   ##    sort(myStrArray, system.cmp)
   ##
   var n = a.len
-  var b: seq[T]
+  var b: Seq[T]
   newSeq(b, n div 2)
   var s = 1
   while s < n:

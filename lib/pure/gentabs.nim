@@ -21,10 +21,10 @@ type
     modeCaseInsensitive,   ## case insensitive matching of keys
     modeStyleInsensitive   ## style sensitive matching of keys
     
-  TGenKeyValuePair[T] = tuple[key: string, val: T]
-  TGenKeyValuePairSeq[T] = seq[TGenKeyValuePair[T]]
+  TGenKeyValuePair[T] = tuple[key: String, val: T]
+  TGenKeyValuePairSeq[T] = Seq[TGenKeyValuePair[T]]
   TGenTable*[T] = object of TObject
-    counter: int
+    counter: Int
     data: TGenKeyValuePairSeq[T]
     mode: TGenTableMode
 
@@ -36,29 +36,29 @@ const
   startSize = 64
 
 
-proc len*[T](tbl: PGenTable[T]): int {.inline.} =
+proc len*[T](tbl: PGenTable[T]): Int {.inline.} =
   ## returns the number of keys in `tbl`.
   result = tbl.counter
 
-iterator pairs*[T](tbl: PGenTable[T]): tuple[key: string, value: T] =
+iterator pairs*[T](tbl: PGenTable[T]): tuple[key: String, value: T] =
   ## iterates over any (key, value) pair in the table `tbl`.
   for h in 0..high(tbl.data):
     if not isNil(tbl.data[h].key):
       yield (tbl.data[h].key, tbl.data[h].val)
 
-proc myhash[T](tbl: PGenTable[T], key: string): THash =
+proc myhash[T](tbl: PGenTable[T], key: String): THash =
   case tbl.mode
   of modeCaseSensitive: result = hashes.hash(key)
   of modeCaseInsensitive: result = hashes.hashIgnoreCase(key)
   of modeStyleInsensitive: result = hashes.hashIgnoreStyle(key)
 
-proc myCmp[T](tbl: PGenTable[T], a, b: string): bool =
+proc myCmp[T](tbl: PGenTable[T], a, b: String): Bool =
   case tbl.mode
   of modeCaseSensitive: result = cmp(a, b) == 0
   of modeCaseInsensitive: result = cmpIgnoreCase(a, b) == 0
   of modeStyleInsensitive: result = cmpIgnoreStyle(a, b) == 0
 
-proc mustRehash(length, counter: int): bool =
+proc mustRehash(length, counter: Int): Bool =
   assert(length > counter)
   result = (length * 2 < counter * 3) or (length - counter < 4)
 
@@ -72,17 +72,17 @@ proc newGenTable*[T](mode: TGenTableMode): PGenTable[T] =
 proc nextTry(h, maxHash: THash): THash {.inline.} =
   result = ((5 * h) + 1) and maxHash
 
-proc RawGet[T](tbl: PGenTable[T], key: string): int =
+proc rawGet[T](tbl: PGenTable[T], key: String): Int =
   var h: THash
   h = myhash(tbl, key) and high(tbl.data) # start with real hash value
   while not isNil(tbl.data[h].key):
-    if mycmp(tbl, tbl.data[h].key, key):
+    if myCmp(tbl, tbl.data[h].key, key):
       return h
     h = nextTry(h, high(tbl.data))
   result = - 1
 
-proc RawInsert[T](tbl: PGenTable[T], data: var TGenKeyValuePairSeq[T], 
-                  key: string, val: T) =
+proc rawInsert[T](tbl: PGenTable[T], data: var TGenKeyValuePairSeq[T], 
+                  key: String, val: T) =
   var h: THash
   h = myhash(tbl, key) and high(data)
   while not isNil(data[h].key):
@@ -90,33 +90,33 @@ proc RawInsert[T](tbl: PGenTable[T], data: var TGenKeyValuePairSeq[T],
   data[h].key = key
   data[h].val = val
 
-proc Enlarge[T](tbl: PGenTable[T]) =
+proc enlarge[T](tbl: PGenTable[T]) =
   var n: TGenKeyValuePairSeq[T]
   newSeq(n, len(tbl.data) * growthFactor)
   for i in countup(0, high(tbl.data)):
     if not isNil(tbl.data[i].key): 
-      RawInsert[T](tbl, n, tbl.data[i].key, tbl.data[i].val)
+      rawInsert[T](tbl, n, tbl.data[i].key, tbl.data[i].val)
   swap(tbl.data, n)
 
-proc hasKey*[T](tbl: PGenTable[T], key: string): bool =
+proc hasKey*[T](tbl: PGenTable[T], key: String): Bool =
   ## returns true iff `key` is in the table `tbl`.
   result = rawGet(tbl, key) >= 0
 
-proc `[]`*[T](tbl: PGenTable[T], key: string): T =
+proc `[]`*[T](tbl: PGenTable[T], key: String): T =
   ## retrieves the value at ``tbl[key]``. If `key` is not in `tbl`,
   ## default(T) is returned and no exception is raised. One can check
   ## with ``hasKey`` whether the key exists.
-  var index = RawGet(tbl, key)
+  var index = rawGet(tbl, key)
   if index >= 0: result = tbl.data[index].val
 
-proc `[]=`*[T](tbl: PGenTable[T], key: string, val: T) =
+proc `[]=`*[T](tbl: PGenTable[T], key: String, val: T) =
   ## puts a (key, value)-pair into `tbl`.
-  var index = RawGet(tbl, key)
+  var index = rawGet(tbl, key)
   if index >= 0:
     tbl.data[index].val = val
   else:
-    if mustRehash(len(tbl.data), tbl.counter): Enlarge(tbl)
-    RawInsert(tbl, tbl.data, key, val)
+    if mustRehash(len(tbl.data), tbl.counter): enlarge(tbl)
+    rawInsert(tbl, tbl.data, key, val)
     inc(tbl.counter)
 
 
@@ -144,7 +144,7 @@ when isMainModule:
   # Verify a table of user-defined types
   #
   type
-    TMyType = tuple[first, second: string] # a pair of strings
+    TMyType = tuple[first, second: String] # a pair of strings
   
   var y = newGenTable[TMyType](modeCaseInsensitive) # hash table where each
                                                     # value is TMyType tuple
@@ -165,7 +165,7 @@ when isMainModule:
   #
   # Verify table of tables
   #
-  var z: PGenTable[ PGenTable[int] ] # hash table where each value is 
+  var z: PGenTable[ PGenTable[Int] ] # hash table where each value is 
                                      # a hash table of ints
   
   z = newGenTable[PGenTable[int]](modeCaseInsensitive)

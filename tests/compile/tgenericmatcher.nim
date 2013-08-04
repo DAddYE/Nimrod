@@ -10,13 +10,13 @@ type
     of mkTerminal:
       value: T
     of mkSequence, mkAlternation:
-      matchers: seq[TMatcher[T]]
+      matchers: Seq[TMatcher[T]]
     of mkRepeat:
       matcher: PMatcher[T]
-      min, max: int
+      min, max: Int
   PMatcher[T] = ref TMatcher[T]
 
 var 
-  m: PMatcher[int]
+  m: PMatcher[Int]
 
 

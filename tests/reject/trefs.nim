@@ -6,12 +6,12 @@ discard """
 # test for ref types (including refs to procs)
 
 type
-  TProc = proc (a, b: int): int {.stdcall.}
+  TProc = proc (a, b: Int): Int {.stdcall.}
 
-proc foo(c, d: int): int {.stdcall.} =
+proc foo(c, d: Int): Int {.stdcall.} =
   return 0
 
-proc wrongfoo(c, e: int): int {.inline.} =
+proc wrongfoo(c, e: Int): Int {.inline.} =
   return 0
 
 var p: TProc

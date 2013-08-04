@@ -5,8 +5,8 @@ discard """
 # this tests the new overflow literals
 
 var
-  i: int
-i = int(0xffffffff'i32)
+  i: Int
+i = Int(0xffffffff'i32)
 when defined(cpu64):
   if i == -1:
     write(stdout, "works!\n")

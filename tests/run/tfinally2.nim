@@ -7,9 +7,9 @@ D'''
 """
 # Test break in try statement:
 
-proc main: int = 
+proc main: Int = 
   try:
-    block AB:
+    block ab:
       try:
         try:
           break AB
@@ -17,7 +17,7 @@ proc main: int =
           echo("A")
         echo("skipped")
       finally: 
-        block B:
+        block b:
           echo("B")
       echo("skipped")
     echo("C")

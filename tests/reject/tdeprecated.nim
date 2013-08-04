@@ -4,7 +4,7 @@ discard """
 """
 
 var
-  a {.deprecated.}: array[0..11, int]
+  a {.deprecated.}: Array[0..11, Int]
   
 a[8] = 1
 

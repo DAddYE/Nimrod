@@ -28,10 +28,10 @@
 """.}
 
 type
-  TId {.importc: "id", header: "<objc/Object.h>", final.} = distinct int
+  TId {.importc: "id", header: "<objc/Object.h>", final.} = distinct Int
 
 proc newGreeter: TId {.importobjc: "Greeter new", nodecl.}
-proc greet(self: TId, x, y: int) {.importobjc: "greet", nodecl.}
+proc greet(self: TId, x, y: Int) {.importobjc: "greet", nodecl.}
 proc free(self: TId) {.importobjc: "free", nodecl.}
 
 var g = newGreeter()

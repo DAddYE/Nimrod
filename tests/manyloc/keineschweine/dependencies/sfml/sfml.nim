@@ -13,13 +13,13 @@ type
   PClock* = ptr TClock
   TClock* {.pf.} = object
   TTime* {.pf.} = object
-    microseconds*: int64
+    microseconds*: Int64
   TVector2i* {.pf.} = object
-    x*, y*: cint
+    x*, y*: Cint
   TVector2f* {.pf.} = object
-    x*, y*: cfloat
+    x*, y*: Cfloat
   TVector3f* {.pf.} = object
-    x*, y*, z*: cfloat
+    x*, y*, z*: Cfloat
 
   PInputStream* = ptr TInputStream
   TInputStream* {.pf.} = object 
@@ -27,26 +27,26 @@ type
     seek*: TInputStreamSeekFunc
     tell*: TInputStreamTellFunc
     getSize*: TInputStreamGetSizeFunc
-    userData*: pointer
-  TInputStreamReadFunc* = proc (data: pointer, size: int64, userData: pointer): int64{.
+    userData*: Pointer
+  TInputStreamReadFunc* = proc (data: Pointer, size: Int64, userData: Pointer): Int64{.
     cdecl.}
-  TInputStreamSeekFunc* = proc (position: int16, userData: pointer): int64{.
+  TInputStreamSeekFunc* = proc (position: Int16, userData: Pointer): Int64{.
     cdecl.}
-  TInputStreamTellFunc* = proc (userData: pointer): int64 {.cdecl.}
-  TInputStreamGetSizeFunc* = proc (userData: pointer): int64 {.cdecl.}
+  TInputStreamTellFunc* = proc (userData: Pointer): Int64 {.cdecl.}
+  TInputStreamGetSizeFunc* = proc (userData: Pointer): Int64 {.cdecl.}
   PWindow* = ptr TWindow
   TWindow* {.pf.} = object
   PContextSettings* = ptr TContextSettings
   TContextSettings*{.pf.} = object
-    depthBits: cint
-    stencilBits: cint
-    antialiasingLevel: cint
-    majorVersion: cint
-    minorVersion: cint
+    depthBits: Cint
+    stencilBits: Cint
+    antialiasingLevel: Cint
+    majorVersion: Cint
+    minorVersion: Cint
   TVideoMode* {.pf.} = object
-    width*: cint
-    height*: cint
-    bitsPerPixel*: cint
+    width*: Cint
+    height*: Cint
+    bitsPerPixel*: Cint
   TEventType*{.size: sizeof(cint).} = enum 
     EvtClosed, EvtResized, EvtLostFocus, EvtGainedFocus, 
     EvtTextEntered, EvtKeyPressed, EvtKeyReleased, EvtMouseWheelMoved, 
@@ -56,32 +56,32 @@ type
     EvtJoystickDisconnected
   TKeyEvent*{.pf.} = object 
     code*: TKeyCode
-    alt*    : bool
-    control*: bool
-    shift*  : bool
-    system* : bool
+    alt*    : Bool
+    control*: Bool
+    shift*  : Bool
+    system* : Bool
   TJoystickConnectEvent*{.pf.} = object
-    joystickId*: cint
+    joystickId*: Cint
   TJoystickButtonEvent*{.pf.} = object
-    joystickId*: cint
-    button*: cint
+    joystickId*: Cint
+    button*: Cint
   TJoystickMoveEvent*{.pf.} = object
-    joystickId*: cint
+    joystickId*: Cint
     axis*: TJoystickAxis
-    position*: cfloat
+    position*: Cfloat
   TMouseWheelEvent*{.pf.} = object 
-    delta*: cint
-    x*: cint
-    y*: cint
+    delta*: Cint
+    x*: Cint
+    y*: Cint
   TMouseButtonEvent*{.pf.} = object
     button*: TMouseButton
-    x*: cint
-    y*: cint
+    x*: Cint
+    y*: Cint
   TMouseMoveEvent*{.pf.} = object
-    x*: cint
-    y*: cint
+    x*: Cint
+    y*: Cint
   TTextEvent*{.pf.} = object
-    unicode*: cint
+    unicode*: Cint
   PEvent* = ptr TEvent
   TEvent*{.pf.} = object
     case kind*: TEventType
@@ -108,8 +108,8 @@ type
     JoystickX, JoystickY, JoystickZ, JoystickR,      
     JoystickU, JoystickV, JoystickPovX, JoystickPovY
   TSizeEvent*{.pf.} = object
-    width*: cint
-    height*: cint
+    width*: Cint
+    height*: Cint
   TMouseButton*{.size: sizeof(cint).} = enum 
     MouseLeft, MouseRight, MouseMiddle,  
     MouseXButton1, MouseXButton2, MouseButtonCount
@@ -213,7 +213,7 @@ type
 
   PTransform* = ptr TTransform
   TTransform* {.pf.} = object
-    matrix*: array[0..8, cfloat]
+    matrix*: Array[0..8, Cfloat]
   TColor* {.pf.} = object 
     r*: Uint8
     g*: Uint8
@@ -221,18 +221,18 @@ type
     a*: Uint8
   PFloatRect* = ptr TFloatRect
   TFloatRect*{.pf.} = object 
-    left*: cfloat
-    top*: cfloat
-    width*: cfloat
-    height*: cfloat
+    left*: Cfloat
+    top*: Cfloat
+    width*: Cfloat
+    height*: Cfloat
   PIntRect* = ptr TIntRect
   TIntRect*{.pf.} = object 
-    left*: cint
-    top*: cint
-    width*: cint
-    height*: cint
+    left*: Cint
+    top*: Cint
+    width*: Cint
+    height*: Cint
   TGlyph* {.pf.} = object
-    advance*: cint
+    advance*: Cint
     bounds*: TIntRect
     textureRect*: TIntRect
   PVertex* = ptr TVertex
@@ -250,54 +250,54 @@ type
     Quads
 
 
-proc newWindow*(mode: TVideoMode, title: cstring, style: uint32, settings: PContextSettings = nil): PWindow {.
+proc newWindow*(mode: TVideoMode, title: Cstring, style: Uint32, settings: PContextSettings = nil): PWindow {.
   cdecl, importc: "sfWindow_create", dynlib: LibW.}
 
 proc close*(window: PWindow) {.
   cdecl, importc: "sfWindow_close", dynlib: LibW.}
-proc isOpen*(window: PWindow): bool {.cdecl, importc: "sfWindow_isOpen", dynlib: LibW.}
+proc isOpen*(window: PWindow): Bool {.cdecl, importc: "sfWindow_isOpen", dynlib: LibW.}
 
-proc pollEvent*(window: PWindow, event: PEvent): bool {.
+proc pollEvent*(window: PWindow, event: PEvent): Bool {.
   cdecl, importc: "sfWindow_pollEvent", dynlib: LibW.}
-proc waitEvent*(window: PWindow, event: PEvent): bool {.
+proc waitEvent*(window: PWindow, event: PEvent): Bool {.
   cdecl, importc: "sfWindow_waitEvent", dynlib: LibW.}
 
 proc getDesktopMode*(): TVideoMode {.
   cdecl, importc: "sfVideoMode_getDesktopMode", dynlib: LibW.}
-proc isKeyPressed*(key: TKeyCode): bool {.
+proc isKeyPressed*(key: TKeyCode): Bool {.
   cdecl, importc: "sfKeyboard_isKeyPressed", dynlib: LibW.}
 
-proc mouseIsButtonPressed*(button: TMouseButton): bool {.
+proc mouseIsButtonPressed*(button: TMouseButton): Bool {.
   cdecl, importc: "sfMouse_isButtonPressed", dynlib: LibW.}
 proc mouseGetPosition*(relativeTo: PWindow): TVector2i {.
   cdecl, importc: "sfMouse_getPosition", dynlib: LibW.}
 proc mouseSetPosition*(position: TVector2i, relativeTo: PWindow) {.
   cdecl, importc: "sfMouse_setPosition", dynlib: LibW.}
 
-proc joystickIsConnected*(joystick: cint): bool {.
+proc joystickIsConnected*(joystick: Cint): Bool {.
   cdecl, importc: "sfJoystick_isConnected", dynlib: LibW.}
-proc joystickGetButtonCount*(joystick: cint): cint {.
+proc joystickGetButtonCount*(joystick: Cint): Cint {.
   cdecl, importc: "sfJoystick_getButtonCount", dynlib: LibW.}
-proc joystickHasAxis*(joystick: cint, axis: TJoystickAxis): bool {.
+proc joystickHasAxis*(joystick: Cint, axis: TJoystickAxis): Bool {.
   cdecl, importc: "sfJoystick_hasAxis", dynlib: LibW.}
-proc joystickIsButtonPressed*(joystick: cint, button: cint): bool {.
+proc joystickIsButtonPressed*(joystick: Cint, button: Cint): Bool {.
   cdecl, importc: "sfJoystick_isButtonPressed", dynlib: LibW.}
-proc joystickGetAxisPosition*(joystick: cint, axis: TJoystickAxis): float {.
+proc joystickGetAxisPosition*(joystick: Cint, axis: TJoystickAxis): Float {.
   cdecl, importc: "sfJoystick_getAxisPosition", dynlib: LibW.}
-proc joystickUpdate*(): void {.
+proc joystickUpdate*(): Void {.
   cdecl, importc: "sfJoystick_update", dynlib: LibW.}
 
 
 proc newRenderWindow*(handle: TWindowHandle, settings: PContextSettings = nil): PRenderWindow{.
   cdecl, importc: "sfRenderWindow_createFromHandle", dynlib: LibG.}
-proc newRenderWindow*(mode: TVideoMode, title: cstring, style: int32, settings: PContextSettings = nil): PRenderWindow {.
+proc newRenderWindow*(mode: TVideoMode, title: Cstring, style: Int32, settings: PContextSettings = nil): PRenderWindow {.
   cdecl, importc: "sfRenderWindow_create", dynlib: LibG.}
 
 proc destroy*(window: PRenderWindow) {.
   cdecl, importc: "sfRenderWindow_destroy", dynlib: LibG.}
 proc close*(window: PRenderWindow) {.
   cdecl, importc: "sfRenderWindow_close", dynlib: LibG.}
-proc isOpen*(window: PRenderWindow): bool {.
+proc isOpen*(window: PRenderWindow): Bool {.
   cdecl, importc: "sfRenderWindow_isOpen", dynlib: LibG.}
 
 #void sfRenderWindow_setIcon(sfRenderWindow* renderWindow, unsigned int width, unsigned int height, const sfUint8* pixels);
@@ -307,13 +307,13 @@ proc isOpen*(window: PRenderWindow): bool {.
 proc getSettings*(window: PRenderWindow): TContextSettings {.
   cdecl, importc: "sfRenderWindow_getSettings", dynlib: LibG.}
 
-proc pollEvent*(window: PRenderWindow, event: PEvent): bool {.
+proc pollEvent*(window: PRenderWindow, event: PEvent): Bool {.
   cdecl, importc: "sfRenderWindow_pollEvent", dynlib: LibG.}
-proc pollEvent*(window: PRenderWindow; event: var TEvent): bool {.
+proc pollEvent*(window: PRenderWindow; event: var TEvent): Bool {.
   cdecl, importc: "sfRenderWindow_pollEvent", dynlib: LibG.}
-proc waitEvent*(window: PRenderWindow, event: PEvent): bool {.
+proc waitEvent*(window: PRenderWindow, event: PEvent): Bool {.
   cdecl, importc: "sfRenderWindow_waitEvent", dynlib: LibG.}
-proc waitEvent*(window: PRenderWindow, event: var TEvent): bool {.
+proc waitEvent*(window: PRenderWindow, event: var TEvent): Bool {.
   cdecl, importc: "sfRenderWindow_waitEvent", dynlib: LibG.}
 proc getPosition*(window: PRenderWindow): TVector2i {.
   cdecl, importc: "sfRenderWindow_getPosition", dynlib: LibG.}
@@ -321,26 +321,26 @@ proc setPosition*(window: PRenderWindow, position: TVector2i) {.
   cdecl, importc: "sfRenderWindow_setPosition", dynlib: LibG.}
 proc getSize*(window: PRenderWindow): TVector2i {.
   cdecl, importc: "sfRenderWindow_getSize", dynlib: LibG.}
-proc setSize*(window: PRenderWindow, size: TVector2i): void {.
+proc setSize*(window: PRenderWindow, size: TVector2i): Void {.
   cdecl, importc: "sfRenderWindow_setSize", dynlib: LibG.}
-proc setTitle*(window: PRenderWindow, title: cstring): void {.
+proc setTitle*(window: PRenderWindow, title: Cstring): Void {.
   cdecl, importc: "sfRenderWindow_setTitle", dynlib: LibG.}
 
-proc setVisible*(window: PRenderWindow, visible: bool) {.
+proc setVisible*(window: PRenderWindow, visible: Bool) {.
   cdecl, importc: "sfRenderWindow_setVisible", dynlib: LibG.}
-proc setMouseCursorVisible*(window: PRenderWindow, show: bool) {.
+proc setMouseCursorVisible*(window: PRenderWindow, show: Bool) {.
   cdecl, importc: "sfRenderWindow_setMouseCursorVisible", dynlib: LibG.}
-proc setVerticalSyncEnabled*(window: PRenderWindow, enabled: bool) {.
+proc setVerticalSyncEnabled*(window: PRenderWindow, enabled: Bool) {.
   cdecl, importc: "sfRenderWindow_setVerticalSyncEnabled", dynlib: LibG.}
-proc setKeyRepeatEnabled*(window: PRenderWindow, enabled: bool) {.
+proc setKeyRepeatEnabled*(window: PRenderWindow, enabled: Bool) {.
   cdecl, importc: "sfRenderWindow_setKeyRepeatEnabled", dynlib: LibG.}
-proc setActive*(window: PRenderWindow, active: bool): bool {.
+proc setActive*(window: PRenderWindow, active: Bool): Bool {.
   cdecl, importc: "sfRenderWindow_setActive", dynlib: LibG.}
 proc display*(window: PRenderWindow) {.
   cdecl, importc: "sfRenderWindow_display", dynlib: LibG.}
-proc setFramerateLimit*(window: PRenderWindow, limit: uint) {.
+proc setFramerateLimit*(window: PRenderWindow, limit: Uint) {.
   cdecl, importc: "sfRenderWindow_setFramerateLimit", dynlib: LibG.}
-proc setJoystickThreshold*(window: PRenderWindow, threshold: float) {.
+proc setJoystickThreshold*(window: PRenderWindow, threshold: Float) {.
   cdecl, importc: "sfRenderWindow_setJoystickThreshold", dynlib: LibG.}
 proc getSystemHandle*(window: PRenderWindow): TWindowHandle {.
   cdecl, importc: "sfRenderWindow_getSystemHandle", dynlib: LibG.}
@@ -375,7 +375,7 @@ proc draw*(window: PRenderWindow, shape: PConvexShape, states: PRenderStates = n
   cdecl, importc: "sfRenderWindow_drawConvexShape", dynlib: LibG.}
 proc draw*(window: PRenderWindow, shape: PVertexArray, states: PRenderStates = nil) {.
   cdecl, importc: "sfRenderWindow_drawVertexArray", dynlib: LibG.}
-proc draw*(window: PRenderWindow, vertices: PVertex, vertexCount: cint, 
+proc draw*(window: PRenderWindow, vertices: PVertex, vertexCount: Cint, 
            vertexType: TPrimitiveType, states: PRenderStates = nil) {.
   cdecl, importc: "sfRenderWindow_drawPrimitives", dynlib: LibG.}
 
@@ -389,7 +389,7 @@ proc capture*(window: PRenderWindow): PImage {.
   cdecl, importc: "sfRenderWindow_capture", dynlib: LibG.}
 
 #Construct a new render texture
-proc newRenderTexture*(width, height: cint; depthBuffer: Bool): PRenderTexture {.
+proc newRenderTexture*(width, height: Cint; depthBuffer: Bool): PRenderTexture {.
   cdecl, importc: "sfRenderTexture_create", dynlib: LibG.}
 #Destroy an existing render texture
 proc destroy*(renderTexture: PRenderTexture){.
@@ -398,7 +398,7 @@ proc destroy*(renderTexture: PRenderTexture){.
 proc getSize*(renderTexture: PRenderTexture): TVector2i {.
   cdecl, importc: "sfRenderTexture_getSize", dynlib: LibG.}
 #Activate or deactivate a render texture as the current target for rendering
-proc setActive*(renderTexture: PRenderTexture; active: bool): bool{.
+proc setActive*(renderTexture: PRenderTexture; active: Bool): Bool{.
   cdecl, importc: "sfRenderTexture_setActive", dynlib: LibG.}
 #Update the contents of the target texture
 proc display*(renderTexture: PRenderTexture){.
@@ -441,7 +441,7 @@ proc draw*(renderTexture: PRenderTexture; va: PVertexArray;
             states: PRenderStates){.
   cdecl, importc: "sfRenderTexture_drawVertexArray", dynlib: LibG.}
 #Draw primitives defined by an array of vertices to a render texture
-proc draw*(renderTexture: PRenderTexture; vertices: PVertex; vertexCount: cint; 
+proc draw*(renderTexture: PRenderTexture; vertices: PVertex; vertexCount: Cint; 
             primitiveType: TPrimitiveType; states: PRenderStates){.
   cdecl, importc: "sfRenderTexture_drawPrimitives", dynlib: LibG.}
 #Save the current OpenGL render states and matrices
@@ -481,34 +481,34 @@ proc resetGLStates*(renderTexture: PRenderTexture){.
 proc getTexture*(renderTexture: PRenderTexture): PTexture{.
   cdecl, importc: "sfRenderTexture_getTexture", dynlib: LibG.}
 #Enable or disable the smooth filter on a render texture
-proc setSmooth*(renderTexture: PRenderTexture; smooth: bool){.
+proc setSmooth*(renderTexture: PRenderTexture; smooth: Bool){.
   cdecl, importc: "sfRenderTexture_setSmooth", dynlib: LibG.}
 #Tell whether the smooth filter is enabled or not for a render texture
-proc isSmooth*(renderTexture: PRenderTexture): bool {.
+proc isSmooth*(renderTexture: PRenderTexture): Bool {.
   cdecl, importc: "sfRenderTexture_isSmooth", dynlib: LibG.}
 
-proc intRect*(left, top, width, height: cint): TIntRect =
+proc intRect*(left, top, width, height: Cint): TIntRect =
   result.left   = left
   result.top    = top
   result.width  = width
   result.height = height
-proc floatRect*(left, top, width, height: cfloat): TFloatRect =
+proc floatRect*(left, top, width, height: Cfloat): TFloatRect =
   result.left   = left
   result.top    = top 
   result.width  = width
   result.height = height
-proc contains*(rect: PFloatRect, x, y: cfloat): bool {.
+proc contains*(rect: PFloatRect, x, y: Cfloat): Bool {.
   cdecl, importc: "sfFloatRect_contains", dynlib: LibG.}
-proc contains*(rect: PIntRect, x: cint, y: cint): bool{.cdecl, 
+proc contains*(rect: PIntRect, x: Cint, y: Cint): Bool{.cdecl, 
   importc: "sfIntRect_contains", dynlib: LibG.}
-proc intersects*(rect1, rect2, intersection: PFloatRect): bool {.
+proc intersects*(rect1, rect2, intersection: PFloatRect): Bool {.
   cdecl, importc: "sfFloatRect_intersects", dynlib: LibG.}
-proc intersects*(rect1, rect2, intersection: PIntRect): bool {.
+proc intersects*(rect1, rect2, intersection: PIntRect): Bool {.
   cdecl, importc: "sfIntRect_intersects", dynlib: LibG.}
 
-proc newFont*(filename: cstring): PFont {.
+proc newFont*(filename: Cstring): PFont {.
   cdecl, importc: "sfFont_createFromFile", dynlib: LibG.}
-proc newFont*(data: pointer, sizeInBytes: cint): PFont {.
+proc newFont*(data: Pointer, sizeInBytes: Cint): PFont {.
   cdecl, importc: "sfFont_createFromMemory", dynlib: LibG.}
 proc newFont*(stream: PInputStream): PFont {.
   cdecl, importc: "sfFont_createFromStream", dynlib: LibG.}
@@ -516,13 +516,13 @@ proc copy*(font: PFont): PFont {.
   cdecl, importc: "sfFont_copy", dynlib: LibG.}
 proc destroy*(font: PFont) {.
   cdecl, importc: "sfFont_destroy", dynlib: LibG.}
-proc getGlyph*(font: PFont, codePoint: Uint32, characterSize: cint, bold: bool): TGlyph{.
+proc getGlyph*(font: PFont, codePoint: Uint32, characterSize: Cint, bold: Bool): TGlyph{.
   cdecl, importc: "sfFont_getGlyph", dynlib: LibG.}
-proc getKerning*(font: PFont, first: Uint32, second: Uint32, characterSize: cint): cint {.
+proc getKerning*(font: PFont, first: Uint32, second: Uint32, characterSize: Cint): Cint {.
   cdecl, importc: "sfFont_getKerning", dynlib: LibG.}
-proc getLineSpacing*(font: PFont, characterSize: cint): cint {.
+proc getLineSpacing*(font: PFont, characterSize: Cint): Cint {.
   cdecl, importc: "sfFont_getLineSpacing", dynlib: LibG.}
-proc getTexture*(font: PFont, characterSize: cint): PTexture {.
+proc getTexture*(font: PFont, characterSize: Cint): PTexture {.
   cdecl, importc: "sfFont_getTexture", dynlib: LibG.}
 #getDefaultFont() has been removed from CSFML
 proc getDefaultFont*(): PFont {.
@@ -536,7 +536,7 @@ proc destroy*(shape: PCircleShape) {.
   cdecl, importc: "sfCircleShape_destroy", dynlib: LibG.}
 proc setPosition*(shape: PCircleShape, position: TVector2f) {.
   cdecl, importc: "sfCircleShape_setPosition", dynlib: LibG.}
-proc setRotation*(shape: PCircleShape, angle: cfloat) {.
+proc setRotation*(shape: PCircleShape, angle: Cfloat) {.
   cdecl, importc: "sfCircleShape_setRotation", dynlib: LibG.}
 proc setScale*(shape: PCircleShape, scale: TVector2f) {.
   cdecl, importc: "sfCircleShape_setScale", dynlib: LibG.}
@@ -544,7 +544,7 @@ proc setOrigin*(shape: PCircleShape, origin: TVector2f) {.
   cdecl, importc: "sfCircleShape_setOrigin", dynlib: LibG.}
 proc getPosition*(shape: PCircleShape): TVector2f {.
   cdecl, importc: "sfCircleShape_getPosition", dynlib: LibG.}
-proc getRotation*(shape: PCircleShape): cfloat {.
+proc getRotation*(shape: PCircleShape): Cfloat {.
   cdecl, importc: "sfCircleShape_getRotation", dynlib: LibG.}
 proc getScale*(shape: PCircleShape): TVector2f {.
   cdecl, importc: "sfCircleShape_getScale", dynlib: LibG.}
@@ -552,7 +552,7 @@ proc getOrigin*(shape: PCircleShape): TVector2f {.
   cdecl, importc: "sfCircleShape_getOrigin", dynlib: LibG.}
 proc move*(shape: PCircleShape, offset: TVector2f) {.
   cdecl, importc: "sfCircleShape_move", dynlib: LibG.}
-proc rotate*(shape: PCircleShape, angle: cfloat){.
+proc rotate*(shape: PCircleShape, angle: Cfloat){.
   cdecl, importc: "sfCircleShape_rotate", dynlib: LibG.}
 proc scale*(shape: PCircleShape, factors: TVector2f) {.
   cdecl, importc: "sfCircleShape_scale", dynlib: LibG.}
@@ -560,7 +560,7 @@ proc getTransform*(shape: PCircleShape): TTransform {.
   cdecl, importc: "sfCircleShape_getTransform", dynlib: LibG.}
 proc getInverseTransform*(shape: PCircleShape): TTransform {.
   cdecl, importc: "sfCircleShape_getInverseTransform", dynlib: LibG.}
-proc setTexture*(shape: PCircleShape, texture: PTexture, resetRect: bool) {.
+proc setTexture*(shape: PCircleShape, texture: PTexture, resetRect: Bool) {.
   cdecl, importc: "sfCircleShape_setTexture", dynlib: LibG.}
 proc setTextureRect*(shape: PCircleShape, rect: TIntRect) {.
   cdecl, importc: "sfCircleShape_setTextureRect", dynlib: LibG.}
@@ -568,7 +568,7 @@ proc setFillColor*(shape: PCircleShape, color: TColor) {.
   cdecl, importc: "sfCircleShape_setFillColor", dynlib: LibG.}
 proc setOutlineColor*(shape: PCircleShape, color: TColor) {.
   cdecl, importc: "sfCircleShape_setOutlineColor", dynlib: LibG.}
-proc setOutlineThickness*(shape: PCircleShape, thickness: cfloat) {.
+proc setOutlineThickness*(shape: PCircleShape, thickness: Cfloat) {.
   cdecl, importc: "sfCircleShape_setOutlineThickness", dynlib: LibG.}
 proc getTexture*(shape: PCircleShape): PTexture {.
   cdecl, importc: "sfCircleShape_getTexture", dynlib: LibG.}
@@ -578,17 +578,17 @@ proc getFillColor*(shape: PCircleShape): TColor {.
   cdecl, importc: "sfCircleShape_getFillColor", dynlib: LibG.}
 proc getOutlineColor*(shape: PCircleShape): TColor {.
   cdecl, importc: "sfCircleShape_getOutlineColor", dynlib: LibG.}
-proc getOutlineThickness*(shape: PCircleShape): cfloat {.
+proc getOutlineThickness*(shape: PCircleShape): Cfloat {.
   cdecl, importc: "sfCircleShape_getOutlineThickness", dynlib: LibG.}
-proc getPointCount*(shape: PCircleShape): cint {.
+proc getPointCount*(shape: PCircleShape): Cint {.
   cdecl, importc: "sfCircleShape_getPointCount", dynlib: LibG.}
-proc getPoint*(shape: PCircleShape, index: cint): TVector2f {.
+proc getPoint*(shape: PCircleShape, index: Cint): TVector2f {.
   cdecl, importc: "sfCircleShape_getPoint", dynlib: LibG.}
-proc setRadius*(shape: PCircleShape, radius: cfloat) {.
+proc setRadius*(shape: PCircleShape, radius: Cfloat) {.
   cdecl, importc: "sfCircleShape_setRadius", dynlib: LibG.}
-proc getRadius*(shape: PCircleShape): cfloat {.
+proc getRadius*(shape: PCircleShape): Cfloat {.
   cdecl, importc: "sfCircleShape_getRadius", dynlib: LibG.}
-proc setPointCount*(shape: PCircleShape, count: cint) {.
+proc setPointCount*(shape: PCircleShape, count: Cint) {.
   cdecl, importc: "sfCircleShape_setPointCount", dynlib: LibG.}
 proc getLocalBounds*(shape: PCircleShape): TFloatRect {.
   cdecl, importc: "sfCircleShape_getLocalBounds", dynlib: LibG.}
@@ -603,7 +603,7 @@ proc destroy*(shape: PRectangleShape){.
   cdecl, importc: "sfRectangleShape_destroy", dynlib: LibG.}
 proc setPosition*(shape: PRectangleShape, position: TVector2f) {.
   cdecl, importc: "sfRectangleShape_setPosition", dynlib: LibG.}
-proc setRotation*(shape: PRectangleShape, angle: cfloat) {.
+proc setRotation*(shape: PRectangleShape, angle: Cfloat) {.
   cdecl, importc: "sfRectangleShape_setRotation", dynlib: LibG.}
 proc setScale*(shape: PRectangleShape, scale: TVector2f) {.
   cdecl, importc: "sfRectangleShape_setScale", dynlib: LibG.}
@@ -611,7 +611,7 @@ proc setOrigin*(shape: PRectangleShape, origin: TVector2f) {.
   cdecl, importc: "sfRectangleShape_setOrigin", dynlib: LibG.}
 proc getPosition*(shape: PRectangleShape): TVector2f {.
   cdecl, importc: "sfRectangleShape_getPosition", dynlib: LibG.}
-proc getRotation*(shape: PRectangleShape): cfloat {.
+proc getRotation*(shape: PRectangleShape): Cfloat {.
   cdecl, importc: "sfRectangleShape_getRotation", dynlib: LibG.}
 proc getScale*(shape: PRectangleShape): TVector2f {.
   cdecl, importc: "sfRectangleShape_getScale", dynlib: LibG.}
@@ -619,7 +619,7 @@ proc getOrigin*(shape: PRectangleShape): TVector2f {.
   cdecl, importc: "sfRectangleShape_getOrigin", dynlib: LibG.}
 proc move*(shape: PRectangleShape, offset: TVector2f) {.
   cdecl, importc: "sfRectangleShape_move", dynlib: LibG.}
-proc rotate*(shape: PRectangleShape, angle: cfloat) {.
+proc rotate*(shape: PRectangleShape, angle: Cfloat) {.
   cdecl, importc: "sfRectangleShape_rotate", dynlib: LibG.}
 proc scale*(shape: PRectangleShape, factors: TVector2f) {.
   cdecl, importc: "sfRectangleShape_scale", dynlib: LibG.}
@@ -627,7 +627,7 @@ proc getTransform*(shape: PRectangleShape): TTransform {.
   cdecl, importc: "sfRectangleShape_getTransform", dynlib: LibG.}
 proc getInverseTransform*(shape: PRectangleShape): TTransform {.
   cdecl, importc: "sfRectangleShape_getInverseTransform", dynlib: LibG.}
-proc setTexture*(shape: PRectangleShape, texture: PTexture, resetRect: bool) {.
+proc setTexture*(shape: PRectangleShape, texture: PTexture, resetRect: Bool) {.
   cdecl, importc: "sfRectangleShape_setTexture", dynlib: LibG.}
 proc setTextureRect*(shape: PRectangleShape, rect: TIntRect) {.
   cdecl, importc: "sfRectangleShape_setTextureRect", dynlib: LibG.}
@@ -635,7 +635,7 @@ proc setFillColor*(shape: PRectangleShape, color: TColor) {.
   cdecl, importc: "sfRectangleShape_setFillColor", dynlib: LibG.}
 proc setOutlineColor*(shape: PRectangleShape, color: TColor) {.
   cdecl, importc: "sfRectangleShape_setOutlineColor", dynlib: LibG.}
-proc setOutlineThickness*(shape: PRectangleShape, thickness: cfloat) {.
+proc setOutlineThickness*(shape: PRectangleShape, thickness: Cfloat) {.
   cdecl, importc: "sfRectangleShape_setOutlineThickness", dynlib: LibG.}
 proc getTexture*(shape: PRectangleShape): PTexture {.
   cdecl, importc: "sfRectangleShape_getTexture", dynlib: LibG.}
@@ -645,11 +645,11 @@ proc getFillColor*(shape: PRectangleShape): TColor {.
   cdecl, importc: "sfRectangleShape_getFillColor", dynlib: LibG.}
 proc getOutlineColor*(shape: PRectangleShape): TColor {.
   cdecl, importc: "sfRectangleShape_getOutlineColor", dynlib: LibG.}
-proc getOutlineThickness*(shape: PRectangleShape): cfloat {.
+proc getOutlineThickness*(shape: PRectangleShape): Cfloat {.
   cdecl, importc: "sfRectangleShape_getOutlineThickness", dynlib: LibG.}
-proc getPointCount*(shape: PRectangleShape): cint {.
+proc getPointCount*(shape: PRectangleShape): Cint {.
   cdecl, importc: "sfRectangleShape_getPointCount", dynlib: LibG.}
-proc getPoint*(shape: PRectangleShape, index: cint): TVector2f {.
+proc getPoint*(shape: PRectangleShape, index: Cint): TVector2f {.
   cdecl, importc: "sfRectangleShape_getPoint", dynlib: LibG.}
 proc setSize*(shape: PRectangleShape, size: TVector2f) {.
   cdecl, importc: "sfRectangleShape_setSize", dynlib: LibG.}
@@ -673,7 +673,7 @@ proc setCenter*(view: PView, center: TVector2f) {.
   cdecl, importc: "sfView_setCenter", dynlib: LibG.}
 proc setSize*(view: PView, size: TVector2f) {.
   cdecl, importc: "sfView_setSize", dynlib: LibG.}
-proc setRotation*(view: PView, angle: cfloat) {.
+proc setRotation*(view: PView, angle: Cfloat) {.
   cdecl, importc: "sfView_setRotation", dynlib: LibG.}
 proc setViewport*(view: PView, viewport: TFloatRect) {.
   cdecl, importc: "sfView_setViewport", dynlib: LibG.}
@@ -683,26 +683,26 @@ proc getCenter*(view: PView): TVector2f {.
   cdecl, importc: "sfView_getCenter", dynlib: LibG.}
 proc getSize*(view: PView): TVector2f {.
   cdecl, importc: "sfView_getSize", dynlib: LibG.}
-proc getRotation*(view: PView): cfloat {.
+proc getRotation*(view: PView): Cfloat {.
   cdecl, importc: "sfView_getRotation", dynlib: LibG.}
 proc getViewport*(view: PView): TFloatRect {.
   cdecl, importc: "sfView_getViewport", dynlib: LibG.}
 proc move*(view: PView, offset: TVector2f) {.
   cdecl, importc: "sfView_move", dynlib: LibG.}
-proc rotate*(view: PView, angle: cfloat) {.
+proc rotate*(view: PView, angle: Cfloat) {.
   cdecl, importc: "sfView_rotate", dynlib: LibG.}
-proc zoom*(view: PView, factor: cfloat) {.
+proc zoom*(view: PView, factor: Cfloat) {.
   cdecl, importc: "sfView_zoom", dynlib: LibG.}
 
-proc newImage*(width, height: cint): PImage {.
+proc newImage*(width, height: Cint): PImage {.
   cdecl, importc: "sfImage_create", dynlib: LibG.}
-proc newImage*(width, height: cint, color: TColor): PImage {.
+proc newImage*(width, height: Cint, color: TColor): PImage {.
   cdecl, importc: "sfImage_createFromColor", dynlib: LibG.}
-proc newImage*(width, height: cint, pixels: pointer): PImage {. ##same deal as setIcon()
+proc newImage*(width, height: Cint, pixels: Pointer): PImage {. ##same deal as setIcon()
   cdecl, importc: "sfImage_createFromPixels", dynlib: LibG.}
-proc newImage*(filename: cstring): PImage {.
+proc newImage*(filename: Cstring): PImage {.
   cdecl, importc: "sfImage_createFromFile", dynlib: LibG.}
-proc newImage*(data: pointer, size: cint): PImage {.
+proc newImage*(data: Pointer, size: Cint): PImage {.
   cdecl, importc: "sfImage_createFromMemory", dynlib: LibG.}
 proc newImage*(stream: PInputStream): PImage {.
   cdecl, importc: "sfImage_createFromStream", dynlib: LibG.}
@@ -710,20 +710,20 @@ proc copy*(image: PImage): PImage {.
   cdecl, importc: "sfImage_copy", dynlib: LibG.}
 proc destroy*(image: PImage) {.
   cdecl, importc: "sfImage_destroy", dynlib: LibG.}
-proc save*(image: PImage, filename: cstring): bool {.
+proc save*(image: PImage, filename: Cstring): Bool {.
   cdecl, importc: "sfImage_saveToFile", dynlib: LibG.}
 proc getSize*(image: PImage): TVector2i {.
   cdecl, importc: "sfImage_getSize", dynlib: LibG.}
-proc createMask*(image: PImage, color: TColor, alpha: cchar) {.
+proc createMask*(image: PImage, color: TColor, alpha: Cchar) {.
   cdecl, importc: "sfImage_createMaskFromColor", dynlib: LibG.}
-proc copy*(destination, source: PImage, destX, destY: cint;
-            sourceRect: TIntRect, applyAlpha: bool) {.
+proc copy*(destination, source: PImage, destX, destY: Cint;
+            sourceRect: TIntRect, applyAlpha: Bool) {.
   cdecl, importc: "sfImage_copyImage", dynlib: LibG.}
-proc setPixel*(image: PImage, x, y: cint, color: TColor) {.
+proc setPixel*(image: PImage, x, y: Cint, color: TColor) {.
   cdecl, importc: "sfImage_setPixel", dynlib: LibG.}
-proc getPixel*(image: PImage, x, y: cint): TColor {.
+proc getPixel*(image: PImage, x, y: Cint): TColor {.
   cdecl, importc: "sfImage_getPixel", dynlib: LibG.}
-proc getPixels*(image: PImage): pointer {.
+proc getPixels*(image: PImage): Pointer {.
   cdecl, importc: "sfImage_getPixelsPtr", dynlib: LibG.}
 proc flipHorizontally*(image: PImage) {.
   cdecl, importc: "sfImage_flipHorizontally", dynlib: LibG.}
@@ -738,7 +738,7 @@ proc destroy*(sprite: PSprite) {.
   cdecl, importc: "sfSprite_destroy", dynlib: LibG.}
 proc setPosition*(sprite: PSprite, position: TVector2f) {.
   cdecl, importc: "sfSprite_setPosition", dynlib: LibG.}
-proc setRotation*(sprite: PSprite, angle: cfloat) {.
+proc setRotation*(sprite: PSprite, angle: Cfloat) {.
   cdecl, importc: "sfSprite_setRotation", dynlib: LibG.}
 proc setScale*(sprite: PSprite, scale: TVector2f) {.
   cdecl, importc: "sfSprite_setScale", dynlib: LibG.}
@@ -746,7 +746,7 @@ proc setOrigin*(sprite: PSprite, origin: TVector2f) {.
   cdecl, importc: "sfSprite_setOrigin", dynlib: LibG.}
 proc getPosition*(sprite: PSprite): TVector2f {.
   cdecl, importc: "sfSprite_getPosition", dynlib: LibG.}
-proc getRotation*(sprite: PSprite): cfloat {.
+proc getRotation*(sprite: PSprite): Cfloat {.
   cdecl, importc: "sfSprite_getRotation", dynlib: LibG.}
 proc getScale*(sprite: PSprite): TVector2f {.
   cdecl, importc: "sfSprite_getScale", dynlib: LibG.}
@@ -754,7 +754,7 @@ proc getOrigin*(sprite: PSprite): TVector2f {.
   cdecl, importc: "sfSprite_getOrigin", dynlib: LibG.}
 proc move*(sprite: PSprite, offset: TVector2f) {.
   cdecl, importc: "sfSprite_move", dynlib: LibG.}
-proc rotate*(sprite: PSprite, angle: cfloat) {.
+proc rotate*(sprite: PSprite, angle: Cfloat) {.
   cdecl, importc: "sfSprite_rotate", dynlib: LibG.}
 proc scale*(sprite: PSprite, factor: TVector2f) {.
   cdecl, importc: "sfSprite_scale", dynlib: LibG.}
@@ -762,7 +762,7 @@ proc getTransform*(sprite: PSprite): TTransform {.
   cdecl, importc: "sfSprite_getTransform", dynlib: LibG.}
 proc getInverseTransform*(sprite: PSprite): TTransform {.
   cdecl, importc: "sfSprite_getInverseTransform", dynlib: LibG.}
-proc setTexture*(sprite: PSprite, texture: PTexture, resetRect: bool) {.
+proc setTexture*(sprite: PSprite, texture: PTexture, resetRect: Bool) {.
   cdecl, importc: "sfSprite_setTexture", dynlib: LibG.}
 proc setTextureRect*(sprite: PSprite, rectangle: TIntRect) {.
   cdecl, importc: "sfSprite_setTextureRect", dynlib: LibG.}
@@ -779,11 +779,11 @@ proc getLocalBounds*(sprite: PSprite): TFloatRect {.
 proc getGlobalBounds*(sprite: PSprite): TFloatRect {.
   cdecl, importc: "sfSprite_getGlobalBounds", dynlib: LibG.}
 
-proc newTexture*(width, height: cint): PTexture {.
+proc newTexture*(width, height: Cint): PTexture {.
   cdecl, importc: "sfTexture_create", dynlib: LibG.}
-proc newTexture*(filename: cstring): PTexture {.
+proc newTexture*(filename: Cstring): PTexture {.
   cdecl, importc: "sfTexture_createFromFile", dynlib: LibG.}
-proc newTexture*(data: pointer, size: cint, area: PIntRect): PTexture {.
+proc newTexture*(data: Pointer, size: Cint, area: PIntRect): PTexture {.
   cdecl, importc: "sfTexture_createFromMemory", dynlib: LibG.}
 proc newTexture*(stream: PInputStream, area: PIntRect): PTexture {.
   cdecl, importc: "sfTexture_createFromStream", dynlib: LibG.}
@@ -797,25 +797,25 @@ proc getSize*(texture: PTexture): TVector2i {.
   cdecl, importc: "sfTexture_getSize", dynlib: LibG.}
 proc copyToImage*(texture: PTexture): PImage {.
   cdecl, importc: "sfTexture_copyToImage", dynlib: LibG.}
-proc updateFromPixels*(texture: PTexture, pixels: pointer, width, height, x, y: cint) {.
+proc updateFromPixels*(texture: PTexture, pixels: Pointer, width, height, x, y: Cint) {.
   cdecl, importc: "sfTexture_updateFromPixels", dynlib: LibG.}
-proc updateFromImage*(texture: PTexture, image: PImage, x, y: cint) {.
+proc updateFromImage*(texture: PTexture, image: PImage, x, y: Cint) {.
   cdecl, importc: "sfTexture_updateFromImage", dynlib: LibG.}
-proc updateFromWindow*(texture: PTexture, window: PWindow, x, y: cint) {.
+proc updateFromWindow*(texture: PTexture, window: PWindow, x, y: Cint) {.
   cdecl, importc: "sfTexture_updateFromWindow", dynlib: LibG.}
-proc updateFromWindow*(texture: PTexture, window: PRenderWindow, x, y: cint) {.
+proc updateFromWindow*(texture: PTexture, window: PRenderWindow, x, y: Cint) {.
   cdecl, importc: "sfTexture_updateFromRenderWindow", dynlib: LibG.}
 proc bindGL*(texture: PTexture) {.
   cdecl, importc: "sfTexture_bind", dynlib: LibG.}
-proc setSmooth*(texture: PTexture, smooth: bool) {.
+proc setSmooth*(texture: PTexture, smooth: Bool) {.
   cdecl, importc: "sfTexture_setSmooth", dynlib: LibG.}
-proc isSmooth*(texture: PTexture): bool {.
+proc isSmooth*(texture: PTexture): Bool {.
   cdecl, importc: "sfTexture_isSmooth", dynlib: LibG.}
-proc setRepeated*(texture: PTexture, repeated: bool) {.
+proc setRepeated*(texture: PTexture, repeated: Bool) {.
   cdecl, importc: "sfTexture_setRepeated", dynlib: LibG.}
-proc isRepeated*(texture: PTexture): bool {.
+proc isRepeated*(texture: PTexture): Bool {.
   cdecl, importc: "sfTexture_isRepeated", dynlib: LibG.}
-proc textureMaxSize*(): cint {.
+proc textureMaxSize*(): Cint {.
   cdecl, importc: "sfTexture_getMaximumSize", dynlib: LibG.}
 
 proc newVertexArray*(): PVertexArray {.
@@ -824,13 +824,13 @@ proc copy*(vertexArray: PVertexArray): PVertexArray {.
   cdecl, importc: "sfVertexArray_copy", dynlib: LibG.}
 proc destroy*(va: PVertexArray) {.
   cdecl, importc: "sfVertexArray_destroy", dynlib: LibG.}
-proc getVertexCount*(va: PVertexArray): cint {.
+proc getVertexCount*(va: PVertexArray): Cint {.
   cdecl, importc: "sfVertexArray_getVertexCount", dynlib: LibG.}
-proc getVertex*(va: PVertexArray, index: cint): PVertex {.
+proc getVertex*(va: PVertexArray, index: Cint): PVertex {.
   cdecl, importc: "sfVertexArray_getVertex", dynlib: LibG.}
 proc clear*(va: PVertexArray) {.
   cdecl, importc: "sfVertexArray_clear", dynlib: LibG.}
-proc resize*(va: PVertexArray, size: cint) {.
+proc resize*(va: PVertexArray, size: Cint) {.
   cdecl, importc: "sfVertexArray_resize", dynlib: LibG.}
 proc append*(va: PVertexArray, vertex: TVertex) {.
   cdecl, importc: "sfVertexArray_append", dynlib: LibG.}
@@ -850,7 +850,7 @@ proc destroy*(text: PText) {.
   cdecl, importc: "sfText_destroy", dynlib: LibG.}
 proc setPosition*(text: PText, position: TVector2f) {.
   cdecl, importc: "sfText_setPosition", dynlib: LibG.}
-proc setRotation*(text: PText, angle: cfloat) {.
+proc setRotation*(text: PText, angle: Cfloat) {.
   cdecl, importc: "sfText_setRotation", dynlib: LibG.}
 proc setScale*(text: PText, scale: TVector2f) {.
   cdecl, importc: "sfText_setScale", dynlib: LibG.}
@@ -858,7 +858,7 @@ proc setOrigin*(text: PText, origin: TVector2f) {.
   cdecl, importc: "sfText_setOrigin", dynlib: LibG.}
 proc getPosition*(text: PText): TVector2f {.
   cdecl, importc: "sfText_getPosition", dynlib: LibG.}
-proc getRotation*(text: PText): cfloat {.
+proc getRotation*(text: PText): Cfloat {.
   cdecl, importc: "sfText_getRotation", dynlib: LibG.}
 proc getScale*(text: PText): TVector2f {.
   cdecl, importc: "sfText_getScale", dynlib: LibG.}
@@ -866,7 +866,7 @@ proc getOrigin*(text: PText): TVector2f {.
   cdecl, importc: "sfText_getOrigin", dynlib: LibG.}
 proc move*(text: PText, offset: TVector2f) {.
   cdecl, importc: "sfText_move", dynlib: LibG.}
-proc rotate*(text: PText, angle: cfloat) {.
+proc rotate*(text: PText, angle: Cfloat) {.
   cdecl, importc: "sfText_rotate", dynlib: LibG.}
 proc scale*(text: PText, factors: TVector2f) {.
   cdecl, importc: "sfText_scale", dynlib: LibG.}
@@ -874,40 +874,40 @@ proc getTransform*(text: PText): TTransform {.
   cdecl, importc: "sfText_getTransform", dynlib: LibG.}
 proc getInverseTransform*(text: PText): TTransform {.
   cdecl, importc: "sfText_getInverseTransform", dynlib: LibG.}
-proc setString*(text: PText, string: cstring) {.
+proc setString*(text: PText, string: Cstring) {.
   cdecl, importc: "sfText_setString", dynlib: LibG.}
 proc setUnicodeString*(text: PText, string: ptr Uint32) {.
   cdecl, importc: "sfText_setUnicodeString", dynlib: LibG.}
 proc setFont*(text: PText, font: PFont) {.
   cdecl, importc: "sfText_setFont", dynlib: LibG.}
-proc setCharacterSize*(text: PText, size: cint) {.
+proc setCharacterSize*(text: PText, size: Cint) {.
   cdecl, importc: "sfText_setCharacterSize", dynlib: LibG.}
 proc setStyle*(text: PText, style: TTextStyle) {.
   cdecl, importc: "sfText_setStyle", dynlib: LibG.}
 proc setColor*(text: PText, color: TColor) {.
   cdecl, importc: "sfText_setColor", dynlib: LibG.}
-proc getString*(text: PText): cstring {.
+proc getString*(text: PText): Cstring {.
   cdecl, importc: "sfText_getString", dynlib: LibG.}
 proc getUnicodeString*(text: PText): ptr Uint32 {.cdecl, 
   importc: "sfText_getUnicodeString", dynlib: LibG.}
 proc getFont*(text: PText): PFont {.
   cdecl, importc: "sfText_getFont", dynlib: LibG.}
-proc getCharacterSize*(text: PText): cint {.
+proc getCharacterSize*(text: PText): Cint {.
   cdecl, importc: "sfText_getCharacterSize", dynlib: LibG.}
 proc getStyle*(text: PText): Uint32 {.
   cdecl, importc: "sfText_getStyle", dynlib: LibG.}
 proc getColor*(text: PText): TColor {.
   cdecl, importc: "sfText_getColor", dynlib: LibG.}
-proc findCharacterPos*(text: PText, index: cint): TVector2f {.
+proc findCharacterPos*(text: PText, index: Cint): TVector2f {.
   cdecl, importc: "sfText_findCharacterPos", dynlib: LibG.}
 proc getLocalBounds*(text: PText): TFloatRect {.
   cdecl, importc: "sfText_getLocalBounds", dynlib: LibG.}
 proc getGlobalBounds*(text: PText): TFloatRect {.
   cdecl, importc: "sfText_getGlobalBounds", dynlib: LibG.}
 
-proc transformFromMatrix*(a00, a01, a02, a10, a11, a12, a20, a21, a22: cfloat): TTransform {.
+proc transformFromMatrix*(a00, a01, a02, a10, a11, a12, a20, a21, a22: Cfloat): TTransform {.
   cdecl, importc: "sfTransform_fromMatrix", dynlib: LibG.}
-proc getMatrix*(transform: PTransform, matrix: ptr cfloat) {.
+proc getMatrix*(transform: PTransform, matrix: ptr Cfloat) {.
   cdecl, importc: "sfTransform_getMatrix", dynlib: LibG.}
 proc getInverse*(transform: PTransform): TTransform {.
   cdecl, importc: "sfTransform_getInverse", dynlib: LibG.}
@@ -917,69 +917,69 @@ proc transformRect*(transform: PTransform, rectangle: TFloatRect): TFloatRect {.
   cdecl, importc: "sfTransform_transformRect", dynlib: LibG.}
 proc combine*(transform: PTransform, other: PTransform) {.
   cdecl, importc: "sfTransform_combine", dynlib: LibG.}
-proc translate*(transform: PTransform, x, y: cfloat) {.
+proc translate*(transform: PTransform, x, y: Cfloat) {.
   cdecl, importc: "sfTransform_translate", dynlib: LibG.}
-proc rotate*(transform: PTransform, angle: cfloat) {.
+proc rotate*(transform: PTransform, angle: Cfloat) {.
   cdecl, importc: "sfTransform_rotate", dynlib: LibG.}
-proc rotateWithCenter*(transform: PTransform, angle, centerX, centerY: cfloat){.
+proc rotateWithCenter*(transform: PTransform, angle, centerX, centerY: Cfloat){.
   cdecl, importc: "sfTransform_rotateWithCenter", dynlib: LibG.}
-proc scale*(transform: PTransform, scaleX, scaleY: cfloat) {.
+proc scale*(transform: PTransform, scaleX, scaleY: Cfloat) {.
   cdecl, importc: "sfTransform_scale", dynlib: LibG.}
-proc scaleWithCenter*(transform: PTransform, scaleX, scaleY, centerX, centerY: cfloat) {.
+proc scaleWithCenter*(transform: PTransform, scaleX, scaleY, centerX, centerY: Cfloat) {.
   cdecl, importc: "sfTransform_scaleWithCenter", dynlib: LibG.}
-let IdentityMatrix*: TTransform = transformFromMatrix(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0)
+let identityMatrix*: TTransform = transformFromMatrix(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0)
 
 
-proc newShader*(VSfilename: cstring, fragmentShaderFilename: cstring): PShader {.
+proc newShader*(VSfilename: Cstring, fragmentShaderFilename: Cstring): PShader {.
   cdecl, importc: "sfShader_createFromFile", dynlib: LibG.}
-proc newShaderFromStr*(vertexShader: cstring, fragmentShader: cstring): PShader {.
+proc newShaderFromStr*(vertexShader: Cstring, fragmentShader: Cstring): PShader {.
   cdecl, importc: "sfShader_createFromMemory", dynlib: LibG.}
 proc newShader*(vertexShaderStream: PInputStream, fragmentShaderStream: PInputStream): PShader {.
   cdecl, importc: "sfShader_createFromStream", dynlib: LibG.}
 proc destroy*(shader: PShader) {.
   cdecl, importc: "sfShader_destroy", dynlib: LibG.}
-proc setFloatParameter*(shader: PShader, name: cstring, x: cfloat) {.
+proc setFloatParameter*(shader: PShader, name: Cstring, x: Cfloat) {.
   cdecl, importc: "sfShader_setFloatParameter", dynlib: LibG.}
-proc setFloat2Parameter*(shader: PShader, name: cstring, x, y: cfloat) {.
+proc setFloat2Parameter*(shader: PShader, name: Cstring, x, y: Cfloat) {.
   cdecl, importc: "sfShader_setFloat2Parameter", dynlib: LibG.}
-proc setFloat3Parameter*(shader: PShader, name: cstring, x, y, z: cfloat) {.
+proc setFloat3Parameter*(shader: PShader, name: Cstring, x, y, z: Cfloat) {.
   cdecl, importc: "sfShader_setFloat3Parameter", dynlib: LibG.}
-proc setFloat4Parameter*(shader: PShader, name: cstring, x, y, z, w: cfloat) {.
+proc setFloat4Parameter*(shader: PShader, name: Cstring, x, y, z, w: Cfloat) {.
   cdecl, importc: "sfShader_setFloat4Parameter", dynlib: LibG.}
-proc setVector2Parameter*(shader: PShader, name: cstring, vector: TVector2f) {.
+proc setVector2Parameter*(shader: PShader, name: Cstring, vector: TVector2f) {.
   cdecl, importc: "sfShader_setVector2Parameter", dynlib: LibG.}
-proc setVector3Parameter*(shader: PShader, name: cstring, vector: TVector3f) {.
+proc setVector3Parameter*(shader: PShader, name: Cstring, vector: TVector3f) {.
   cdecl, importc: "sfShader_setVector3Parameter", dynlib: LibG.}
-proc setColorParameter*(shader: PShader, name: cstring, color: TColor) {.
+proc setColorParameter*(shader: PShader, name: Cstring, color: TColor) {.
   cdecl, importc: "sfShader_setColorParameter", dynlib: LibG.}
-proc setTransformParameter*(shader: PShader, name: cstring, transform: TTransform) {.
+proc setTransformParameter*(shader: PShader, name: Cstring, transform: TTransform) {.
   cdecl, importc: "sfShader_setTransformParameter", dynlib: LibG.}
-proc setTextureParameter*(shader: PShader, name: cstring, texture: PTexture) {.
+proc setTextureParameter*(shader: PShader, name: Cstring, texture: PTexture) {.
   cdecl, importc: "sfShader_setTextureParameter", dynlib: LibG.}
-proc setCurrentTextureParameter*(shader: PShader, name: cstring) {.
+proc setCurrentTextureParameter*(shader: PShader, name: Cstring) {.
   cdecl, importc: "sfShader_setCurrentTextureParameter", dynlib: LibG.}
 proc bindGL*(shader: PShader) {.
   cdecl, importc: "sfShader_bind", dynlib: LibG.}
 proc unbindGL*(shader: PShader) {.
   cdecl, importc: "sfShader_unbind", dynlib: LibG.}
-proc shaderIsAvailable*(): bool {.
+proc shaderIsAvailable*(): Bool {.
   cdecl, importc: "sfShader_isAvailable", dynlib: LibG.}
 
-proc color*(red, green, blue: cchar): TColor {.
+proc color*(red, green, blue: Cchar): TColor {.
   cdecl, importc: "sfColor_fromRGB", dynlib: LibG.}
-proc color*(red, green, blue: int): TColor {.inline.} =
-  return color(red.cchar, green.cchar, blue.cchar)
-proc color*(red, green, blue, alpha: cchar): TColor {.
+proc color*(red, green, blue: Int): TColor {.inline.} =
+  return color(red.Cchar, green.Cchar, blue.Cchar)
+proc color*(red, green, blue, alpha: Cchar): TColor {.
   cdecl, importc: "sfColor_fromRGBA", dynlib: LibG.}
-proc color*(red, green, blue, alpha: int): TColor {.inline.} =
-  return color(red.cchar, green.cchar, blue.cchar, alpha.cchar)
+proc color*(red, green, blue, alpha: Int): TColor {.inline.} =
+  return color(red.Cchar, green.Cchar, blue.Cchar, alpha.Cchar)
 proc `+`*(color1, color2: TColor): TColor {.
   cdecl, importc: "sfColor_add", dynlib: LibG.}
 proc `*`*(color1, color2: TColor): TColor {.
   cdecl, importc: "sfColor_modulate", dynlib: LibG.}
-proc newColor*(r,g,b: int): TColor {.inline.} =
+proc newColor*(r,g,b: Int): TColor {.inline.} =
   return color(r,g,b)
-proc newColor*(r,g,b,a: int): TColor {.inline.} = 
+proc newColor*(r,g,b,a: Int): TColor {.inline.} = 
   return color(r,g,b,a)
 
 proc newClock*(): PClock {.
@@ -992,70 +992,70 @@ proc getElapsedTime*(clock: PClock): TTime {.
   cdecl, importc: "sfClock_getElapsedTime", dynlib: LibS.}
 proc restart*(clock: PClock): TTime {.
   cdecl, importc: "sfClock_restart", dynlib: LibS, discardable.}
-proc asSeconds*(time: TTime): cfloat {.
+proc asSeconds*(time: TTime): Cfloat {.
   cdecl, importc: "sfTime_asSeconds", dynlib: LibS.}
-proc asMilliseconds*(time: TTime): int32 {.
+proc asMilliseconds*(time: TTime): Int32 {.
   cdecl, importc: "sfTime_asMilliseconds", dynlib: LibS.}
-proc asMicroseconds*(time: TTime): int64 {.
+proc asMicroseconds*(time: TTime): Int64 {.
   cdecl, importc: "sfTime_asMicroseconds", dynlib: LibS.}
-proc seconds*(seconds: cfloat): TTime {.
+proc seconds*(seconds: Cfloat): TTime {.
   cdecl, importc: "sfSeconds", dynlib: LibS.}
-proc milliseconds*(ms: int32): TTime {.
+proc milliseconds*(ms: Int32): TTime {.
   cdecl, importc: "sfMilliseconds", dynlib: LibS.}
-proc microseconds*(us: int64): TTime {.
+proc microseconds*(us: Int64): TTime {.
   cdecl, importc: "sfMicroseconds", dynlib: LibS.}
 
-proc newContextSettings*(depthBits: cint = 0,
-                         stencilBits: cint = 0,
-                         antialiasingLevel: cint = 0,
-                         majorVersion: cint = 0,
-                         minorVersion: cint = 0): TContextSettings =
+proc newContextSettings*(depthBits: Cint = 0,
+                         stencilBits: Cint = 0,
+                         antialiasingLevel: Cint = 0,
+                         majorVersion: Cint = 0,
+                         minorVersion: Cint = 0): TContextSettings =
   result.depthBits = depthBits
   result.stencilBits = stencilBits
   result.antialiasingLevel = antialiasingLevel
   result.majorVersion = majorVersion
   result.minorVersion = minorVersion
 
-proc newCircleShape*(radius: cfloat; pointCount: cint = 30): PCircleShape = 
+proc newCircleShape*(radius: Cfloat; pointCount: Cint = 30): PCircleShape = 
   result = newCircleShape()
   result.setRadius radius
   result.setPointCount pointCount
-proc newText*(str: string, font: PFont, size: int): PText =
+proc newText*(str: String, font: PFont, size: Int): PText =
   result = newText()
   result.setString(str)
   result.setFont(font)
-  result.setCharacterSize(size.cint)
-proc newVertexArray*(primitiveType: TPrimitiveType, vertexCount: cint = 0): PVertexArray =
+  result.setCharacterSize(size.Cint)
+proc newVertexArray*(primitiveType: TPrimitiveType, vertexCount: Cint = 0): PVertexArray =
   result = newVertexArray()
   result.setPrimitiveType(primitiveType)
   if vertexCount != 0:
     result.resize(vertexCount)
-proc videoMode*(width, height, bpp: cint): TVideoMode =
+proc videoMode*(width, height, bpp: Cint): TVideoMode =
   result.width = width
   result.height = height
   result.bitsPerPixel = bpp
 
-proc `[]`*(a: PVertexArray, index: int): PVertex =
-  return getVertex(a, index.cint)
+proc `[]`*(a: PVertexArray, index: Int): PVertex =
+  return getVertex(a, index.Cint)
 
-proc `$` *(a: TContextSettings): string =
+proc `$` *(a: TContextSettings): String =
   return "<TContextSettings stencil=$1 aa=$2 major=$3 minor=$4 depth=$5>" % [
     $a.stencilBits, $a.antialiasingLevel, $a.majorVersion, $a.minorVersion, $a.depthBits]
-proc `$` *(a: TVideoMode): string = 
+proc `$` *(a: TVideoMode): String = 
   return "<TVideoMode $1x$2 $3bpp>" % [$a.width, $a.height, $a.bitsPerPixel]
-proc `$` *(a: TFloatRect): string = 
+proc `$` *(a: TFloatRect): String = 
   return "<TFloatRect $1,$2 $3x$4>" % [$a.left, $a.top, $a.width, $a.height]
-proc `$` *(a: PView): string = 
+proc `$` *(a: PView): String = 
   return $a.getViewport()
-proc `$` *(a: TVector2f): string = 
+proc `$` *(a: TVector2f): String = 
   return "<TVector2f $1,$2>" % [$a.x, $a.y]
 
-proc vec2i*(x, y: int): TVector2i =
-  result.x = x.cint
-  result.y = y.cint
-proc vec2f*(x, y: float): TVector2f =
-  result.x = x.cfloat
-  result.y = y.cfloat
+proc vec2i*(x, y: Int): TVector2i =
+  result.x = x.Cint
+  result.y = y.Cint
+proc vec2f*(x, y: Float): TVector2f =
+  result.x = x.Cfloat
+  result.y = y.Cfloat
 
 proc `+`*(a, b: TVector2f): TVector2f {.inline.} =
   result.x = a.x + b.x
@@ -1066,43 +1066,43 @@ proc `-`*(a: TVector2f): TVector2f {.inline.} =
 proc `-`*(a, b: TVector2f): TVector2f {.inline.}=
   result.x = a.x - b.x
   result.y = a.y - b.y
-proc `*`*(a: TVector2f, b: cfloat): TVector2f {.inline.} =
+proc `*`*(a: TVector2f, b: Cfloat): TVector2f {.inline.} =
   result.x = a.x * b
   result.y = a.y * b
 proc `*`*(a, b: TVector2f): TVector2f {.inline.} =
   result.x = a.x * b.x
   result.y = a.y * b.y
-proc `/`*(a: TVector2f, b: cfloat): TVector2f {.inline.} =
+proc `/`*(a: TVector2f, b: Cfloat): TVector2f {.inline.} =
   result.x = a.x / b
   result.y = a.y / b
 proc `+=` *(a: var TVector2f, b: TVector2f) {.inline, noSideEffect.} =
   a = a + b
 proc `-=` *(a: var TVector2f, b: TVector2f) {.inline, noSideEffect.} =
   a = a - b
-proc `*=` *(a: var TVector2f, b: float) {.inline, noSideEffect.} =
+proc `*=` *(a: var TVector2f, b: Float) {.inline, noSideEffect.} =
   a = a * b
 proc `*=` *(a: var TVector2f, b: TVector2f) {.inline, noSideEffect.} =
   a = a * b
-proc `/=` *(a: var TVector2f, b: float) {.inline, noSideEffect.} =
+proc `/=` *(a: var TVector2f, b: Float) {.inline, noSideEffect.} =
   a = a / b
-proc `<` *(a, b: TVector2f): bool {.inline, noSideEffect.} =
+proc `<` *(a, b: TVector2f): Bool {.inline, noSideEffect.} =
   return a.x < b.x or (a.x == b.x and a.y < b.y)
-proc `<=` *(a, b: TVector2f): bool {.inline, noSideEffect.} =
+proc `<=` *(a, b: TVector2f): Bool {.inline, noSideEffect.} =
   return a.x <= b.x and a.y <= b.y
-proc `==` *(a, b: TVector2f): bool {.inline, noSideEffect.} =
+proc `==` *(a, b: TVector2f): Bool {.inline, noSideEffect.} =
   return a.x == b.x and a.y == b.y
-proc length*(a: TVector2f): float {.inline.} =
+proc length*(a: TVector2f): Float {.inline.} =
   return sqrt(pow(a.x, 2.0) + pow(a.y, 2.0))
-proc lengthSq*(a: TVector2f): float {.inline.} =
+proc lengthSq*(a: TVector2f): Float {.inline.} =
   return pow(a.x, 2.0) + pow(a.y, 2.0)
-proc distanceSq*(a, b: TVector2f): float {.inline.} =
+proc distanceSq*(a, b: TVector2f): Float {.inline.} =
   return pow(a.x - b.x, 2.0) + pow(a.y - b.y, 2.0)
-proc distance*(a, b: TVector2f): float {.inline.} =
+proc distance*(a, b: TVector2f): Float {.inline.} =
   return sqrt(pow(a.x - b.x, 2.0) + pow(a.y - b.y, 2.0))
 proc permul*(a, b: TVector2f): TVector2f =
   result.x = a.x * b.x
   result.y = a.y * b.y
-proc rotate*(a: TVector2f, phi: float): TVector2f =
+proc rotate*(a: TVector2f, phi: Float): TVector2f =
   var c = cos(phi)
   var s = sin(phi)
   result.x = a.x * c - a.y * s
@@ -1110,6 +1110,6 @@ proc rotate*(a: TVector2f, phi: float): TVector2f =
 proc perpendicular(a: TVector2f): TVector2f =
   result.x = -a.x
   result.y =  a.y
-proc cross(a, b: TVector2f): float =
+proc cross(a, b: TVector2f): Float =
   return a.x * b.y - a.y * b.x
 

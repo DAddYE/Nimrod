@@ -20,7 +20,7 @@
 type
   TSemGenericFlag = enum
     withinBind, withinTypeDesc, withinMixin
-  TSemGenericFlags = set[TSemGenericFlag]
+  TSemGenericFlags = Set[TSemGenericFlag]
 
 proc getIdentNode(n: PNode): PNode =
   case n.kind
@@ -40,7 +40,7 @@ proc semGenericStmtScope(c: PContext, n: PNode,
   result = semGenericStmt(c, n, flags, ctx)
   closeScope(c)
 
-template macroToExpand(s: expr): expr =
+template macroToExpand(s: Expr): Expr =
   s.kind in {skMacro, skTemplate} and (s.typ.len == 1 or sfImmediate in s.flags)
 
 proc semGenericStmtSymbol(c: PContext, n: PNode, s: PSym): PNode = 
@@ -73,7 +73,7 @@ proc semGenericStmtSymbol(c: PContext, n: PNode, s: PSym): PNode =
       result = n
   else: result = newSymNode(s, n.info)
 
-proc Lookup(c: PContext, n: PNode, flags: TSemGenericFlags, 
+proc lookup(c: PContext, n: PNode, flags: TSemGenericFlags, 
             ctx: var TIntSet): PNode =
   result = n
   let ident = considerAcc(n)
@@ -96,7 +96,7 @@ proc semGenericStmt(c: PContext, n: PNode,
   if gCmd == cmdIdeTools: suggestStmt(c, n)
   case n.kind
   of nkIdent, nkAccQuoted:
-    result = Lookup(c, n, flags, ctx)
+    result = lookup(c, n, flags, ctx)
   of nkDotExpr:
     let luf = if withinMixin notin flags: {checkUndeclared} else: {}
     var s = QualifiedLookUp(c, n, luf)

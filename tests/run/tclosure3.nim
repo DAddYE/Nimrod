@@ -6,7 +6,7 @@ discard """
 proc main =
   const n = 30
   for iterations in 0..50_000:
-    var s: seq[proc(): string {.closure.}] = @[]
+    var s: Seq[proc(): String {.closure.}] = @[]
     for i in 0 .. n-1:
       let ii = i
       s.add(proc(): string = return $(ii*ii))

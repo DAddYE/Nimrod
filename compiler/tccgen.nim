@@ -12,7 +12,7 @@ import
 
 {.compile: "../tinyc/libtcc.c".}
 
-proc tinyCErrorHandler(closure: pointer, msg: cstring) {.cdecl.} = 
+proc tinyCErrorHandler(closure: Pointer, msg: Cstring) {.cdecl.} = 
   rawMessage(errGenerated, $msg)
   
 proc initTinyCState: PccState = 
@@ -23,7 +23,7 @@ var
   gTinyC = initTinyCState()
   libIncluded = false
 
-proc addFile(filename: string) =  
+proc addFile(filename: String) =  
   if addFile(gTinyC, filename) != 0'i32:
     rawMessage(errCannotOpenFile, filename)
 
@@ -62,17 +62,17 @@ proc setupEnvironment =
     when defined(amd64):
       addSysincludePath(gTinyC, "/usr/include/x86_64-linux-gnu")
 
-proc compileCCode*(ccode: string) = 
+proc compileCCode*(ccode: String) = 
   if not libIncluded:
     libIncluded = true
     setupEnvironment()
   discard compileString(gTinyC, ccode)
   
 proc run*() =
-  var a: array[0..1, cstring]
+  var a: Array[0..1, Cstring]
   a[0] = ""
   a[1] = ""
-  var err = tinyc.run(gTinyC, 0'i32, cast[cstringArray](addr(a))) != 0'i32
+  var err = tinyc.run(gTinyC, 0'i32, cast[CstringArray](addr(a))) != 0'i32
   closeCCState(gTinyC)
   if err: rawMessage(errExecutionOfProgramFailed, "")
 

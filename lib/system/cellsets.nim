@@ -10,7 +10,7 @@
 # Efficient set of pointers for the GC (and repr)
 
 type
-  TRefCount = int
+  TRefCount = Int
 
   TCell {.pure.} = object
     refcount: TRefCount  # the refcount and some flags
@@ -22,48 +22,48 @@ type
   PCell = ptr TCell
 
   PPageDesc = ptr TPageDesc
-  TBitIndex = range[0..UnitsPerPage-1]
+  TBitIndex = Range[0..UnitsPerPage-1]
   TPageDesc {.final, pure.} = object
     next: PPageDesc # all nodes are connected with this pointer
     key: TAddress   # start address at bit 0
-    bits: array[TBitIndex, int] # a bit vector
+    bits: Array[TBitIndex, Int] # a bit vector
 
-  PPageDescArray = ptr array[0..1000_000, PPageDesc]
+  PPageDescArray = ptr Array[0..1000_000, PPageDesc]
   TCellSet {.final, pure.} = object
-    counter, max: int
+    counter, max: Int
     head: PPageDesc
     data: PPageDescArray
 
-  PCellArray = ptr array[0..100_000_000, PCell]
+  PCellArray = ptr Array[0..100_000_000, PCell]
   TCellSeq {.final, pure.} = object
-    len, cap: int
+    len, cap: Int
     d: PCellArray
 
 # ------------------- cell seq handling ---------------------------------------
 
-proc contains(s: TCellSeq, c: PCell): bool {.inline.} =
+proc contains(s: TCellSeq, c: PCell): Bool {.inline.} =
   for i in 0 .. s.len-1:
-    if s.d[i] == c: return True
-  return False
+    if s.d[i] == c: return true
+  return false
 
 proc add(s: var TCellSeq, c: PCell) {.inline.} =
   if s.len >= s.cap:
     s.cap = s.cap * 3 div 2
-    var d = cast[PCellArray](Alloc(s.cap * sizeof(PCell)))
+    var d = cast[PCellArray](alloc(s.cap * sizeof(PCell)))
     copyMem(d, s.d, s.len * sizeof(PCell))
-    Dealloc(s.d)
+    dealloc(s.d)
     s.d = d
     # XXX: realloc?
   s.d[s.len] = c
   inc(s.len)
 
-proc init(s: var TCellSeq, cap: int = 1024) =
+proc init(s: var TCellSeq, cap: Int = 1024) =
   s.len = 0
   s.cap = cap
-  s.d = cast[PCellArray](Alloc0(cap * sizeof(PCell)))
+  s.d = cast[PCellArray](alloc0(cap * sizeof(PCell)))
 
 proc deinit(s: var TCellSeq) = 
-  Dealloc(s.d)
+  dealloc(s.d)
   s.d = nil
   s.len = 0
   s.cap = 0
@@ -73,56 +73,56 @@ proc deinit(s: var TCellSeq) =
 const
   InitCellSetSize = 1024 # must be a power of two!
 
-proc Init(s: var TCellSet) =
-  s.data = cast[PPageDescArray](Alloc0(InitCellSetSize * sizeof(PPageDesc)))
+proc init(s: var TCellSet) =
+  s.data = cast[PPageDescArray](alloc0(InitCellSetSize * sizeof(PPageDesc)))
   s.max = InitCellSetSize-1
   s.counter = 0
   s.head = nil
 
-proc Deinit(s: var TCellSet) =
+proc deinit(s: var TCellSet) =
   var it = s.head
   while it != nil:
     var n = it.next
-    Dealloc(it)
+    dealloc(it)
     it = n
   s.head = nil # play it safe here
-  Dealloc(s.data)
+  dealloc(s.data)
   s.data = nil
   s.counter = 0
 
-proc nextTry(h, maxHash: int): int {.inline.} =
+proc nextTry(h, maxHash: Int): Int {.inline.} =
   result = ((5*h) + 1) and maxHash
   # For any initial h in range(maxHash), repeating that maxHash times
   # generates each int in range(maxHash) exactly once (see any text on
   # random-number generation for proof).
   
-proc CellSetGet(t: TCellSet, key: TAddress): PPageDesc =
-  var h = cast[int](key) and t.max
+proc cellSetGet(t: TCellSet, key: TAddress): PPageDesc =
+  var h = cast[Int](key) and t.max
   while t.data[h] != nil:
     if t.data[h].key == key: return t.data[h]
     h = nextTry(h, t.max)
   return nil
 
-proc CellSetRawInsert(t: TCellSet, data: PPageDescArray, desc: PPageDesc) =
-  var h = cast[int](desc.key) and t.max
+proc cellSetRawInsert(t: TCellSet, data: PPageDescArray, desc: PPageDesc) =
+  var h = cast[Int](desc.key) and t.max
   while data[h] != nil:
     sysAssert(data[h] != desc, "CellSetRawInsert 1")
     h = nextTry(h, t.max)
   sysAssert(data[h] == nil, "CellSetRawInsert 2")
   data[h] = desc
 
-proc CellSetEnlarge(t: var TCellSet) =
+proc cellSetEnlarge(t: var TCellSet) =
   var oldMax = t.max
   t.max = ((t.max+1)*2)-1
-  var n = cast[PPageDescArray](Alloc0((t.max + 1) * sizeof(PPageDesc)))
-  for i in 0 .. oldmax:
+  var n = cast[PPageDescArray](alloc0((t.max + 1) * sizeof(PPageDesc)))
+  for i in 0 .. oldMax:
     if t.data[i] != nil:
-      CellSetRawInsert(t, n, t.data[i])
-  Dealloc(t.data)
+      cellSetRawInsert(t, n, t.data[i])
+  dealloc(t.data)
   t.data = n
 
-proc CellSetPut(t: var TCellSet, key: TAddress): PPageDesc =
-  var h = cast[int](key) and t.max
+proc cellSetPut(t: var TCellSet, key: TAddress): PPageDesc =
+  var h = cast[Int](key) and t.max
   while true:
     var x = t.data[h]
     if x == nil: break
@@ -130,13 +130,13 @@ proc CellSetPut(t: var TCellSet, key: TAddress): PPageDesc =
     h = nextTry(h, t.max)
 
   if ((t.max+1)*2 < t.counter*3) or ((t.max+1)-t.counter < 4):
-    CellSetEnlarge(t)
+    cellSetEnlarge(t)
   inc(t.counter)
-  h = cast[int](key) and t.max
+  h = cast[Int](key) and t.max
   while t.data[h] != nil: h = nextTry(h, t.max)
   sysAssert(t.data[h] == nil, "CellSetPut")
   # the new page descriptor goes into result
-  result = cast[PPageDesc](Alloc0(sizeof(TPageDesc)))
+  result = cast[PPageDesc](alloc0(sizeof(TPageDesc)))
   result.next = t.head
   result.key = key
   t.head = result
@@ -144,9 +144,9 @@ proc CellSetPut(t: var TCellSet, key: TAddress): PPageDesc =
 
 # ---------- slightly higher level procs --------------------------------------
 
-proc contains(s: TCellSet, cell: PCell): bool =
+proc contains(s: TCellSet, cell: PCell): Bool =
   var u = cast[TAddress](cell)
-  var t = CellSetGet(s, u shr PageShift)
+  var t = cellSetGet(s, u shr PageShift)
   if t != nil:
     u = (u %% PageSize) /% MemAlign
     result = (t.bits[u shr IntShift] and (1 shl (u and IntMask))) != 0
@@ -155,21 +155,21 @@ proc contains(s: TCellSet, cell: PCell): bool =
 
 proc incl(s: var TCellSet, cell: PCell) {.noinline.} =
   var u = cast[TAddress](cell)
-  var t = CellSetPut(s, u shr PageShift)
+  var t = cellSetPut(s, u shr PageShift)
   u = (u %% PageSize) /% MemAlign
   t.bits[u shr IntShift] = t.bits[u shr IntShift] or (1 shl (u and IntMask))
 
 proc excl(s: var TCellSet, cell: PCell) =
   var u = cast[TAddress](cell)
-  var t = CellSetGet(s, u shr PageShift)
+  var t = cellSetGet(s, u shr PageShift)
   if t != nil:
     u = (u %% PageSize) /% MemAlign
     t.bits[u shr IntShift] = (t.bits[u shr IntShift] and
                               not (1 shl (u and IntMask)))
 
-proc containsOrIncl(s: var TCellSet, cell: PCell): bool = 
+proc containsOrIncl(s: var TCellSet, cell: PCell): Bool = 
   var u = cast[TAddress](cell)
-  var t = CellSetGet(s, u shr PageShift)
+  var t = cellSetGet(s, u shr PageShift)
   if t != nil:
     u = (u %% PageSize) /% MemAlign
     result = (t.bits[u shr IntShift] and (1 shl (u and IntMask))) != 0
@@ -177,7 +177,7 @@ proc containsOrIncl(s: var TCellSet, cell: PCell): bool =
       t.bits[u shr IntShift] = t.bits[u shr IntShift] or
           (1 shl (u and IntMask))
   else: 
-    Incl(s, cell)
+    incl(s, cell)
     result = false
 
 iterator elements(t: TCellSet): PCell {.inline.} =
@@ -201,7 +201,7 @@ iterator elements(t: TCellSet): PCell {.inline.} =
 iterator elementsExcept(t, s: TCellSet): PCell {.inline.} =
   var r = t.head
   while r != nil:
-    let ss = CellSetGet(s, r.key)
+    let ss = cellSetGet(s, r.key)
     var i = 0
     while i <= high(r.bits):
       var w = r.bits[i]

@@ -1,5 +1,5 @@
 
-iterator fibonacci(): int = 
+iterator fibonacci(): Int = 
   var a = 0
   var b = 1
   while true: 

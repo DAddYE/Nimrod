@@ -4,7 +4,7 @@ s = socket()
 
 s.connect("www.google.com", TPort(80))
 
-var data: string = ""
+var data: String = ""
 s.readLine(data)
 echo(data)
 

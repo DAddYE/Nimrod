@@ -4,9 +4,9 @@ discard """
   errormsg: "type mismatch: got (typedesc[float], string)"
 """
 
-proc foo(T: typedesc; some: T) =
+proc foo(T: TypeDesc; some: T) =
   echo($some)
 
-foo int, 4
+foo Int, 4
 foo float, "bad"
 

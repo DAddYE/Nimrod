@@ -11,7 +11,7 @@
 
 import idents, strutils, os, options
 
-var gFrontEndId, gBackendId*: int
+var gFrontEndId, gBackendId*: Int
 
 const
   debugIds* = false
@@ -26,33 +26,33 @@ proc registerID*(id: PIdObj) =
     if id.id == -1 or ContainsOrIncl(usedIds, id.id): 
       InternalError("ID already used: " & $id.id)
 
-proc getID*(): int {.inline.} = 
+proc getID*(): Int {.inline.} = 
   result = gFrontEndId
   inc(gFrontEndId)
 
-proc backendId*(): int {.inline.} = 
+proc backendId*(): Int {.inline.} = 
   result = gBackendId
   inc(gBackendId)
 
-proc setId*(id: int) {.inline.} = 
+proc setId*(id: Int) {.inline.} = 
   gFrontEndId = max(gFrontEndId, id + 1)
 
-proc IDsynchronizationPoint*(idRange: int) = 
-  gFrontEndId = (gFrontEndId div IdRange + 1) * IdRange + 1
+proc iDsynchronizationPoint*(idRange: Int) = 
+  gFrontEndId = (gFrontEndId div idRange + 1) * idRange + 1
 
-proc toGid(f: string): string =
+proc toGid(f: String): String =
   # we used to use ``f.addFileExt("gid")`` (aka ``$project.gid``), but this
   # will cause strange bugs if multiple projects are in the same folder, so
   # we simply use a project independent name:
   result = options.completeGeneratedFilePath("nimrod.gid")
 
-proc saveMaxIds*(project: string) =
+proc saveMaxIds*(project: String) =
   var f = open(project.toGid, fmWrite)
   f.writeln($gFrontEndId)
-  f.writeln($gBackEndId)
+  f.writeln($gBackendId)
   f.close()
   
-proc loadMaxIds*(project: string) =
+proc loadMaxIds*(project: String) =
   var f: TFile
   if open(f, project.toGid, fmRead):
     var line = newStringOfCap(20)
@@ -61,5 +61,5 @@ proc loadMaxIds*(project: string) =
       if f.readLine(line):
         var backEndId = parseInt(line)
         gFrontEndId = max(gFrontEndId, frontEndId)
-        gBackEndId = max(gBackEndId, backEndId)
+        gBackendId = max(gBackendId, backEndId)
     f.close()

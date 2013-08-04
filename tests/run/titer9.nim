@@ -4,14 +4,14 @@ discard """
 0'''
 """
 
-iterator count[T](x: T, skip: bool): int {.closure.} =
+iterator count[T](x: T, skip: Bool): Int {.closure.} =
   if skip: return x+10
   else: yield x+1
 
   if skip: return x+10
   else: yield x+2
 
-proc takeProc[T](x: iterator (x: T, skip: bool): int) =
+proc takeProc[T](x: iterator (x: T, skip: Bool): Int) =
   echo x(4, false)
   echo x(4, true)
   echo x(4, false)

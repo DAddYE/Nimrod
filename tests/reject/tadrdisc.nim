@@ -9,9 +9,9 @@ type
   TKind = enum ka, kb, kc
   TA = object
     case k: TKind
-    of ka: x, y: int
-    of kb: a, b: string
-    of kc: c, d: float
+    of ka: x, y: Int
+    of kb: a, b: String
+    of kc: c, d: Float
     
 proc setKind(k: var TKind) = 
   k = kc

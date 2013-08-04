@@ -5,7 +5,7 @@ discard """
 
 type
   TObj = object
-    x, y: int
+    x, y: Int
   PObj = ref TObj
 
 proc p(a: PObj) =

@@ -8,12 +8,12 @@ import macros
 
 var gid {.compileTime.} = 3
 
-macro genId(): expr =
+macro genId(): Expr =
   result = newIntLitNode(gid)
   inc gid
 
-proc Id1(): int {.compileTime.} = return genId()
-proc Id2(): int {.compileTime.} = return genId()
+proc id1(): Int {.compileTime.} = return genId()
+proc id2(): Int {.compileTime.} = return genId()
 
 echo Id1(), " ", Id2()
 

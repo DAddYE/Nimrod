@@ -4,20 +4,20 @@ discard """
 
 type
   Module = object
-    nodes*: seq[PNode]
-    id: int
+    nodes*: Seq[PNode]
+    id: Int
 
   PModule = ref Module
 
   Node = object
     owner*: PModule
-    data*: array[0..200, char] # some fat to drain memory faster
-    id: int
+    data*: Array[0..200, Char] # some fat to drain memory faster
+    id: Int
 
   PNode = ref Node
 
 var
-  gid: int
+  gid: Int
 
 when false:
   proc finalizeNode(x: PNode) =
@@ -45,7 +45,7 @@ proc loop =
   for i in 0..1000:
     gModuleCache = compileModule()
     gModuleCache = nil
-    GC_fullCollect()
+    gCFullCollect()
 
     if getOccupiedMem() > 9_000_000:
       echo "still a leak! ", getOccupiedMem()

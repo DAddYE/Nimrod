@@ -17,37 +17,37 @@ proc raiseOverflow {.compilerproc, noinline, noreturn.} =
 proc raiseDivByZero {.compilerproc, noinline, noreturn.} =
   sysFatal(EDivByZero, "divison by zero")
 
-proc addInt64(a, b: int64): int64 {.compilerProc, inline.} =
+proc addInt64(a, b: Int64): Int64 {.compilerProc, inline.} =
   result = a +% b
-  if (result xor a) >= int64(0) or (result xor b) >= int64(0):
+  if (result xor a) >= Int64(0) or (result xor b) >= Int64(0):
     return result
   raiseOverflow()
 
-proc subInt64(a, b: int64): int64 {.compilerProc, inline.} =
+proc subInt64(a, b: Int64): Int64 {.compilerProc, inline.} =
   result = a -% b
-  if (result xor a) >= int64(0) or (result xor not b) >= int64(0):
+  if (result xor a) >= Int64(0) or (result xor not b) >= Int64(0):
     return result
   raiseOverflow()
 
-proc negInt64(a: int64): int64 {.compilerProc, inline.} =
-  if a != low(int64): return -a
+proc negInt64(a: Int64): Int64 {.compilerProc, inline.} =
+  if a != low(Int64): return -a
   raiseOverflow()
 
-proc absInt64(a: int64): int64 {.compilerProc, inline.} =
-  if a != low(int64):
+proc absInt64(a: Int64): Int64 {.compilerProc, inline.} =
+  if a != low(Int64):
     if a >= 0: return a
     else: return -a
   raiseOverflow()
 
-proc divInt64(a, b: int64): int64 {.compilerProc, inline.} =
-  if b == int64(0):
+proc divInt64(a, b: Int64): Int64 {.compilerProc, inline.} =
+  if b == Int64(0):
     raiseDivByZero()
-  if a == low(int64) and b == int64(-1):
+  if a == low(Int64) and b == Int64(-1):
     raiseOverflow()
   return a div b
 
-proc modInt64(a, b: int64): int64 {.compilerProc, inline.} =
-  if b == int64(0):
+proc modInt64(a, b: Int64): Int64 {.compilerProc, inline.} =
+  if b == Int64(0):
     raiseDivByZero()
   return a mod b
 
@@ -71,9 +71,9 @@ proc modInt64(a, b: int64): int64 {.compilerProc, inline.} =
 # one that can lose catastrophic amounts of information, it's the native int
 # product that must have overflowed.
 #
-proc mulInt64(a, b: int64): int64 {.compilerproc.} =
+proc mulInt64(a, b: Int64): Int64 {.compilerproc.} =
   var
-    resAsFloat, floatProd: float64
+    resAsFloat, floatProd: Float64
   result = a *% b
   floatProd = toBiggestFloat(a) # conversion
   floatProd = floatProd * toBiggestFloat(b)
@@ -95,8 +95,8 @@ proc mulInt64(a, b: int64): int64 {.compilerproc.} =
   raiseOverflow()
 
 
-proc absInt(a: int): int {.compilerProc, inline.} =
-  if a != low(int):
+proc absInt(a: Int): Int {.compilerProc, inline.} =
+  if a != low(Int):
     if a >= 0: return a
     else: return -a
   raiseOverflow()
@@ -242,34 +242,34 @@ elif false: # asmVersion and (defined(gcc) or defined(llvm_gcc)):
 
 # Platform independent versions of the above (slower!)
 when not defined(addInt):
-  proc addInt(a, b: int): int {.compilerProc, inline.} =
+  proc addInt(a, b: Int): Int {.compilerProc, inline.} =
     result = a +% b
     if (result xor a) >= 0 or (result xor b) >= 0:
       return result
     raiseOverflow()
 
 when not defined(subInt):
-  proc subInt(a, b: int): int {.compilerProc, inline.} =
+  proc subInt(a, b: Int): Int {.compilerProc, inline.} =
     result = a -% b
     if (result xor a) >= 0 or (result xor not b) >= 0:
       return result
     raiseOverflow()
 
 when not defined(negInt):
-  proc negInt(a: int): int {.compilerProc, inline.} =
-    if a != low(int): return -a
+  proc negInt(a: Int): Int {.compilerProc, inline.} =
+    if a != low(Int): return -a
     raiseOverflow()
 
 when not defined(divInt):
-  proc divInt(a, b: int): int {.compilerProc, inline.} =
+  proc divInt(a, b: Int): Int {.compilerProc, inline.} =
     if b == 0:
       raiseDivByZero()
-    if a == low(int) and b == -1:
+    if a == low(Int) and b == -1:
       raiseOverflow()
     return a div b
 
 when not defined(modInt):
-  proc modInt(a, b: int): int {.compilerProc, inline.} =
+  proc modInt(a, b: Int): Int {.compilerProc, inline.} =
     if b == 0:
       raiseDivByZero()
     return a mod b
@@ -295,9 +295,9 @@ when not defined(mulInt):
   # the only one that can lose catastrophic amounts of information, it's the
   # native int product that must have overflowed.
   #
-  proc mulInt(a, b: int): int {.compilerProc.} =
+  proc mulInt(a, b: Int): Int {.compilerProc.} =
     var
-      resAsFloat, floatProd: float
+      resAsFloat, floatProd: Float
 
     result = a *% b
     floatProd = toFloat(a) * toFloat(b)
@@ -324,14 +324,14 @@ when not defined(mulInt):
 proc raiseFloatInvalidOp {.noinline, noreturn.} =
   sysFatal(EFloatInvalidOp, "FPU operation caused a NaN result")
 
-proc nanCheck(x: float64) {.compilerProc, inline.} =
+proc nanCheck(x: Float64) {.compilerProc, inline.} =
   if x != x: raiseFloatInvalidOp()
 
-proc raiseFloatOverflow(x: float64) {.noinline, noreturn.} =
+proc raiseFloatOverflow(x: Float64) {.noinline, noreturn.} =
   if x > 0.0:
     sysFatal(EFloatOverflow, "FPU operation caused an overflow")
   else:
     sysFatal(EFloatUnderflow, "FPU operations caused an underflow")
 
-proc infCheck(x: float64) {.compilerProc, inline.} =
+proc infCheck(x: Float64) {.compilerProc, inline.} =
   if x != 0.0 and x*0.5 == x: raiseFloatOverflow(x)

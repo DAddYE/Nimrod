@@ -3,7 +3,7 @@ type
     PNode = ref TNode
     TNode = tuple # comment
       self: PNode # comment
-      a, b: int # comment
+      a, b: Int # comment
 
 var node: PNode
 new(node)

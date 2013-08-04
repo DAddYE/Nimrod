@@ -10,9 +10,9 @@
 ## Serialization utilities for the compiler.
 import strutils
 
-proc c_sprintf(buf, frmt: cstring) {.importc: "sprintf", nodecl, varargs.}
+proc cSprintf(buf, frmt: Cstring) {.importc: "sprintf", nodecl, varargs.}
 
-proc ToStrMaxPrecision*(f: BiggestFloat): string = 
+proc toStrMaxPrecision*(f: BiggestFloat): String = 
   if f != f:
     result = "NAN"
   elif f == 0.0:
@@ -21,24 +21,24 @@ proc ToStrMaxPrecision*(f: BiggestFloat): string =
     if f > 0.0: result = "INF"
     else: result = "-INF"
   else:
-    var buf: array [0..80, char]    
-    c_sprintf(buf, "%#.16e", f) 
+    var buf: Array [0..80, Char]    
+    cSprintf(buf, "%#.16e", f) 
     result = $buf
 
-proc encodeStr*(s: string, result: var string) =
+proc encodeStr*(s: String, result: var String) =
   for i in countup(0, len(s) - 1): 
     case s[i]
     of 'a'..'z', 'A'..'Z', '0'..'9', '_': add(result, s[i])
     else: add(result, '\\' & toHex(ord(s[i]), 2))
 
-proc hexChar(c: char, xi: var int) = 
+proc hexChar(c: Char, xi: var Int) = 
   case c
   of '0'..'9': xi = (xi shl 4) or (ord(c) - ord('0'))
   of 'a'..'f': xi = (xi shl 4) or (ord(c) - ord('a') + 10)
   of 'A'..'F': xi = (xi shl 4) or (ord(c) - ord('A') + 10)
   else: nil
 
-proc decodeStr*(s: cstring, pos: var int): string =
+proc decodeStr*(s: Cstring, pos: var Int): String =
   var i = pos
   result = ""
   while true: 
@@ -64,8 +64,8 @@ const
 const
   vintDelta = 5
 
-template encodeIntImpl(self: expr) =
-  var d: char
+template encodeIntImpl(self: Expr) =
+  var d: Char
   var v = x
   var rem = v mod 190
   if rem < 0: 
@@ -74,26 +74,26 @@ template encodeIntImpl(self: expr) =
     rem = - rem
   else: 
     v = v div 190
-  var idx = int(rem)
+  var idx = Int(rem)
   if idx < 62: d = chars[idx]
   else: d = chr(idx - 62 + 128)
   if v != 0: self(v, result)
   add(result, d)
 
-proc encodeVBiggestIntAux(x: BiggestInt, result: var string) =
+proc encodeVBiggestIntAux(x: BiggestInt, result: var String) =
   ## encode a biggest int as a variable length base 190 int.
   encodeIntImpl(encodeVBiggestIntAux)
 
-proc encodeVBiggestInt*(x: BiggestInt, result: var string) =
+proc encodeVBiggestInt*(x: BiggestInt, result: var String) =
   ## encode a biggest int as a variable length base 190 int.
   encodeVBiggestIntAux(x +% vintDelta, result)
   #  encodeIntImpl(encodeVBiggestInt)
 
-proc encodeVIntAux(x: int, result: var string) = 
+proc encodeVIntAux(x: Int, result: var String) = 
   ## encode an int as a variable length base 190 int.
   encodeIntImpl(encodeVIntAux)
   
-proc encodeVInt*(x: int, result: var string) = 
+proc encodeVInt*(x: Int, result: var String) = 
   ## encode an int as a variable length base 190 int.
   encodeVIntAux(x +% vintDelta, result)
 
@@ -116,19 +116,19 @@ template decodeIntImpl() =
   result = result * sign -% vintDelta
   pos = i
 
-proc decodeVInt*(s: cstring, pos: var int): int = 
+proc decodeVInt*(s: Cstring, pos: var Int): Int = 
   decodeIntImpl()
 
-proc decodeVBiggestInt*(s: cstring, pos: var int): biggestInt =
+proc decodeVBiggestInt*(s: Cstring, pos: var Int): BiggestInt =
   decodeIntImpl()
 
-iterator decodeVIntArray*(s: cstring): int =
+iterator decodeVIntArray*(s: Cstring): Int =
   var i = 0
   while s[i] != '\0':
     yield decodeVInt(s, i)
     if s[i] == ' ': inc i
 
-iterator decodeStrArray*(s: cstring): string =
+iterator decodeStrArray*(s: Cstring): String =
   var i = 0
   while s[i] != '\0':
     yield decodeStr(s, i)

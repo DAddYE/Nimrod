@@ -27,7 +27,7 @@ var
     # the arguments to be passed to the program that
     # should be run
 
-proc ProcessCmdLine*(pass: TCmdLinePass, cmd: string) =
+proc processCmdLine*(pass: TCmdLinePass, cmd: String) =
   var p = parseopt.initOptParser(cmd)
   var argsCount = 0
   while true: 
@@ -41,9 +41,9 @@ proc ProcessCmdLine*(pass: TCmdLinePass, cmd: string) =
       if bracketLe >= 0: 
         var key = substr(p.key, 0, bracketLe - 1)
         var val = substr(p.key, bracketLe + 1) & ':' & p.val
-        ProcessSwitch(key, val, pass, gCmdLineInfo)
+        processSwitch(key, val, pass, gCmdLineInfo)
       else: 
-        ProcessSwitch(p.key, p.val, pass, gCmdLineInfo)
+        processSwitch(p.key, p.val, pass, gCmdLineInfo)
     of cmdArgument:
       if argsCount == 0:
         options.command = p.key
@@ -73,14 +73,14 @@ proc serve*(action: proc (){.nimcall.}) =
   case typ
   of "stdin":
     while true:
-      var line = stdin.readLine.string
+      var line = stdin.readLine.String
       if line == "quit": quit()
       execute line
       echo ""
-      FlushFile(stdout)
+      flushFile(stdout)
 
   of "tcp", "":
-    var server = Socket()
+    var server = socket()
     let p = getConfigVar("server.port")
     let port = if p.len > 0: parseInt(p).TPort else: 6000.TPort
     server.bindAddr(port, getConfigVar("server.address"))
@@ -90,7 +90,7 @@ proc serve*(action: proc (){.nimcall.}) =
     while true:
       accept(server, stdoutSocket)
       stdoutSocket.readLine(inp)
-      execute inp.string
+      execute inp.String
       stdoutSocket.send("\c\L")
       stdoutSocket.close()
   else:

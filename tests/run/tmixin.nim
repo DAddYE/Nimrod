@@ -4,14 +4,14 @@ discard """
 
 type
   TFoo1 = object of TObject
-    v: int
+    v: Int
   TFoo2 = object of TFoo1
-    v2: int
+    v2: Int
 
 proc test(f: TFoo1) =
   echo "1"
 
-proc Foo[T](f: T) =
+proc foo[T](f: T) =
   mixin test
   test(f)
 
@@ -23,5 +23,5 @@ var
 proc test(f: TFoo2) =
   echo "2"
 
-Foo(a)
-Foo(b)
+foo(a)
+foo(b)

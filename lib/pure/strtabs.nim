@@ -22,32 +22,32 @@ type
     modeCaseSensitive,        ## the table is case sensitive
     modeCaseInsensitive,      ## the table is case insensitive
     modeStyleInsensitive      ## the table is style insensitive
-  TKeyValuePair = tuple[key, val: string]
-  TKeyValuePairSeq = seq[TKeyValuePair]
+  TKeyValuePair = tuple[key, val: String]
+  TKeyValuePairSeq = Seq[TKeyValuePair]
   TStringTable* = object of TObject
-    counter: int
+    counter: Int
     data: TKeyValuePairSeq
     mode: TStringTableMode
 
   PStringTable* = ref TStringTable ## use this type to declare string tables
 
-proc len*(t: PStringTable): int {.rtl, extern: "nst$1".} =
+proc len*(t: PStringTable): Int {.rtl, extern: "nst$1".} =
   ## returns the number of keys in `t`.
   result = t.counter
 
-iterator pairs*(t: PStringTable): tuple[key, value: string] =
+iterator pairs*(t: PStringTable): tuple[key, value: String] =
   ## iterates over every (key, value) pair in the table `t`.
   for h in 0..high(t.data):
     if not isNil(t.data[h].key):
       yield (t.data[h].key, t.data[h].val)
 
-iterator keys*(t: PStringTable): string =
+iterator keys*(t: PStringTable): String =
   ## iterates over every key in the table `t`.
   for h in 0..high(t.data):
     if not isNil(t.data[h].key):
       yield t.data[h].key
 
-iterator values*(t: PStringTable): string =
+iterator values*(t: PStringTable): String =
   ## iterates over every value in the table `t`.
   for h in 0..high(t.data):
     if not isNil(t.data[h].key):
@@ -69,87 +69,87 @@ const
   growthFactor = 2
   startSize = 64
 
-proc myhash(t: PStringTable, key: string): THash =
+proc myhash(t: PStringTable, key: String): THash =
   case t.mode
   of modeCaseSensitive: result = hashes.hash(key)
   of modeCaseInsensitive: result = hashes.hashIgnoreCase(key)
   of modeStyleInsensitive: result = hashes.hashIgnoreStyle(key)
 
-proc myCmp(t: PStringTable, a, b: string): bool =
+proc myCmp(t: PStringTable, a, b: String): Bool =
   case t.mode
   of modeCaseSensitive: result = cmp(a, b) == 0
   of modeCaseInsensitive: result = cmpIgnoreCase(a, b) == 0
   of modeStyleInsensitive: result = cmpIgnoreStyle(a, b) == 0
 
-proc mustRehash(length, counter: int): bool =
+proc mustRehash(length, counter: Int): Bool =
   assert(length > counter)
   result = (length * 2 < counter * 3) or (length - counter < 4)
 
 proc nextTry(h, maxHash: THash): THash {.inline.} =
   result = ((5 * h) + 1) and maxHash
 
-proc RawGet(t: PStringTable, key: string): int =
+proc rawGet(t: PStringTable, key: String): Int =
   var h: THash = myhash(t, key) and high(t.data) # start with real hash value
   while not isNil(t.data[h].key):
-    if mycmp(t, t.data[h].key, key):
+    if myCmp(t, t.data[h].key, key):
       return h
     h = nextTry(h, high(t.data))
   result = - 1
 
-proc `[]`*(t: PStringTable, key: string): string {.rtl, extern: "nstGet".} =
+proc `[]`*(t: PStringTable, key: String): String {.rtl, extern: "nstGet".} =
   ## retrieves the value at ``t[key]``. If `key` is not in `t`, "" is returned
   ## and no exception is raised. One can check with ``hasKey`` whether the key
   ## exists.
-  var index = RawGet(t, key)
+  var index = rawGet(t, key)
   if index >= 0: result = t.data[index].val
   else: result = ""
 
-proc mget*(t: PStringTable, key: string): var string {.
+proc mget*(t: PStringTable, key: String): var String {.
              rtl, extern: "nstTake".} =
   ## retrieves the location at ``t[key]``. If `key` is not in `t`, the
   ## ``EInvalidKey`` exception is raised.
-  var index = RawGet(t, key)
+  var index = rawGet(t, key)
   if index >= 0: result = t.data[index].val
   else: raise newException(EInvalidKey, "key does not exist: " & key)
 
-proc hasKey*(t: PStringTable, key: string): bool {.rtl, extern: "nst$1".} =
+proc hasKey*(t: PStringTable, key: String): Bool {.rtl, extern: "nst$1".} =
   ## returns true iff `key` is in the table `t`.
   result = rawGet(t, key) >= 0
 
-proc RawInsert(t: PStringTable, data: var TKeyValuePairSeq, key, val: string) =
+proc rawInsert(t: PStringTable, data: var TKeyValuePairSeq, key, val: String) =
   var h: THash = myhash(t, key) and high(data)
   while not isNil(data[h].key):
     h = nextTry(h, high(data))
   data[h].key = key
   data[h].val = val
 
-proc Enlarge(t: PStringTable) =
+proc enlarge(t: PStringTable) =
   var n: TKeyValuePairSeq
   newSeq(n, len(t.data) * growthFactor)
   for i in countup(0, high(t.data)):
-    if not isNil(t.data[i].key): RawInsert(t, n, t.data[i].key, t.data[i].val)
+    if not isNil(t.data[i].key): rawInsert(t, n, t.data[i].key, t.data[i].val)
   swap(t.data, n)
 
-proc `[]=`*(t: PStringTable, key, val: string) {.rtl, extern: "nstPut".} =
+proc `[]=`*(t: PStringTable, key, val: String) {.rtl, extern: "nstPut".} =
   ## puts a (key, value)-pair into `t`.
-  var index = RawGet(t, key)
+  var index = rawGet(t, key)
   if index >= 0:
     t.data[index].val = val
   else:
-    if mustRehash(len(t.data), t.counter): Enlarge(t)
-    RawInsert(t, t.data, key, val)
+    if mustRehash(len(t.data), t.counter): enlarge(t)
+    rawInsert(t, t.data, key, val)
     inc(t.counter)
 
-proc RaiseFormatException(s: string) =
+proc raiseFormatException(s: String) =
   var e: ref EInvalidValue
   new(e)
   e.msg = "format string: key not found: " & s
   raise e
 
-proc getValue(t: PStringTable, flags: set[TFormatFlag], key: string): string =
+proc getValue(t: PStringTable, flags: Set[TFormatFlag], key: String): String =
   if hasKey(t, key): return t[key]
   # hm difficult: assume safety in taint mode here. XXX This is dangerous!
-  if useEnvironment in flags: result = os.getEnv(key).string
+  if useEnvironment in flags: result = os.getEnv(key).String
   else: result = ""
   if result.len == 0:
     if useKey in flags: result = '$' & key
@@ -163,7 +163,7 @@ proc newStringTable*(mode: TStringTableMode): PStringTable {.
   result.counter = 0
   newSeq(result.data, startSize)
 
-proc newStringTable*(keyValuePairs: varargs[string],
+proc newStringTable*(keyValuePairs: Varargs[String],
                      mode: TStringTableMode): PStringTable {.
   rtl, extern: "nst$1WithPairs".} =
   ## creates a new string table with given key value pairs.
@@ -176,7 +176,7 @@ proc newStringTable*(keyValuePairs: varargs[string],
     result[keyValuePairs[i]] = keyValuePairs[i + 1]
     inc(i, 2)
 
-proc newStringTable*(keyValuePairs: varargs[tuple[key, val: string]],
+proc newStringTable*(keyValuePairs: Varargs[tuple[key, val: String]],
                      mode: TStringTableMode = modeCaseSensitive): PStringTable {.
   rtl, extern: "nst$1WithTableConstr".} =
   ## creates a new string table with given key value pairs.
@@ -184,9 +184,9 @@ proc newStringTable*(keyValuePairs: varargs[tuple[key, val: string]],
   ##   var mytab = newStringTable({"key1": "val1", "key2": "val2"},
   ##                              modeCaseInsensitive)
   result = newStringTable(mode)
-  for key, val in items(keyvaluePairs): result[key] = val
+  for key, val in items(keyValuePairs): result[key] = val
 
-proc `%`*(f: string, t: PStringTable, flags: set[TFormatFlag] = {}): string {.
+proc `%`*(f: String, t: PStringTable, flags: Set[TFormatFlag] = {}): String {.
   rtl, extern: "nstFormat".} =
   ## The `%` operator for string tables.
   const
@@ -216,7 +216,7 @@ proc `%`*(f: string, t: PStringTable, flags: set[TFormatFlag] = {}): string {.
       add(result, f[i])
       inc(i)
 
-proc `$`*(t: PStringTable): string {.rtl, extern: "nstDollar".} =
+proc `$`*(t: PStringTable): String {.rtl, extern: "nstDollar".} =
   ## The `$` operator for string tables.
   if t.len == 0:
     result = "{:}"

@@ -2,7 +2,7 @@ type
   PIDGen*[T: Ordinal] = ref TIDGen[T]
   TIDGen*[T: Ordinal] = object
     max: T
-    freeIDs: seq[T]
+    freeIDs: Seq[T]
   EOutOfIDs* = object of EInvalidKey
 
 #proc free[T](idg: PIDgen[T]) = 

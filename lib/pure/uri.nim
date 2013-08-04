@@ -8,9 +8,9 @@
 #
 import strutils
 type
-  TUrl* = distinct string
+  TUrl* = distinct String
 
-proc `$`*(url: TUrl): string = return string(url)
+proc `$`*(url: TUrl): String = return String(url)
 
 proc `/`*(a, b: TUrl): TUrl =
   ## Joins two URLs together, separating them with / if needed.
@@ -22,7 +22,7 @@ proc `/`*(a, b: TUrl): TUrl =
   if bS[0] == '/':
     urlS.add(bS.substr(1))
   else:
-    urlS.add(bs)
+    urlS.add(bS)
   result = TUrl(urlS)
 
 proc add*(url: var TUrl, a: TUrl) =

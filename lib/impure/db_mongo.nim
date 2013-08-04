@@ -30,14 +30,14 @@
 import mongo, oids, json
 
 type
-  EDb* = object of EIO ## exception that is raised if a database error occurs
+  EDb* = object of Eio ## exception that is raised if a database error occurs
   TDbConn* = TMongo    ## a database connection; alias for ``TMongo``
 
-  FDb* = object of FIO ## effect that denotes a database operation
-  FReadDb* = object of FDB   ## effect that denotes a read operation
-  FWriteDb* = object of FDB  ## effect that denotes a write operation
+  FDb* = object of Fio ## effect that denotes a database operation
+  FReadDb* = object of FDb   ## effect that denotes a read operation
+  FWriteDb* = object of FDb  ## effect that denotes a write operation
 
-proc dbError*(db: TDbConn, msg: string) {.noreturn.} = 
+proc dbError*(db: TDbConn, msg: String) {.noreturn.} = 
   ## raises an EDb exception with message `msg`.
   var e: ref EDb
   new(e)
@@ -47,22 +47,22 @@ proc dbError*(db: TDbConn, msg: string) {.noreturn.} =
     e.msg = $db.err & " " & msg
   raise e
 
-proc Close*(db: var TDbConn) {.tags: [FDB].} = 
+proc close*(db: var TDbConn) {.tags: [FDb].} = 
   ## closes the database connection.
   disconnect(db)
   destroy(db)
 
-proc Open*(host: string = defaultHost, port: int = defaultPort): TDbConn {.
-  tags: [FDB].} =
+proc open*(host: String = defaultHost, port: Int = defaultPort): TDbConn {.
+  tags: [FDb].} =
   ## opens a database connection. Raises `EDb` if the connection could not
   ## be established.
   init(result)
   
-  let x = connect(result, host, port.cint)
+  let x = connect(result, host, port.Cint)
   if x != 0'i32:
     dbError(result, "cannot open: " & host)
 
-proc jsonToBSon(b: var TBSon, key: string, j: PJsonNode) =
+proc jsonToBSon(b: var TBSon, key: String, j: PJsonNode) =
   case j.kind
   of JString:
     add(b, key, j.str)
@@ -85,7 +85,7 @@ proc jsonToBSon(b: var TBSon, key: string, j: PJsonNode) =
       jsonToBSon(b, $i, e)
     addFinishArray(b)
 
-proc jsonToBSon*(j: PJsonNode, oid: TOid): TBSon =
+proc jsonToBSon*(j: PJsonNode, oid: Toid): TBSon =
   ## converts a JSON value into the BSON format. The result must be
   ## ``destroyed`` explicitely!
   init(result)
@@ -95,7 +95,7 @@ proc jsonToBSon*(j: PJsonNode, oid: TOid): TBSon =
     jsonToBSon(result, key, val)
   finish(result)
 
-proc `[]`*(obj: var TBSon, fieldname: cstring): TBSon =
+proc `[]`*(obj: var TBSon, fieldname: Cstring): TBSon =
   ## retrieves the value belonging to `fieldname`. Raises `EInvalidKey` if
   ## the attribute does not exist.
   var it = initIter(obj)
@@ -103,7 +103,7 @@ proc `[]`*(obj: var TBSon, fieldname: cstring): TBSon =
   if res == bkEOO:
     raise newException(EInvalidIndex, "key not in object")
 
-proc getId*(obj: var TBSon): TOid =
+proc getId*(obj: var TBSon): Toid =
   ## retrieves the ``_id`` attribute of `obj`.
   var it = initIter(obj)
   var b: TBSon
@@ -113,7 +113,7 @@ proc getId*(obj: var TBSon): TOid =
   else:
     raise newException(EInvalidIndex, "_id not in object")
 
-proc insertID*(db: var TDbConn, namespace: string, data: PJsonNode): TOid {.
+proc insertID*(db: var TDbConn, namespace: String, data: PJsonNode): Toid {.
   tags: [FWriteDb].} =
   ## converts `data` to BSON format and inserts it in `namespace`. Returns
   ## the generated OID for the ``_id`` field.
@@ -122,13 +122,13 @@ proc insertID*(db: var TDbConn, namespace: string, data: PJsonNode): TOid {.
   insert(db, namespace, x)
   destroy(x)
 
-proc insert*(db: var TDbConn, namespace: string, data: PJsonNode) {.
+proc insert*(db: var TDbConn, namespace: String, data: PJsonNode) {.
   tags: [FWriteDb].} =
   ## converts `data` to BSON format and inserts it in `namespace`.  
-  discard InsertID(db, namespace, data)
+  discard insertID(db, namespace, data)
 
-proc update*(db: var TDbConn, namespace: string, obj: var TBSon) {.
-  tags: [FReadDB, FWriteDb].} =
+proc update*(db: var TDbConn, namespace: String, obj: var TBSon) {.
+  tags: [FReadDb, FWriteDb].} =
   ## updates `obj` in `namespace`.
   var cond: TBson
   init(cond)
@@ -137,14 +137,14 @@ proc update*(db: var TDbConn, namespace: string, obj: var TBSon) {.
   update(db, namespace, cond, obj, ord(UPDATE_UPSERT))
   destroy(cond)
 
-proc update*(db: var TDbConn, namespace: string, oid: TOid, obj: PJsonNode) {.
-  tags: [FReadDB, FWriteDb].} =
+proc update*(db: var TDbConn, namespace: String, oid: Toid, obj: PJsonNode) {.
+  tags: [FReadDb, FWriteDb].} =
   ## updates the data with `oid` to have the new data `obj`.
   var a = jsonToBSon(obj, oid)
-  Update(db, namespace, a)
+  update(db, namespace, a)
   destroy(a)
 
-proc delete*(db: var TDbConn, namespace: string, oid: TOid) {.
+proc delete*(db: var TDbConn, namespace: String, oid: Toid) {.
   tags: [FWriteDb].} =
   ## Deletes the object belonging to `oid`.
   var cond: TBson
@@ -154,13 +154,13 @@ proc delete*(db: var TDbConn, namespace: string, oid: TOid) {.
   discard remove(db, namespace, cond)
   destroy(cond)
 
-proc delete*(db: var TDbConn, namespace: string, obj: var TBSon) {.
+proc delete*(db: var TDbConn, namespace: String, obj: var TBSon) {.
   tags: [FWriteDb].} =
   ## Deletes the object `obj`.
   delete(db, namespace, getId(obj))
 
-iterator find*(db: var TDbConn, namespace: string): var TBSon {.
-  tags: [FReadDB].} =
+iterator find*(db: var TDbConn, namespace: String): var TBSon {.
+  tags: [FReadDb].} =
   ## iterates over any object in `namespace`.
   var cursor: TCursor
   init(cursor, db, namespace)
@@ -168,8 +168,8 @@ iterator find*(db: var TDbConn, namespace: string): var TBSon {.
     yield bson(cursor)[]
   destroy(cursor)
 
-iterator find*(db: var TDbConn, namespace: string, 
-               query, fields: var TBSon): var TBSon {.tags: [FReadDB].} =
+iterator find*(db: var TDbConn, namespace: String, 
+               query, fields: var TBSon): var TBSon {.tags: [FReadDb].} =
   ## yields the `fields` of any document that suffices `query`.
   var cursor = find(db, namespace, query, fields, 0'i32, 0'i32, 0'i32)
   if cursor != nil:
@@ -177,14 +177,14 @@ iterator find*(db: var TDbConn, namespace: string,
       yield bson(cursor[])[]
     destroy(cursor[])
 
-proc setupFieldnames(fields: varargs[string]): TBSon =
+proc setupFieldnames(fields: Varargs[String]): TBSon =
   init(result)
   for x in fields: add(result, x, 1'i32)
   finish(result)
 
-iterator find*(db: var TDbConn, namespace: string, 
-               query: var TBSon, fields: varargs[string]): var TBSon {.
-               tags: [FReadDB].} =
+iterator find*(db: var TDbConn, namespace: String, 
+               query: var TBSon, fields: Varargs[String]): var TBSon {.
+               tags: [FReadDb].} =
   ## yields the `fields` of any document that suffices `query`. If `fields` 
   ## is ``[]`` the whole document is yielded.
   var f = setupFieldnames(fields)
@@ -195,14 +195,14 @@ iterator find*(db: var TDbConn, namespace: string,
     destroy(cursor[])
   destroy(f)
 
-proc setupQuery(query: string): TBSon =
+proc setupQuery(query: String): TBSon =
   init(result)
   add(result, "$where", query)
   finish(result)
 
-iterator find*(db: var TDbConn, namespace: string, 
-               query: string, fields: varargs[string]): var TBSon {.
-               tags: [FReadDB].} =
+iterator find*(db: var TDbConn, namespace: String, 
+               query: String, fields: Varargs[String]): var TBSon {.
+               tags: [FReadDb].} =
   ## yields the `fields` of any document that suffices `query`. If `fields` 
   ## is ``[]`` the whole document is yielded.
   var f = setupFieldnames(fields)

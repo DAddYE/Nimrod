@@ -35,7 +35,7 @@ when defined(embedUnidecodeTable):
   const translationTable = splitLines(slurp"unidecode/unidecode.dat")
 else:
   # shared is fine for threading:
-  var translationTable: seq[string]
+  var translationTable: Seq[String]
 
 proc loadUnidecodeTable*(datafile = "unidecode.dat") =
   ## loads the datafile that `unidecode` to work. Unless this module is
@@ -46,10 +46,10 @@ proc loadUnidecodeTable*(datafile = "unidecode.dat") =
     newSeq(translationTable, 0xffff)
     var i = 0
     for line in lines(datafile):
-      translationTable[i] = line.string
+      translationTable[i] = line.String
       inc(i)
 
-proc unidecode*(s: string): string = 
+proc unidecode*(s: String): String = 
   ## Finds the sequence of ASCII characters that is the closest approximation
   ## to the UTF-8 string `s`.
   ##
@@ -64,7 +64,7 @@ proc unidecode*(s: string): string =
   assert(not isNil(translationTable))
   result = ""
   for r in runes(s): 
-    var c = int(r)
+    var c = Int(r)
     if c <=% 127: add(result, chr(c))
     elif c <% translationTable.len: add(result, translationTable[c-128])
 

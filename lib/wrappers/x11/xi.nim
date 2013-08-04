@@ -60,131 +60,131 @@
 #
 
 const 
-  sz_xGetExtensionVersionReq* = 8
-  sz_xGetExtensionVersionReply* = 32
-  sz_xListInputDevicesReq* = 4
-  sz_xListInputDevicesReply* = 32
-  sz_xOpenDeviceReq* = 8
-  sz_xOpenDeviceReply* = 32
-  sz_xCloseDeviceReq* = 8
-  sz_xSetDeviceModeReq* = 8
-  sz_xSetDeviceModeReply* = 32
-  sz_xSelectExtensionEventReq* = 12
-  sz_xGetSelectedExtensionEventsReq* = 8
-  sz_xGetSelectedExtensionEventsReply* = 32
-  sz_xChangeDeviceDontPropagateListReq* = 12
-  sz_xGetDeviceDontPropagateListReq* = 8
-  sz_xGetDeviceDontPropagateListReply* = 32
-  sz_xGetDeviceMotionEventsReq* = 16
-  sz_xGetDeviceMotionEventsReply* = 32
-  sz_xChangeKeyboardDeviceReq* = 8
-  sz_xChangeKeyboardDeviceReply* = 32
-  sz_xChangePointerDeviceReq* = 8
-  sz_xChangePointerDeviceReply* = 32
-  sz_xGrabDeviceReq* = 20
-  sz_xGrabDeviceReply* = 32
-  sz_xUngrabDeviceReq* = 12
-  sz_xGrabDeviceKeyReq* = 20
-  sz_xGrabDeviceKeyReply* = 32
-  sz_xUngrabDeviceKeyReq* = 16
-  sz_xGrabDeviceButtonReq* = 20
-  sz_xGrabDeviceButtonReply* = 32
-  sz_xUngrabDeviceButtonReq* = 16
-  sz_xAllowDeviceEventsReq* = 12
-  sz_xGetDeviceFocusReq* = 8
-  sz_xGetDeviceFocusReply* = 32
-  sz_xSetDeviceFocusReq* = 16
-  sz_xGetFeedbackControlReq* = 8
-  sz_xGetFeedbackControlReply* = 32
-  sz_xChangeFeedbackControlReq* = 12
-  sz_xGetDeviceKeyMappingReq* = 8
-  sz_xGetDeviceKeyMappingReply* = 32
-  sz_xChangeDeviceKeyMappingReq* = 8
-  sz_xGetDeviceModifierMappingReq* = 8
-  sz_xSetDeviceModifierMappingReq* = 8
-  sz_xSetDeviceModifierMappingReply* = 32
-  sz_xGetDeviceButtonMappingReq* = 8
-  sz_xGetDeviceButtonMappingReply* = 32
-  sz_xSetDeviceButtonMappingReq* = 8
-  sz_xSetDeviceButtonMappingReply* = 32
-  sz_xQueryDeviceStateReq* = 8
-  sz_xQueryDeviceStateReply* = 32
-  sz_xSendExtensionEventReq* = 16
-  sz_xDeviceBellReq* = 8
-  sz_xSetDeviceValuatorsReq* = 8
-  sz_xSetDeviceValuatorsReply* = 32
-  sz_xGetDeviceControlReq* = 8
-  sz_xGetDeviceControlReply* = 32
-  sz_xChangeDeviceControlReq* = 8
-  sz_xChangeDeviceControlReply* = 32
+  szXGetExtensionVersionReq* = 8
+  szXGetExtensionVersionReply* = 32
+  szXListInputDevicesReq* = 4
+  szXListInputDevicesReply* = 32
+  szXOpenDeviceReq* = 8
+  szXOpenDeviceReply* = 32
+  szXCloseDeviceReq* = 8
+  szXSetDeviceModeReq* = 8
+  szXSetDeviceModeReply* = 32
+  szXSelectExtensionEventReq* = 12
+  szXGetSelectedExtensionEventsReq* = 8
+  szXGetSelectedExtensionEventsReply* = 32
+  szXChangeDeviceDontPropagateListReq* = 12
+  szXGetDeviceDontPropagateListReq* = 8
+  szXGetDeviceDontPropagateListReply* = 32
+  szXGetDeviceMotionEventsReq* = 16
+  szXGetDeviceMotionEventsReply* = 32
+  szXChangeKeyboardDeviceReq* = 8
+  szXChangeKeyboardDeviceReply* = 32
+  szXChangePointerDeviceReq* = 8
+  szXChangePointerDeviceReply* = 32
+  szXGrabDeviceReq* = 20
+  szXGrabDeviceReply* = 32
+  szXUngrabDeviceReq* = 12
+  szXGrabDeviceKeyReq* = 20
+  szXGrabDeviceKeyReply* = 32
+  szXUngrabDeviceKeyReq* = 16
+  szXGrabDeviceButtonReq* = 20
+  szXGrabDeviceButtonReply* = 32
+  szXUngrabDeviceButtonReq* = 16
+  szXAllowDeviceEventsReq* = 12
+  szXGetDeviceFocusReq* = 8
+  szXGetDeviceFocusReply* = 32
+  szXSetDeviceFocusReq* = 16
+  szXGetFeedbackControlReq* = 8
+  szXGetFeedbackControlReply* = 32
+  szXChangeFeedbackControlReq* = 12
+  szXGetDeviceKeyMappingReq* = 8
+  szXGetDeviceKeyMappingReply* = 32
+  szXChangeDeviceKeyMappingReq* = 8
+  szXGetDeviceModifierMappingReq* = 8
+  szXSetDeviceModifierMappingReq* = 8
+  szXSetDeviceModifierMappingReply* = 32
+  szXGetDeviceButtonMappingReq* = 8
+  szXGetDeviceButtonMappingReply* = 32
+  szXSetDeviceButtonMappingReq* = 8
+  szXSetDeviceButtonMappingReply* = 32
+  szXQueryDeviceStateReq* = 8
+  szXQueryDeviceStateReply* = 32
+  szXSendExtensionEventReq* = 16
+  szXDeviceBellReq* = 8
+  szXSetDeviceValuatorsReq* = 8
+  szXSetDeviceValuatorsReply* = 32
+  szXGetDeviceControlReq* = 8
+  szXGetDeviceControlReply* = 32
+  szXChangeDeviceControlReq* = 8
+  szXChangeDeviceControlReply* = 32
 
 const 
-  INAME* = "XInputExtension"
+  Iname* = "XInputExtension"
 
 const 
-  XI_KEYBOARD* = "KEYBOARD"
-  XI_MOUSE* = "MOUSE"
-  XI_TABLET* = "TABLET"
-  XI_TOUCHSCREEN* = "TOUCHSCREEN"
-  XI_TOUCHPAD* = "TOUCHPAD"
-  XI_BARCODE* = "BARCODE"
-  XI_BUTTONBOX* = "BUTTONBOX"
-  XI_KNOB_BOX* = "KNOB_BOX"
-  XI_ONE_KNOB* = "ONE_KNOB"
-  XI_NINE_KNOB* = "NINE_KNOB"
-  XI_TRACKBALL* = "TRACKBALL"
-  XI_QUADRATURE* = "QUADRATURE"
-  XI_ID_MODULE* = "ID_MODULE"
-  XI_SPACEBALL* = "SPACEBALL"
-  XI_DATAGLOVE* = "DATAGLOVE"
-  XI_EYETRACKER* = "EYETRACKER"
-  XI_CURSORKEYS* = "CURSORKEYS"
-  XI_FOOTMOUSE* = "FOOTMOUSE"
+  XiKeyboard* = "KEYBOARD"
+  XiMouse* = "MOUSE"
+  XiTablet* = "TABLET"
+  XiTouchscreen* = "TOUCHSCREEN"
+  XiTouchpad* = "TOUCHPAD"
+  XiBarcode* = "BARCODE"
+  XiButtonbox* = "BUTTONBOX"
+  XiKnobBox* = "KNOB_BOX"
+  XiOneKnob* = "ONE_KNOB"
+  XiNineKnob* = "NINE_KNOB"
+  XiTrackball* = "TRACKBALL"
+  XiQuadrature* = "QUADRATURE"
+  XiIdModule* = "ID_MODULE"
+  XiSpaceball* = "SPACEBALL"
+  XiDataglove* = "DATAGLOVE"
+  XiEyetracker* = "EYETRACKER"
+  XiCursorkeys* = "CURSORKEYS"
+  XiFootmouse* = "FOOTMOUSE"
 
 const 
-  Dont_Check* = 0
-  XInput_Initial_Release* = 1
-  XInput_Add_XDeviceBell* = 2
-  XInput_Add_XSetDeviceValuators* = 3
-  XInput_Add_XChangeDeviceControl* = 4
+  DontCheck* = 0
+  XInputInitialRelease* = 1
+  XInputAddXDeviceBell* = 2
+  XInputAddXSetDeviceValuators* = 3
+  XInputAddXChangeDeviceControl* = 4
 
 const 
-  XI_Absent* = 0
-  XI_Present* = 1
+  XIAbsent* = 0
+  XIPresent* = 1
 
 const 
-  XI_Initial_Release_Major* = 1
-  XI_Initial_Release_Minor* = 0
+  XIInitialReleaseMajor* = 1
+  XIInitialReleaseMinor* = 0
 
 const 
-  XI_Add_XDeviceBell_Major* = 1
-  XI_Add_XDeviceBell_Minor* = 1
+  XIAddXDeviceBellMajor* = 1
+  XIAddXDeviceBellMinor* = 1
 
 const 
-  XI_Add_XSetDeviceValuators_Major* = 1
-  XI_Add_XSetDeviceValuators_Minor* = 2
+  XIAddXSetDeviceValuatorsMajor* = 1
+  XIAddXSetDeviceValuatorsMinor* = 2
 
 const 
-  XI_Add_XChangeDeviceControl_Major* = 1
-  XI_Add_XChangeDeviceControl_Minor* = 3
+  XIAddXChangeDeviceControlMajor* = 1
+  XIAddXChangeDeviceControlMinor* = 3
 
 const 
-  DEVICE_RESOLUTION* = 1
+  DeviceResolution* = 1
 
 const 
   NoSuchExtension* = 1
 
 const 
-  COUNT* = 0
-  CREATE* = 1
+  Count* = 0
+  Create* = 1
 
 const 
   NewPointer* = 0
   NewKeyboard* = 1
 
 const 
-  XPOINTER* = 0
-  XKEYBOARD* = 1
+  Xpointer* = 0
+  Xkeyboard* = 1
 
 const 
   UseXKeyboard* = 0x000000FF
@@ -231,8 +231,8 @@ const
   DeviceMode* = int(1) shl 0
   Relative* = 0
   Absolute* = 1               # Merged from Metrolink tree for XINPUT stuff 
-  TS_Raw* = 57
-  TS_Scaled* = 58
+  TSRaw* = 57
+  TSScaled* = 58
   SendCoreEvents* = 59
   DontSendCoreEvents* = 60    # End of merged section 
 
@@ -275,11 +275,11 @@ const
   noExtensionEvent* = 9
 
 const 
-  XI_BadDevice* = 0
-  XI_BadEvent* = 1
-  XI_BadMode* = 2
-  XI_DeviceBusy* = 3
-  XI_BadClass* = 4 # Make XEventClass be a CARD32 for 64 bit servers.  Don't affect client
+  XIBadDevice* = 0
+  XIBadEvent* = 1
+  XIBadMode* = 2
+  XIDeviceBusy* = 3
+  XIBadClass* = 4 # Make XEventClass be a CARD32 for 64 bit servers.  Don't affect client
                    #  definition of XEventClass since that would be a library interface change.
                    #  See the top of X.h for more _XSERVER64 magic.
                    #
@@ -289,7 +289,7 @@ when defined(XSERVER64):
     XEventClass* = CARD32
 else: 
   type 
-    XEventClass* = int32
+    XEventClass* = Int32
 #******************************************************************
 # *
 # * Extension version structure.
@@ -299,9 +299,9 @@ else:
 type 
   PXExtensionVersion* = ptr TXExtensionVersion
   TXExtensionVersion*{.final.} = object 
-    present*: int16
-    major_version*: int16
-    minor_version*: int16
+    present*: Int16
+    major_version*: Int16
+    minor_version*: Int16
 
 
 # implementation

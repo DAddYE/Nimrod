@@ -1,15 +1,15 @@
 import macros, macro_dsl, estreams
 from strutils import format
 
-template newLenName(): stmt {.immediate.} =
+template newLenName(): Stmt {.immediate.} =
   let lenName {.inject.} = ^("len"& $lenNames)
   inc(lenNames)
 
-template defPacketImports*(): stmt {.immediate, dirty.} =
+template defPacketImports*(): Stmt {.immediate, dirty.} =
   import macros, macro_dsl, estreams
   from strutils import format
 
-proc `$`*[T](x: seq[T]): string =
+proc `$`*[T](x: Seq[T]): String =
   result = "[seq len="
   result.add($x.len)
   result.add ':'
@@ -18,7 +18,7 @@ proc `$`*[T](x: seq[T]): string =
     result.add($x[i])
   result.add ']'
 
-macro defPacket*(typeNameN: expr, typeFields: expr): stmt {.immediate.} = 
+macro defPacket*(typeNameN: Expr, typeFields: Expr): Stmt {.immediate.} = 
   result = newNimNode(nnkStmtList)
   let 
     typeName = quoted2ident(typeNameN)
@@ -94,7 +94,7 @@ macro defPacket*(typeNameN: expr, typeFields: expr): stmt {.immediate.} =
               newCall(  ## add(result.name, unpack[seqType](stream))
                 "add", resName, newNimNode(nnkCall).und(readName, streamID)
         ) ) ) )
-        packbody.add(
+        packBody.add(
           newNimNode(nnkVarSection).und(newNimNode(nnkIdentDefs).und(
             lenName,  ## var lenName = int16(len(p.name))
             newIdentNode("int16"),
@@ -123,7 +123,7 @@ macro defPacket*(typeNameN: expr, typeFields: expr): stmt {.immediate.} =
         packBody.add(newCall("pack", streamID, dotName))
         readBody.add(resName := newCall("read"& $typeFields[i][1].ident, streamID))
     else:
-      error("I dont know what to do with: "& treerepr(typeFields[i]))
+      error("I dont know what to do with: "& treeRepr(typeFields[i]))
   
   var 
     toStringFunc = newNimNode(nnkProcDef).und(
@@ -187,7 +187,7 @@ macro defPacket*(typeNameN: expr, typeFields: expr): stmt {.immediate.} =
   when defined(GenPacketShowOutput):
     echo(repr(result))
 
-proc newProc*(name: PNimrodNode; params: varargs[PNimrodNode]; resultType: PNimrodNode): PNimrodNode {.compileTime.} =
+proc newProc*(name: PNimrodNode; params: Varargs[PNimrodNode]; resultType: PNimrodNode): PNimrodNode {.compileTime.} =
   result = newNimNode(nnkProcDef).und(
     name,
     emptyNode(),
@@ -202,14 +202,14 @@ proc body*(procNode: PNimrodNode): PNimrodNode {.compileTime.} =
   assert procNode.kind == nnkProcDef and procNode[6].kind == nnkStmtList
   result = procNode[6]
 
-proc iddefs*(a, b: string; c: PNimrodNode): PNimrodNode {.compileTime.} =
+proc iddefs*(a, b: String; c: PNimrodNode): PNimrodNode {.compileTime.} =
   result = newNimNode(nnkIdentDefs).und(^a, ^b, c)
-proc iddefs*(a: string; b: PNimrodNode): PNimrodNode {.compileTime.} =
+proc iddefs*(a: String; b: PNimrodNode): PNimrodNode {.compileTime.} =
   result = newNimNode(nnkIdentDefs).und(^a, b, emptyNode())
 proc varTy*(a: PNimrodNode): PNimrodNode {.compileTime.} =
   result = newNimNode(nnkVarTy).und(a)
 
-macro forwardPacket*(typeName: expr, underlyingType: expr): stmt {.immediate.} =
+macro forwardPacket*(typeName: Expr, underlyingType: Expr): Stmt {.immediate.} =
   var
     packetID = ^"p"
     streamID = ^"s"
@@ -232,18 +232,18 @@ macro forwardPacket*(typeName: expr, underlyingType: expr): stmt {.immediate.} =
   of nnkBracketExpr:
     case $underlyingType[0].ident
     of "array":
-      for i in underlyingType[1][1].intval.int .. underlyingType[1][2].intval.int:
+      for i in underlyingType[1][1].intVal.Int .. underlyingType[1][2].intVal.Int:
         readBody.add(
           newCall("read", ^"s", resName[lit(i)]))
         packBody.add(
           newCall("writeBE", ^"s", packetID[lit(i)]))
     else:
-      echo "Unknown type: ", repr(underlyingtype)
+      echo "Unknown type: ", repr(underlyingType)
   else:
-    echo "unknown type:", repr(underlyingtype)
+    echo "unknown type:", repr(underlyingType)
   echo(repr(result))
 
-template forwardPacketT*(typeName: expr; underlyingType: expr): stmt {.dirty, immediate.} =
+template forwardPacketT*(typeName: Expr; underlyingType: Expr): Stmt {.dirty, immediate.} =
   proc `read typeName`*(buffer: PBuffer): typeName =
     #discard readData(s, addr result, sizeof(result))
     var res: underlyingType

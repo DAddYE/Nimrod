@@ -8,7 +8,7 @@ type
   TRequestMethod = enum reqGet, reqPost
   TServer* = object       ## contains the current server state
     socket: TSocket
-    job: seq[TJob]
+    job: Seq[TJob]
   TJob* = object
     client: TSocket
     process: PProcess
@@ -33,13 +33,13 @@ proc cannotExec(client: TSocket) =
   send(client, "<P>Error prohibited CGI execution.</p>" & wwwNL)
 
 
-proc headers(client: TSocket, filename: string) =
+proc headers(client: TSocket, filename: String) =
   # XXX could use filename to determine file type
   send(client, "HTTP/1.0 200 OK" & wwwNL)
   send(client, ServerSig)
   sendTextContentType(client)
 
-proc notFound(client: TSocket, path: string) =
+proc notFound(client: TSocket, path: String) =
   send(client, "HTTP/1.0 404 NOT FOUND" & wwwNL)
   send(client, ServerSig)
   sendTextContentType(client)
@@ -64,7 +64,7 @@ proc unimplemented(client: TSocket) =
 
 proc discardHeaders(client: TSocket) = skip(client)
 
-proc serveFile(client: TSocket, filename: string) =
+proc serveFile(client: TSocket, filename: String) =
   discardHeaders(client)
 
   var f: TFile
@@ -72,14 +72,14 @@ proc serveFile(client: TSocket, filename: string) =
     headers(client, filename)
     const bufSize = 8000 # != 8K might be good for memory manager
     var buf = alloc(bufsize)
-    while True:
+    while true:
       var bytesread = readBuffer(f, buf, bufsize)
       if bytesread > 0:
         var byteswritten = send(client, buf, bytesread)
-        if bytesread != bytesWritten:
+        if bytesread != byteswritten:
           dealloc(buf)
           close(f)
-          OSError()
+          oSError()
       if bytesread != bufSize: break
     dealloc(buf)
     close(f)
@@ -89,7 +89,7 @@ proc serveFile(client: TSocket, filename: string) =
 
 # ------------------ CGI execution -------------------------------------------
 
-proc executeCgi(server: var TServer, client: TSocket, path, query: string, 
+proc executeCgi(server: var TServer, client: TSocket, path, query: String, 
                 meth: TRequestMethod) =
   var env = newStringTable(modeCaseInsensitive)
   var contentLength = -1
@@ -133,23 +133,23 @@ proc executeCgi(server: var TServer, client: TSocket, path, query: string,
     var buf = alloc(contentLength)
     if recv(client, buf, contentLength) != contentLength: 
       dealloc(buf)
-      OSError()
+      oSError()
     var inp = process.inputStream
     inp.writeData(buf, contentLength)
     dealloc(buf)
 
 proc animate(server: var TServer) =
   # checks list of jobs, removes finished ones (pretty sloppy by seq copying)
-  var active_jobs: seq[TJob] = @[]
+  var activeJobs: Seq[TJob] = @[]
   for i in 0..server.job.len-1:
     var job = server.job[i]
     if running(job.process):
-      active_jobs.add(job)
+      activeJobs.add(job)
     else:
       # read process output stream and send it to client
       var outp = job.process.outputStream
       while true:
-        var line = outp.readstr(1024)
+        var line = outp.readStr(1024)
         if line.len == 0:
           break
         else:
@@ -159,7 +159,7 @@ proc animate(server: var TServer) =
             echo("send failed, client diconnected")
       close(job.client)
 
-  server.job = active_jobs
+  server.job = activeJobs
 
 # --------------- Server Setup -----------------------------------------------
 
@@ -197,7 +197,7 @@ proc acceptRequest(server: var TServer, client: TSocket) =
   if path[path.len-1] == '/' or existsDir(path):
     path = path / "index.html"
 
-  if not ExistsFile(path):
+  if not existsFile(path):
     discardHeaders(client)
     notFound(client, path)
     client.close()
@@ -222,15 +222,15 @@ when isMainModule:
 
   var server: TServer
   server.job = @[]
-  server.socket = socket(AF_INET)
-  if server.socket == InvalidSocket: OSError()
+  server.socket = socket(AfInet)
+  if server.socket == invalidSocket: oSError()
   server.socket.bindAddr(port=TPort(port))
   listen(server.socket)
   echo("server up on port " & $port)
 
   while true:
     # check for new new connection & handle it
-    var list: seq[TSocket] = @[server.socket]
+    var list: Seq[TSocket] = @[server.socket]
     if select(list, 10) > 0:
       var client: TSocket
       new(client)

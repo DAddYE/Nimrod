@@ -11,25 +11,25 @@ import
   strutils
 
 type 
-  TCrc32* = int32
+  TCrc32* = Int32
 
 const 
   InitCrc32* = TCrc32(- 1)
   InitAdler32* = int32(1)
 
-proc updateCrc32*(val: int8, crc: TCrc32): TCrc32 {.inline.}
+proc updateCrc32*(val: Int8, crc: TCrc32): TCrc32 {.inline.}
 proc updateCrc32*(val: Char, crc: TCrc32): TCrc32 {.inline.}
-proc crcFromBuf*(buf: Pointer, length: int): TCrc32
-proc strCrc32*(s: string): TCrc32
-proc crcFromFile*(filename: string): TCrc32
-proc updateAdler32*(adler: int32, buf: pointer, length: int): int32
+proc crcFromBuf*(buf: Pointer, length: Int): TCrc32
+proc strCrc32*(s: String): TCrc32
+proc crcFromFile*(filename: String): TCrc32
+proc updateAdler32*(adler: Int32, buf: Pointer, length: Int): Int32
 # implementation
 
 type 
-  TCRC_TabEntry = int
+  TCRC_TabEntry = Int
 
 const 
-  crc32table: array[0..255, TCRC_TabEntry] = [0, 1996959894, - 301047508, 
+  crc32table: Array[0..255, TCRC_TabEntry] = [0, 1996959894, - 301047508, 
     - 1727442502, 124634137, 1886057615, - 379345611, - 1637575261, 249268274, 
     2044508324, - 522852066, - 1747789432, 162941995, 2125561021, - 407360249, 
     - 1866523247, 498536548, 1789927666, - 205950648, - 2067906082, 450548861, 
@@ -75,7 +75,7 @@ const
     755167117]
 
 proc updateCrc32(val: int8, crc: TCrc32): TCrc32 = 
-  result = TCrc32(crc32Table[(int(crc) xor (int(val) and 0x000000FF)) and
+  result = TCrc32(crc32table[(Int(crc) xor (Int(val) and 0x000000FF)) and
       0x000000FF]) xor (crc shr TCrc32(8))
 
 proc updateCrc32(val: Char, crc: TCrc32): TCrc32 = 
@@ -85,12 +85,12 @@ proc strCrc32(s: string): TCrc32 =
   result = InitCrc32
   for i in countup(0, len(s) - 1): result = updateCrc32(s[i], result)
   
-proc `><`*(c: TCrc32, s: string): TCrc32 = 
+proc `><`*(c: TCrc32, s: String): TCrc32 = 
   result = c
   for i in 0..len(s)-1: result = updateCrc32(s[i], result)  
   
 type 
-  TByteArray = array[0..10000000, int8]
+  TByteArray = Array[0..10000000, Int8]
   PByteArray = ref TByteArray
 
 proc crcFromBuf(buf: Pointer, length: int): TCrc32 = 
@@ -127,10 +127,10 @@ const
 
 proc updateAdler32(adler: int32, buf: pointer, length: int): int32 = 
   var 
-    s1, s2: int32
-    L, k, b: int
-  s1 = adler and int32(0x0000FFFF)
-  s2 = (adler shr int32(16)) and int32(0x0000FFFF)
+    s1, s2: Int32
+    L, k, b: Int
+  s1 = adler and Int32(0x0000FFFF)
+  s2 = (adler shr Int32(16)) and Int32(0x0000FFFF)
   L = length
   b = 0
   while (L > 0): 
@@ -138,10 +138,10 @@ proc updateAdler32(adler: int32, buf: pointer, length: int): int32 =
     else: k = nmax
     dec(L, k)
     while (k > 0): 
-      s1 = s1 +% int32((cast[cstring](buf))[b])
+      s1 = s1 +% Int32((cast[Cstring](buf))[b])
       s2 = s2 +% s1
       inc(b)
       dec(k)
     s1 = `%%`(s1, base)
     s2 = `%%`(s2, base)
-  result = (s2 shl int32(16)) or s1
+  result = (s2 shl Int32(16)) or s1

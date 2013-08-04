@@ -36,7 +36,7 @@ type
     owner: PSym               # current owner
     forStmt: PNode            # current for stmt
     forLoopBody: PTransNode   # transformed for loop body 
-    yieldStmts: int           # we count the number of yield statements, 
+    yieldStmts: Int           # we count the number of yield statements, 
                               # because we need to introduce new variables
                               # if we encounter the 2nd yield statement
     next: PTransCon           # for stacking
@@ -44,38 +44,38 @@ type
   TTransfContext = object of passes.TPassContext
     module: PSym
     transCon: PTransCon      # top of a TransCon stack
-    inlining: int            # > 0 if we are in inlining context (copy vars)
-    nestedProcs: int         # > 0 if we are in a nested proc
-    contSyms, breakSyms: seq[PSym]  # to transform 'continue' and 'break'
-    inLoop: int              # > 0 if we are in a loop
+    inlining: Int            # > 0 if we are in inlining context (copy vars)
+    nestedProcs: Int         # > 0 if we are in a nested proc
+    contSyms, breakSyms: Seq[PSym]  # to transform 'continue' and 'break'
+    inLoop: Int              # > 0 if we are in a loop
   PTransf = ref TTransfContext
 
 proc newTransNode(a: PNode): PTransNode {.inline.} = 
   result = PTransNode(shallowCopy(a))
 
 proc newTransNode(kind: TNodeKind, info: TLineInfo, 
-                  sons: int): PTransNode {.inline.} = 
+                  sons: Int): PTransNode {.inline.} = 
   var x = newNodeI(kind, info)
   newSeq(x.sons, sons)
   result = x.PTransNode
 
 proc newTransNode(kind: TNodeKind, n: PNode, 
-                  sons: int): PTransNode {.inline.} = 
+                  sons: Int): PTransNode {.inline.} = 
   var x = newNodeIT(kind, n.info, n.typ)
   newSeq(x.sons, sons)
   x.typ = n.typ
   result = x.PTransNode
 
-proc `[]=`(a: PTransNode, i: int, x: PTransNode) {.inline.} = 
+proc `[]=`(a: PTransNode, i: Int, x: PTransNode) {.inline.} = 
   var n = PNode(a)
   n.sons[i] = PNode(x)
 
-proc `[]`(a: PTransNode, i: int): PTransNode {.inline.} = 
+proc `[]`(a: PTransNode, i: Int): PTransNode {.inline.} = 
   var n = PNode(a)
   result = n.sons[i].PTransNode
   
 proc add(a, b: PTransNode) {.inline.} = addSon(PNode(a), PNode(b))
-proc len(a: PTransNode): int {.inline.} = result = sonsLen(a.PNode)
+proc len(a: PTransNode): Int {.inline.} = result = sonsLen(a.PNode)
 
 proc newTransCon(owner: PSym): PTransCon = 
   assert owner != nil
@@ -88,7 +88,7 @@ proc pushTransCon(c: PTransf, t: PTransCon) =
   c.transCon = t
 
 proc popTransCon(c: PTransf) = 
-  if (c.transCon == nil): InternalError("popTransCon")
+  if (c.transCon == nil): internalError("popTransCon")
   c.transCon = c.transCon.next
 
 proc getCurrOwner(c: PTransf): PSym = 
@@ -126,7 +126,7 @@ proc transformSymAux(c: PTransf, n: PNode): PNode =
   else: 
     b = n
   while tc != nil: 
-    result = IdNodeTableGet(tc.mapping, b.sym)
+    result = idNodeTableGet(tc.mapping, b.sym)
     if result != nil: return
     tc = tc.next
   result = b
@@ -141,32 +141,32 @@ proc transformVarSection(c: PTransf, v: PNode): PTransNode =
     if it.kind == nkCommentStmt: 
       result[i] = PTransNode(it)
     elif it.kind == nkIdentDefs: 
-      if it.sons[0].kind != nkSym: InternalError(it.info, "transformVarSection")
+      if it.sons[0].kind != nkSym: internalError(it.info, "transformVarSection")
       InternalAssert(it.len == 3)
       var newVar = copySym(it.sons[0].sym)
       incl(newVar.flags, sfFromGeneric)
       # fixes a strange bug for rodgen:
       #include(it.sons[0].sym.flags, sfFromGeneric);
       newVar.owner = getCurrOwner(c)
-      IdNodeTablePut(c.transCon.mapping, it.sons[0].sym, newSymNode(newVar))
+      idNodeTablePut(c.transCon.mapping, it.sons[0].sym, newSymNode(newVar))
       var defs = newTransNode(nkIdentDefs, it.info, 3)
       if importantComments():
         # keep documentation information:
-        pnode(defs).comment = it.comment
+        PNode(defs).comment = it.comment
       defs[0] = newSymNode(newVar).PTransNode
       defs[1] = it.sons[1].PTransNode
       defs[2] = transform(c, it.sons[2])
       result[i] = defs
     else: 
       if it.kind != nkVarTuple: 
-        InternalError(it.info, "transformVarSection: not nkVarTuple")
+        internalError(it.info, "transformVarSection: not nkVarTuple")
       var L = sonsLen(it)
       var defs = newTransNode(it.kind, it.info, L)
       for j in countup(0, L-3): 
         var newVar = copySym(it.sons[j].sym)
         incl(newVar.flags, sfFromGeneric)
         newVar.owner = getCurrOwner(c)
-        IdNodeTablePut(c.transCon.mapping, it.sons[j].sym, newSymNode(newVar))
+        idNodeTablePut(c.transCon.mapping, it.sons[j].sym, newSymNode(newVar))
         defs[j] = newSymNode(newVar).PTransNode
       assert(it.sons[L-2].kind == nkEmpty)
       defs[L-1] = transform(c, it.sons[L-1])
@@ -179,19 +179,19 @@ proc transformConstSection(c: PTransf, v: PNode): PTransNode =
     if it.kind == nkCommentStmt:
       result[i] = PTransNode(it)
     else:
-      if it.kind != nkConstDef: InternalError(it.info, "transformConstSection")
+      if it.kind != nkConstDef: internalError(it.info, "transformConstSection")
       if it.sons[0].kind != nkSym:
-        InternalError(it.info, "transformConstSection")
+        internalError(it.info, "transformConstSection")
       if sfFakeConst in it[0].sym.flags:
         var b = newNodeI(nkConstDef, it.info)
         addSon(b, it[0])
         addSon(b, ast.emptyNode)            # no type description
-        addSon(b, transform(c, it[2]).pnode)
+        addSon(b, transform(c, it[2]).PNode)
         result[i] = PTransNode(b)
       else:
         result[i] = PTransNode(it)
 
-proc hasContinue(n: PNode): bool = 
+proc hasContinue(n: PNode): Bool = 
   case n.kind
   of nkEmpty..nkNilLit, nkForStmt, nkParForStmt, nkWhileStmt: nil
   of nkContinueStmt: result = true
@@ -217,7 +217,7 @@ proc transformBlock(c: PTransf, n: PNode): PTransNode =
 
 proc transformBreak(c: PTransf, n: PNode): PTransNode =
   if c.inLoop > 0 or n.sons[0].kind != nkEmpty:
-    result = n.ptransNode
+    result = n.PTransNode
   else:
     let labl = c.breakSyms[c.breakSyms.high]
     result = transformSons(c, n)
@@ -241,7 +241,7 @@ proc transformLoopBody(c: PTransf, n: PNode): PTransNode =
   else: 
     result = transform(c, n)
   
-proc newTupleAccess(tup: PNode, i: int): PNode = 
+proc newTupleAccess(tup: PNode, i: Int): PNode = 
   result = newNodeIT(nkBracketExpr, tup.info, tup.typ.sons[i])
   addSon(result, copyTree(tup))
   var lit = newNodeIT(nkIntLit, tup.info, getSysType(tyInt))
@@ -292,11 +292,11 @@ proc transformYield(c: PTransf, n: PNode): PTransNode =
     add(result, c.transCon.forLoopBody)
   else: 
     # we need to introduce new local variables:
-    add(result, introduceNewLocalVars(c, c.transCon.forLoopBody.pnode))
+    add(result, introduceNewLocalVars(c, c.transCon.forLoopBody.PNode))
 
 proc transformAddrDeref(c: PTransf, n: PNode, a, b: TNodeKind): PTransNode =
   result = transformSons(c, n)
-  var n = result.pnode
+  var n = result.PNode
   case n.sons[0].kind
   of nkObjUpConv, nkObjDownConv, nkChckRange, nkChckRangeF, nkChckRange64:
     var m = n.sons[0].sons[0]
@@ -429,15 +429,15 @@ proc findWrongOwners(c: PTransf, n: PNode) =
 proc transformFor(c: PTransf, n: PNode): PTransNode = 
   # generate access statements for the parameters (unless they are constant)
   # put mapping from formal parameters to actual parameters
-  if n.kind != nkForStmt: InternalError(n.info, "transformFor")
+  if n.kind != nkForStmt: internalError(n.info, "transformFor")
 
   var length = sonsLen(n)
   var call = n.sons[length - 2]
   if call.kind notin nkCallKinds or call.sons[0].kind != nkSym or 
       call.sons[0].typ.callConv == ccClosure or
       call.sons[0].sym.kind != skIterator:
-    n.sons[length-1] = transformLoopBody(c, n.sons[length-1]).pnode
-    return lambdalifting.liftForLoop(n).ptransNode
+    n.sons[length-1] = transformLoopBody(c, n.sons[length-1]).PNode
+    return lambdalifting.liftForLoop(n).PTransNode
     #InternalError(call.info, "transformFor")
 
   #echo "transforming: ", renderTree(n)
@@ -446,7 +446,7 @@ proc transformFor(c: PTransf, n: PNode): PTransNode =
   var v = newNodeI(nkVarSection, n.info)
   for i in countup(0, length - 3): 
     addVar(v, copyTree(n.sons[i])) # declare new vars
-  add(result, v.ptransNode)
+  add(result, v.PTransNode)
   
   # Bugfix: inlined locals belong to the invoking routine, not to the invoked
   # iterator!
@@ -454,24 +454,24 @@ proc transformFor(c: PTransf, n: PNode): PTransNode =
   var newC = newTransCon(getCurrOwner(c))
   newC.forStmt = n
   newC.forLoopBody = loopBody
-  if iter.kind != skIterator: InternalError(call.info, "transformFor") 
+  if iter.kind != skIterator: internalError(call.info, "transformFor") 
   # generate access statements for the parameters (unless they are constant)
   pushTransCon(c, newC)
   for i in countup(1, sonsLen(call) - 1): 
-    var arg = transform(c, call.sons[i]).pnode
+    var arg = transform(c, call.sons[i]).PNode
     var formal = skipTypes(iter.typ, abstractInst).n.sons[i].sym 
     case putArgInto(arg, formal.typ)
     of paDirectMapping: 
-      IdNodeTablePut(newC.mapping, formal, arg)
+      idNodeTablePut(newC.mapping, formal, arg)
     of paFastAsgn: 
       # generate a temporary and produce an assignment statement:
       var temp = newTemp(c, formal.typ, formal.info)
       addVar(v, newSymNode(temp))
-      add(result, newAsgnStmt(c, newSymNode(temp), arg.ptransNode))
-      IdNodeTablePut(newC.mapping, formal, newSymNode(temp))
+      add(result, newAsgnStmt(c, newSymNode(temp), arg.PTransNode))
+      idNodeTablePut(newC.mapping, formal, newSymNode(temp))
     of paVarAsgn:
       assert(skipTypes(formal.typ, abstractInst).kind == tyVar)
-      IdNodeTablePut(newC.mapping, formal, arg)
+      idNodeTablePut(newC.mapping, formal, arg)
       # XXX BUG still not correct if the arg has a side effect!
   var body = iter.getBody
   pushInfoContext(n.info)
@@ -500,19 +500,19 @@ proc transformCase(c: PTransf, n: PNode): PTransNode =
     var e = transform(c, it)
     case it.kind
     of nkElifBranch:
-      if ifs.pnode == nil:
+      if ifs.PNode == nil:
         ifs = newTransNode(nkIfStmt, it.info, 0)
       ifs.add(e)
     of nkElse:
-      if ifs.pnode == nil: result.add(e)
+      if ifs.PNode == nil: result.add(e)
       else: ifs.add(e)
     else:
       result.add(e)
-  if ifs.pnode != nil:
+  if ifs.PNode != nil:
     var elseBranch = newTransNode(nkElse, n.info, 1)
     elseBranch[0] = ifs
     result.add(elseBranch)
-  elif result.Pnode.lastSon.kind != nkElse and not (
+  elif result.PNode.lastSon.kind != nkElse and not (
       skipTypes(n.sons[0].Typ, abstractVarRange).Kind in
         {tyInt..tyInt64, tyChar, tyEnum, tyUInt..tyUInt32}):
     # fix a stupid code gen bug by normalizing:
@@ -523,7 +523,7 @@ proc transformCase(c: PTransf, n: PNode): PTransNode =
 proc transformArrayAccess(c: PTransf, n: PNode): PTransNode = 
   # XXX this is really bad; transf should use a proper AST visitor
   if n.sons[0].kind == nkSym and n.sons[0].sym.kind == skType:
-    result = n.ptransnode
+    result = n.PTransNode
   else:
     result = newTransNode(n)
     for i in 0 .. < n.len:
@@ -563,26 +563,26 @@ proc transformCall(c: PTransf, n: PNode): PTransNode =
     add(result, transform(c, n.sons[0]))
     var j = 1
     while j < sonsLen(n): 
-      var a = transform(c, n.sons[j]).pnode
+      var a = transform(c, n.sons[j]).PNode
       inc(j)
       if isConstExpr(a): 
         while (j < sonsLen(n)):
-          let b = transform(c, n.sons[j]).pnode
+          let b = transform(c, n.sons[j]).PNode
           if not isConstExpr(b): break
           a = evalOp(op.magic, n, a, b, nil)
           inc(j)
-      add(result, a.ptransnode)
+      add(result, a.PTransNode)
     if len(result) == 2: result = result[1]
   else:
-    let s = transformSons(c, n).pnode
+    let s = transformSons(c, n).PNode
     # bugfix: check after 'transformSons' if it's still a method call:
     # use the dispatcher for the call:
     if s.sons[0].kind == nkSym and s.sons[0].sym.kind == skMethod:
-      result = methodCall(s).ptransNode
+      result = methodCall(s).PTransNode
     else:
-      result = s.ptransNode
+      result = s.PTransNode
 
-proc dontInlineConstant(orig, cnst: PNode): bool {.inline.} =
+proc dontInlineConstant(orig, cnst: PNode): Bool {.inline.} =
   # symbols that expand to a complex constant (array, etc.) should not be
   # inlined, unless it's the empty array:
   result = orig.kind == nkSym and cnst.kind in {nkCurly, nkPar, nkBracket} and 
@@ -653,7 +653,7 @@ proc transform(c: PTransf, n: PNode): PTransNode =
         # completely:
         result = PTransNode(newNode(nkCommentStmt))
   of nkCommentStmt, nkTemplateDef: 
-    return n.ptransNode
+    return n.PTransNode
   of nkConstSection:
     # do not replace ``const c = 3`` with ``const 3 = 3``
     return transformConstSection(c, n)
@@ -677,7 +677,7 @@ proc transform(c: PTransf, n: PNode): PTransNode =
     result = transformSons(c, n)
     # XXX comment handling really sucks:
     if importantComments():
-      pnode(result).comment = n.comment
+      PNode(result).comment = n.comment
   else:
     result = transformSons(c, n)
   var cnst = getConstExpr(c.module, PNode(result))
@@ -695,7 +695,7 @@ proc processTransf(c: PTransf, n: PNode, owner: PSym): PNode =
   popTransCon(c)
   incl(result.flags, nfTransf)
 
-proc openTransf(module: PSym, filename: string): PTransf = 
+proc openTransf(module: PSym, filename: String): PTransf = 
   new(result)
   result.contSyms = @[]
   result.breakSyms = @[]

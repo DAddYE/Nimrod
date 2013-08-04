@@ -37,39 +37,39 @@ import rltypedefs
 # Some character stuff. 
 
 const 
-  control_character_threshold* = 0x00000020 # Smaller than this is control. 
-  control_character_mask* = 0x0000001F # 0x20 - 1 
-  meta_character_threshold* = 0x0000007F # Larger than this is Meta. 
-  control_character_bit* = 0x00000040 # 0x000000, must be off. 
-  meta_character_bit* = 0x00000080 # x0000000, must be on. 
-  largest_char* = 255         # Largest character value. 
+  controlCharacterThreshold* = 0x00000020 # Smaller than this is control. 
+  controlCharacterMask* = 0x0000001F # 0x20 - 1 
+  metaCharacterThreshold* = 0x0000007F # Larger than this is Meta. 
+  controlCharacterBit* = 0x00000040 # 0x000000, must be off. 
+  metaCharacterBit* = 0x00000080 # x0000000, must be on. 
+  largestChar* = 255         # Largest character value. 
 
-template CTRL_CHAR*(c: expr): expr = 
+template ctrlChar*(c: Expr): Expr = 
   (c < control_character_threshold and ((c and 0x00000080) == 0))
 
-template META_CHAR*(c: expr): expr = 
+template metaChar*(c: Expr): Expr = 
   (c > meta_character_threshold and c <= largest_char)
 
-template CTRL*(c: expr): expr = 
+template ctrl*(c: Expr): Expr = 
   (c and control_character_mask)
 
-template META*(c: expr): expr = 
+template meta*(c: Expr): Expr = 
   (c or meta_character_bit)
 
-template UNMETA*(c: expr): expr = 
+template unmeta*(c: Expr): Expr = 
   (c and not meta_character_bit)
 
-template UNCTRL*(c: expr): expr = 
+template unctrl*(c: Expr): Expr = 
   (c or 32 or control_character_bit)
 
 # Beware:  these only work with single-byte ASCII characters. 
 
 const 
-  RETURN_CHAR* = CTRL('M'.ord)
-  RUBOUT_CHAR* = 0x0000007F
-  ABORT_CHAR* = CTRL('G'.ord)
-  PAGE_CHAR* = CTRL('L'.ord)
-  ESC_CHAR* = CTRL('['.ord)
+  ReturnChar* = CTRL('M'.ord)
+  RuboutChar* = 0x0000007F
+  AbortChar* = CTRL('G'.ord)
+  PageChar* = CTRL('L'.ord)
+  EscChar* = CTRL('['.ord)
 
 # A keymap contains one entry for each key in the ASCII set.
 #   Each entry consists of a type and a pointer.
@@ -79,8 +79,8 @@ const
 
 type 
   TKEYMAP_ENTRY*{.pure, final.} = object 
-    typ*: char
-    function*: TCommandFunc
+    typ*: Char
+    function*: TcommandFunc
 
 
 # This must be large enough to hold bindings for all of the characters
@@ -88,8 +88,8 @@ type
 #   and so on) plus one for subsequence matching. 
 
 const 
-  KEYMAP_SIZE* = 257
-  ANYOTHERKEY* = KEYMAP_SIZE - 1
+  KeymapSize* = 257
+  Anyotherkey* = KEYMAP_SIZE - 1
 
 # I wanted to make the above structure contain a union of:
 #   union { rl_TCommandFunc_t *function; struct _keymap_entry *keymap; } value;
@@ -97,15 +97,15 @@ const
 #   Maybe I need C lessons. 
 
 type 
-  TKEYMAP_ENTRY_ARRAY* = array[0..KEYMAP_SIZE - 1, TKEYMAP_ENTRY]
+  TKEYMAP_ENTRY_ARRAY* = Array[0..KEYMAP_SIZE - 1, TKEYMAP_ENTRY]
   PKeymap* = ptr TKEYMAP_ENTRY
 
 # The values that TYPE can have in a keymap entry. 
 
 const 
-  ISFUNC* = 0
-  ISKMAP* = 1
-  ISMACR* = 2
+  Isfunc* = 0
+  Iskmap* = 1
+  Ismacr* = 2
 
 when false: 
   var 
@@ -119,42 +119,42 @@ when false:
 # Return a new, empty keymap.
 #   Free it with free() when you are done. 
 
-proc make_bare_keymap*(): PKeymap{.cdecl, importc: "rl_make_bare_keymap", 
+proc makeBareKeymap*(): PKeymap{.cdecl, importc: "rl_make_bare_keymap", 
                                    dynlib: readlineDll.}
 # Return a new keymap which is a copy of MAP. 
 
-proc copy_keymap*(a2: PKeymap): PKeymap{.cdecl, importc: "rl_copy_keymap", 
+proc copyKeymap*(a2: PKeymap): PKeymap{.cdecl, importc: "rl_copy_keymap", 
     dynlib: readlineDll.}
 # Return a new keymap with the printing characters bound to rl_insert,
 #   the lowercase Meta characters bound to run their equivalents, and
 #   the Meta digits bound to produce numeric arguments. 
 
-proc make_keymap*(): PKeymap{.cdecl, importc: "rl_make_keymap", 
+proc makeKeymap*(): PKeymap{.cdecl, importc: "rl_make_keymap", 
                               dynlib: readlineDll.}
 # Free the storage associated with a keymap. 
 
-proc discard_keymap*(a2: PKeymap){.cdecl, importc: "rl_discard_keymap", 
+proc discardKeymap*(a2: PKeymap){.cdecl, importc: "rl_discard_keymap", 
                                    dynlib: readlineDll.}
 # These functions actually appear in bind.c 
 # Return the keymap corresponding to a given name.  Names look like
 #   `emacs' or `emacs-meta' or `vi-insert'.  
 
-proc get_keymap_by_name*(a2: cstring): PKeymap{.cdecl, 
+proc getKeymapByName*(a2: Cstring): PKeymap{.cdecl, 
     importc: "rl_get_keymap_by_name", dynlib: readlineDll.}
 # Return the current keymap. 
 
-proc get_keymap*(): PKeymap{.cdecl, importc: "rl_get_keymap", 
+proc getKeymap*(): PKeymap{.cdecl, importc: "rl_get_keymap", 
                              dynlib: readlineDll.}
 # Set the current keymap to MAP. 
 
-proc set_keymap*(a2: PKeymap){.cdecl, importc: "rl_set_keymap", 
+proc setKeymap*(a2: PKeymap){.cdecl, importc: "rl_set_keymap", 
                                dynlib: readlineDll.}
 
 const 
   tildeDll = readlineDll
 
 type 
-  Thook_func* = proc (a2: cstring): cstring{.cdecl.}
+  ThookFunc* = proc (a2: Cstring): Cstring{.cdecl.}
 
 when not defined(macosx):
   # If non-null, this contains the address of a function that the application
@@ -187,24 +187,24 @@ when not defined(macosx):
 
 # Return a new string which is the result of tilde expanding STRING. 
 
-proc expand*(a2: cstring): cstring{.cdecl, importc: "tilde_expand", 
+proc expand*(a2: Cstring): Cstring{.cdecl, importc: "tilde_expand", 
                                     dynlib: tildeDll.}
 # Do the work of tilde expansion on FILENAME.  FILENAME starts with a
 #   tilde.  If there is no expansion, call tilde_expansion_failure_hook. 
 
-proc expand_word*(a2: cstring): cstring{.cdecl, importc: "tilde_expand_word", 
+proc expandWord*(a2: Cstring): Cstring{.cdecl, importc: "tilde_expand_word", 
     dynlib: tildeDll.}
 # Find the portion of the string beginning with ~ that should be expanded. 
 
-proc find_word*(a2: cstring, a3: cint, a4: ptr cint): cstring{.cdecl, 
+proc findWord*(a2: Cstring, a3: Cint, a4: ptr Cint): Cstring{.cdecl, 
     importc: "tilde_find_word", dynlib: tildeDll.}
 
 # Hex-encoded Readline version number. 
 
 const 
-  READLINE_VERSION* = 0x00000600 # Readline 6.0 
-  VERSION_MAJOR* = 6
-  VERSION_MINOR* = 0
+  ReadlineVersion* = 0x00000600 # Readline 6.0 
+  VersionMajor* = 6
+  VersionMinor* = 0
 
 # Readline data structures. 
 # Maintaining the state of undo.  We remember individual deletes and inserts
@@ -214,7 +214,7 @@ const
 #   the code tells undo what to undo, not how to undo it. 
 
 type 
-  Tundo_code* = enum 
+  TundoCode* = enum 
     UNDO_DELETE, UNDO_INSERT, UNDO_BEGIN, UNDO_END
 
 # What an element of THE_UNDO_LIST looks like. 
@@ -222,10 +222,10 @@ type
 type 
   TUNDO_LIST*{.pure, final.} = object 
     next*: ptr Tundo_list
-    start*: cint
-    theEnd*: cint             # Where the change took place. 
-    text*: cstring            # The text to insert, if undoing a delete. 
-    what*: Tundo_code         # Delete, Insert, Begin, End. 
+    start*: Cint
+    theEnd*: Cint             # Where the change took place. 
+    text*: Cstring            # The text to insert, if undoing a delete. 
+    what*: TundoCode         # Delete, Insert, Begin, End. 
   
 
 # The current undo list for RL_LINE_BUFFER. 
@@ -237,8 +237,8 @@ when not defined(macosx):
 
 type 
   TFUNMAP*{.pure, final.} = object 
-    name*: cstring
-    function*: TCommandFunc
+    name*: Cstring
+    function*: TcommandFunc
 
 
 when not defined(macosx):
@@ -251,334 +251,334 @@ when not defined(macosx):
 # **************************************************************** 
 # Bindable commands for numeric arguments. 
 
-proc digit_argument*(a2: cint, a3: cint): cint{.cdecl, 
+proc digitArgument*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_digit_argument", dynlib: readlineDll.}
-proc universal_argument*(a2: cint, a3: cint): cint{.cdecl, 
+proc universalArgument*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_universal_argument", dynlib: readlineDll.}
 # Bindable commands for moving the cursor. 
 
-proc forward_byte*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_forward_byte", 
+proc forwardByte*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_forward_byte", 
     dynlib: readlineDll.}
-proc forward_char*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_forward_char", 
+proc forwardChar*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_forward_char", 
     dynlib: readlineDll.}
-proc forward*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_forward", 
+proc forward*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_forward", 
     dynlib: readlineDll.}
-proc backward_byte*(a2: cint, a3: cint): cint{.cdecl, 
+proc backwardByte*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_backward_byte", dynlib: readlineDll.}
-proc backward_char*(a2: cint, a3: cint): cint{.cdecl, 
+proc backwardChar*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_backward_char", dynlib: readlineDll.}
-proc backward*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_backward", 
+proc backward*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_backward", 
     dynlib: readlineDll.}
-proc beg_of_line*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_beg_of_line", 
+proc begOfLine*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_beg_of_line", 
     dynlib: readlineDll.}
-proc end_of_line*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_end_of_line", 
+proc endOfLine*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_end_of_line", 
     dynlib: readlineDll.}
-proc forward_word*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_forward_word", 
+proc forwardWord*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_forward_word", 
     dynlib: readlineDll.}
-proc backward_word*(a2: cint, a3: cint): cint{.cdecl, 
+proc backwardWord*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_backward_word", dynlib: readlineDll.}
-proc refresh_line*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_refresh_line", 
+proc refreshLine*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_refresh_line", 
     dynlib: readlineDll.}
-proc clear_screen*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_clear_screen", 
+proc clearScreen*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_clear_screen", 
     dynlib: readlineDll.}
-proc skip_csi_sequence*(a2: cint, a3: cint): cint{.cdecl, 
+proc skipCsiSequence*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_skip_csi_sequence", dynlib: readlineDll.}
-proc arrow_keys*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_arrow_keys", 
+proc arrowKeys*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_arrow_keys", 
     dynlib: readlineDll.}
 # Bindable commands for inserting and deleting text. 
 
-proc insert*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_insert", 
+proc insert*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_insert", 
                                         dynlib: readlineDll.}
-proc quoted_insert*(a2: cint, a3: cint): cint{.cdecl, 
+proc quotedInsert*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_quoted_insert", dynlib: readlineDll.}
-proc tab_insert*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_tab_insert", 
+proc tabInsert*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_tab_insert", 
     dynlib: readlineDll.}
-proc newline*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_newline", 
+proc newline*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_newline", 
     dynlib: readlineDll.}
-proc do_lowercase_version*(a2: cint, a3: cint): cint{.cdecl, 
+proc doLowercaseVersion*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_do_lowercase_version", dynlib: readlineDll.}
-proc rubout*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_rubout", 
+proc rubout*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_rubout", 
                                         dynlib: readlineDll.}
-proc delete*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_delete", 
+proc delete*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_delete", 
                                         dynlib: readlineDll.}
-proc rubout_or_delete*(a2: cint, a3: cint): cint{.cdecl, 
+proc ruboutOrDelete*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_rubout_or_delete", dynlib: readlineDll.}
-proc delete_horizontal_space*(a2: cint, a3: cint): cint{.cdecl, 
+proc deleteHorizontalSpace*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_delete_horizontal_space", dynlib: readlineDll.}
-proc delete_or_show_completions*(a2: cint, a3: cint): cint{.cdecl, 
+proc deleteOrShowCompletions*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_delete_or_show_completions", dynlib: readlineDll.}
-proc insert_comment*(a2: cint, a3: cint): cint{.cdecl, 
+proc insertComment*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_insert_comment", dynlib: readlineDll.}
 # Bindable commands for changing case. 
 
-proc upcase_word*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_upcase_word", 
+proc upcaseWord*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_upcase_word", 
     dynlib: readlineDll.}
-proc downcase_word*(a2: cint, a3: cint): cint{.cdecl, 
+proc downcaseWord*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_downcase_word", dynlib: readlineDll.}
-proc capitalize_word*(a2: cint, a3: cint): cint{.cdecl, 
+proc capitalizeWord*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_capitalize_word", dynlib: readlineDll.}
 # Bindable commands for transposing characters and words. 
 
-proc transpose_words*(a2: cint, a3: cint): cint{.cdecl, 
+proc transposeWords*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_transpose_words", dynlib: readlineDll.}
-proc transpose_chars*(a2: cint, a3: cint): cint{.cdecl, 
+proc transposeChars*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_transpose_chars", dynlib: readlineDll.}
 # Bindable commands for searching within a line. 
 
-proc char_search*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_char_search", 
+proc charSearch*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_char_search", 
     dynlib: readlineDll.}
-proc backward_char_search*(a2: cint, a3: cint): cint{.cdecl, 
+proc backwardCharSearch*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_backward_char_search", dynlib: readlineDll.}
 # Bindable commands for readline's interface to the command history. 
 
-proc beginning_of_history*(a2: cint, a3: cint): cint{.cdecl, 
+proc beginningOfHistory*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_beginning_of_history", dynlib: readlineDll.}
-proc end_of_history*(a2: cint, a3: cint): cint{.cdecl, 
+proc endOfHistory*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_end_of_history", dynlib: readlineDll.}
-proc get_next_history*(a2: cint, a3: cint): cint{.cdecl, 
+proc getNextHistory*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_get_next_history", dynlib: readlineDll.}
-proc get_previous_history*(a2: cint, a3: cint): cint{.cdecl, 
+proc getPreviousHistory*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_get_previous_history", dynlib: readlineDll.}
 # Bindable commands for managing the mark and region. 
 
-proc set_mark*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_set_mark", 
+proc setMark*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_set_mark", 
     dynlib: readlineDll.}
-proc exchange_point_and_mark*(a2: cint, a3: cint): cint{.cdecl, 
+proc exchangePointAndMark*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_exchange_point_and_mark", dynlib: readlineDll.}
 # Bindable commands to set the editing mode (emacs or vi). 
 
-proc vi_editing_mode*(a2: cint, a3: cint): cint{.cdecl, 
+proc viEditingMode*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_vi_editing_mode", dynlib: readlineDll.}
-proc emacs_editing_mode*(a2: cint, a3: cint): cint{.cdecl, 
+proc emacsEditingMode*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_emacs_editing_mode", dynlib: readlineDll.}
 # Bindable commands to change the insert mode (insert or overwrite) 
 
-proc overwrite_mode*(a2: cint, a3: cint): cint{.cdecl, 
+proc overwriteMode*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_overwrite_mode", dynlib: readlineDll.}
 # Bindable commands for managing key bindings. 
 
-proc re_read_init_file*(a2: cint, a3: cint): cint{.cdecl, 
+proc reReadInitFile*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_re_read_init_file", dynlib: readlineDll.}
-proc dump_functions*(a2: cint, a3: cint): cint{.cdecl, 
+proc dumpFunctions*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_dump_functions", dynlib: readlineDll.}
-proc dump_macros*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_dump_macros", 
+proc dumpMacros*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_dump_macros", 
     dynlib: readlineDll.}
-proc dump_variables*(a2: cint, a3: cint): cint{.cdecl, 
+proc dumpVariables*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_dump_variables", dynlib: readlineDll.}
 # Bindable commands for word completion. 
 
-proc complete*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_complete", 
+proc complete*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_complete", 
     dynlib: readlineDll.}
-proc possible_completions*(a2: cint, a3: cint): cint{.cdecl, 
+proc possibleCompletions*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_possible_completions", dynlib: readlineDll.}
-proc insert_completions*(a2: cint, a3: cint): cint{.cdecl, 
+proc insertCompletions*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_insert_completions", dynlib: readlineDll.}
-proc old_menu_complete*(a2: cint, a3: cint): cint{.cdecl, 
+proc oldMenuComplete*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_old_menu_complete", dynlib: readlineDll.}
-proc menu_complete*(a2: cint, a3: cint): cint{.cdecl, 
+proc menuComplete*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_menu_complete", dynlib: readlineDll.}
-proc backward_menu_complete*(a2: cint, a3: cint): cint{.cdecl, 
+proc backwardMenuComplete*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_backward_menu_complete", dynlib: readlineDll.}
 # Bindable commands for killing and yanking text, and managing the kill ring. 
 
-proc kill_word*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_kill_word", 
+proc killWord*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_kill_word", 
     dynlib: readlineDll.}
-proc backward_kill_word*(a2: cint, a3: cint): cint{.cdecl, 
+proc backwardKillWord*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_backward_kill_word", dynlib: readlineDll.}
-proc kill_line*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_kill_line", 
+proc killLine*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_kill_line", 
     dynlib: readlineDll.}
-proc backward_kill_line*(a2: cint, a3: cint): cint{.cdecl, 
+proc backwardKillLine*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_backward_kill_line", dynlib: readlineDll.}
-proc kill_full_line*(a2: cint, a3: cint): cint{.cdecl, 
+proc killFullLine*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_kill_full_line", dynlib: readlineDll.}
-proc unix_word_rubout*(a2: cint, a3: cint): cint{.cdecl, 
+proc unixWordRubout*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_unix_word_rubout", dynlib: readlineDll.}
-proc unix_filename_rubout*(a2: cint, a3: cint): cint{.cdecl, 
+proc unixFilenameRubout*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_unix_filename_rubout", dynlib: readlineDll.}
-proc unix_line_discard*(a2: cint, a3: cint): cint{.cdecl, 
+proc unixLineDiscard*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_unix_line_discard", dynlib: readlineDll.}
-proc copy_region_to_kill*(a2: cint, a3: cint): cint{.cdecl, 
+proc copyRegionToKill*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_copy_region_to_kill", dynlib: readlineDll.}
-proc kill_region*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_kill_region", 
+proc killRegion*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_kill_region", 
     dynlib: readlineDll.}
-proc copy_forward_word*(a2: cint, a3: cint): cint{.cdecl, 
+proc copyForwardWord*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_copy_forward_word", dynlib: readlineDll.}
-proc copy_backward_word*(a2: cint, a3: cint): cint{.cdecl, 
+proc copyBackwardWord*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_copy_backward_word", dynlib: readlineDll.}
-proc yank*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_yank", 
+proc yank*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_yank", 
                                       dynlib: readlineDll.}
-proc yank_pop*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_yank_pop", 
+proc yankPop*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_yank_pop", 
     dynlib: readlineDll.}
-proc yank_nth_arg*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_yank_nth_arg", 
+proc yankNthArg*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_yank_nth_arg", 
     dynlib: readlineDll.}
-proc yank_last_arg*(a2: cint, a3: cint): cint{.cdecl, 
+proc yankLastArg*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_yank_last_arg", dynlib: readlineDll.}
 when defined(Windows): 
   proc paste_from_clipboard*(a2: cint, a3: cint): cint{.cdecl, 
       importc: "rl_paste_from_clipboard", dynlib: readlineDll.}
 # Bindable commands for incremental searching. 
 
-proc reverse_search_history*(a2: cint, a3: cint): cint{.cdecl, 
+proc reverseSearchHistory*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_reverse_search_history", dynlib: readlineDll.}
-proc forward_search_history*(a2: cint, a3: cint): cint{.cdecl, 
+proc forwardSearchHistory*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_forward_search_history", dynlib: readlineDll.}
 # Bindable keyboard macro commands. 
 
-proc start_kbd_macro*(a2: cint, a3: cint): cint{.cdecl, 
+proc startKbdMacro*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_start_kbd_macro", dynlib: readlineDll.}
-proc end_kbd_macro*(a2: cint, a3: cint): cint{.cdecl, 
+proc endKbdMacro*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_end_kbd_macro", dynlib: readlineDll.}
-proc call_last_kbd_macro*(a2: cint, a3: cint): cint{.cdecl, 
+proc callLastKbdMacro*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_call_last_kbd_macro", dynlib: readlineDll.}
 # Bindable undo commands. 
 
-proc revert_line*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_revert_line", 
+proc revertLine*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_revert_line", 
     dynlib: readlineDll.}
-proc undo_command*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_undo_command", 
+proc undoCommand*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_undo_command", 
     dynlib: readlineDll.}
 # Bindable tilde expansion commands. 
 
-proc tilde_expand*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_tilde_expand", 
+proc tildeExpand*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_tilde_expand", 
     dynlib: readlineDll.}
 # Bindable terminal control commands. 
 
-proc restart_output*(a2: cint, a3: cint): cint{.cdecl, 
+proc restartOutput*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_restart_output", dynlib: readlineDll.}
-proc stop_output*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_stop_output", 
+proc stopOutput*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_stop_output", 
     dynlib: readlineDll.}
 # Miscellaneous bindable commands. 
 
-proc abort*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_abort", 
+proc abort*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_abort", 
                                        dynlib: readlineDll.}
-proc tty_status*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_tty_status", 
+proc ttyStatus*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_tty_status", 
     dynlib: readlineDll.}
 # Bindable commands for incremental and non-incremental history searching. 
 
-proc history_search_forward*(a2: cint, a3: cint): cint{.cdecl, 
+proc historySearchForward*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_history_search_forward", dynlib: readlineDll.}
-proc history_search_backward*(a2: cint, a3: cint): cint{.cdecl, 
+proc historySearchBackward*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_history_search_backward", dynlib: readlineDll.}
-proc noninc_forward_search*(a2: cint, a3: cint): cint{.cdecl, 
+proc nonincForwardSearch*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_noninc_forward_search", dynlib: readlineDll.}
-proc noninc_reverse_search*(a2: cint, a3: cint): cint{.cdecl, 
+proc nonincReverseSearch*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_noninc_reverse_search", dynlib: readlineDll.}
-proc noninc_forward_search_again*(a2: cint, a3: cint): cint{.cdecl, 
+proc nonincForwardSearchAgain*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_noninc_forward_search_again", dynlib: readlineDll.}
-proc noninc_reverse_search_again*(a2: cint, a3: cint): cint{.cdecl, 
+proc nonincReverseSearchAgain*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_noninc_reverse_search_again", dynlib: readlineDll.}
 # Bindable command used when inserting a matching close character. 
 
-proc insert_close*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_insert_close", 
+proc insertClose*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_insert_close", 
     dynlib: readlineDll.}
 # Not available unless READLINE_CALLBACKS is defined. 
 
-proc callback_handler_install*(a2: cstring, a3: TvcpFunc){.cdecl, 
+proc callbackHandlerInstall*(a2: Cstring, a3: Tvcpfunc){.cdecl, 
     importc: "rl_callback_handler_install", dynlib: readlineDll.}
-proc callback_read_char*(){.cdecl, importc: "rl_callback_read_char", 
+proc callbackReadChar*(){.cdecl, importc: "rl_callback_read_char", 
                             dynlib: readlineDll.}
-proc callback_handler_remove*(){.cdecl, importc: "rl_callback_handler_remove", 
+proc callbackHandlerRemove*(){.cdecl, importc: "rl_callback_handler_remove", 
                                  dynlib: readlineDll.}
 # Things for vi mode. Not available unless readline is compiled -DVI_MODE. 
 # VI-mode bindable commands. 
 
-proc vi_redo*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_redo", 
+proc viRedo*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_redo", 
     dynlib: readlineDll.}
-proc vi_undo*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_undo", 
+proc viUndo*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_undo", 
     dynlib: readlineDll.}
-proc vi_yank_arg*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_yank_arg", 
+proc viYankArg*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_yank_arg", 
     dynlib: readlineDll.}
-proc vi_fetch_history*(a2: cint, a3: cint): cint{.cdecl, 
+proc viFetchHistory*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_vi_fetch_history", dynlib: readlineDll.}
-proc vi_search_again*(a2: cint, a3: cint): cint{.cdecl, 
+proc viSearchAgain*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_vi_search_again", dynlib: readlineDll.}
-proc vi_search*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_search", 
+proc viSearch*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_search", 
     dynlib: readlineDll.}
-proc vi_complete*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_complete", 
+proc viComplete*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_complete", 
     dynlib: readlineDll.}
-proc vi_tilde_expand*(a2: cint, a3: cint): cint{.cdecl, 
+proc viTildeExpand*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_vi_tilde_expand", dynlib: readlineDll.}
-proc vi_prev_word*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_prev_word", 
+proc viPrevWord*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_prev_word", 
     dynlib: readlineDll.}
-proc vi_next_word*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_next_word", 
+proc viNextWord*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_next_word", 
     dynlib: readlineDll.}
-proc vi_end_word*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_end_word", 
+proc viEndWord*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_end_word", 
     dynlib: readlineDll.}
-proc vi_insert_beg*(a2: cint, a3: cint): cint{.cdecl, 
+proc viInsertBeg*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_vi_insert_beg", dynlib: readlineDll.}
-proc vi_append_mode*(a2: cint, a3: cint): cint{.cdecl, 
+proc viAppendMode*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_vi_append_mode", dynlib: readlineDll.}
-proc vi_append_eol*(a2: cint, a3: cint): cint{.cdecl, 
+proc viAppendEol*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_vi_append_eol", dynlib: readlineDll.}
-proc vi_eof_maybe*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_eof_maybe", 
+proc viEofMaybe*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_eof_maybe", 
     dynlib: readlineDll.}
-proc vi_insertion_mode*(a2: cint, a3: cint): cint{.cdecl, 
+proc viInsertionMode*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_vi_insertion_mode", dynlib: readlineDll.}
-proc vi_insert_mode*(a2: cint, a3: cint): cint{.cdecl, 
+proc viInsertMode*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_vi_insert_mode", dynlib: readlineDll.}
-proc vi_movement_mode*(a2: cint, a3: cint): cint{.cdecl, 
+proc viMovementMode*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_vi_movement_mode", dynlib: readlineDll.}
-proc vi_arg_digit*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_arg_digit", 
+proc viArgDigit*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_arg_digit", 
     dynlib: readlineDll.}
-proc vi_change_case*(a2: cint, a3: cint): cint{.cdecl, 
+proc viChangeCase*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_vi_change_case", dynlib: readlineDll.}
-proc vi_put*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_put", 
+proc viPut*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_put", 
                                         dynlib: readlineDll.}
-proc vi_column*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_column", 
+proc viColumn*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_column", 
     dynlib: readlineDll.}
-proc vi_delete_to*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_delete_to", 
+proc viDeleteTo*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_delete_to", 
     dynlib: readlineDll.}
-proc vi_change_to*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_change_to", 
+proc viChangeTo*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_change_to", 
     dynlib: readlineDll.}
-proc vi_yank_to*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_yank_to", 
+proc viYankTo*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_yank_to", 
     dynlib: readlineDll.}
-proc vi_rubout*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_rubout", 
+proc viRubout*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_rubout", 
     dynlib: readlineDll.}
-proc vi_delete*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_delete", 
+proc viDelete*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_delete", 
     dynlib: readlineDll.}
-proc vi_back_to_indent*(a2: cint, a3: cint): cint{.cdecl, 
+proc viBackToIndent*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_vi_back_to_indent", dynlib: readlineDll.}
-proc vi_first_print*(a2: cint, a3: cint): cint{.cdecl, 
+proc viFirstPrint*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_vi_first_print", dynlib: readlineDll.}
-proc vi_char_search*(a2: cint, a3: cint): cint{.cdecl, 
+proc viCharSearch*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_vi_char_search", dynlib: readlineDll.}
-proc vi_match*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_match", 
+proc viMatch*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_match", 
     dynlib: readlineDll.}
-proc vi_change_char*(a2: cint, a3: cint): cint{.cdecl, 
+proc viChangeChar*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_vi_change_char", dynlib: readlineDll.}
-proc vi_subst*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_subst", 
+proc viSubst*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_subst", 
     dynlib: readlineDll.}
-proc vi_overstrike*(a2: cint, a3: cint): cint{.cdecl, 
+proc viOverstrike*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_vi_overstrike", dynlib: readlineDll.}
-proc vi_overstrike_delete*(a2: cint, a3: cint): cint{.cdecl, 
+proc viOverstrikeDelete*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_vi_overstrike_delete", dynlib: readlineDll.}
-proc vi_replace*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_replace", 
+proc viReplace*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_replace", 
     dynlib: readlineDll.}
-proc vi_set_mark*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_set_mark", 
+proc viSetMark*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_set_mark", 
     dynlib: readlineDll.}
-proc vi_goto_mark*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_goto_mark", 
+proc viGotoMark*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_goto_mark", 
     dynlib: readlineDll.}
 # VI-mode utility functions. 
 
-proc vi_check*(): cint{.cdecl, importc: "rl_vi_check", dynlib: readlineDll.}
-proc vi_domove*(a2: cint, a3: ptr cint): cint{.cdecl, importc: "rl_vi_domove", 
+proc viCheck*(): Cint{.cdecl, importc: "rl_vi_check", dynlib: readlineDll.}
+proc viDomove*(a2: Cint, a3: ptr Cint): Cint{.cdecl, importc: "rl_vi_domove", 
     dynlib: readlineDll.}
-proc vi_bracktype*(a2: cint): cint{.cdecl, importc: "rl_vi_bracktype", 
+proc viBracktype*(a2: Cint): Cint{.cdecl, importc: "rl_vi_bracktype", 
                                     dynlib: readlineDll.}
-proc vi_start_inserting*(a2: cint, a3: cint, a4: cint){.cdecl, 
+proc viStartInserting*(a2: Cint, a3: Cint, a4: Cint){.cdecl, 
     importc: "rl_vi_start_inserting", dynlib: readlineDll.}
 # VI-mode pseudo-bindable commands, used as utility functions. 
 
-proc vi_fXWord*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_fWord", 
+proc viFXWord*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_fWord", 
     dynlib: readlineDll.}
-proc vi_bXWord*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_bWord", 
+proc viBXWord*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_bWord", 
     dynlib: readlineDll.}
-proc vi_eXWord*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_eWord", 
+proc viEXWord*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_eWord", 
     dynlib: readlineDll.}
-proc vi_fword*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_fword", 
+proc viFword*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_fword", 
     dynlib: readlineDll.}
-proc vi_bword*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_bword", 
+proc viBword*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_bword", 
     dynlib: readlineDll.}
-proc vi_eword*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_eword", 
+proc viEword*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_vi_eword", 
     dynlib: readlineDll.}
 # **************************************************************** 
 #								    
@@ -588,241 +588,241 @@ proc vi_eword*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_vi_eword",
 # Readline functions. 
 # Read a line of input.  Prompt with PROMPT.  A NULL PROMPT means none. 
 
-proc readline*(a2: cstring): cstring{.cdecl, importc: "readline", 
+proc readline*(a2: Cstring): Cstring{.cdecl, importc: "readline", 
                                       dynlib: readlineDll.}
-proc free*(mem: cstring) {.importc: "free", nodecl.}
+proc free*(mem: Cstring) {.importc: "free", nodecl.}
   ## free the buffer that `readline` returned.
 
-proc set_prompt*(a2: cstring): cint{.cdecl, importc: "rl_set_prompt", 
+proc setPrompt*(a2: Cstring): Cint{.cdecl, importc: "rl_set_prompt", 
                                      dynlib: readlineDll.}
-proc expand_prompt*(a2: cstring): cint{.cdecl, importc: "rl_expand_prompt", 
+proc expandPrompt*(a2: Cstring): Cint{.cdecl, importc: "rl_expand_prompt", 
                                         dynlib: readlineDll.}
-proc initialize*(): cint{.cdecl, importc: "rl_initialize", dynlib: readlineDll.}
+proc initialize*(): Cint{.cdecl, importc: "rl_initialize", dynlib: readlineDll.}
 # Undocumented; unused by readline 
 
-proc discard_argument*(): cint{.cdecl, importc: "rl_discard_argument", 
+proc discardArgument*(): Cint{.cdecl, importc: "rl_discard_argument", 
                                 dynlib: readlineDll.}
 # Utility functions to bind keys to readline commands. 
 
-proc add_defun*(a2: cstring, a3: TCommandFunc, a4: cint): cint{.cdecl, 
+proc addDefun*(a2: Cstring, a3: TcommandFunc, a4: Cint): Cint{.cdecl, 
     importc: "rl_add_defun", dynlib: readlineDll.}
-proc bind_key*(a2: cint, a3: TCommandFunc): cint{.cdecl, 
+proc bindKey*(a2: Cint, a3: TcommandFunc): Cint{.cdecl, 
     importc: "rl_bind_key", dynlib: readlineDll.}
-proc bind_key_in_map*(a2: cint, a3: TCommandFunc, a4: PKeymap): cint{.cdecl, 
+proc bindKeyInMap*(a2: Cint, a3: TcommandFunc, a4: PKeymap): Cint{.cdecl, 
     importc: "rl_bind_key_in_map", dynlib: readlineDll.}
-proc unbind_key*(a2: cint): cint{.cdecl, importc: "rl_unbind_key", 
+proc unbindKey*(a2: Cint): Cint{.cdecl, importc: "rl_unbind_key", 
                                   dynlib: readlineDll.}
-proc unbind_key_in_map*(a2: cint, a3: PKeymap): cint{.cdecl, 
+proc unbindKeyInMap*(a2: Cint, a3: PKeymap): Cint{.cdecl, 
     importc: "rl_unbind_key_in_map", dynlib: readlineDll.}
-proc bind_key_if_unbound*(a2: cint, a3: TCommandFunc): cint{.cdecl, 
+proc bindKeyIfUnbound*(a2: Cint, a3: TcommandFunc): Cint{.cdecl, 
     importc: "rl_bind_key_if_unbound", dynlib: readlineDll.}
-proc bind_key_if_unbound_in_map*(a2: cint, a3: TCommandFunc, a4: PKeymap): cint{.
+proc bindKeyIfUnboundInMap*(a2: cint, a3: TcommandFunc, a4: PKeymap): cint{.
     cdecl, importc: "rl_bind_key_if_unbound_in_map", dynlib: readlineDll.}
-proc unbind_function_in_map*(a2: TCommandFunc, a3: PKeymap): cint{.cdecl, 
+proc unbindFunctionInMap*(a2: TcommandFunc, a3: PKeymap): Cint{.cdecl, 
     importc: "rl_unbind_function_in_map", dynlib: readlineDll.}
-proc unbind_command_in_map*(a2: cstring, a3: PKeymap): cint{.cdecl, 
+proc unbindCommandInMap*(a2: Cstring, a3: PKeymap): Cint{.cdecl, 
     importc: "rl_unbind_command_in_map", dynlib: readlineDll.}
-proc bind_keyseq*(a2: cstring, a3: TCommandFunc): cint{.cdecl, 
+proc bindKeyseq*(a2: Cstring, a3: TcommandFunc): Cint{.cdecl, 
     importc: "rl_bind_keyseq", dynlib: readlineDll.}
-proc bind_keyseq_in_map*(a2: cstring, a3: TCommandFunc, a4: PKeymap): cint{.
+proc bindKeyseqInMap*(a2: Cstring, a3: TcommandFunc, a4: PKeymap): Cint{.
     cdecl, importc: "rl_bind_keyseq_in_map", dynlib: readlineDll.}
-proc bind_keyseq_if_unbound*(a2: cstring, a3: TCommandFunc): cint{.cdecl, 
+proc bindKeyseqIfUnbound*(a2: Cstring, a3: TcommandFunc): Cint{.cdecl, 
     importc: "rl_bind_keyseq_if_unbound", dynlib: readlineDll.}
-proc bind_keyseq_if_unbound_in_map*(a2: cstring, a3: TCommandFunc, 
-                                    a4: PKeymap): cint{.cdecl, 
+proc bindKeyseqIfUnboundInMap*(a2: Cstring, a3: TcommandFunc, 
+                                    a4: PKeymap): Cint{.cdecl, 
     importc: "rl_bind_keyseq_if_unbound_in_map", dynlib: readlineDll.}
-proc generic_bind*(a2: cint, a3: cstring, a4: cstring, a5: PKeymap): cint{.
+proc genericBind*(a2: Cint, a3: Cstring, a4: Cstring, a5: PKeymap): Cint{.
     cdecl, importc: "rl_generic_bind", dynlib: readlineDll.}
-proc variable_value*(a2: cstring): cstring{.cdecl, importc: "rl_variable_value", 
+proc variableValue*(a2: Cstring): Cstring{.cdecl, importc: "rl_variable_value", 
     dynlib: readlineDll.}
-proc variable_bind*(a2: cstring, a3: cstring): cint{.cdecl, 
+proc variableBind*(a2: Cstring, a3: Cstring): Cint{.cdecl, 
     importc: "rl_variable_bind", dynlib: readlineDll.}
 # Backwards compatibility, use rl_bind_keyseq_in_map instead. 
 
-proc set_key*(a2: cstring, a3: TCommandFunc, a4: PKeymap): cint{.cdecl, 
+proc setKey*(a2: Cstring, a3: TcommandFunc, a4: PKeymap): Cint{.cdecl, 
     importc: "rl_set_key", dynlib: readlineDll.}
 # Backwards compatibility, use rl_generic_bind instead. 
 
-proc macro_bind*(a2: cstring, a3: cstring, a4: PKeymap): cint{.cdecl, 
+proc macroBind*(a2: Cstring, a3: Cstring, a4: PKeymap): Cint{.cdecl, 
     importc: "rl_macro_bind", dynlib: readlineDll.}
 # Undocumented in the texinfo manual; not really useful to programs. 
 
-proc translate_keyseq*(a2: cstring, a3: cstring, a4: ptr cint): cint{.cdecl, 
+proc translateKeyseq*(a2: Cstring, a3: Cstring, a4: ptr Cint): Cint{.cdecl, 
     importc: "rl_translate_keyseq", dynlib: readlineDll.}
-proc untranslate_keyseq*(a2: cint): cstring{.cdecl, 
+proc untranslateKeyseq*(a2: Cint): Cstring{.cdecl, 
     importc: "rl_untranslate_keyseq", dynlib: readlineDll.}
-proc named_function*(a2: cstring): TCommandFunc{.cdecl, 
+proc namedFunction*(a2: Cstring): TcommandFunc{.cdecl, 
     importc: "rl_named_function", dynlib: readlineDll.}
-proc function_of_keyseq*(a2: cstring, a3: PKeymap, a4: ptr cint): TCommandFunc{.
+proc functionOfKeyseq*(a2: Cstring, a3: PKeymap, a4: ptr Cint): TcommandFunc{.
     cdecl, importc: "rl_function_of_keyseq", dynlib: readlineDll.}
-proc list_funmap_names*(){.cdecl, importc: "rl_list_funmap_names", 
+proc listFunmapNames*(){.cdecl, importc: "rl_list_funmap_names", 
                            dynlib: readlineDll.}
-proc invoking_keyseqs_in_map*(a2: TCommandFunc, a3: PKeymap): cstringArray{.
+proc invokingKeyseqsInMap*(a2: TcommandFunc, a3: PKeymap): CstringArray{.
     cdecl, importc: "rl_invoking_keyseqs_in_map", dynlib: readlineDll.}
-proc invoking_keyseqs*(a2: TCommandFunc): cstringArray{.cdecl, 
+proc invokingKeyseqs*(a2: TcommandFunc): CstringArray{.cdecl, 
     importc: "rl_invoking_keyseqs", dynlib: readlineDll.}
-proc function_dumper*(a2: cint){.cdecl, importc: "rl_function_dumper", 
+proc functionDumper*(a2: Cint){.cdecl, importc: "rl_function_dumper", 
                                  dynlib: readlineDll.}
-proc macro_dumper*(a2: cint){.cdecl, importc: "rl_macro_dumper", 
+proc macroDumper*(a2: Cint){.cdecl, importc: "rl_macro_dumper", 
                               dynlib: readlineDll.}
-proc variable_dumper*(a2: cint){.cdecl, importc: "rl_variable_dumper", 
+proc variableDumper*(a2: Cint){.cdecl, importc: "rl_variable_dumper", 
                                  dynlib: readlineDll.}
-proc read_init_file*(a2: cstring): cint{.cdecl, importc: "rl_read_init_file", 
+proc readInitFile*(a2: Cstring): Cint{.cdecl, importc: "rl_read_init_file", 
     dynlib: readlineDll.}
-proc parse_and_bind*(a2: cstring): cint{.cdecl, importc: "rl_parse_and_bind", 
+proc parseAndBind*(a2: Cstring): Cint{.cdecl, importc: "rl_parse_and_bind", 
     dynlib: readlineDll.}
 
-proc get_keymap_name*(a2: PKeymap): cstring{.cdecl, 
+proc getKeymapName*(a2: PKeymap): Cstring{.cdecl, 
     importc: "rl_get_keymap_name", dynlib: readlineDll.}
 
-proc set_keymap_from_edit_mode*(){.cdecl, 
+proc setKeymapFromEditMode*(){.cdecl, 
                                    importc: "rl_set_keymap_from_edit_mode", 
                                    dynlib: readlineDll.}
-proc get_keymap_name_from_edit_mode*(): cstring{.cdecl, 
+proc getKeymapNameFromEditMode*(): Cstring{.cdecl, 
     importc: "rl_get_keymap_name_from_edit_mode", dynlib: readlineDll.}
 # Functions for manipulating the funmap, which maps command names to functions. 
 
-proc add_funmap_entry*(a2: cstring, a3: TCommandFunc): cint{.cdecl, 
+proc addFunmapEntry*(a2: Cstring, a3: TcommandFunc): Cint{.cdecl, 
     importc: "rl_add_funmap_entry", dynlib: readlineDll.}
-proc funmap_names*(): cstringArray{.cdecl, importc: "rl_funmap_names", 
+proc funmapNames*(): CstringArray{.cdecl, importc: "rl_funmap_names", 
                                     dynlib: readlineDll.}
 # Undocumented, only used internally -- there is only one funmap, and this
 #   function may be called only once. 
 
-proc initialize_funmap*(){.cdecl, importc: "rl_initialize_funmap", 
+proc initializeFunmap*(){.cdecl, importc: "rl_initialize_funmap", 
                            dynlib: readlineDll.}
 # Utility functions for managing keyboard macros. 
 
-proc push_macro_input*(a2: cstring){.cdecl, importc: "rl_push_macro_input", 
+proc pushMacroInput*(a2: Cstring){.cdecl, importc: "rl_push_macro_input", 
                                      dynlib: readlineDll.}
 # Functions for undoing, from undo.c 
 
-proc add_undo*(a2: Tundo_code, a3: cint, a4: cint, a5: cstring){.cdecl, 
+proc addUndo*(a2: TundoCode, a3: Cint, a4: Cint, a5: Cstring){.cdecl, 
     importc: "rl_add_undo", dynlib: readlineDll.}
-proc free_undo_list*(){.cdecl, importc: "rl_free_undo_list", dynlib: readlineDll.}
-proc do_undo*(): cint{.cdecl, importc: "rl_do_undo", dynlib: readlineDll.}
-proc begin_undo_group*(): cint{.cdecl, importc: "rl_begin_undo_group", 
+proc freeUndoList*(){.cdecl, importc: "rl_free_undo_list", dynlib: readlineDll.}
+proc doUndo*(): Cint{.cdecl, importc: "rl_do_undo", dynlib: readlineDll.}
+proc beginUndoGroup*(): Cint{.cdecl, importc: "rl_begin_undo_group", 
                                 dynlib: readlineDll.}
-proc end_undo_group*(): cint{.cdecl, importc: "rl_end_undo_group", 
+proc endUndoGroup*(): Cint{.cdecl, importc: "rl_end_undo_group", 
                               dynlib: readlineDll.}
-proc modifying*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_modifying", 
+proc modifying*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_modifying", 
     dynlib: readlineDll.}
 # Functions for redisplay. 
 
 proc redisplay*(){.cdecl, importc: "rl_redisplay", dynlib: readlineDll.}
-proc on_new_line*(): cint{.cdecl, importc: "rl_on_new_line", dynlib: readlineDll.}
-proc on_new_line_with_prompt*(): cint{.cdecl, 
+proc onNewLine*(): Cint{.cdecl, importc: "rl_on_new_line", dynlib: readlineDll.}
+proc onNewLineWithPrompt*(): Cint{.cdecl, 
                                        importc: "rl_on_new_line_with_prompt", 
                                        dynlib: readlineDll.}
-proc forced_update_display*(): cint{.cdecl, importc: "rl_forced_update_display", 
+proc forcedUpdateDisplay*(): Cint{.cdecl, importc: "rl_forced_update_display", 
                                      dynlib: readlineDll.}
-proc clear_message*(): cint{.cdecl, importc: "rl_clear_message", 
+proc clearMessage*(): Cint{.cdecl, importc: "rl_clear_message", 
                              dynlib: readlineDll.}
-proc reset_line_state*(): cint{.cdecl, importc: "rl_reset_line_state", 
+proc resetLineState*(): Cint{.cdecl, importc: "rl_reset_line_state", 
                                 dynlib: readlineDll.}
-proc crlf*(): cint{.cdecl, importc: "rl_crlf", dynlib: readlineDll.}
-proc message*(a2: cstring): cint{.varargs, cdecl, importc: "rl_message", 
+proc crlf*(): Cint{.cdecl, importc: "rl_crlf", dynlib: readlineDll.}
+proc message*(a2: Cstring): Cint{.varargs, cdecl, importc: "rl_message", 
                                   dynlib: readlineDll.}
-proc show_char*(a2: cint): cint{.cdecl, importc: "rl_show_char", 
+proc showChar*(a2: Cint): Cint{.cdecl, importc: "rl_show_char", 
                                  dynlib: readlineDll.}
 # Undocumented in texinfo manual. 
 
-proc character_len*(a2: cint, a3: cint): cint{.cdecl, 
+proc characterLen*(a2: Cint, a3: Cint): Cint{.cdecl, 
     importc: "rl_character_len", dynlib: readlineDll.}
 # Save and restore internal prompt redisplay information. 
 
-proc save_prompt*(){.cdecl, importc: "rl_save_prompt", dynlib: readlineDll.}
-proc restore_prompt*(){.cdecl, importc: "rl_restore_prompt", dynlib: readlineDll.}
+proc savePrompt*(){.cdecl, importc: "rl_save_prompt", dynlib: readlineDll.}
+proc restorePrompt*(){.cdecl, importc: "rl_restore_prompt", dynlib: readlineDll.}
 # Modifying text. 
 
-proc replace_line*(a2: cstring, a3: cint){.cdecl, importc: "rl_replace_line", 
+proc replaceLine*(a2: Cstring, a3: Cint){.cdecl, importc: "rl_replace_line", 
     dynlib: readlineDll.}
-proc insert_text*(a2: cstring): cint{.cdecl, importc: "rl_insert_text", 
+proc insertText*(a2: Cstring): Cint{.cdecl, importc: "rl_insert_text", 
                                       dynlib: readlineDll.}
-proc delete_text*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_delete_text", 
+proc deleteText*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_delete_text", 
     dynlib: readlineDll.}
-proc kill_text*(a2: cint, a3: cint): cint{.cdecl, importc: "rl_kill_text", 
+proc killText*(a2: Cint, a3: Cint): Cint{.cdecl, importc: "rl_kill_text", 
     dynlib: readlineDll.}
-proc copy_text*(a2: cint, a3: cint): cstring{.cdecl, importc: "rl_copy_text", 
+proc copyText*(a2: Cint, a3: Cint): Cstring{.cdecl, importc: "rl_copy_text", 
     dynlib: readlineDll.}
 # Terminal and tty mode management. 
 
-proc prep_terminal*(a2: cint){.cdecl, importc: "rl_prep_terminal", 
+proc prepTerminal*(a2: Cint){.cdecl, importc: "rl_prep_terminal", 
                                dynlib: readlineDll.}
-proc deprep_terminal*(){.cdecl, importc: "rl_deprep_terminal", 
+proc deprepTerminal*(){.cdecl, importc: "rl_deprep_terminal", 
                          dynlib: readlineDll.}
-proc tty_set_default_bindings*(a2: PKeymap){.cdecl, 
+proc ttySetDefaultBindings*(a2: PKeymap){.cdecl, 
     importc: "rl_tty_set_default_bindings", dynlib: readlineDll.}
-proc tty_unset_default_bindings*(a2: PKeymap){.cdecl, 
+proc ttyUnsetDefaultBindings*(a2: PKeymap){.cdecl, 
     importc: "rl_tty_unset_default_bindings", dynlib: readlineDll.}
-proc reset_terminal*(a2: cstring): cint{.cdecl, importc: "rl_reset_terminal", 
+proc resetTerminal*(a2: Cstring): Cint{.cdecl, importc: "rl_reset_terminal", 
     dynlib: readlineDll.}
-proc resize_terminal*(){.cdecl, importc: "rl_resize_terminal", 
+proc resizeTerminal*(){.cdecl, importc: "rl_resize_terminal", 
                          dynlib: readlineDll.}
-proc set_screen_size*(a2: cint, a3: cint){.cdecl, importc: "rl_set_screen_size", 
+proc setScreenSize*(a2: Cint, a3: Cint){.cdecl, importc: "rl_set_screen_size", 
     dynlib: readlineDll.}
-proc get_screen_size*(a2: ptr cint, a3: ptr cint){.cdecl, 
+proc getScreenSize*(a2: ptr Cint, a3: ptr Cint){.cdecl, 
     importc: "rl_get_screen_size", dynlib: readlineDll.}
-proc reset_screen_size*(){.cdecl, importc: "rl_reset_screen_size", 
+proc resetScreenSize*(){.cdecl, importc: "rl_reset_screen_size", 
                            dynlib: readlineDll.}
-proc get_termcap*(a2: cstring): cstring{.cdecl, importc: "rl_get_termcap", 
+proc getTermcap*(a2: Cstring): Cstring{.cdecl, importc: "rl_get_termcap", 
     dynlib: readlineDll.}
 # Functions for character input. 
 
-proc stuff_char*(a2: cint): cint{.cdecl, importc: "rl_stuff_char", 
+proc stuffChar*(a2: Cint): Cint{.cdecl, importc: "rl_stuff_char", 
                                   dynlib: readlineDll.}
-proc execute_next*(a2: cint): cint{.cdecl, importc: "rl_execute_next", 
+proc executeNext*(a2: Cint): Cint{.cdecl, importc: "rl_execute_next", 
                                     dynlib: readlineDll.}
-proc clear_pending_input*(): cint{.cdecl, importc: "rl_clear_pending_input", 
+proc clearPendingInput*(): Cint{.cdecl, importc: "rl_clear_pending_input", 
                                    dynlib: readlineDll.}
-proc read_key*(): cint{.cdecl, importc: "rl_read_key", dynlib: readlineDll.}
-proc getc*(a2: TFile): cint{.cdecl, importc: "rl_getc", dynlib: readlineDll.}
-proc set_keyboard_input_timeout*(a2: cint): cint{.cdecl, 
+proc readKey*(): Cint{.cdecl, importc: "rl_read_key", dynlib: readlineDll.}
+proc getc*(a2: TFile): Cint{.cdecl, importc: "rl_getc", dynlib: readlineDll.}
+proc setKeyboardInputTimeout*(a2: Cint): Cint{.cdecl, 
     importc: "rl_set_keyboard_input_timeout", dynlib: readlineDll.}
 # `Public' utility functions . 
 
-proc extend_line_buffer*(a2: cint){.cdecl, importc: "rl_extend_line_buffer", 
+proc extendLineBuffer*(a2: Cint){.cdecl, importc: "rl_extend_line_buffer", 
                                     dynlib: readlineDll.}
-proc ding*(): cint{.cdecl, importc: "rl_ding", dynlib: readlineDll.}
-proc alphabetic*(a2: cint): cint{.cdecl, importc: "rl_alphabetic", 
+proc ding*(): Cint{.cdecl, importc: "rl_ding", dynlib: readlineDll.}
+proc alphabetic*(a2: Cint): Cint{.cdecl, importc: "rl_alphabetic", 
                                   dynlib: readlineDll.}
-proc free*(a2: pointer){.cdecl, importc: "rl_free", dynlib: readlineDll.}
+proc free*(a2: Pointer){.cdecl, importc: "rl_free", dynlib: readlineDll.}
 # Readline signal handling, from signals.c 
 
-proc set_signals*(): cint{.cdecl, importc: "rl_set_signals", dynlib: readlineDll.}
-proc clear_signals*(): cint{.cdecl, importc: "rl_clear_signals", 
+proc setSignals*(): Cint{.cdecl, importc: "rl_set_signals", dynlib: readlineDll.}
+proc clearSignals*(): Cint{.cdecl, importc: "rl_clear_signals", 
                              dynlib: readlineDll.}
-proc cleanup_after_signal*(){.cdecl, importc: "rl_cleanup_after_signal", 
+proc cleanupAfterSignal*(){.cdecl, importc: "rl_cleanup_after_signal", 
                               dynlib: readlineDll.}
-proc reset_after_signal*(){.cdecl, importc: "rl_reset_after_signal", 
+proc resetAfterSignal*(){.cdecl, importc: "rl_reset_after_signal", 
                             dynlib: readlineDll.}
-proc free_line_state*(){.cdecl, importc: "rl_free_line_state", 
+proc freeLineState*(){.cdecl, importc: "rl_free_line_state", 
                          dynlib: readlineDll.}
-proc echo_signal_char*(a2: cint){.cdecl, importc: "rl_echo_signal_char", 
+proc echoSignalChar*(a2: Cint){.cdecl, importc: "rl_echo_signal_char", 
                                   dynlib: readlineDll.}
-proc set_paren_blink_timeout*(a2: cint): cint{.cdecl, 
+proc setParenBlinkTimeout*(a2: Cint): Cint{.cdecl, 
     importc: "rl_set_paren_blink_timeout", dynlib: readlineDll.}
 # Undocumented. 
 
-proc maybe_save_line*(): cint{.cdecl, importc: "rl_maybe_save_line", 
+proc maybeSaveLine*(): Cint{.cdecl, importc: "rl_maybe_save_line", 
                                dynlib: readlineDll.}
-proc maybe_unsave_line*(): cint{.cdecl, importc: "rl_maybe_unsave_line", 
+proc maybeUnsaveLine*(): Cint{.cdecl, importc: "rl_maybe_unsave_line", 
                                  dynlib: readlineDll.}
-proc maybe_replace_line*(): cint{.cdecl, importc: "rl_maybe_replace_line", 
+proc maybeReplaceLine*(): Cint{.cdecl, importc: "rl_maybe_replace_line", 
                                   dynlib: readlineDll.}
 # Completion functions. 
 
-proc complete_internal*(a2: cint): cint{.cdecl, importc: "rl_complete_internal", 
+proc completeInternal*(a2: Cint): Cint{.cdecl, importc: "rl_complete_internal", 
     dynlib: readlineDll.}
-proc display_match_list*(a2: cstringArray, a3: cint, a4: cint){.cdecl, 
+proc displayMatchList*(a2: CstringArray, a3: Cint, a4: Cint){.cdecl, 
     importc: "rl_display_match_list", dynlib: readlineDll.}
-proc completion_matches*(a2: cstring, a3: Tcompentry_func): cstringArray{.
+proc completionMatches*(a2: Cstring, a3: TcompentryFunc): CstringArray{.
     cdecl, importc: "rl_completion_matches", dynlib: readlineDll.}
-proc username_completion_function*(a2: cstring, a3: cint): cstring{.cdecl, 
+proc usernameCompletionFunction*(a2: Cstring, a3: Cint): Cstring{.cdecl, 
     importc: "rl_username_completion_function", dynlib: readlineDll.}
-proc filename_completion_function*(a2: cstring, a3: cint): cstring{.cdecl, 
+proc filenameCompletionFunction*(a2: Cstring, a3: Cint): Cstring{.cdecl, 
     importc: "rl_filename_completion_function", dynlib: readlineDll.}
-proc completion_mode*(a2: TCommandFunc): cint{.cdecl, 
+proc completionMode*(a2: TcommandFunc): Cint{.cdecl, 
     importc: "rl_completion_mode", dynlib: readlineDll.}
 # **************************************************************** 
 #								    
@@ -1113,90 +1113,90 @@ when false:
 #   a top-level command (RL_ISSTATE (RL_STATE_READCMD)). 
 
 const 
-  READERR* = (- 2)
+  Readerr* = (- 2)
 
 # Definitions available for use by readline clients. 
 
 const 
-  PROMPT_START_IGNORE* = '\x01'
-  PROMPT_END_IGNORE* = '\x02'
+  PromptStartIgnore* = '\x01'
+  PromptEndIgnore* = '\x02'
 
 # Possible values for do_replace argument to rl_filename_quoting_function,
 #   called by rl_complete_internal. 
 
 const 
-  NO_MATCH* = 0
-  SINGLE_MATCH* = 1
-  MULT_MATCH* = 2
+  NoMatch* = 0
+  SingleMatch* = 1
+  MultMatch* = 2
 
 # Possible state values for rl_readline_state 
 
 const 
-  STATE_NONE* = 0x00000000    # no state; before first call 
-  STATE_INITIALIZING* = 0x00000001 # initializing 
-  STATE_INITIALIZED* = 0x00000002 # initialization done 
-  STATE_TERMPREPPED* = 0x00000004 # terminal is prepped 
-  STATE_READCMD* = 0x00000008 # reading a command key 
-  STATE_METANEXT* = 0x00000010 # reading input after ESC 
-  STATE_DISPATCHING* = 0x00000020 # dispatching to a command 
-  STATE_MOREINPUT* = 0x00000040 # reading more input in a command function 
-  STATE_ISEARCH* = 0x00000080 # doing incremental search 
-  STATE_NSEARCH* = 0x00000100 # doing non-inc search 
-  STATE_SEARCH* = 0x00000200  # doing a history search 
-  STATE_NUMERICARG* = 0x00000400 # reading numeric argument 
-  STATE_MACROINPUT* = 0x00000800 # getting input from a macro 
-  STATE_MACRODEF* = 0x00001000 # defining keyboard macro 
-  STATE_OVERWRITE* = 0x00002000 # overwrite mode 
-  STATE_COMPLETING* = 0x00004000 # doing completion 
-  STATE_SIGHANDLER* = 0x00008000 # in readline sighandler 
-  STATE_UNDOING* = 0x00010000 # doing an undo 
-  STATE_INPUTPENDING* = 0x00020000 # rl_execute_next called 
-  STATE_TTYCSAVED* = 0x00040000 # tty special chars saved 
-  STATE_CALLBACK* = 0x00080000 # using the callback interface 
-  STATE_VIMOTION* = 0x00100000 # reading vi motion arg 
-  STATE_MULTIKEY* = 0x00200000 # reading multiple-key command 
-  STATE_VICMDONCE* = 0x00400000 # entered vi command mode at least once 
-  STATE_REDISPLAYING* = 0x00800000 # updating terminal display 
-  STATE_DONE* = 0x01000000    # done; accepted line 
+  StateNone* = 0x00000000    # no state; before first call 
+  StateInitializing* = 0x00000001 # initializing 
+  StateInitialized* = 0x00000002 # initialization done 
+  StateTermprepped* = 0x00000004 # terminal is prepped 
+  StateReadcmd* = 0x00000008 # reading a command key 
+  StateMetanext* = 0x00000010 # reading input after ESC 
+  StateDispatching* = 0x00000020 # dispatching to a command 
+  StateMoreinput* = 0x00000040 # reading more input in a command function 
+  StateIsearch* = 0x00000080 # doing incremental search 
+  StateNsearch* = 0x00000100 # doing non-inc search 
+  StateSearch* = 0x00000200  # doing a history search 
+  StateNumericarg* = 0x00000400 # reading numeric argument 
+  StateMacroinput* = 0x00000800 # getting input from a macro 
+  StateMacrodef* = 0x00001000 # defining keyboard macro 
+  StateOverwrite* = 0x00002000 # overwrite mode 
+  StateCompleting* = 0x00004000 # doing completion 
+  StateSighandler* = 0x00008000 # in readline sighandler 
+  StateUndoing* = 0x00010000 # doing an undo 
+  StateInputpending* = 0x00020000 # rl_execute_next called 
+  StateTtycsaved* = 0x00040000 # tty special chars saved 
+  StateCallback* = 0x00080000 # using the callback interface 
+  StateVimotion* = 0x00100000 # reading vi motion arg 
+  StateMultikey* = 0x00200000 # reading multiple-key command 
+  StateVicmdonce* = 0x00400000 # entered vi command mode at least once 
+  StateRedisplaying* = 0x00800000 # updating terminal display 
+  StateDone* = 0x01000000    # done; accepted line 
 
-template SETSTATE*(x: expr): stmt = 
+template setstate*(x: Expr): Stmt = 
   readline_state = readline_state or (x)
 
-template UNSETSTATE*(x: expr): stmt = 
+template unsetstate*(x: Expr): Stmt = 
   readline_state = readline_state and not (x)
 
-template ISSTATE*(x: expr): expr = 
+template isstate*(x: Expr): Expr = 
   (readline_state and x) != 0
 
 type 
-  Treadline_state*{.pure, final.} = object 
-    point*: cint              # line state 
-    theEnd*: cint
-    mark*: cint
-    buffer*: cstring
-    buflen*: cint
+  TreadlineState*{.pure, final.} = object 
+    point*: Cint              # line state 
+    theEnd*: Cint
+    mark*: Cint
+    buffer*: Cstring
+    buflen*: Cint
     ul*: ptr TUNDO_LIST
-    prompt*: cstring          # global state 
-    rlstate*: cint
-    done*: cint
+    prompt*: Cstring          # global state 
+    rlstate*: Cint
+    done*: Cint
     kmap*: PKeymap            # input state 
-    lastfunc*: TCommandFunc
-    insmode*: cint
-    edmode*: cint
-    kseqlen*: cint
+    lastfunc*: TcommandFunc
+    insmode*: Cint
+    edmode*: Cint
+    kseqlen*: Cint
     inf*: TFile
     outf*: TFile
-    pendingin*: cint
-    theMacro*: cstring        # signal state 
-    catchsigs*: cint
-    catchsigwinch*: cint      # search state 
+    pendingin*: Cint
+    theMacro*: Cstring        # signal state 
+    catchsigs*: Cint
+    catchsigwinch*: Cint      # search state 
                               # completion state 
                               # options state 
                               # reserved for future expansion, so the struct size doesn't change 
-    reserved*: array[0..64 - 1, char]
+    reserved*: Array[0..64 - 1, Char]
 
 
-proc save_state*(a2: ptr Treadline_state): cint{.cdecl, 
+proc saveState*(a2: ptr TreadlineState): Cint{.cdecl, 
     importc: "rl_save_state", dynlib: readlineDll.}
-proc restore_state*(a2: ptr Treadline_state): cint{.cdecl, 
+proc restoreState*(a2: ptr TreadlineState): Cint{.cdecl, 
     importc: "rl_restore_state", dynlib: readlineDll.}

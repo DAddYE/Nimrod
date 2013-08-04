@@ -23,8 +23,8 @@ proc delNimCache() =
   except EOS:
     echo "[Warning] could not delete: ", nimcacheDir
     
-proc runRodFiles(r: var TResults, options: string) =
-  template test(filename: expr): stmt =
+proc runRodFiles(r: var TResults, options: String) =
+  template test(filename: Expr): Stmt =
     runSingleTest(r, rodfilesDir / filename, options)
   
   delNimCache()
@@ -56,8 +56,8 @@ proc runRodFiles(r: var TResults, options: string) =
   test "tgeneric2"
   delNimCache()
 
-proc compileRodFiles(r: var TResults, options: string) =
-  template test(filename: expr): stmt =
+proc compileRodFiles(r: var TResults, options: String) =
+  template test(filename: Expr): Stmt =
     compileSingleTest(r, rodfilesDir / filename, options)
     
   delNimCache()
@@ -68,13 +68,13 @@ proc compileRodFiles(r: var TResults, options: string) =
 
 # --------------------- DLL generation tests ----------------------------------
 
-proc safeCopyFile(src, dest: string) =
+proc safeCopyFile(src, dest: String) =
   try:
     copyFile(src, dest)
   except EOS:
     echo "[Warning] could not copy: ", src, " to ", dest
 
-proc runBasicDLLTest(c, r: var TResults, options: string) =
+proc runBasicDLLTest(c, r: var TResults, options: String) =
   compileSingleTest c, "lib/nimrtl.nim", options & " --app:lib -d:createNimRtl"
   compileSingleTest c, "tests/dll/server.nim", 
     options & " --app:lib -d:useNimRtl"
@@ -85,7 +85,7 @@ proc runBasicDLLTest(c, r: var TResults, options: string) =
     safeCopyFile("lib" / nimrtlDll, "tests/dll" / nimrtlDll)
   else:
     # posix relies on crappy LD_LIBRARY_PATH (ugh!):
-    var libpath = getenv"LD_LIBRARY_PATH".string
+    var libpath = getEnv"LD_LIBRARY_PATH".String
     if peg"\i '/nimrod' (!'/')* '/lib'" notin libpath:
       echo "[Warning] insufficient LD_LIBRARY_PATH"
     var serverDll = DynlibFormat % "server"
@@ -93,7 +93,7 @@ proc runBasicDLLTest(c, r: var TResults, options: string) =
   
   runSingleTest r, "tests/dll/client.nim", options & " -d:useNimRtl"
 
-proc runDLLTests(r: var TResults, options: string) =
+proc runDLLTests(r: var TResults, options: String) =
   # dummy compile result:
   var c = initResults()
   
@@ -102,7 +102,7 @@ proc runDLLTests(r: var TResults, options: string) =
   runBasicDLLTest c, r, options & " --gc:boehm"
   runBasicDLLTest c, r, options & " -d:release --gc:boehm"
 
-proc compileDLLTests(r: var TResults, options: string) =
+proc compileDLLTests(r: var TResults, options: String) =
   # dummy run result:
   var c = initResults()
   
@@ -113,8 +113,8 @@ proc compileDLLTests(r: var TResults, options: string) =
 
 # ------------------------------ GC tests -------------------------------------
 
-proc runGcTests(r: var TResults, options: string) =
-  template test(filename: expr): stmt =
+proc runGcTests(r: var TResults, options: String) =
+  template test(filename: Expr): Stmt =
     runSingleTest(r, "tests/gc" / filename, options)
     runSingleTest(r, "tests/gc" / filename, options & " -d:release")
     runSingleTest(r, "tests/gc" / filename, options &
@@ -135,8 +135,8 @@ proc runGcTests(r: var TResults, options: string) =
 
 # ------------------------- threading tests -----------------------------------
 
-proc runThreadTests(r: var TResults, options: string) =
-  template test(filename: expr): stmt =
+proc runThreadTests(r: var TResults, options: String) =
+  template test(filename: Expr): Stmt =
     runSingleTest(r, "tests/threads" / filename, options)
     runSingleTest(r, "tests/threads" / filename, options & " -d:release")
     runSingleTest(r, "tests/threads" / filename, options & " --tlsEmulation:on")
@@ -150,14 +150,14 @@ proc runThreadTests(r: var TResults, options: string) =
   #test "tthreadanalysis"
   #test "tthreadsort"
 
-proc rejectThreadTests(r: var TResults, options: string) =
+proc rejectThreadTests(r: var TResults, options: String) =
   rejectSingleTest(r, "tests/threads/tthreadanalysis2", options)
   rejectSingleTest(r, "tests/threads/tthreadanalysis3", options)
   rejectSingleTest(r, "tests/threads/tthreadheapviolation1", options)
 
 # ------------------------- IO tests ------------------------------------------
 
-proc runIOTests(r: var TResults, options: string) =
+proc runIOTests(r: var TResults, options: String) =
   # We need readall_echo to be compiled for this test to run.
   # dummy compile result:
   var c = initResults()
@@ -166,14 +166,14 @@ proc runIOTests(r: var TResults, options: string) =
   
 # ------------------------- debugger tests ------------------------------------
 
-proc compileDebuggerTests(r: var TResults, options: string) =
+proc compileDebuggerTests(r: var TResults, options: String) =
   compileSingleTest(r, "tools/nimgrep", options & 
                     " --debugger:on")
 
 # ------------------------- JS tests ------------------------------------------
 
-proc runJsTests(r: var TResults, options: string) =
-  template test(filename: expr): stmt =
+proc runJsTests(r: var TResults, options: String) =
+  template test(filename: Expr): Stmt =
     runSingleTest(r, filename, options & " -d:nodejs", targetJS)
     runSingleTest(r, filename, options & " -d:nodejs -d:release", targetJS)
     
@@ -185,10 +185,10 @@ proc runJsTests(r: var TResults, options: string) =
     test "tests/run/" & testfile & ".nim"
 
 # ------------------------- register special tests here -----------------------
-proc runSpecialTests(r: var TResults, options: string) =
+proc runSpecialTests(r: var TResults, options: String) =
   runRodFiles(r, options)
   #runDLLTests(r, options)
-  runGCTests(r, options)
+  runGcTests(r, options)
   runThreadTests(r, options & " --threads:on")
   runIOTests(r, options)
 
@@ -197,10 +197,10 @@ proc runSpecialTests(r: var TResults, options: string) =
   for t in ["lib/packages/docutils/highlite"]:
     runSingleTest(r, t, options)
 
-proc rejectSpecialTests(r: var TResults, options: string) =
+proc rejectSpecialTests(r: var TResults, options: String) =
   rejectThreadTests(r, options)
 
-proc findMainFile(dir: string): string =
+proc findMainFile(dir: String): String =
   # finds the file belonging to ".nimrod.cfg"; if there is no such file
   # it returns the some ".nim" file if there is only one: 
   const cfgExt = ".nimrod.cfg"
@@ -212,16 +212,16 @@ proc findMainFile(dir: string): string =
       elif file.endsWith(".nim"):
         if result.len == 0: result = file
         inc nimFiles
-  if nimFiles != 1: result.setlen(0)
+  if nimFiles != 1: result.setLen(0)
 
-proc compileManyLoc(r: var TResults, options: string) =
+proc compileManyLoc(r: var TResults, options: String) =
   for kind, dir in os.walkDir("tests/manyloc"):
     if kind == pcDir:
       let mainfile = findMainFile(dir)
       if mainfile != ".nim":
         compileSingleTest(r, mainfile, options)
 
-proc compileSpecialTests(r: var TResults, options: string) =
+proc compileSpecialTests(r: var TResults, options: String) =
   compileRodFiles(r, options)
 
   compileSingleTest(r, "compiler/c2nim/c2nim.nim", options)

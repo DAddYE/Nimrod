@@ -67,10 +67,10 @@ import sockets, strutils, parseurl, parseutils, strtabs
 
 type
   TResponse* = tuple[
-    version: string, 
-    status: string, 
+    version: String, 
+    status: String, 
     headers: PStringTable,
-    body: string]
+    body: String]
 
   EInvalidProtocol* = object of ESynch ## exception that is raised when server
                                        ## does not conform to the implemented
@@ -82,19 +82,19 @@ type
 
 const defUserAgent* = "Nimrod httpclient/0.1"
 
-proc httpError(msg: string) =
+proc httpError(msg: String) =
   var e: ref EInvalidProtocol
   new(e)
   e.msg = msg
   raise e
   
-proc fileError(msg: string) =
-  var e: ref EIO
+proc fileError(msg: String) =
+  var e: ref Eio
   new(e)
   e.msg = msg
   raise e
 
-proc parseChunks(s: TSocket, timeout: int): string =
+proc parseChunks(s: TSocket, timeout: Int): String =
   result = ""
   var ri = 0
   while true:
@@ -132,7 +132,7 @@ proc parseChunks(s: TSocket, timeout: int): string =
     # Trailer headers will only be sent if the request specifies that we want
     # them: http://tools.ietf.org/html/rfc2616#section-3.6.1
   
-proc parseBody(s: TSocket, headers: PStringTable, timeout: int): string =
+proc parseBody(s: TSocket, headers: PStringTable, timeout: Int): String =
   result = ""
   if headers["Transfer-Encoding"] == "chunked":
     result = parseChunks(s, timeout)
@@ -141,7 +141,7 @@ proc parseBody(s: TSocket, headers: PStringTable, timeout: int): string =
     # (http://tools.ietf.org/html/rfc2616#section-4.4) NR.3
     var contentLengthHeader = headers["Content-Length"]
     if contentLengthHeader != "":
-      var length = contentLengthHeader.parseint()
+      var length = contentLengthHeader.parseInt()
       result = newString(length)
       var received = 0
       while true:
@@ -159,20 +159,20 @@ proc parseBody(s: TSocket, headers: PStringTable, timeout: int): string =
       # (http://tools.ietf.org/html/rfc2616#section-4.4) NR.5
       if headers["Connection"] == "close":
         var buf = ""
-        while True:
+        while true:
           buf = newString(4000)
           let r = s.recv(addr(buf[0]), 4000, timeout)
           if r == 0: break
           buf.setLen(r)
           result.add(buf)
 
-proc parseResponse(s: TSocket, getBody: bool, timeout: int): TResponse =
+proc parseResponse(s: TSocket, getBody: Bool, timeout: Int): TResponse =
   var parsedStatus = false
   var linei = 0
   var fullyRead = false
   var line = ""
   result.headers = newStringTable(modeCaseInsensitive)
-  while True:
+  while true:
     line = ""
     linei = 0
     s.readLine(line, timeout)
@@ -239,7 +239,7 @@ when not defined(ssl):
 else:
   let defaultSSLContext = newContext(verifyMode = CVerifyNone)
 
-proc request*(url: string, httpMethod = httpGET, extraHeaders = "", 
+proc request*(url: String, httpMethod = httpGET, extraHeaders = "", 
               body = "",
               sslContext: PSSLContext = defaultSSLContext,
               timeout = -1, userAgent = defUserAgent): TResponse =
@@ -282,22 +282,22 @@ proc request*(url: string, httpMethod = httpGET, extraHeaders = "",
   result = parseResponse(s, httpMethod != httpHEAD, timeout)
   s.close()
   
-proc redirection(status: string): bool =
+proc redirection(status: String): Bool =
   const redirectionNRs = ["301", "302", "303", "307"]
   for i in items(redirectionNRs):
     if status.startsWith(i):
-      return True
+      return true
 
-proc getNewLocation(lastUrl: string, headers: PStringTable): string =
+proc getNewLocation(lastUrl: String, headers: PStringTable): String =
   result = headers["Location"]
   if result == "": httpError("location header expected")
   # Relative URLs. (Not part of the spec, but soon will be.)
-  let r = parseURL(result)
+  let r = parseUrl(result)
   if r.hostname == "" and r.path != "":
-    let origParsed = parseURL(lastUrl)
+    let origParsed = parseUrl(lastUrl)
     result = origParsed.hostname & "/" & r.path
   
-proc get*(url: string, extraHeaders = "", maxRedirects = 5,
+proc get*(url: String, extraHeaders = "", maxRedirects = 5,
           sslContext: PSSLContext = defaultSSLContext,
           timeout = -1, userAgent = defUserAgent): TResponse =
   ## | GETs the ``url`` and returns a ``TResponse`` object
@@ -312,11 +312,11 @@ proc get*(url: string, extraHeaders = "", maxRedirects = 5,
       let redirectTo = getNewLocation(lastURL, result.headers)
       result = request(redirectTo, httpGET, extraHeaders, "", sslContext,
                        timeout, userAgent)
-      lastUrl = redirectTo
+      lastURL = redirectTo
       
-proc getContent*(url: string, extraHeaders = "", maxRedirects = 5,
+proc getContent*(url: String, extraHeaders = "", maxRedirects = 5,
                  sslContext: PSSLContext = defaultSSLContext,
-                 timeout = -1, userAgent = defUserAgent): string =
+                 timeout = -1, userAgent = defUserAgent): String =
   ## | GETs the body and returns it as a string.
   ## | Raises exceptions for the status codes ``4xx`` and ``5xx``
   ## | Extra headers can be specified and must be separated by ``\c\L``.
@@ -324,11 +324,11 @@ proc getContent*(url: string, extraHeaders = "", maxRedirects = 5,
   ## server takes longer than specified an ETimeout exception will be raised.
   var r = get(url, extraHeaders, maxRedirects, sslContext, timeout, userAgent)
   if r.status[0] in {'4','5'}:
-    raise newException(EHTTPRequestErr, r.status)
+    raise newException(EHttpRequestErr, r.status)
   else:
     return r.body
   
-proc post*(url: string, extraHeaders = "", body = "",
+proc post*(url: String, extraHeaders = "", body = "",
            maxRedirects = 5,
            sslContext: PSSLContext = defaultSSLContext,
            timeout = -1, userAgent = defUserAgent): TResponse =
@@ -343,16 +343,16 @@ proc post*(url: string, extraHeaders = "", body = "",
   var lastUrl = ""
   for i in 1..maxRedirects:
     if result.status.redirection():
-      let redirectTo = getNewLocation(lastURL, result.headers)
-      var meth = if result.status != "307": httpGet else: httpPost
+      let redirectTo = getNewLocation(lastUrl, result.headers)
+      var meth = if result.status != "307": httpGET else: httpPOST
       result = request(redirectTo, meth, xh, body, sslContext, timeout,
                        userAgent)
       lastUrl = redirectTo
   
-proc postContent*(url: string, extraHeaders = "", body = "",
+proc postContent*(url: String, extraHeaders = "", body = "",
                   maxRedirects = 5,
                   sslContext: PSSLContext = defaultSSLContext,
-                  timeout = -1, userAgent = defUserAgent): string =
+                  timeout = -1, userAgent = defUserAgent): String =
   ## | POSTs ``body`` to ``url`` and returns the response's body as a string
   ## | Raises exceptions for the status codes ``4xx`` and ``5xx``
   ## | Extra headers can be specified and must be separated by ``\c\L``.
@@ -361,11 +361,11 @@ proc postContent*(url: string, extraHeaders = "", body = "",
   var r = post(url, extraHeaders, body, maxRedirects, sslContext, timeout,
                userAgent)
   if r.status[0] in {'4','5'}:
-    raise newException(EHTTPRequestErr, r.status)
+    raise newException(EHttpRequestErr, r.status)
   else:
     return r.body
   
-proc downloadFile*(url: string, outputFilename: string,
+proc downloadFile*(url: String, outputFilename: String,
                    sslContext: PSSLContext = defaultSSLContext,
                    timeout = -1, userAgent = defUserAgent) =
   ## | Downloads ``url`` and saves it to ``outputFilename``

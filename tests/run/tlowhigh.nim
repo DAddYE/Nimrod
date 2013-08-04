@@ -5,15 +5,15 @@ discard """
 # Test the magic low() and high() procs
 
 type
-  myEnum = enum e1, e2, e3, e4, e5
+  MyEnum = enum e1, e2, e3, e4, e5
 
 var
-  a: array [myEnum, int]
+  a: Array [myEnum, Int]
 
 for i in low(a) .. high(a):
   a[i] = 0
 
-proc sum(a: openarray[int]): int =
+proc sum(a: Openarray[Int]): Int =
   result = 0
   for i in low(a)..high(a):
     inc(result, a[i])

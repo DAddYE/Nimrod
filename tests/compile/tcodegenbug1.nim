@@ -9,19 +9,19 @@ type
 
   TStatus* = object
     status*: TStatusEnum
-    desc*: string
-    hash*: string
+    desc*: String
+    hash*: String
     
 proc initStatus*(): TStatus =
   result.status = sUnknown
   result.desc = ""
   result.hash = ""
 
-proc isInProgress*(status: TStatusEnum): bool =
+proc isInProgress*(status: TStatusEnum): Bool =
   return status in {sBuildInProgress, sTestInProgress, sDocGenInProgress,
                     sCSrcGenInProgress}
 
-proc `$`*(status: TStatusEnum): string =
+proc `$`*(status: TStatusEnum): String =
   case status
   of sBuildFailure:
     return "build failure"
@@ -50,17 +50,17 @@ proc `$`*(status: TStatusEnum): string =
   of sUnknown:
     return "unknown"
     
-proc makeCommitPath*(platform, hash: string): string =
+proc makeCommitPath*(platform, hash: String): String =
   return platform / "nimrod_" & hash.substr(0, 11) # 11 Chars.
 
 type
   TFlag = enum
     A, B, C, D
 
-  TFlags = set[TFlag]
+  TFlags = Set[TFlag]
 
   TObj = object
-    x: int
+    x: Int
     flags: TFlags
 
 # have a proc taking TFlags as param and returning object having TFlags field

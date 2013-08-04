@@ -16,42 +16,42 @@ type
   TRenderFlag* = enum 
     renderNone, renderNoBody, renderNoComments, renderDocComments, 
     renderNoPragmas, renderIds
-  TRenderFlags* = set[TRenderFlag]
+  TRenderFlags* = Set[TRenderFlag]
   TRenderTok*{.final.} = object 
     kind*: TTokType
-    length*: int16
+    length*: Int16
 
-  TRenderTokSeq* = seq[TRenderTok]
+  TRenderTokSeq* = Seq[TRenderTok]
   TSrcGen*{.final.} = object 
-    indent*: int
-    lineLen*: int
-    pos*: int              # current position for iteration over the buffer
-    idx*: int              # current token index for iteration over the buffer
+    indent*: Int
+    lineLen*: Int
+    pos*: Int              # current position for iteration over the buffer
+    idx*: Int              # current token index for iteration over the buffer
     tokens*: TRenderTokSeq
-    buf*: string
-    pendingNL*: int        # negative if not active; else contains the
+    buf*: String
+    pendingNL*: Int        # negative if not active; else contains the
                            # indentation value
-    comStack*: seq[PNode]  # comment stack
+    comStack*: Seq[PNode]  # comment stack
     flags*: TRenderFlags
-    checkAnon: bool        # we're in a context that can contain sfAnon
+    checkAnon: Bool        # we're in a context that can contain sfAnon
 
 
-proc renderModule*(n: PNode, filename: string, renderFlags: TRenderFlags = {})
-proc renderTree*(n: PNode, renderFlags: TRenderFlags = {}): string
+proc renderModule*(n: PNode, filename: String, renderFlags: TRenderFlags = {})
+proc renderTree*(n: PNode, renderFlags: TRenderFlags = {}): String
 proc initTokRender*(r: var TSrcGen, n: PNode, renderFlags: TRenderFlags = {})
-proc getNextTok*(r: var TSrcGen, kind: var TTokType, literal: var string)
+proc getNextTok*(r: var TSrcGen, kind: var TTokType, literal: var String)
 # implementation
 # We render the source code in a two phases: The first
 # determines how long the subtree will likely be, the second
 # phase appends to a buffer that will be the output.
 
-proc isKeyword*(s: string): bool =
+proc isKeyword*(s: String): Bool =
   var i = getIdent(s)
   if (i.id >= ord(tokKeywordLow) - ord(tkSymbol)) and
       (i.id <= ord(tokKeywordHigh) - ord(tkSymbol)): 
     result = true
 
-proc renderDefinitionName*(s: PSym): string =
+proc renderDefinitionName*(s: PSym): String =
   let x = s.name.s
   if x[0] in SymStartChars and not renderer.isKeyword(x): result = x
   else: result = '`' & x & '`'
@@ -62,7 +62,7 @@ const
   MaxLineLen = 80
   LineCommentColumn = 30
 
-proc InitSrcGen(g: var TSrcGen, renderFlags: TRenderFlags) = 
+proc initSrcGen(g: var TSrcGen, renderFlags: TRenderFlags) = 
   g.comStack = @[]
   g.tokens = @[]
   g.indent = 0
@@ -74,11 +74,11 @@ proc InitSrcGen(g: var TSrcGen, renderFlags: TRenderFlags) =
   g.pendingNL = -1
   g.checkAnon = false
 
-proc addTok(g: var TSrcGen, kind: TTokType, s: string) = 
+proc addTok(g: var TSrcGen, kind: TTokType, s: String) = 
   var length = len(g.tokens)
-  setlen(g.tokens, length + 1)
+  setLen(g.tokens, length + 1)
   g.tokens[length].kind = kind
-  g.tokens[length].length = int16(len(s))
+  g.tokens[length].length = Int16(len(s))
   add(g.buf, s)
 
 proc addPendingNL(g: var TSrcGen) = 
@@ -87,7 +87,7 @@ proc addPendingNL(g: var TSrcGen) =
     g.lineLen = g.pendingNL
     g.pendingNL = - 1
 
-proc putNL(g: var TSrcGen, indent: int) = 
+proc putNL(g: var TSrcGen, indent: Int) = 
   if g.pendingNL >= 0: addPendingNL(g)
   else: addTok(g, tkSpaces, "\n")
   g.pendingNL = indent
@@ -96,7 +96,7 @@ proc putNL(g: var TSrcGen, indent: int) =
 proc putNL(g: var TSrcGen) = 
   putNL(g, g.indent)
 
-proc optNL(g: var TSrcGen, indent: int) = 
+proc optNL(g: var TSrcGen, indent: Int) = 
   g.pendingNL = indent
   g.lineLen = indent          # BUGFIX
   
@@ -108,38 +108,38 @@ proc indentNL(g: var TSrcGen) =
   g.pendingNL = g.indent
   g.lineLen = g.indent
 
-proc Dedent(g: var TSrcGen) = 
+proc dedent(g: var TSrcGen) = 
   dec(g.indent, indentWidth)
   assert(g.indent >= 0)
   if g.pendingNL > indentWidth: 
-    Dec(g.pendingNL, indentWidth)
-    Dec(g.lineLen, indentWidth)
+    dec(g.pendingNL, indentWidth)
+    dec(g.lineLen, indentWidth)
 
-proc put(g: var TSrcGen, kind: TTokType, s: string) = 
+proc put(g: var TSrcGen, kind: TTokType, s: String) = 
   addPendingNL(g)
   if len(s) > 0: 
     addTok(g, kind, s)
     inc(g.lineLen, len(s))
 
-proc putLong(g: var TSrcGen, kind: TTokType, s: string, lineLen: int) = 
+proc putLong(g: var TSrcGen, kind: TTokType, s: String, lineLen: Int) = 
   # use this for tokens over multiple lines.
   addPendingNL(g)
   addTok(g, kind, s)
   g.lineLen = lineLen
 
-proc toNimChar(c: Char): string = 
+proc toNimChar(c: Char): String = 
   case c
   of '\0': result = "\\0"
   of '\x01'..'\x1F', '\x80'..'\xFF': result = "\\x" & strutils.toHex(ord(c), 2)
   of '\'', '\"', '\\': result = '\\' & c
   else: result = c & ""
   
-proc makeNimString(s: string): string = 
+proc makeNimString(s: String): String = 
   result = "\""
   for i in countup(0, len(s)-1): add(result, toNimChar(s[i]))
   add(result, '\"')
 
-proc putComment(g: var TSrcGen, s: string) = 
+proc putComment(g: var TSrcGen, s: String) = 
   var i = 0
   var comIndent = 1
   var isCode = (len(s) >= 2) and (s[1] != ' ')
@@ -187,7 +187,7 @@ proc putComment(g: var TSrcGen, s: string) =
   put(g, tkComment, com)
   optNL(g)
 
-proc maxLineLength(s: string): int = 
+proc maxLineLength(s: String): Int = 
   result = 0
   var i = 0
   var lineLen = 0
@@ -208,7 +208,7 @@ proc maxLineLength(s: string): int =
       inc(lineLen)
       inc(i)
 
-proc putRawStr(g: var TSrcGen, kind: TTokType, s: string) = 
+proc putRawStr(g: var TSrcGen, kind: TTokType, s: String) = 
   var i = 0
   var hi = len(s) - 1
   var str = ""
@@ -230,7 +230,7 @@ proc putRawStr(g: var TSrcGen, kind: TTokType, s: string) =
       inc(i)
   put(g, kind, str)
 
-proc containsNL(s: string): bool = 
+proc containsNL(s: String): Bool = 
   for i in countup(0, len(s) - 1): 
     case s[i]
     of '\x0D', '\x0A': 
@@ -241,19 +241,19 @@ proc containsNL(s: string): bool =
 
 proc pushCom(g: var TSrcGen, n: PNode) = 
   var length = len(g.comStack)
-  setlen(g.comStack, length + 1)
+  setLen(g.comStack, length + 1)
   g.comStack[length] = n
 
 proc popAllComs(g: var TSrcGen) = 
-  setlen(g.comStack, 0)
+  setLen(g.comStack, 0)
 
 proc popCom(g: var TSrcGen) = 
-  setlen(g.comStack, len(g.comStack) - 1)
+  setLen(g.comStack, len(g.comStack) - 1)
 
 const 
   Space = " "
 
-proc shouldRenderComment(g: var TSrcGen, n: PNode): bool = 
+proc shouldRenderComment(g: var TSrcGen, n: PNode): Bool = 
   result = false
   if n.comment != nil: 
     result = (renderNoComments notin g.flags) or
@@ -277,8 +277,8 @@ proc gcoms(g: var TSrcGen) =
   for i in countup(0, high(g.comStack)): gcom(g, g.comStack[i])
   popAllComs(g)
 
-proc lsub(n: PNode): int
-proc litAux(n: PNode, x: biggestInt, size: int): string =
+proc lsub(n: PNode): Int
+proc litAux(n: PNode, x: BiggestInt, size: Int): String =
   proc skip(t: PType): PType = 
     result = t
     while result.kind in {tyGenericInst, tyRange, tyVar, tyDistinct, tyOrdinal,
@@ -295,15 +295,15 @@ proc litAux(n: PNode, x: biggestInt, size: int): string =
   elif nfBase16 in n.flags: result = "0x" & toHex(x, size * 2)
   else: result = $x
 
-proc ulitAux(n: PNode, x: biggestInt, size: int): string = 
+proc ulitAux(n: PNode, x: BiggestInt, size: Int): String = 
   if nfBase2 in n.flags: result = "0b" & toBin(x, size * 8)
   elif nfBase8 in n.flags: result = "0o" & toOct(x, size * 3)
   elif nfBase16 in n.flags: result = "0x" & toHex(x, size * 2)
   else: result = $x
   # XXX proper unsigned output!
   
-proc atom(n: PNode): string = 
-  var f: float32
+proc atom(n: PNode): String = 
+  var f: Float32
   case n.kind
   of nkEmpty: result = ""
   of nkIdent: result = n.ident.s
@@ -311,7 +311,7 @@ proc atom(n: PNode): string =
   of nkStrLit: result = makeNimString(n.strVal)
   of nkRStrLit: result = "r\"" & replace(n.strVal, "\"", "\"\"")  & '\"'
   of nkTripleStrLit: result = "\"\"\"" & n.strVal & "\"\"\""
-  of nkCharLit: result = '\'' & toNimChar(chr(int(n.intVal))) & '\''
+  of nkCharLit: result = '\'' & toNimChar(chr(Int(n.intVal))) & '\''
   of nkIntLit: result = litAux(n, n.intVal, 4)
   of nkInt8Lit: result = litAux(n, n.intVal, 1) & "\'i8"
   of nkInt16Lit: result = litAux(n, n.intVal, 2) & "\'i16"
@@ -341,10 +341,10 @@ proc atom(n: PNode): string =
     if (n.typ != nil) and (n.typ.sym != nil): result = n.typ.sym.name.s
     else: result = "[type node]"
   else: 
-    InternalError("rnimsyn.atom " & $n.kind)
+    internalError("rnimsyn.atom " & $n.kind)
     result = ""
   
-proc lcomma(n: PNode, start: int = 0, theEnd: int = - 1): int = 
+proc lcomma(n: PNode, start: Int = 0, theEnd: Int = - 1): Int = 
   assert(theEnd < 0)
   result = 0
   for i in countup(start, sonsLen(n) + theEnd): 
@@ -353,7 +353,7 @@ proc lcomma(n: PNode, start: int = 0, theEnd: int = - 1): int =
   if result > 0: 
     dec(result, 2)            # last does not get a comma!
   
-proc lsons(n: PNode, start: int = 0, theEnd: int = - 1): int = 
+proc lsons(n: PNode, start: Int = 0, theEnd: Int = - 1): Int = 
   assert(theEnd < 0)
   result = 0
   for i in countup(start, sonsLen(n) + theEnd): inc(result, lsub(n.sons[i]))
@@ -458,14 +458,14 @@ proc lsub(n: PNode): int =
     result = lcomma(n, 0, -2) + lsub(lastSon(n)) + len("except_:_")
   else: result = maxLineLen + 1
   
-proc fits(g: TSrcGen, x: int): bool = 
+proc fits(g: TSrcGen, x: Int): Bool = 
   result = x + g.lineLen <= maxLineLen
 
 type 
   TSubFlag = enum 
     rfLongMode, rfNoIndent, rfInConstExpr
-  TSubFlags = set[TSubFlag]
-  TContext = tuple[spacing: int, flags: TSubFlags]
+  TSubFlags = Set[TSubFlag]
+  TContext = tuple[spacing: Int, flags: TSubFlags]
 
 const 
   emptyContext: TContext = (spacing: 0, flags: {})
@@ -480,7 +480,7 @@ proc gsub(g: var TSrcGen, n: PNode) =
   initContext(c)
   gsub(g, n, c)
 
-proc hasCom(n: PNode): bool = 
+proc hasCom(n: PNode): Bool = 
   result = false
   if n.comment != nil: return true
   case n.kind
@@ -489,12 +489,12 @@ proc hasCom(n: PNode): bool =
     for i in countup(0, sonsLen(n) - 1): 
       if hasCom(n.sons[i]): return true
   
-proc putWithSpace(g: var TSrcGen, kind: TTokType, s: string) = 
+proc putWithSpace(g: var TSrcGen, kind: TTokType, s: String) = 
   put(g, kind, s)
   put(g, tkSpaces, Space)
 
-proc gcommaAux(g: var TSrcGen, n: PNode, ind: int, start: int = 0, 
-               theEnd: int = - 1, separator = tkComma) = 
+proc gcommaAux(g: var TSrcGen, n: PNode, ind: Int, start: Int = 0, 
+               theEnd: Int = - 1, separator = tkComma) = 
   for i in countup(start, sonsLen(n) + theEnd):
     var c = i < sonsLen(n) + theEnd
     var sublen = lsub(n.sons[i]) + ord(c)
@@ -508,9 +508,9 @@ proc gcommaAux(g: var TSrcGen, n: PNode, ind: int, start: int = 0,
         gcoms(g)
         optNL(g, ind)
 
-proc gcomma(g: var TSrcGen, n: PNode, c: TContext, start: int = 0, 
-            theEnd: int = - 1) = 
-  var ind: int
+proc gcomma(g: var TSrcGen, n: PNode, c: TContext, start: Int = 0, 
+            theEnd: Int = - 1) = 
+  var ind: Int
   if rfInConstExpr in c.flags: 
     ind = g.indent + indentWidth
   else: 
@@ -518,22 +518,22 @@ proc gcomma(g: var TSrcGen, n: PNode, c: TContext, start: int = 0,
     if ind > maxLineLen div 2: ind = g.indent + longIndentWid
   gcommaAux(g, n, ind, start, theEnd)
 
-proc gcomma(g: var TSrcGen, n: PNode, start: int = 0, theEnd: int = - 1) = 
+proc gcomma(g: var TSrcGen, n: PNode, start: Int = 0, theEnd: Int = - 1) = 
   var ind = g.lineLen
   if ind > maxLineLen div 2: ind = g.indent + longIndentWid
   gcommaAux(g, n, ind, start, theEnd)
 
-proc gsemicolon(g: var TSrcGen, n: PNode, start: int = 0, theEnd: int = - 1) = 
+proc gsemicolon(g: var TSrcGen, n: PNode, start: Int = 0, theEnd: Int = - 1) = 
   var ind = g.lineLen
   if ind > maxLineLen div 2: ind = g.indent + longIndentWid
-  gcommaAux(g, n, ind, start, theEnd, tkSemicolon)
+  gcommaAux(g, n, ind, start, theEnd, tkSemiColon)
 
-proc gsons(g: var TSrcGen, n: PNode, c: TContext, start: int = 0, 
-           theEnd: int = - 1) = 
+proc gsons(g: var TSrcGen, n: PNode, c: TContext, start: Int = 0, 
+           theEnd: Int = - 1) = 
   for i in countup(start, sonsLen(n) + theEnd): gsub(g, n.sons[i], c)
 
 proc gsection(g: var TSrcGen, n: PNode, c: TContext, kind: TTokType, 
-              k: string) = 
+              k: String) = 
   if sonsLen(n) == 0: return # empty var sections are possible
   putWithSpace(g, kind, k)
   gcoms(g)
@@ -544,7 +544,7 @@ proc gsection(g: var TSrcGen, n: PNode, c: TContext, kind: TTokType,
     gcoms(g)
   dedent(g)
 
-proc longMode(n: PNode, start: int = 0, theEnd: int = - 1): bool = 
+proc longMode(n: PNode, start: Int = 0, theEnd: Int = - 1): Bool = 
   result = n.comment != nil
   if not result: 
     # check further
@@ -814,7 +814,7 @@ proc gsub(g: var TSrcGen, n: PNode, c: TContext) =
     put(g, tkParRi, ")")
   of nkStaticExpr:
     put(g, tkStatic, "static")
-    put(g, tkSpaces, space)
+    put(g, tkSpaces, Space)
     gsub(g, n.sons[0])
   of nkBracketExpr: 
     gsub(g, n.sons[0])
@@ -831,7 +831,7 @@ proc gsub(g: var TSrcGen, n: PNode, c: TContext) =
     gcomma(g, n, 1)
   of nkCommand: 
     gsub(g, n.sons[0])
-    put(g, tkSpaces, space)
+    put(g, tkSpaces, Space)
     gcomma(g, n, 1)
   of nkExprEqExpr, nkAsgn, nkFastAsgn: 
     gsub(g, n.sons[0])
@@ -938,7 +938,7 @@ proc gsub(g: var TSrcGen, n: PNode, c: TContext) =
   of nkPrefix: 
     gsub(g, n.sons[0])
     if n.len > 1:
-      put(g, tkSpaces, space)
+      put(g, tkSpaces, Space)
       gsub(g, n.sons[1])
   of nkPostfix: 
     gsub(g, n.sons[1])
@@ -1236,7 +1236,7 @@ proc gsub(g: var TSrcGen, n: PNode, c: TContext) =
       put(g, tkBracketRi, "]")
   else: 
     #nkNone, nkMetaNode, nkExplicitTypeListCall: 
-    InternalError(n.info, "rnimsyn.gsub(" & $n.kind & ')')
+    internalError(n.info, "rnimsyn.gsub(" & $n.kind & ')')
 
 proc renderTree(n: PNode, renderFlags: TRenderFlags = {}): string = 
   var g: TSrcGen
@@ -1273,7 +1273,7 @@ proc initTokRender(r: var TSrcGen, n: PNode, renderFlags: TRenderFlags = {}) =
 proc getNextTok(r: var TSrcGen, kind: var TTokType, literal: var string) = 
   if r.idx < len(r.tokens): 
     kind = r.tokens[r.idx].kind
-    var length = r.tokens[r.idx].length.int
+    var length = r.tokens[r.idx].length.Int
     literal = substr(r.buf, r.pos, r.pos + length - 1)
     inc(r.pos, length)
     inc(r.idx)

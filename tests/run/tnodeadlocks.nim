@@ -9,12 +9,12 @@ const
   noDeadlocks = defined(preventDeadlocks)
 
 var
-  thr: array [0..5, TThread[tuple[a, b: int]]]
-  L, M, N: TLock
+  thr: Array [0..5, TThread[tuple[a, b: Int]]]
+  L, m, n: TLock
 
 proc doNothing() = nil
 
-proc threadFunc(interval: tuple[a, b: int]) {.thread.} = 
+proc threadFunc(interval: tuple[a, b: Int]) {.thread.} = 
   doNothing()
   for i in interval.a..interval.b: 
     when nodeadlocks:
@@ -45,8 +45,8 @@ proc threadFunc(interval: tuple[a, b: int]) {.thread.} =
         Acquire(M)
       else: assert false
     else:
-      Acquire(L) # lock stdout
-      Acquire(M)
+      acquire(L) # lock stdout
+      acquire(m)
       
     echo i
     os.sleep(10)
@@ -54,12 +54,12 @@ proc threadFunc(interval: tuple[a, b: int]) {.thread.} =
       echo "deadlocks prevented: ", deadlocksPrevented
     when nodeadlocks:
       Release(N)
-    Release(M)
-    Release(L)
+    release(m)
+    release(L)
 
-InitLock(L)
-InitLock(M)
-InitLock(N)
+initLock(L)
+initLock(m)
+initLock(n)
 
 proc main =
   for i in 0..high(thr):

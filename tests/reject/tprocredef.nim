@@ -4,6 +4,6 @@ discard """
   errormsg: "redefinition of \'foo\'"
 """
 
-proc foo(a: int, b: string) = nil
+proc foo(a: Int, b: String) = nil
 proc foo(a: int, b: string) = nil
 

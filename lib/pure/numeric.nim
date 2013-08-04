@@ -8,10 +8,10 @@
 #
 
 
-type TOneVarFunction* =proc (x:float):float
+type TOneVarFunction* =proc (x:Float):Float
 
-proc brent*(xmin,xmax:float ,function:TOneVarFunction, tol:float,maxiter=1000): 
-  tuple[rootx, rooty: float, success: bool]=
+proc brent*(xmin,xmax:Float ,function:TOneVarFunction, tol:Float,maxiter=1000): 
+  tuple[rootx, rooty: Float, success: Bool]=
   ## Searches `function` for a root between `xmin` and `xmax` 
   ## using brents method. If the function value at `xmin`and `xmax` has the
   ## same sign, `rootx`/`rooty` is set too the extrema value closest to x-axis
@@ -32,9 +32,9 @@ proc brent*(xmin,xmax:float ,function:TOneVarFunction, tol:float,maxiter=1000):
     fc=fa
     s=0.0
     fs=0.0
-    mflag:bool
+    mflag:Bool
     i=0
-    tmp2:float
+    tmp2:Float
 
   if fa*fb>=0:
     if abs(fa)<abs(fb):

@@ -1,7 +1,7 @@
 import unittest
 
 test "loop variables are captured by copy":
-  var funcs: seq[proc (): int {.closure.}] = @[]
+  var funcs: Seq[proc (): Int {.closure.}] = @[]
   
   for i in 0..10:
     let ii = i

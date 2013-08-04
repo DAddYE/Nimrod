@@ -4,12 +4,12 @@ discard """
 
 type
   ITest = tuple[
-    setter: proc(v: int) {.closure.},
-    getter1: proc(): int {.closure.},
-    getter2: proc(): int {.closure.}]
+    setter: proc(v: Int) {.closure.},
+    getter1: proc(): Int {.closure.},
+    getter2: proc(): Int {.closure.}]
 
 proc getInterf(): ITest =
-  var shared1, shared2: int
+  var shared1, shared2: Int
   
   return (setter: proc (x: int) = 
             shared1 = x

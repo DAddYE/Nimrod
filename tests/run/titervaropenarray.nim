@@ -3,7 +3,7 @@ discard """
   output: "123"
 """
 # Try to break the transformation pass:
-iterator iterAndZero(a: var openArray[int]): int =
+iterator iterAndZero(a: var Openarray[Int]): Int =
   for i in 0..len(a)-1:
     yield a[i]
     a[i] = 0

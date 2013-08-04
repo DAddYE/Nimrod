@@ -30,38 +30,38 @@ import
 type
   TParser*{.final.} = object  # a TParser object represents a module that
                               # is being parsed
-    currInd: int              # current indentation
-    firstTok: bool
+    currInd: Int              # current indentation
+    firstTok: Bool
     lex*: TLexer              # the lexer that is used for parsing
     tok*: TToken              # the current token
 
-proc ParseAll*(p: var TParser): PNode
-proc openParser*(p: var TParser, filename: string, inputstream: PLLStream)
+proc parseAll*(p: var TParser): PNode
+proc openParser*(p: var TParser, filename: String, inputstream: PLLStream)
 proc closeParser*(p: var TParser)
 proc parseTopLevelStmt*(p: var TParser): PNode
   # implements an iterator. Returns the next top-level statement or
   # emtyNode if end of stream.
 
-proc parseString*(s: string, filename: string = "", line: int = 0): PNode
+proc parseString*(s: String, filename: String = "", line: Int = 0): PNode
   # filename and line could be set optionally, when the string originates 
   # from a certain source file. This way, the compiler could generate
   # correct error messages referring to the original source.
   
 # helpers for the other parsers
-proc getPrecedence*(tok: TToken): int
-proc isOperator*(tok: TToken): bool
+proc getPrecedence*(tok: TToken): Int
+proc isOperator*(tok: TToken): Bool
 proc getTok*(p: var TParser)
-proc parMessage*(p: TParser, msg: TMsgKind, arg: string = "")
+proc parMessage*(p: TParser, msg: TMsgKind, arg: String = "")
 proc skipComment*(p: var TParser, node: PNode)
 proc newNodeP*(kind: TNodeKind, p: TParser): PNode
 proc newIntNodeP*(kind: TNodeKind, intVal: BiggestInt, p: TParser): PNode
 proc newFloatNodeP*(kind: TNodeKind, floatVal: BiggestFloat, p: TParser): PNode
-proc newStrNodeP*(kind: TNodeKind, strVal: string, p: TParser): PNode
+proc newStrNodeP*(kind: TNodeKind, strVal: String, p: TParser): PNode
 proc newIdentNodeP*(ident: PIdent, p: TParser): PNode
 proc expectIdentOrKeyw*(p: TParser)
-proc ExpectIdent*(p: TParser)
+proc expectIdent*(p: TParser)
 proc parLineInfo*(p: TParser): TLineInfo
-proc Eat*(p: var TParser, TokType: TTokType)
+proc eat*(p: var TParser, TokType: TTokType)
 proc skipInd*(p: var TParser)
 proc optPar*(p: var TParser)
 proc optInd*(p: var TParser, n: PNode)
@@ -75,17 +75,17 @@ proc parseCase(p: var TParser): PNode
 proc getTok(p: var TParser) = 
   rawGetTok(p.lex, p.tok)
 
-proc OpenParser*(p: var TParser, fileIdx: int32, inputStream: PLLStream) =
+proc openParser*(p: var TParser, fileIdx: Int32, inputStream: PLLStream) =
   initToken(p.tok)
-  OpenLexer(p.lex, fileIdx, inputstream)
+  openLexer(p.lex, fileIdx, inputStream)
   getTok(p)                   # read the first token
   p.firstTok = true
 
-proc OpenParser*(p: var TParser, filename: string, inputStream: PLLStream) =
-  openParser(p, filename.fileInfoIdx, inputStream)
+proc openParser*(p: var TParser, filename: string, inputStream: PLLStream) =
+  openParser(p, filename.fileInfoIdx, inputstream)
 
-proc CloseParser(p: var TParser) = 
-  CloseLexer(p.lex)
+proc closeParser(p: var TParser) = 
+  closeLexer(p.lex)
 
 proc parMessage(p: TParser, msg: TMsgKind, arg: string = "") = 
   lexMessage(p.lex, msg, arg)
@@ -93,15 +93,15 @@ proc parMessage(p: TParser, msg: TMsgKind, arg: string = "") =
 proc parMessage(p: TParser, msg: TMsgKind, tok: TToken) = 
   lexMessage(p.lex, msg, prettyTok(tok))
 
-template withInd(p: expr, body: stmt) {.immediate.} =
+template withInd(p: Expr, body: Stmt) {.immediate.} =
   let oldInd = p.currInd
   p.currInd = p.tok.indent
   body
   p.currInd = oldInd
 
-template realInd(p): bool = p.tok.indent > p.currInd
-template sameInd(p): bool = p.tok.indent == p.currInd
-template sameOrNoInd(p): bool = p.tok.indent == p.currInd or p.tok.indent < 0
+template realInd(p): Bool = p.tok.indent > p.currInd
+template sameInd(p): Bool = p.tok.indent == p.currInd
+template sameOrNoInd(p): Bool = p.tok.indent == p.currInd or p.tok.indent < 0
 
 proc rawSkipComment(p: var TParser, node: PNode) =
   if p.tok.tokType == tkComment:
@@ -135,12 +135,12 @@ proc expectIdentOrKeyw(p: TParser) =
   if p.tok.tokType != tkSymbol and not isKeyword(p.tok.tokType):
     lexMessage(p.lex, errIdentifierExpected, prettyTok(p.tok))
   
-proc ExpectIdent(p: TParser) =
+proc expectIdent(p: TParser) =
   if p.tok.tokType != tkSymbol:
     lexMessage(p.lex, errIdentifierExpected, prettyTok(p.tok))
   
-proc Eat(p: var TParser, TokType: TTokType) =
-  if p.tok.TokType == TokType: getTok(p)
+proc eat(p: var TParser, TokType: TTokType) =
+  if p.tok.TokType == tokType: getTok(p)
   else: lexMessage(p.lex, errTokenExpected, TokTypeToStr[tokType])
   
 proc parLineInfo(p: TParser): TLineInfo =
@@ -179,16 +179,16 @@ proc parseTypeDesc(p: var TParser): PNode
 proc parseDoBlocks(p: var TParser, call: PNode)
 proc parseParamList(p: var TParser, retColon = true): PNode
 
-proc relevantOprChar(ident: PIdent): char {.inline.} =
+proc relevantOprChar(ident: PIdent): Char {.inline.} =
   result = ident.s[0]
   var L = ident.s.len
   if result == '\\' and L > 1:
     result = ident.s[1]
 
-proc IsSigilLike(tok: TToken): bool {.inline.} =
+proc isSigilLike(tok: TToken): Bool {.inline.} =
   result = tok.tokType == tkOpr and relevantOprChar(tok.ident) == '@'
 
-proc IsLeftAssociative(tok: TToken): bool {.inline.} =
+proc isLeftAssociative(tok: TToken): Bool {.inline.} =
   result = tok.tokType != tkOpr or relevantOprChar(tok.ident) != '^'
 
 proc getPrecedence(tok: TToken): int = 
@@ -197,7 +197,7 @@ proc getPrecedence(tok: TToken): int =
     let L = tok.ident.s.len
     let relevantChar = relevantOprChar(tok.ident)
     
-    template considerAsgn(value: expr) = 
+    template considerAsgn(value: Expr) = 
       result = if tok.ident.s[L-1] == '=': 1 else: value     
     
     case relevantChar
@@ -455,7 +455,7 @@ proc simpleExpr(p: var TParser, mode = pmNormal): PNode
 
 proc semiStmtList(p: var TParser, result: PNode) =
   result.add(complexOrSimpleStmt(p))
-  while p.tok.tokType == tkSemicolon:
+  while p.tok.tokType == tkSemiColon:
     getTok(p)
     optInd(p, result)
     result.add(complexOrSimpleStmt(p))
@@ -482,7 +482,7 @@ proc parsePar(p: var TParser): PNode =
     # XXX 'bind' used to be an expression, so we exclude it here;
     # tests/reject/tbind2 fails otherwise.
     semiStmtList(p, result)
-  elif p.tok.tokType == tkSemicolon:
+  elif p.tok.tokType == tkSemiColon:
     # '(;' enforces 'stmt' context:
     getTok(p)
     optInd(p, result)
@@ -498,7 +498,7 @@ proc parsePar(p: var TParser): PNode =
       asgn.sons[0] = a
       asgn.sons[1] = b
       result.add(asgn)
-    elif p.tok.tokType == tkSemicolon:
+    elif p.tok.tokType == tkSemiColon:
       # stmt context:
       result.add(a)
       semiStmtList(p, result)
@@ -661,14 +661,14 @@ proc primarySuffix(p: var TParser, r: PNode): PNode =
 
 proc primary(p: var TParser, mode: TPrimaryMode): PNode
 
-proc simpleExprAux(p: var TParser, limit: int, mode: TPrimaryMode): PNode =
+proc simpleExprAux(p: var TParser, limit: Int, mode: TPrimaryMode): PNode =
   result = primary(p, mode)
   # expand while operators have priorities higher than 'limit'
   var opPrec = getPrecedence(p.tok)
   let modeB = if mode == pmTypeDef: pmTypeDesc else: mode
   # the operator itself must not start on a new line:
   while opPrec >= limit and p.tok.indent < 0:
-    var leftAssoc = ord(IsLeftAssociative(p.tok))
+    var leftAssoc = ord(isLeftAssociative(p.tok))
     var a = newNodeP(nkInfix, p)
     var opNode = newIdentNodeP(p.tok.ident, p) # skip operator:
     getTok(p)
@@ -746,7 +746,7 @@ type
   TDeclaredIdentFlag = enum 
     withPragma,               # identifier may have pragma
     withBothOptional          # both ':' and '=' parts are optional
-  TDeclaredIdentFlags = set[TDeclaredIdentFlag]
+  TDeclaredIdentFlags = Set[TDeclaredIdentFlag]
 
 proc parseIdentColonEquals(p: var TParser, flags: TDeclaredIdentFlags): PNode = 
   #| declColonEquals = identWithPragma (comma identWithPragma)* comma?
@@ -794,7 +794,7 @@ proc parseTuple(p: var TParser, indentAllowed = false): PNode =
     while p.tok.tokType in {tkSymbol, tkAccent}:
       var a = parseIdentColonEquals(p, {})
       addSon(result, a)
-      if p.tok.tokType notin {tkComma, tkSemicolon}: break
+      if p.tok.tokType notin {tkComma, tkSemiColon}: break
       getTok(p)
       skipComment(p, a)
     optPar(p)
@@ -836,13 +836,13 @@ proc parseParamList(p: var TParser, retColon = true): PNode =
         parMessage(p, errTokenExpected, ")")
         break 
       addSon(result, a)
-      if p.tok.tokType notin {tkComma, tkSemicolon}: break 
+      if p.tok.tokType notin {tkComma, tkSemiColon}: break 
       getTok(p)
       skipComment(p, a)
     optPar(p)
     eat(p, tkParRi)
   let hasRet = if retColon: p.tok.tokType == tkColon
-               else: p.tok.tokType == tkOpr and IdentEq(p.tok.ident, "->")
+               else: p.tok.tokType == tkOpr and identEq(p.tok.ident, "->")
   if hasRet and p.tok.indent < 0:
     getTok(p)
     optInd(p, result)
@@ -873,7 +873,7 @@ proc parseDoBlocks(p: var TParser, call: PNode) =
     while sameInd(p) and p.tok.tokType == tkDo:
       addSon(call, parseDoBlock(p))      
 
-proc parseProcExpr(p: var TParser, isExpr: bool): PNode = 
+proc parseProcExpr(p: var TParser, isExpr: Bool): PNode = 
   #| procExpr = 'proc' paramListColon pragmas? ('=' COMMENT? stmt)?
   # either a proc type or a anonymous proc
   let info = parLineInfo(p)
@@ -893,7 +893,7 @@ proc parseProcExpr(p: var TParser, isExpr: bool): PNode =
       addSon(result, params)
       addSon(result, pragmas)
 
-proc isExprStart(p: TParser): bool = 
+proc isExprStart(p: TParser): Bool = 
   case p.tok.tokType
   of tkSymbol, tkAccent, tkOpr, tkNot, tkNil, tkCast, tkIf, 
      tkProc, tkIterator, tkBind, tkAddr,
@@ -936,7 +936,7 @@ proc primary(p: var TParser, mode: TPrimaryMode): PNode =
   #|         / 'static' primary
   #|         / 'bind' primary
   if isOperator(p.tok):
-    let isSigil = IsSigilLike(p.tok)
+    let isSigil = isSigilLike(p.tok)
     result = newNodeP(nkPrefix, p)
     var a = newIdentNodeP(p.tok.ident, p)
     addSon(result, a)
@@ -1362,7 +1362,7 @@ proc parseGenericParamList(p: var TParser): PNode =
   while p.tok.tokType in {tkSymbol, tkAccent}: 
     var a = parseGenericParam(p)
     addSon(result, a)
-    if p.tok.tokType notin {tkComma, tkSemicolon}: break 
+    if p.tok.tokType notin {tkComma, tkSemiColon}: break 
     getTok(p)
     skipComment(p, a)
   optPar(p)
@@ -1374,7 +1374,7 @@ proc parsePattern(p: var TParser): PNode =
   result = parseStmt(p)
   eat(p, tkCurlyRi)
 
-proc validInd(p: var TParser): bool =
+proc validInd(p: var TParser): Bool =
   result = p.tok.indent < 0 or p.tok.indent > p.currInd
 
 proc parseRoutine(p: var TParser, kind: TNodeKind): PNode = 
@@ -1407,7 +1407,7 @@ proc parseRoutine(p: var TParser, kind: TNodeKind): PNode =
 proc newCommentStmt(p: var TParser): PNode =
   #| commentStmt = COMMENT
   result = newNodeP(nkCommentStmt, p)
-  result.info.line = result.info.line - int16(1) - int16(p.tok.iNumber)
+  result.info.line = result.info.line - Int16(1) - Int16(p.tok.iNumber)
   result.comment = p.tok.literal
   getTok(p)
 
@@ -1755,8 +1755,8 @@ proc parseStmt(p: var TParser): PNode =
       while true:
         if p.tok.indent == p.currInd:
           nil
-        elif p.tok.tokType == tkSemicolon:
-          while p.tok.tokType == tkSemicolon: getTok(p)
+        elif p.tok.tokType == tkSemiColon:
+          while p.tok.tokType == tkSemiColon: getTok(p)
         else:
           if p.tok.indent > p.currInd:
             parMessage(p, errInvalidIndentation)
@@ -1785,7 +1785,7 @@ proc parseStmt(p: var TParser): PNode =
         let a = simpleStmt(p)
         if a.kind == nkEmpty: parMessage(p, errExprExpected, p.tok)
         result.add(a)
-        if p.tok.tokType != tkSemicolon: break
+        if p.tok.tokType != tkSemiColon: break
         getTok(p)
   
 proc parseAll(p: var TParser): PNode = 
@@ -1817,11 +1817,11 @@ proc parseTopLevelStmt(p: var TParser): PNode =
       break
 
 proc parseString(s: string, filename: string = "", line: int = 0): PNode =
-  var stream = LLStreamOpen(s)
+  var stream = lLStreamOpen(s)
   stream.lineOffset = line
 
   var parser: TParser
-  OpenParser(parser, filename, stream)
+  openParser(parser, filename, stream)
 
   result = parser.parseAll
-  CloseParser(parser)
+  closeParser(parser)

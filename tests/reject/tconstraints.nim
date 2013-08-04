@@ -3,11 +3,11 @@ discard """
   errormsg: "type mismatch: got (int literal(232))"
 """
 
-proc myGenericProc[T: object|tuple|ptr|ref|distinct](x: T): string = 
+proc myGenericProc[T: object|tuple|ptr|ref|distinct](x: T): String = 
   result = $x
 
 type
-  TMyObj = tuple[x, y: int]
+  TMyObj = tuple[x, y: Int]
 
 var
   x: TMyObj

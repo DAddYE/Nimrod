@@ -55,17 +55,17 @@ else:
 # 
 
 type 
-  Tmd5_state*{.pure, final.} = object 
-    count*: array[0..2 - 1, int32] # message length in bits, lsw first 
-    abcd*: array[0..4 - 1, int32] # digest buffer 
-    buf*: array[0..64 - 1, byte] # accumulate block 
+  Tmd5State*{.pure, final.} = object 
+    count*: Array[0..2 - 1, Int32] # message length in bits, lsw first 
+    abcd*: Array[0..4 - 1, Int32] # digest buffer 
+    buf*: Array[0..64 - 1, Byte] # accumulate block 
   
 
-proc sock_init*(): cint{.stdcall, importc: "mongo_sock_init", dynlib: mongodll.}
+proc sockInit*(): Cint{.stdcall, importc: "mongo_sock_init", dynlib: mongodll.}
 const 
-  OK* = 0
-  ERROR* = - 1
-  SIZE_OVERFLOW* = 1
+  Ok* = 0
+  Error* = - 1
+  SizeOverflow* = 1
   defaultHost* = "127.0.0.1"
   defaultPort* = 27017
 
@@ -99,53 +99,53 @@ type
     bkINT = 16, 
     bkTIMESTAMP = 17, 
     bkLONG = 18
-  TBsonBool* = cint
+  TBsonBool* = Cint
   TIter* {.pure, final.} = object 
-    cur*: cstring
+    cur*: Cstring
     first*: TBsonBool
 
   TBson* {.pure, final.} = object 
-    data*: cstring
-    cur*: cstring
-    dataSize*: cint
+    data*: Cstring
+    cur*: Cstring
+    dataSize*: Cint
     finished*: TBsonBool
-    stack*: array[0..32 - 1, cint]
-    stackPos*: cint
-    err*: cint       ## Bitfield representing errors or warnings on this buffer 
-    errstr*: cstring ## A string representation of the most recent error
+    stack*: Array[0..32 - 1, Cint]
+    stackPos*: Cint
+    err*: Cint       ## Bitfield representing errors or warnings on this buffer 
+    errstr*: Cstring ## A string representation of the most recent error
                      ## or warning. 
   
-  TDate* = int64
+  TDate* = Int64
 
 # milliseconds since epoch UTC 
 
 type
   TTimestamp*{.pure, final.} = object ## a timestamp
-    i*: cint                  # increment 
-    t*: cint                  # time in seconds 
+    i*: Cint                  # increment 
+    t*: Cint                  # time in seconds 
 
 proc create*(): ptr TBson{.stdcall, importc: "bson_create", dynlib: bsondll.}
 proc dispose*(b: ptr TBson){.stdcall, importc: "bson_dispose", dynlib: bsondll.}
 
-proc size*(b: var TBson): cint {.stdcall, importc: "bson_size", dynlib: bsondll.}
+proc size*(b: var TBson): Cint {.stdcall, importc: "bson_size", dynlib: bsondll.}
   ## Size of a BSON object.
 
-proc bufferSize*(b: var TBson): cint{.stdcall, importc: "bson_buffer_size", 
+proc bufferSize*(b: var TBson): Cint{.stdcall, importc: "bson_buffer_size", 
                                       dynlib: bsondll.}
   ## Buffer size of a BSON object.
 
 proc print*(b: var TBson){.stdcall, importc: "bson_print", dynlib: bsondll.}
   ## Print a string representation of a BSON object.
 
-proc print*(TBson: cstring, depth: cint) {.stdcall, 
+proc print*(TBson: Cstring, depth: Cint) {.stdcall, 
     importc: "bson_print_raw", dynlib: bsondll.}
   ## Print a string representation of a BSON object up to `depth`.
 
-proc data*(b: var TBson): cstring{.stdcall, importc: "bson_data", 
+proc data*(b: var TBson): Cstring{.stdcall, importc: "bson_data", 
                                    dynlib: bsondll.}
   ## Return a pointer to the raw buffer stored by this bson object.
 
-proc find*(it: var TIter, obj: var TBson, name: cstring): TBsonKind {.stdcall, 
+proc find*(it: var TIter, obj: var TBson, name: Cstring): TBsonKind {.stdcall, 
     importc: "bson_find", dynlib: bsondll.}
   ## Advance `it` to the named field. `obj` is the BSON object to use.
   ## `name` is the name of the field to find. Returns the type of the found
@@ -158,21 +158,21 @@ proc dispose*(a2: ptr TIter){.stdcall, importc: "bson_iterator_dispose",
 
 proc initIter*(b: var TBson): TIter =
   ## Initialize a bson iterator from the value `b`.
-  proc iterator_init(i: var TIter, b: var TBson){.stdcall, 
+  proc iteratorInit(i: var TIter, b: var TBson){.stdcall, 
       importc: "bson_iterator_init", dynlib: bsondll.}
 
-  iterator_init(result, b)
+  iteratorInit(result, b)
 
-proc fromBuffer*(i: var TIter, buffer: cstring) {.stdcall, 
+proc fromBuffer*(i: var TIter, buffer: Cstring) {.stdcall, 
     importc: "bson_iterator_from_buffer", dynlib: bsondll.}
   ## Initialize a bson iterator from a cstring buffer. Note
   ## that this is mostly used internally.
 
-proc more*(i: var TIter): bool = 
+proc more*(i: var TIter): Bool = 
   ## Check to see if the bson_iterator has more data.
-  proc iterator_more(i: var TIter): TBsonBool{.stdcall, 
+  proc iteratorMore(i: var TIter): TBsonBool{.stdcall, 
       importc: "bson_iterator_more", dynlib: bsondll.}
-  result = iterator_more(i) != 0'i32
+  result = iteratorMore(i) != 0'i32
   
 proc next*(i: var TIter): TBsonKind {.stdcall, 
     importc: "bson_iterator_next", dynlib: bsondll.}
@@ -182,24 +182,24 @@ proc kind*(i: var TIter): TBsonKind{.stdcall,
     importc: "bson_iterator_type", dynlib: bsondll.}
   ## Get the type of the BSON object currently pointed to by the iterator.
 
-proc key*(i: var TIter): cstring{.stdcall, 
+proc key*(i: var TIter): Cstring{.stdcall, 
     importc: "bson_iterator_key", dynlib: bsondll.}
   ##  Get the key of the BSON object currently pointed to by the iterator.
   
-proc value*(i: var TIter): cstring{.stdcall, 
+proc value*(i: var TIter): Cstring{.stdcall, 
     importc: "bson_iterator_value", dynlib: bsondll.}
   ## Get the value of the BSON object currently pointed to by the iterator.
   
-proc floatVal*(i: var TIter): float {.stdcall, 
+proc floatVal*(i: var TIter): Float {.stdcall, 
     importc: "bson_iterator_double", dynlib: bsondll.}
   ## Get the double value of the BSON object currently pointed to by the
   ## iterator.
 
-proc intVal*(i: var TIter): cint{.stdcall, importc: "bson_iterator_int", 
+proc intVal*(i: var TIter): Cint{.stdcall, importc: "bson_iterator_int", 
                                   dynlib: bsondll.}
   ## Get the int value of the BSON object currently pointed to by the iterator.
 
-proc int64Val*(i: var TIter): int64{.stdcall, 
+proc int64Val*(i: var TIter): Int64{.stdcall, 
     importc: "bson_iterator_long", dynlib: bsondll.}
   ## Get the long value of the BSON object currently pointed to by the iterator.
 
@@ -207,10 +207,10 @@ proc timestamp*(i: var TIter): Ttimestamp {.stdcall,
     importc: "bson_iterator_timestamp", dynlib: bsondll.}
   # return the bson timestamp as a whole or in parts 
 
-proc timestampTime*(i: var TIter): cint {.stdcall, 
+proc timestampTime*(i: var TIter): Cint {.stdcall, 
     importc: "bson_iterator_timestamp_time", dynlib: bsondll.}
   # return the bson timestamp as a whole or in parts 
-proc timestampIncrement*(i: var TIter): cint{.stdcall, 
+proc timestampIncrement*(i: var TIter): Cint{.stdcall, 
     importc: "bson_iterator_timestamp_increment", dynlib: bsondll.}
   # return the bson timestamp as a whole or in parts 
 
@@ -222,17 +222,17 @@ proc boolVal*(i: var TIter): TBsonBool{.stdcall,
   ## | false: boolean false, 0 in any type, or null 
   ## | true: anything else (even empty strings and objects) 
 
-proc floatRaw*(i: var TIter): cdouble{.stdcall, 
+proc floatRaw*(i: var TIter): Cdouble{.stdcall, 
     importc: "bson_iterator_double_raw", dynlib: bsondll.}
   ## Get the double value of the BSON object currently pointed to by the
   ## iterator. Assumes the correct type is used.
       
-proc intRaw*(i: var TIter): cint{.stdcall, 
+proc intRaw*(i: var TIter): Cint{.stdcall, 
     importc: "bson_iterator_int_raw", dynlib: bsondll.}
   ## Get the int value of the BSON object currently pointed to by the
   ## iterator. Assumes the correct type is used.
     
-proc int64Raw*(i: var TIter): int64{.stdcall, 
+proc int64Raw*(i: var TIter): Int64{.stdcall, 
     importc: "bson_iterator_long_raw", dynlib: bsondll.}
   ## Get the long value of the BSON object currently pointed to by the
   ## iterator. Assumes the correct type is used.
@@ -242,22 +242,22 @@ proc boolRaw*(i: var TIter): TBsonBool{.stdcall,
   ## Get the bson_bool_t value of the BSON object currently pointed to by the
   ## iterator. Assumes the correct type is used.
 
-proc oidVal*(i: var TIter): ptr TOid {.stdcall, 
+proc oidVal*(i: var TIter): ptr Toid {.stdcall, 
     importc: "bson_iterator_oid", dynlib: bsondll.}
   ## Get the bson_oid_t value of the BSON object currently pointed to by the
   ## iterator.
 
-proc strVal*(i: var TIter): cstring {.stdcall, 
+proc strVal*(i: var TIter): Cstring {.stdcall, 
     importc: "bson_iterator_string", dynlib: bsondll.}
   ## Get the string value of the BSON object currently pointed to by the
   ## iterator.
 
-proc strLen*(i: var TIter): cint {.stdcall, 
+proc strLen*(i: var TIter): Cint {.stdcall, 
     importc: "bson_iterator_string_len", dynlib: bsondll.}
   ## Get the string length of the BSON object currently pointed to by the
   ## iterator.
 
-proc code*(i: var TIter): cstring {.stdcall, 
+proc code*(i: var TIter): Cstring {.stdcall, 
     importc: "bson_iterator_code", dynlib: bsondll.}
   ## Get the code value of the BSON object currently pointed to by the
   ## iterator. Works with bson_code, bson_codewscope, and BSON_STRING
@@ -277,27 +277,27 @@ proc time*(i: var TIter): TTime {.stdcall,
   ## Get the time value of the BSON object currently pointed to by the
   ## iterator.
 
-proc binLen*(i: var TIter): cint {.stdcall, 
+proc binLen*(i: var TIter): Cint {.stdcall, 
     importc: "bson_iterator_bin_len", dynlib: bsondll.}
   ## Get the length of the BSON binary object currently pointed to by the
   ## iterator.
 
-proc binType*(i: var TIter): char {.stdcall, 
+proc binType*(i: var TIter): Char {.stdcall, 
     importc: "bson_iterator_bin_type", dynlib: bsondll.}
   ## Get the type of the BSON binary object currently pointed to by the
   ## iterator.
 
-proc binData*(i: var TIter): cstring {.stdcall, 
+proc binData*(i: var TIter): Cstring {.stdcall, 
     importc: "bson_iterator_bin_data", dynlib: bsondll.}
   ## Get the value of the BSON binary object currently pointed to by the
   ## iterator.
 
-proc regex*(i: var TIter): cstring {.stdcall, 
+proc regex*(i: var TIter): Cstring {.stdcall, 
     importc: "bson_iterator_regex", dynlib: bsondll.}
   ## Get the value of the BSON regex object currently pointed to by the
   ## iterator.
 
-proc regexOpts*(i: var TIter): cstring {.stdcall, 
+proc regexOpts*(i: var TIter): Cstring {.stdcall, 
     importc: "bson_iterator_regex_opts", dynlib: bsondll.}
   ## Get the options of the BSON regex object currently pointed to by the
   ## iterator.
@@ -323,25 +323,25 @@ proc init*(b: var TBson) {.stdcall, importc: "bson_init", dynlib: bsondll.}
   ##
   ## When finished, you must pass the bson object to bson_destroy().
 
-proc init*(b: var TBson, data: cstring): cint {.stdcall, 
+proc init*(b: var TBson, data: Cstring): Cint {.stdcall, 
     importc: "bson_init_data", dynlib: bsondll.}
   ## Initialize a BSON object, and point its data
   ## pointer to the provided `data`.
   ## Returns OK or ERROR.
 
-proc initFinished*(b: var TBson, data: cstring): cint {.stdcall, 
+proc initFinished*(b: var TBson, data: Cstring): Cint {.stdcall, 
     importc: "bson_init_finished_data", dynlib: bsondll.}
 
-proc initSize*(b: var TBson, size: cint) {.stdcall, importc: "bson_init_size", 
+proc initSize*(b: var TBson, size: Cint) {.stdcall, importc: "bson_init_size", 
     dynlib: bsondll.}
   ## Initialize a BSON object, and set its buffer to the given size.
   ## Returns OK or ERROR.
 
-proc ensureSpace*(b: var TBson, bytesNeeded: cint): cint {.stdcall, 
+proc ensureSpace*(b: var TBson, bytesNeeded: Cint): Cint {.stdcall, 
     importc: "bson_ensure_space", dynlib: bsondll.}
   ## Grow a bson object. `bytesNeeded` is the additional number of bytes needed.
 
-proc finish*(b: var TBson): cint{.stdcall, importc: "bson_finish", 
+proc finish*(b: var TBson): Cint{.stdcall, importc: "bson_finish", 
                                   dynlib: bsondll, discardable.}
   ## Finalize a bson object. Returns the standard error code.
   ## To deallocate memory, call destroy on the bson object.
@@ -354,141 +354,141 @@ proc empty*(obj: var TBson) {.stdcall, importc: "bson_empty",
   ## Sets a pointer to a static empty BSON object.
   ## `obj` is the BSON object to initialize. 
 
-proc copy*(outp, inp: var TBson): cint{.stdcall, importc: "bson_copy", 
+proc copy*(outp, inp: var TBson): Cint{.stdcall, importc: "bson_copy", 
     dynlib: bsondll.}
   ## Make a complete copy of the a BSON object.
   ## The source bson object must be in a finished
   ## state; otherwise, the copy will fail.
 
-proc add*(b: var TBson, name: cstring, oid: TOid) =
+proc add*(b: var TBson, name: Cstring, oid: Toid) =
   ## adds an OID to `b`.
-  proc appendOid(b: var TBson, name: cstring, oid: ptr TOid): cint {.stdcall, 
+  proc appendOid(b: var TBson, name: Cstring, oid: ptr Toid): Cint {.stdcall, 
       importc: "bson_append_oid", dynlib: bsondll.}
   
   var oid = oid
   discard appendOid(b, name, addr(oid))
 
-proc add*(b: var TBson, name: cstring, i: cint): cint{.stdcall, 
+proc add*(b: var TBson, name: Cstring, i: Cint): Cint{.stdcall, 
     importc: "bson_append_int", dynlib: bsondll, discardable.}
   ## Append an int to a bson.
 
-proc add*(b: var TBson, name: cstring, i: int64): cint{.stdcall, 
+proc add*(b: var TBson, name: Cstring, i: Int64): Cint{.stdcall, 
     importc: "bson_append_long", dynlib: bsondll, discardable.}
   ## Append an long to a bson.
 
-proc add*(b: var TBson, name: cstring, d: float): cint{.stdcall, 
+proc add*(b: var TBson, name: Cstring, d: Float): Cint{.stdcall, 
     importc: "bson_append_double", dynlib: bsondll, discardable.}
   ## Append an double to a bson.
 
-proc add*(b: var TBson, name: cstring, str: cstring): cint {.stdcall, 
+proc add*(b: var TBson, name: Cstring, str: Cstring): Cint {.stdcall, 
     importc: "bson_append_string", dynlib: bsondll, discardable.}
   ## Append a string to a bson.
 
-proc add*(b: var TBson, name: cstring, str: cstring, len: cint): cint{.
+proc add*(b: var TBson, name: Cstring, str: Cstring, len: Cint): Cint{.
     stdcall, importc: "bson_append_string_n", dynlib: bsondll, discardable.}
   ## Append len bytes of a string to a bson.
 
-proc add*(b: var TBson, name: cstring, str: string) =
+proc add*(b: var TBson, name: Cstring, str: String) =
   ## Append a Nimrod string `str` to a bson.
-  discard add(b, name, str, str.len.cint)
+  discard add(b, name, str, str.len.Cint)
 
-proc addSymbol*(b: var TBson, name: cstring, str: cstring): cint{.stdcall, 
+proc addSymbol*(b: var TBson, name: Cstring, str: Cstring): Cint{.stdcall, 
     importc: "bson_append_symbol", dynlib: bsondll, discardable.}
   ##  Append a symbol to a bson.
 
-proc addSymbol*(b: var TBson, name: cstring, str: cstring, len: cint): cint{.
+proc addSymbol*(b: var TBson, name: Cstring, str: Cstring, len: Cint): Cint{.
     stdcall, importc: "bson_append_symbol_n", dynlib: bsondll, discardable.}
   ## Append len bytes of a symbol to a bson.
 
-proc addCode*(b: var TBson, name: cstring, str: cstring): cint{.stdcall, 
+proc addCode*(b: var TBson, name: Cstring, str: Cstring): Cint{.stdcall, 
     importc: "bson_append_code", dynlib: bsondll, discardable.}
   ## Append code to a bson.
 
-proc addCode*(b: var TBson, name: cstring, str: cstring, len: cint): cint{.
+proc addCode*(b: var TBson, name: Cstring, str: Cstring, len: Cint): Cint{.
     stdcall, importc: "bson_append_code_n", dynlib: bsondll, discardable.}
   ## Append len bytes of code to a bson.
 
-proc addCode*(b: var TBson, name: cstring, code: cstring, 
-                          scope: var TBson): cint{.stdcall, 
+proc addCode*(b: var TBson, name: Cstring, code: Cstring, 
+                          scope: var TBson): Cint{.stdcall, 
     importc: "bson_append_code_w_scope", dynlib: bsondll, discardable.}
   ## Append code to a bson with scope.
 
-proc addCode*(b: var TBson, name: cstring, code: cstring, 
-              size: cint, scope: var TBson): cint{.stdcall, 
+proc addCode*(b: var TBson, name: Cstring, code: Cstring, 
+              size: Cint, scope: var TBson): Cint{.stdcall, 
     importc: "bson_append_code_w_scope_n", dynlib: bsondll, discardable.}
   ## Append len bytes of code to a bson with scope.
 
-proc addBinary*(b: var TBson, name: cstring, typ: char, str: cstring, 
-                len: cint): cint{.stdcall, importc: "bson_append_binary", 
+proc addBinary*(b: var TBson, name: Cstring, typ: Char, str: Cstring, 
+                len: Cint): Cint{.stdcall, importc: "bson_append_binary", 
                                  dynlib: bsondll, discardable.}
   ## Append binary data to a bson.
 
-proc addBinary*(b: var TBson, name: cstring, data: string) =
+proc addBinary*(b: var TBson, name: Cstring, data: String) =
   ## Append binary data to a bson.
-  addBinary(b, name, '\5', data, data.len.cint)
+  addBinary(b, name, '\5', data, data.len.Cint)
 
-proc addBool*(b: var TBson, name: cstring, v: TBsonBool): cint{.stdcall, 
+proc addBool*(b: var TBson, name: Cstring, v: TBsonBool): Cint{.stdcall, 
     importc: "bson_append_bool", dynlib: bsondll, discardable.}
   ## Append a bson_bool_t to a bson.
 
-proc addNull*(b: var TBson, name: cstring): cint {.stdcall, 
+proc addNull*(b: var TBson, name: Cstring): Cint {.stdcall, 
     importc: "bson_append_null", dynlib: bsondll, discardable.}
   ## Append a null value to a bson.
 
-proc addUndefined*(b: var TBson, name: cstring): cint{.stdcall, 
+proc addUndefined*(b: var TBson, name: Cstring): Cint{.stdcall, 
     importc: "bson_append_undefined", dynlib: bsondll, discardable.}
   ## Append an undefined value to a bson.
 
-proc addRegex*(b: var TBson, name: cstring, pattern: cstring, opts: cstring): cint{.
+proc addRegex*(b: var TBson, name: Cstring, pattern: Cstring, opts: Cstring): Cint{.
     stdcall, importc: "bson_append_regex", dynlib: bsondll, discardable.}
   ## Append a regex value to a bson.
 
-proc add*(b: var TBson, name: cstring, TBson: var TBson): cint {.stdcall, 
+proc add*(b: var TBson, name: Cstring, TBson: var TBson): Cint {.stdcall, 
     importc: "bson_append_bson", dynlib: bsondll, discardable.}
   ## Append bson data to a bson.
 
-proc addElement*(b: var TBson, name_or_null: cstring, elem: var TIter): cint{.
+proc addElement*(b: var TBson, name_or_null: Cstring, elem: var TIter): Cint{.
     stdcall, importc: "bson_append_element", dynlib: bsondll, discardable.}
   ## Append a BSON element to a bson from the current point of an iterator.
 
-proc addTimestamp*(b: var TBson, name: cstring, ts: var TTimestamp): cint{.
+proc addTimestamp*(b: var TBson, name: Cstring, ts: var TTimestamp): Cint{.
     stdcall, importc: "bson_append_timestamp", dynlib: bsondll, discardable.}
   ## Append a bson_timestamp_t value to a bson.
 
-proc addTimestamp2*(b: var TBson, name: cstring, time: cint, increment: cint): cint{.
+proc addTimestamp2*(b: var TBson, name: Cstring, time: Cint, increment: Cint): Cint{.
     stdcall, importc: "bson_append_timestamp2", dynlib: bsondll, discardable.}
-proc addDate*(b: var TBson, name: cstring, millis: TDate): cint{.stdcall, 
+proc addDate*(b: var TBson, name: Cstring, millis: TDate): Cint{.stdcall, 
     importc: "bson_append_date", dynlib: bsondll, discardable.}
   ## Append a bson_date_t value to a bson.
 
-proc addTime*(b: var TBson, name: cstring, secs: TTime): cint{.stdcall, 
+proc addTime*(b: var TBson, name: Cstring, secs: TTime): Cint{.stdcall, 
     importc: "bson_append_time_t", dynlib: bsondll, discardable.}
   ## Append a time_t value to a bson.
 
-proc addStartObject*(b: var TBson, name: cstring): cint {.stdcall, 
+proc addStartObject*(b: var TBson, name: Cstring): Cint {.stdcall, 
     importc: "bson_append_start_object", dynlib: bsondll, discardable.}
   ## Start appending a new object to a bson.
 
-proc addStartArray*(b: var TBson, name: cstring): cint {.stdcall, 
+proc addStartArray*(b: var TBson, name: Cstring): Cint {.stdcall, 
     importc: "bson_append_start_array", dynlib: bsondll, discardable.}
   ## Start appending a new array to a bson.
 
-proc addFinishObject*(b: var TBson): cint {.stdcall, 
+proc addFinishObject*(b: var TBson): Cint {.stdcall, 
     importc: "bson_append_finish_object", dynlib: bsondll, discardable.}
   ## Finish appending a new object or array to a bson.
 
-proc addFinishArray*(b: var TBson): cint {.stdcall, 
+proc addFinishArray*(b: var TBson): Cint {.stdcall, 
     importc: "bson_append_finish_array", dynlib: bsondll, discardable.}
   ## Finish appending a new object or array to a bson. This
   ## is simply an alias for bson_append_finish_object.
 
-proc numstr*(str: cstring, i: cint){.stdcall, importc: "bson_numstr", 
+proc numstr*(str: Cstring, i: Cint){.stdcall, importc: "bson_numstr", 
                                      dynlib: bsondll.}
-proc incnumstr*(str: cstring){.stdcall, importc: "bson_incnumstr", 
+proc incnumstr*(str: Cstring){.stdcall, importc: "bson_incnumstr", 
                                dynlib: bsondll.}
 
 type 
-  TErrHandler* = proc (errmsg: cstring){.
+  TErrHandler* = proc (errmsg: Cstring){.
     stdcall.} ## an error handler. Error handlers shouldn't return!
 
 proc setBsonErrHandler*(func: TErrHandler): TErrHandler {.stdcall, 
@@ -496,10 +496,10 @@ proc setBsonErrHandler*(func: TErrHandler): TErrHandler {.stdcall,
   ## Set a function for error handling.
   ## Returns the old error handling function, or nil.
 
-proc fatal*(ok: cint){.stdcall, importc: "bson_fatal", dynlib: bsondll.}
+proc fatal*(ok: Cint){.stdcall, importc: "bson_fatal", dynlib: bsondll.}
   ## does nothing if ok != 0. Exit fatally.
 
-proc fatal*(ok: cint, msg: cstring){.stdcall, importc: "bson_fatal_msg", 
+proc fatal*(ok: Cint, msg: Cstring){.stdcall, importc: "bson_fatal_msg", 
     dynlib: bsondll.}
   ## Exit fatally with an error message.
 
@@ -507,15 +507,15 @@ proc builderError*(b: var TBson){.stdcall, importc: "bson_builder_error",
                                    dynlib: bsondll.}
   ## Invoke the error handler, but do not exit.
 
-proc int64ToDouble*(i64: int64): cdouble {.stdcall, 
+proc int64ToDouble*(i64: Int64): Cdouble {.stdcall, 
     importc: "bson_int64_to_double", dynlib: bsondll.}
   ## Cast an int64_t to double. This is necessary for embedding in
   ## certain environments.
 
 const 
-  MAJOR* = 0
-  MINOR* = 4
-  PATCH* = 0
+  Major* = 0
+  Minor* = 4
+  Patch* = 0
 
 type 
   TError*{.size: sizeof(cint).} = enum ## connection errors
@@ -560,63 +560,63 @@ type
     OP_MSG = 1000, OP_UPDATE = 2001, OP_INSERT = 2002, OP_QUERY = 2004, 
     OP_GET_MORE = 2005, OP_DELETE = 2006, OP_KILL_CURSORS = 2007
   THeader* {.pure, final.} = object 
-    len*: cint
-    id*: cint
-    responseTo*: cint
-    op*: cint
+    len*: Cint
+    id*: Cint
+    responseTo*: Cint
+    op*: Cint
 
   TMessage* {.pure, final.} = object 
     head*: Theader
-    data*: char
+    data*: Char
 
   TReplyFields*{.pure, final.} = object 
-    flag*: cint               # FIX THIS COMMENT non-zero on failure 
-    cursorID*: int64
-    start*: cint
-    num*: cint
+    flag*: Cint               # FIX THIS COMMENT non-zero on failure 
+    cursorID*: Int64
+    start*: Cint
+    num*: Cint
 
   TReply*{.pure, final.} = object 
     head*: Theader
     fields*: Treply_fields
-    objs*: char
+    objs*: Char
 
   THostPort*{.pure, final.} = object 
-    host*: array[0..255 - 1, char]
-    port*: cint
+    host*: Array[0..255 - 1, Char]
+    port*: Cint
     next*: ptr THostPort
 
   TReplset*{.pure, final.} = object ## replset
     seeds*: ptr THostPort    ## List of seeds provided by the user. 
     hosts*: ptr THostPort    ## List of host/ports given by the replica set 
-    name*: cstring           ## Name of the replica set. 
+    name*: Cstring           ## Name of the replica set. 
     primary_connected*: TBsonBool ## Primary node connection status. 
   
   TMongo*{.pure, final.} = object ## mongo
     primary*: ptr THostPort   ## Primary connection info. 
     replset*: ptr TReplSet    ## replset object if connected to a replica set. 
-    sock*: cint               ## Socket file descriptor. 
-    flags*: cint              ## Flags on this connection object. 
-    conn_timeout_ms*: cint    ## Connection timeout in milliseconds. 
-    op_timeout_ms*: cint      ## Read and write timeout in milliseconds. 
+    sock*: Cint               ## Socket file descriptor. 
+    flags*: Cint              ## Flags on this connection object. 
+    conn_timeout_ms*: Cint    ## Connection timeout in milliseconds. 
+    op_timeout_ms*: Cint      ## Read and write timeout in milliseconds. 
     connected*: TBsonBool     ## Connection status. 
     err*: TError              ## Most recent driver error code. 
-    errstr*: array[0..128 - 1, char] ## String version of most recent driver error code. 
-    lasterrcode*: cint        ## getlasterror code given by the server on error. 
-    lasterrstr*: cstring      ## getlasterror string generated by server. 
+    errstr*: Array[0..128 - 1, Char] ## String version of most recent driver error code. 
+    lasterrcode*: Cint        ## getlasterror code given by the server on error. 
+    lasterrstr*: Cstring      ## getlasterror string generated by server. 
   
   TCursor*{.pure, final.} = object ## cursor
     reply*: ptr TReply        ## reply is owned by cursor 
     conn*: ptr TMongo         ## connection is *not* owned by cursor 
-    ns*: cstring              ## owned by cursor 
-    flags*: cint              ## Flags used internally by this drivers. 
-    seen*: cint               ## Number returned so far. 
+    ns*: Cstring              ## owned by cursor 
+    flags*: Cint              ## Flags used internally by this drivers. 
+    seen*: Cint               ## Number returned so far. 
     current*: TBson           ## This cursor's current bson object. 
     err*: TCursorError        ## Errors on this cursor. 
     query*: ptr TBson         ## Bitfield containing cursor options. 
     fields*: ptr TBson        ## Bitfield containing cursor options. 
-    options*: cint            ## Bitfield containing cursor options. 
-    limit*: cint              ## Bitfield containing cursor options. 
-    skip*: cint               ## Bitfield containing cursor options. 
+    options*: Cint            ## Bitfield containing cursor options. 
+    limit*: Cint              ## Bitfield containing cursor options. 
+    skip*: Cint               ## Bitfield containing cursor options. 
   
 
 # Connection API 
@@ -624,27 +624,27 @@ type
 proc createMongo*(): ptr TMongo{.stdcall, importc: "mongo_create", dynlib: mongodll.}
 proc dispose*(conn: ptr TMongo){.stdcall, importc: "mongo_dispose", 
                                  dynlib: mongodll.}
-proc getErr*(conn: var TMongo): cint{.stdcall, importc: "mongo_get_err", 
+proc getErr*(conn: var TMongo): Cint{.stdcall, importc: "mongo_get_err", 
                                      dynlib: mongodll.}
-proc isConnected*(conn: var TMongo): cint{.stdcall, 
+proc isConnected*(conn: var TMongo): Cint{.stdcall, 
     importc: "mongo_is_connected", dynlib: mongodll.}
-proc getOpTimeout*(conn: var TMongo): cint{.stdcall, 
+proc getOpTimeout*(conn: var TMongo): Cint{.stdcall, 
     importc: "mongo_get_op_timeout", dynlib: mongodll.}
-proc getPrimary*(conn: var TMongo): cstring{.stdcall, 
+proc getPrimary*(conn: var TMongo): Cstring{.stdcall, 
     importc: "mongo_get_primary", dynlib: mongodll.}
-proc getSocket*(conn: var TMongo): cint {.stdcall, importc: "mongo_get_socket", 
+proc getSocket*(conn: var TMongo): Cint {.stdcall, importc: "mongo_get_socket", 
     dynlib: mongodll.}
-proc getHostCount*(conn: var TMongo): cint{.stdcall, 
+proc getHostCount*(conn: var TMongo): Cint{.stdcall, 
     importc: "mongo_get_host_count", dynlib: mongodll.}
-proc getHost*(conn: var TMongo, i: cint): cstring {.stdcall, 
+proc getHost*(conn: var TMongo, i: Cint): Cstring {.stdcall, 
     importc: "mongo_get_host", dynlib: mongodll.}
 proc createCursor*(): ptr TCursor{.stdcall, importc: "mongo_cursor_create", 
                                   dynlib: mongodll.}
 proc dispose*(cursor: ptr TCursor){.stdcall, 
     importc: "mongo_cursor_dispose", dynlib: mongodll.}
-proc getServerErr*(conn: var TMongo): cint{.stdcall, 
+proc getServerErr*(conn: var TMongo): Cint{.stdcall, 
     importc: "mongo_get_server_err", dynlib: mongodll.}
-proc getServerErrString*(conn: var TMongo): cstring{.stdcall, 
+proc getServerErrString*(conn: var TMongo): Cstring{.stdcall, 
     importc: "mongo_get_server_err_string", dynlib: mongodll.}
 
 proc init*(conn: var TMongo){.stdcall, importc: "mongo_init", dynlib: mongodll.}
@@ -652,50 +652,50 @@ proc init*(conn: var TMongo){.stdcall, importc: "mongo_init", dynlib: mongodll.}
   ## object using this function.
   ## When finished, you must pass this object to ``destroy``.
 
-proc connect*(conn: var TMongo, host: cstring = defaultHost, 
-              port: cint = defaultPort): cint {.stdcall, 
+proc connect*(conn: var TMongo, host: Cstring = defaultHost, 
+              port: Cint = defaultPort): Cint {.stdcall, 
     importc: "mongo_connect", dynlib: mongodll.}
   ## Connect to a single MongoDB server.
 
-proc replsetInit*(conn: var TMongo, name: cstring){.stdcall, 
+proc replsetInit*(conn: var TMongo, name: Cstring){.stdcall, 
     importc: "mongo_replset_init", dynlib: mongodll.}
   ## Set up this connection object for connecting to a replica set.
   ## To connect, pass the object to replsetConnect.
   ## `name` is the name of the replica set to connect to.
 
-proc replsetAddSeed*(conn: var TMongo, host: cstring = defaultHost, 
-  port: cint = defaultPort){.stdcall,
+proc replsetAddSeed*(conn: var TMongo, host: Cstring = defaultHost, 
+  port: Cint = defaultPort){.stdcall,
   importc: "mongo_replset_add_seed", dynlib: mongodll.}
   ## Add a seed node to the replica set connection object.
   ## You must specify at least one seed node before connecting
   ## to a replica set.
 
-proc parseHost*(hostString: cstring, hostPort: var ThostPort){.stdcall, 
+proc parseHost*(hostString: Cstring, hostPort: var ThostPort){.stdcall, 
     importc: "mongo_parse_host", dynlib: mongodll.}
   ## Utility function for converting a host-port string to a mongo_host_port.
   ## `hostString` is a string containing either a host or a host and port
   ## separated by a colon.
   ## `hostPort` is the mongo_host_port object to write the result to.
 
-proc replsetConnect*(conn: var TMongo): cint{.stdcall, 
+proc replsetConnect*(conn: var TMongo): Cint{.stdcall, 
     importc: "mongo_replset_connect", dynlib: mongodll.}
   ## Connect to a replica set.
   ## Before passing a connection object to this function, you must already
   ## have called setReplset and replsetAddSeed.
 
-proc setOpTimeout*(conn: var TMongo, millis: cint): cint{.stdcall, 
+proc setOpTimeout*(conn: var TMongo, millis: Cint): Cint{.stdcall, 
     importc: "mongo_set_op_timeout", dynlib: mongodll.}
   ## Set a timeout for operations on this connection. This
   ## is a platform-specific feature, and only work on Unix-like
   ## systems. You must also compile for linux to support this.
 
-proc checkConnection*(conn: var TMongo): cint {.stdcall, 
+proc checkConnection*(conn: var TMongo): Cint {.stdcall, 
     importc: "mongo_check_connection", dynlib: mongodll.}
   ## Ensure that this connection is healthy by performing
   ## a round-trip to the server.
   ## Returns OK if connected; otherwise ERROR.
 
-proc reconnect*(conn: var TMongo): cint {.stdcall, importc: "mongo_reconnect", 
+proc reconnect*(conn: var TMongo): Cint {.stdcall, importc: "mongo_reconnect", 
     dynlib: mongodll.}
   ## Try reconnecting to the server using the existing connection settings.
   ## This function will disconnect the current socket. If you've authenticated,
@@ -714,21 +714,21 @@ proc destroy*(conn: var TMongo){.stdcall, importc: "mongo_destroy",
   ## You must always call this function when finished with the connection
   ## object.
 
-proc insert*(conn: var TMongo, ns: cstring, data: var TBson): cint{.stdcall, 
+proc insert*(conn: var TMongo, ns: Cstring, data: var TBson): Cint{.stdcall, 
     importc: "mongo_insert", dynlib: mongodll, discardable.}
   ## Insert a BSON document into a MongoDB server. This function
   ## will fail if the supplied BSON struct is not UTF-8 or if
   ## the keys are invalid for insert (contain '.' or start with '$').
 
-proc insertBatch*(conn: var TMongo, ns: cstring, 
-                  data: ptr ptr TBson, num: cint): cint{.
+proc insertBatch*(conn: var TMongo, ns: Cstring, 
+                  data: ptr ptr TBson, num: Cint): Cint{.
     stdcall, importc: "mongo_insert_batch", dynlib: mongodll, discardable.}
   ## Insert a batch of BSON documents into a MongoDB server. This function
   ## will fail if any of the documents to be inserted is invalid.
   ## `num` is the number of documents in data.
 
-proc update*(conn: var TMongo, ns: cstring, cond, op: var TBson, 
-             flags: cint): cint{.stdcall, importc: "mongo_update", 
+proc update*(conn: var TMongo, ns: Cstring, cond, op: var TBson, 
+             flags: Cint): Cint{.stdcall, importc: "mongo_update", 
                                  dynlib: mongodll, discardable.}
   ## Update a document in a MongoDB server.
   ## 
@@ -739,7 +739,7 @@ proc update*(conn: var TMongo, ns: cstring, cond, op: var TBson,
   ## | flags flags for the update.
   ## | returns OK or ERROR with error stored in conn object.
 
-proc remove*(conn: var TMongo, namespace: cstring, cond: var TBson): cint{.stdcall, 
+proc remove*(conn: var TMongo, namespace: Cstring, cond: var TBson): Cint{.stdcall, 
     importc: "mongo_remove", dynlib: mongodll.}
   ## Remove a document from a MongoDB server.
   ##
@@ -748,8 +748,8 @@ proc remove*(conn: var TMongo, namespace: cstring, cond: var TBson): cint{.stdca
   ## | cond the bson query.
   ## | returns OK or ERROR with error stored in conn object.
 
-proc find*(conn: var TMongo, namespace: cstring, query, fields: var TBson, 
-           limit, skip: cint, options: cint): ptr TCursor{.stdcall, 
+proc find*(conn: var TMongo, namespace: Cstring, query, fields: var TBson, 
+           limit, skip: Cint, options: Cint): ptr TCursor{.stdcall, 
     importc: "mongo_find", dynlib: mongodll.}
   ## Find documents in a MongoDB server.
   ##
@@ -764,7 +764,7 @@ proc find*(conn: var TMongo, namespace: cstring, query, fields: var TBson,
   ##   an error has occurred. For finer-grained error checking,
   ##   use the cursor builder API instead.
 
-proc init*(cursor: var TCursor, conn: var TMongo, namespace: cstring){.stdcall, 
+proc init*(cursor: var TCursor, conn: var TMongo, namespace: Cstring){.stdcall, 
     importc: "mongo_cursor_init", dynlib: mongodll.}
   ## Initalize a new cursor object.
   ##
@@ -789,20 +789,20 @@ proc setFields*(cursor: var TCursor, fields: var TBson){.stdcall,
   ## `fields` is a bson object representing the fields to return.
   ## See http://www.mongodb.org/display/DOCS/Retrieving+a+Subset+of+Fields.
 
-proc setSkip*(cursor: var TCursor, skip: cint){.stdcall, 
+proc setSkip*(cursor: var TCursor, skip: Cint){.stdcall, 
     importc: "mongo_cursor_set_skip", dynlib: mongodll.}
   ##  Set the number of documents to skip.
 
-proc setLimit*(cursor: var TCursor, limit: cint){.stdcall, 
+proc setLimit*(cursor: var TCursor, limit: Cint){.stdcall, 
     importc: "mongo_cursor_set_limit", dynlib: mongodll.}
   ## Set the number of documents to return.
 
-proc setOptions*(cursor: var TCursor, options: cint){.stdcall, 
+proc setOptions*(cursor: var TCursor, options: Cint){.stdcall, 
     importc: "mongo_cursor_set_options", dynlib: mongodll.}
   ## Set any of the available query options (e.g., TAILABLE).
   ## See `TCursorOpts` for available constants.
 
-proc data*(cursor: var TCursor): cstring {.stdcall, 
+proc data*(cursor: var TCursor): Cstring {.stdcall, 
     importc: "mongo_cursor_data", dynlib: mongodll.}
   ## Return the current BSON object data as a ``cstring``. This is useful
   ## for creating bson iterators.
@@ -811,18 +811,18 @@ proc bson*(cursor: var TCursor): ptr TBson{.stdcall,
     importc: "mongo_cursor_bson", dynlib: mongodll.}
   ## Return the current BSON object.
 
-proc next*(cursor: var TCursor): cint {.stdcall, 
+proc next*(cursor: var TCursor): Cint {.stdcall, 
     importc: "mongo_cursor_next", dynlib: mongodll.}
   ## Iterate the cursor, returning the next item. When successful,
   ## the returned object will be stored in cursor.current;
 
-proc destroy*(cursor: var TCursor): cint {.stdcall,
+proc destroy*(cursor: var TCursor): Cint {.stdcall,
     importc: "mongo_cursor_destroy", dynlib: mongodll, discardable.}
   ## Destroy a cursor object. When finished with a cursor, you
   ## must pass it to this function.
 
-proc findOne*(conn: var TMongo, namespace: cstring, query: var TBson, 
-              fields: var TBson, outp: var TBson): cint{.stdcall, 
+proc findOne*(conn: var TMongo, namespace: Cstring, query: var TBson, 
+              fields: var TBson, outp: var TBson): Cint{.stdcall, 
     importc: "mongo_find_one", dynlib: mongodll.}
   ## Find a single document in a MongoDB server.
   ##
@@ -833,7 +833,7 @@ proc findOne*(conn: var TMongo, namespace: cstring, query: var TBson,
   ## | outp a bson document in which to put the query result.
   ##   outp can be nil if you don't care about results. Useful for commands.
 
-proc count*(conn: var TMongo, db: cstring, coll: cstring, query: var TBson): cdouble{.
+proc count*(conn: var TMongo, db: Cstring, coll: Cstring, query: var TBson): Cdouble{.
     stdcall, importc: "mongo_count", dynlib: mongodll.}
   ## Count the number of documents in a collection matching a query.
   ##
@@ -844,8 +844,8 @@ proc count*(conn: var TMongo, db: cstring, coll: cstring, query: var TBson): cdo
   ## | returns the number of matching documents. If the command fails,
   ##   ERROR is returned.
 
-proc createIndex*(conn: var TMongo, namespace: cstring, key: var TBson, 
-                   options: cint, outp: var TBson): cint {.stdcall, 
+proc createIndex*(conn: var TMongo, namespace: Cstring, key: var TBson, 
+                   options: Cint, outp: var TBson): Cint {.stdcall, 
     importc: "mongo_create_index", dynlib: mongodll.}
   ##  Create a compouned index.
   ##
@@ -858,8 +858,8 @@ proc createIndex*(conn: var TMongo, namespace: cstring, key: var TBson,
   ## | out a bson document containing errors, if any.
   ## | returns MONGO_OK if index is created successfully; otherwise, MONGO_ERROR.
 
-proc createSimpleIndex*(conn: var TMongo, namespace, field: cstring, 
-                        options: cint, outp: var TBson): TBsonBool {.stdcall, 
+proc createSimpleIndex*(conn: var TMongo, namespace, field: Cstring, 
+                        options: Cint, outp: var TBson): TBsonBool {.stdcall, 
     importc: "mongo_create_simple_index", dynlib: mongodll.}
   ## Create an index with a single key.
   ##
@@ -876,8 +876,8 @@ proc createSimpleIndex*(conn: var TMongo, namespace, field: cstring,
 # ----------------------------
 
 
-proc runCommand*(conn: var TMongo, db: cstring, command: var TBson, 
-                  outp: var TBson): cint{.stdcall, importc: "mongo_run_command", 
+proc runCommand*(conn: var TMongo, db: Cstring, command: var TBson, 
+                  outp: var TBson): Cint{.stdcall, importc: "mongo_run_command", 
     dynlib: mongodll.}
   ## Run a command on a MongoDB server.
   ## 
@@ -887,8 +887,8 @@ proc runCommand*(conn: var TMongo, db: cstring, command: var TBson,
   ## | out the BSON result of the command.
   ## | returns OK if the command ran without error.
 
-proc simpleIntCommand*(conn: var TMongo, db: cstring, cmd: cstring, arg: cint, 
-                         outp: var TBson): cint{.stdcall, 
+proc simpleIntCommand*(conn: var TMongo, db: Cstring, cmd: Cstring, arg: Cint, 
+                         outp: var TBson): Cint{.stdcall, 
     importc: "mongo_simple_int_command", dynlib: mongodll.}
   ## Run a command that accepts a simple string key and integer value.
   ##
@@ -899,8 +899,8 @@ proc simpleIntCommand*(conn: var TMongo, db: cstring, cmd: cstring, arg: cint,
   ## | out the BSON result of the command.
   ## | returns OK or an error code.
 
-proc simpleStrCommand*(conn: var TMongo, db: cstring, cmd: cstring, 
-                         arg: cstring, outp: var TBson): cint{.stdcall, 
+proc simpleStrCommand*(conn: var TMongo, db: Cstring, cmd: Cstring, 
+                         arg: Cstring, outp: var TBson): Cint{.stdcall, 
     importc: "mongo_simple_str_command", dynlib: mongodll.}
   ## Run a command that accepts a simple string key and value.
   ##
@@ -911,7 +911,7 @@ proc simpleStrCommand*(conn: var TMongo, db: cstring, cmd: cstring,
   ## | out the BSON result of the command.
   ## | returns true if the command ran without error.
 
-proc cmdDropDb*(conn: var TMongo, db: cstring): cint{.stdcall, 
+proc cmdDropDb*(conn: var TMongo, db: Cstring): Cint{.stdcall, 
     importc: "mongo_cmd_drop_db", dynlib: mongodll.}
   ## Drop a database.
   ##
@@ -919,8 +919,8 @@ proc cmdDropDb*(conn: var TMongo, db: cstring): cint{.stdcall,
   ## | db the name of the database to drop.
   ## | returns OK or an error code.
 
-proc cmdDropCollection*(conn: var TMongo, db: cstring, collection: cstring, 
-                          outp: var TBson): cint{.stdcall, 
+proc cmdDropCollection*(conn: var TMongo, db: Cstring, collection: Cstring, 
+                          outp: var TBson): Cint{.stdcall, 
     importc: "mongo_cmd_drop_collection", dynlib: mongodll.}
   ## Drop a collection.
   ##
@@ -930,7 +930,7 @@ proc cmdDropCollection*(conn: var TMongo, db: cstring, collection: cstring,
   ## | out a BSON document containing the result of the command.
   ## | returns true if the collection drop was successful.
 
-proc cmdAddUser*(conn: var TMongo, db: cstring, user: cstring, pass: cstring): cint{.
+proc cmdAddUser*(conn: var TMongo, db: Cstring, user: Cstring, pass: Cstring): Cint{.
     stdcall, importc: "mongo_cmd_add_user", dynlib: mongodll.}
   ## Add a database user.
   ##
@@ -940,8 +940,8 @@ proc cmdAddUser*(conn: var TMongo, db: cstring, user: cstring, pass: cstring): c
   ## | pass the user password
   ## | returns OK or ERROR.
 
-proc cmdAuthenticate*(conn: var TMongo, db: cstring, user: cstring, 
-                      pass: cstring): cint{.stdcall, 
+proc cmdAuthenticate*(conn: var TMongo, db: Cstring, user: Cstring, 
+                      pass: Cstring): Cint{.stdcall, 
     importc: "mongo_cmd_authenticate", dynlib: mongodll.}
   ## Authenticate a user.
   ##
@@ -959,7 +959,7 @@ proc cmdIsMaster*(conn: var TMongo, outp: var TBson): TBsonBool {.stdcall,
   ## | outp a BSON result of the command.
   ## | returns true if the server is a master.
 
-proc cmdGetLastError*(conn: var TMongo, db: cstring, outp: var TBson): cint{.
+proc cmdGetLastError*(conn: var TMongo, db: Cstring, outp: var TBson): Cint{.
     stdcall, importc: "mongo_cmd_get_last_error", dynlib: mongodll.}
   ## Get the error for the last command with the current connection.
   ##
@@ -968,7 +968,7 @@ proc cmdGetLastError*(conn: var TMongo, db: cstring, outp: var TBson): cint{.
   ## | outp a BSON object containing the error details.
   ## | returns OK or ERROR
 
-proc cmdGetPrevError*(conn: var TMongo, db: cstring, outp: var TBson): cint{.
+proc cmdGetPrevError*(conn: var TMongo, db: Cstring, outp: var TBson): Cint{.
     stdcall, importc: "mongo_cmd_get_prev_error", dynlib: mongodll.}
   ## Get the most recent error with the current connection.
   ##
@@ -977,29 +977,29 @@ proc cmdGetPrevError*(conn: var TMongo, db: cstring, outp: var TBson): cint{.
   ## | outp a BSON object containing the error details.
   ## | returns OK or ERROR.
   
-proc cmdResetError*(conn: var TMongo, db: cstring){.stdcall, 
+proc cmdResetError*(conn: var TMongo, db: Cstring){.stdcall, 
     importc: "mongo_cmd_reset_error", dynlib: mongodll.}
   ## Reset the error state for the connection. `db` is the name of the database.
 
 # gridfs.h 
 
 const 
-  DEFAULT_CHUNK_SIZE* = 262144
+  DefaultChunkSize* = 262144
 
 type 
-  TOffset* = int64
+  TOffset* = Int64
 
 # A GridFS represents a single collection of GridFS files in the database. 
 
 type 
   TGridfs*{.pure, final.} = object 
     client*: ptr TMongo       ## The client to db-connection. 
-    dbname*: cstring          ## The root database name 
-    prefix*: cstring          ## The prefix of the GridFS's collections,
+    dbname*: Cstring          ## The root database name 
+    prefix*: Cstring          ## The prefix of the GridFS's collections,
                               ## default is nil 
-    files_ns*: cstring        ## The namespace where the file's metadata
+    files_ns*: Cstring        ## The namespace where the file's metadata
                               ## is stored
-    chunks_ns*: cstring       ## The namespace where the files's data is
+    chunks_ns*: Cstring       ## The namespace where the files's data is
                               ## stored in chunks
 
 # A GridFile is a single GridFS file. 
@@ -1010,14 +1010,14 @@ type
     meta*: ptr TBson          ## GridFile's bson object where all
                               ## its metadata is located 
     pos*: TOffset             ## position is the offset in the file 
-    id*: TOid                 ## files_id of the gridfile 
-    remote_name*: cstring     ## name of the gridfile as a string 
-    content_type*: cstring    ## gridfile's content type 
+    id*: Toid                 ## files_id of the gridfile 
+    remote_name*: Cstring     ## name of the gridfile as a string 
+    content_type*: Cstring    ## gridfile's content type 
     length*: TOffset          ## length of this gridfile 
-    chunk_num*: cint          ## number of the current chunk being written to 
-    pending_data*: cstring    ## buffer storing data still to be
+    chunk_num*: Cint          ## number of the current chunk being written to 
+    pending_data*: Cstring    ## buffer storing data still to be
                               ## written to chunks 
-    pending_len*: cint        ## length of pending_data buffer 
+    pending_len*: Cint        ## length of pending_data buffer 
   
 
 proc createGridfs*(): ptr TGridfs{.stdcall, importc: "gridfs_create", dynlib: mongodll.}
@@ -1031,8 +1031,8 @@ proc getDescriptor*(gf: var TGridFile, outp: var TBson){.stdcall,
     importc: "gridfile_get_descriptor", dynlib: mongodll.}
 
 
-proc init*(client: var TMongo, dbname: cstring, prefix: cstring, 
-           gfs: var TGridfs): cint{.stdcall, importc: "gridfs_init", 
+proc init*(client: var TMongo, dbname: Cstring, prefix: Cstring, 
+           gfs: var TGridfs): Cint{.stdcall, importc: "gridfs_init", 
                                     dynlib: mongodll.}
   ## Initializes a GridFS object
   ## 
@@ -1046,27 +1046,27 @@ proc destroy*(gfs: var TGridfs){.stdcall, importc: "gridfs_destroy",
                                  dynlib: mongodll.}
   ## Destroys a GridFS object. Call this when finished with the object.
 
-proc writerInit*(gfile: var TGridFile, gfs: var TGridfs, remote_name: cstring, 
-                  content_type: cstring){.stdcall, 
+proc writerInit*(gfile: var TGridFile, gfs: var TGridfs, remote_name: Cstring, 
+                  content_type: Cstring){.stdcall, 
     importc: "gridfile_writer_init", dynlib: mongodll.}
   ## Initializes a gridfile for writing incrementally with ``writeBuffer``.
   ## Once initialized, you can write any number of buffers with ``writeBuffer``.
   ## When done, you must call ``writerDone`` to save the file metadata.
 
-proc writeBuffer*(gfile: var TGridFile, data: cstring, length: TOffset){.
+proc writeBuffer*(gfile: var TGridFile, data: Cstring, length: TOffset){.
     stdcall, importc: "gridfile_write_buffer", dynlib: mongodll.}
   ## Write to a GridFS file incrementally. You can call this function any number
   ## of times with a new buffer each time. This allows you to effectively
   ## stream to a GridFS file. When finished, be sure to call ``writerDone``.
 
-proc writerDone*(gfile: var TGridFile): cint{.stdcall, 
+proc writerDone*(gfile: var TGridFile): Cint{.stdcall, 
     importc: "gridfile_writer_done", dynlib: mongodll.}
   ## Signal that writing of this gridfile is complete by
   ## writing any buffered chunks along with the entry in the
   ## files collection. Returns OK or ERROR.
 
-proc storeBuffer*(gfs: var TGridfs, data: cstring, length: TOffset, 
-                   remotename: cstring, contenttype: cstring): cint{.stdcall, 
+proc storeBuffer*(gfs: var TGridfs, data: Cstring, length: TOffset, 
+                   remotename: Cstring, contenttype: Cstring): Cint{.stdcall, 
     importc: "gridfs_store_buffer", dynlib: mongodll.}
   ## Store a buffer as a GridFS file.
   ##
@@ -1077,8 +1077,8 @@ proc storeBuffer*(gfs: var TGridfs, data: cstring, length: TOffset,
   ## | contenttype - optional MIME type for this object
   ## | returns - MONGO_OK or MONGO_ERROR.
 
-proc storeFile*(gfs: var TGridfs, filename: cstring, remotename: cstring, 
-                 contenttype: cstring): cint{.stdcall, 
+proc storeFile*(gfs: var TGridfs, filename: Cstring, remotename: Cstring, 
+                 contenttype: Cstring): Cint{.stdcall, 
     importc: "gridfs_store_file", dynlib: mongodll.}
   ## Open the file referenced by filename and store it as a GridFS file.
   ## 
@@ -1088,22 +1088,22 @@ proc storeFile*(gfs: var TGridfs, filename: cstring, remotename: cstring,
   ## | contenttype - optional MIME type for this object
   ## | returns - OK or ERROR.
 
-proc removeFilename*(gfs: var TGridfs, filename: cstring){.stdcall, 
+proc removeFilename*(gfs: var TGridfs, filename: Cstring){.stdcall, 
     importc: "gridfs_remove_filename", dynlib: mongodll.}
   ## Removes the files referenced by filename from the db.
 
-proc findQuery*(gfs: var TGridfs, query: var TBson, gfile: var TGridFile): cint{.
+proc findQuery*(gfs: var TGridfs, query: var TBson, gfile: var TGridFile): Cint{.
     stdcall, importc: "gridfs_find_query", dynlib: mongodll.}
   ## Find the first file matching the provided query within the
   ## GridFS files collection, and return the file as a GridFile.
   ## Returns OK if successful, ERROR otherwise.
   
-proc findFilename*(gfs: var TGridfs, filename: cstring, gfile: var TGridFile): cint{.
+proc findFilename*(gfs: var TGridfs, filename: Cstring, gfile: var TGridFile): Cint{.
     stdcall, importc: "gridfs_find_filename", dynlib: mongodll.}
   ## Find the first file referenced by filename within the GridFS
   ## and return it as a GridFile. Returns OK or ERROR.
 
-proc init*(gfs: var TGridfs, meta: var TBson, gfile: var TGridFile): cint{.
+proc init*(gfs: var TGridfs, meta: var TBson, gfile: var TGridFile): Cint{.
     stdcall, importc: "gridfile_init", dynlib: mongodll.}
   ## Initializes a GridFile containing the GridFS and file bson.
 
@@ -1115,11 +1115,11 @@ proc exists*(gfile: var TGridFile): TBsonBool{.stdcall,
     importc: "gridfile_exists", dynlib: mongodll.}
   ## Returns whether or not the GridFile exists.
 
-proc getFilename*(gfile: var TGridFile): cstring{.stdcall, 
+proc getFilename*(gfile: var TGridFile): Cstring{.stdcall, 
     importc: "gridfile_get_filename", dynlib: mongodll.}
   ## Returns the filename of GridFile.
 
-proc getChunksize*(gfile: var TGridFile): cint{.stdcall, 
+proc getChunksize*(gfile: var TGridFile): Cint{.stdcall, 
     importc: "gridfile_get_chunksize", dynlib: mongodll.}
   ## Returns the size of the chunks of the GridFile.
 
@@ -1127,7 +1127,7 @@ proc getContentlength*(gfile: var TGridFile): TOffset{.stdcall,
     importc: "gridfile_get_contentlength", dynlib: mongodll.}
   ## Returns the length of GridFile's data.
 
-proc getContenttype*(gfile: var TGridFile): cstring{.stdcall, 
+proc getContenttype*(gfile: var TGridFile): Cstring{.stdcall, 
     importc: "gridfile_get_contenttype", dynlib: mongodll.}
   ## Returns the MIME type of the GridFile (nil if no type specified).
 
@@ -1135,16 +1135,16 @@ proc getUploaddate*(gfile: var TGridFile): Tdate{.stdcall,
     importc: "gridfile_get_uploaddate", dynlib: mongodll.}
   ## Returns the upload date of GridFile.
 
-proc getMd5*(gfile: var TGridFile): cstring {.stdcall, 
+proc getMd5*(gfile: var TGridFile): Cstring {.stdcall, 
     importc: "gridfile_get_md5", dynlib: mongodll.}
   ## Returns the MD5 of GridFile.
 
-proc getField*(gfile: var TGridFile, name: cstring): cstring{.stdcall, 
+proc getField*(gfile: var TGridFile, name: Cstring): Cstring{.stdcall, 
     importc: "gridfile_get_field", dynlib: mongodll.}
   ## Returns the field in GridFile specified by name. Returns the data of the
   ## field specified (nil if none exists).
 
-proc getBoolean*(gfile: var TGridFile, name: cstring): TBsonBool{.stdcall, 
+proc getBoolean*(gfile: var TGridFile, name: Cstring): TBsonBool{.stdcall, 
     importc: "gridfile_get_boolean", dynlib: mongodll.}
   ## Returns a boolean field in GridFile specified by name.
 
@@ -1153,15 +1153,15 @@ proc getMetadata*(gfile: var TGridFile, outp: var TBson){.stdcall,
   ## Returns the metadata of GridFile (an empty bson is returned if none
   ## exists).
 
-proc getNumchunks*(gfile: var TGridFile): cint{.stdcall, 
+proc getNumchunks*(gfile: var TGridFile): Cint{.stdcall, 
     importc: "gridfile_get_numchunks", dynlib: mongodll.}
   ## Returns the number of chunks in the GridFile.
 
-proc getChunk*(gfile: var TGridFile, n: cint, outp: var TBson){.stdcall, 
+proc getChunk*(gfile: var TGridFile, n: Cint, outp: var TBson){.stdcall, 
     importc: "gridfile_get_chunk", dynlib: mongodll.}
   ## Returns chunk `n` of GridFile.
 
-proc getChunks*(gfile: var TGridFile, start: cint, size: cint): ptr TCursor{.
+proc getChunks*(gfile: var TGridFile, start: Cint, size: Cint): ptr TCursor{.
     stdcall, importc: "gridfile_get_chunks", dynlib: mongodll.}
   ## Returns a mongo_cursor of `size` chunks starting with chunk `start`.
   ## The cursor must be destroyed after use.
@@ -1170,7 +1170,7 @@ proc writeFile*(gfile: ptr TGridFile, stream: TFile): TOffset{.stdcall,
     importc: "gridfile_write_file", dynlib: mongodll.}
   ## Writes the GridFile to a stream.
 
-proc read*(gfile: var TGridFile, size: TOffset, buf: cstring): TOffset{.stdcall, 
+proc read*(gfile: var TGridFile, size: TOffset, buf: Cstring): TOffset{.stdcall, 
     importc: "gridfile_read", dynlib: mongodll.}
   ## Reads length bytes from the GridFile to a buffer
   ## and updates the position in the file.

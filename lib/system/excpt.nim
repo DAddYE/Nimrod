@@ -11,14 +11,14 @@
 # use the heap (and nor exceptions) do not include the GC or memory allocator.
 
 var
-  stackTraceNewLine*: string ## undocumented feature; it is replaced by ``<br>``
+  stackTraceNewLine*: String ## undocumented feature; it is replaced by ``<br>``
                              ## for CGI applications
 
-template stackTraceNL: expr =
-  (if IsNil(stackTraceNewLine): "\n" else: stackTraceNewLine)
+template stackTraceNL: Expr =
+  (if isNil(stackTraceNewLine): "\n" else: stackTraceNewLine)
 
 when not defined(windows) or not defined(guiapp):
-  proc writeToStdErr(msg: CString) = write(stdout, msg)
+  proc writeToStdErr(msg: Cstring) = write(stdout, msg)
 
 else:
   proc MessageBoxA(hWnd: cint, lpText, lpCaption: cstring, uType: int): int32 {.
@@ -29,10 +29,10 @@ else:
 
 proc registerSignalHandler()
 
-proc chckIndx(i, a, b: int): int {.inline, compilerproc.}
-proc chckRange(i, a, b: int): int {.inline, compilerproc.}
-proc chckRangeF(x, a, b: float): float {.inline, compilerproc.}
-proc chckNil(p: pointer) {.noinline, compilerproc.}
+proc chckIndx(i, a, b: Int): Int {.inline, compilerproc.}
+proc chckRange(i, a, b: Int): Int {.inline, compilerproc.}
+proc chckRangeF(x, a, b: Float): Float {.inline, compilerproc.}
+proc chckNil(p: Pointer) {.noinline, compilerproc.}
 
 var
   framePtr {.rtlThreadVar.}: PFrame
@@ -123,9 +123,9 @@ when defined(nativeStacktrace) and nativeStackTraceSupported:
 
 when not hasThreadSupport:
   var
-    tempFrames: array [0..127, PFrame] # should not be alloc'd on stack
+    tempFrames: Array [0..127, PFrame] # should not be alloc'd on stack
   
-proc auxWriteStackTrace(f: PFrame, s: var string) =
+proc auxWriteStackTrace(f: PFrame, s: var String) =
   when hasThreadSupport:
     var
       tempFrames: array [0..127, PFrame] # but better than a threadvar
@@ -177,7 +177,7 @@ proc auxWriteStackTrace(f: PFrame, s: var string) =
     add(s, stackTraceNL)
 
 when hasSomeStackTrace:
-  proc rawWriteStackTrace(s: var string) =
+  proc rawWriteStackTrace(s: var String) =
     when nimrodStackTrace:
       if framePtr == nil:
         add(s, "No stack traceback available")
@@ -207,7 +207,7 @@ proc raiseExceptionAux(e: ref E_Base) =
   if excHandler != nil:
     if not excHandler.hasRaiseAction or excHandler.raiseAction(e):
       pushCurrentException(e)
-      c_longjmp(excHandler.context, 1)
+      cLongjmp(excHandler.context, 1)
   elif e[] of EOutOfMemory:
     writeToStdErr(e.name)
     quitOrDebug()
@@ -240,7 +240,7 @@ proc raiseExceptionAux(e: ref E_Base) =
       writeToStdErr(buf)
     quitOrDebug()
 
-proc raiseException(e: ref E_Base, ename: CString) {.compilerRtl.} =
+proc raiseException(e: ref E_Base, ename: Cstring) {.compilerRtl.} =
   e.name = ename
   when hasSomeStackTrace:
     e.trace = ""
@@ -253,7 +253,7 @@ proc reraiseException() {.compilerRtl.} =
   else:
     raiseExceptionAux(currException)
 
-proc WriteStackTrace() =
+proc writeStackTrace() =
   when hasSomeStackTrace:
     var s = ""
     rawWriteStackTrace(s)
@@ -278,29 +278,29 @@ when defined(endb):
   var
     dbgAborting: bool # whether the debugger wants to abort
 
-proc signalHandler(sig: cint) {.exportc: "signalHandler", noconv.} =
-  template processSignal(s, action: expr) {.immediate.} =
-    if s == SIGINT: action("SIGINT: Interrupted by Ctrl-C.\n")
-    elif s == SIGSEGV: 
+proc signalHandler(sig: Cint) {.exportc: "signalHandler", noconv.} =
+  template processSignal(s, action: Expr) {.immediate.} =
+    if s == sigint: action("SIGINT: Interrupted by Ctrl-C.\n")
+    elif s == sigsegv: 
       action("SIGSEGV: Illegal storage access. (Attempt to read from nil?)\n")
-    elif s == SIGABRT:
+    elif s == sigabrt:
       when defined(endb):
         if dbgAborting: return # the debugger wants to abort
       action("SIGABRT: Abnormal termination.\n")
-    elif s == SIGFPE: action("SIGFPE: Arithmetic error.\n")
-    elif s == SIGILL: action("SIGILL: Illegal operation.\n")
-    elif s == SIGBUS: 
+    elif s == sigfpe: action("SIGFPE: Arithmetic error.\n")
+    elif s == sigill: action("SIGILL: Illegal operation.\n")
+    elif s == sigbus: 
       action("SIGBUS: Illegal storage access. (Attempt to read from nil?)\n")
     else: action("unknown signal\n")
 
   # print stack trace and quit
   when hasSomeStackTrace:
-    GC_disable()
+    gCDisable()
     var buf = newStringOfCap(2000)
     rawWriteStackTrace(buf)
     processSignal(sig, buf.add) # nice hu? currying a la nimrod :-)
     writeToStdErr(buf)
-    GC_enable()
+    gCEnable()
   else:
     var msg: cstring
     template asgn(y: expr) = msg = y
@@ -310,17 +310,17 @@ proc signalHandler(sig: cint) {.exportc: "signalHandler", noconv.} =
   quit(1) # always quit when SIGABRT
 
 proc registerSignalHandler() =
-  c_signal(SIGINT, signalHandler)
-  c_signal(SIGSEGV, signalHandler)
-  c_signal(SIGABRT, signalHandler)
-  c_signal(SIGFPE, signalHandler)
-  c_signal(SIGILL, signalHandler)
-  c_signal(SIGBUS, signalHandler)
+  cSignal(sigint, signalHandler)
+  cSignal(sigsegv, signalHandler)
+  cSignal(sigabrt, signalHandler)
+  cSignal(sigfpe, signalHandler)
+  cSignal(sigill, signalHandler)
+  cSignal(sigbus, signalHandler)
 
 when not defined(noSignalHandler):
   registerSignalHandler() # call it in initialization section
 
 proc setControlCHook(hook: proc () {.noconv.}) =
   # ugly cast, but should work on all architectures:
-  type TSignalHandler = proc (sig: cint) {.noconv.}
-  c_signal(SIGINT, cast[TSignalHandler](hook))
+  type TSignalHandler = proc (sig: Cint) {.noconv.}
+  cSignal(sigint, cast[TSignalHandler](hook))

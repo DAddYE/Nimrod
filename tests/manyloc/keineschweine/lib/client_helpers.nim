@@ -4,25 +4,25 @@ import
 type
   PServer* = ptr TServer
   TServer* = object
-    connected*: bool
+    connected*: Bool
     addy: enet.TAddress
     host*: PHost
     peer*: PPeer
-    handlers*: TTable[char, TScPktHandler]
+    handlers*: TTable[Char, TScPktHandler]
   TScPktHandler* = proc(serv: PServer; buffer: PBuffer)
   TFileTransfer = object
-    fileName: string
+    fileName: String
     assetType: TAssetType
-    fullLen: int
-    pos: int32
-    data: string
-    readyToSave: bool
+    fullLen: Int
+    pos: Int32
+    data: String
+    readyToSave: Bool
 var 
   currentFileTransfer: TFileTransfer
   downloadProgress* = newButton(nil, "", vec2f(0,0), nil)
 currentFileTransfer.data = ""
 
-proc addHandler*(serv: PServer; packetType: char; handler: TScPktHandler) =
+proc addHandler*(serv: PServer; packetType: Char; handler: TScPktHandler) =
   serv.handlers[packetType] = handler
 
 proc newServer*(): PServer =
@@ -31,7 +31,7 @@ proc newServer*(): PServer =
   result.host = createHost(nil, 1, 2, 0, 0)
   result.handlers = initTable[char, TScPktHandler](32)
 
-proc connect*(serv: PServer; host: string; port: int16; error: var string): bool =
+proc connect*(serv: PServer; host: String; port: Int16; error: var String): Bool =
   if setHost(serv.addy, host) != 0:
     error = "Could not resolve host "
     error.add host
@@ -44,16 +44,16 @@ proc connect*(serv: PServer; host: string; port: int16; error: var string): bool
     return false
   return true
 
-proc send*[T](serv: PServer; packetType: char; pkt: var T) =
+proc send*[T](serv: PServer; packetType: Char; pkt: var T) =
   if serv.connected:
     var b = newBuffer(100)
     b.write packetType
     b.pack pkt
-    serv.peer.send(0.cuchar, b, FlagUnsequenced)
+    serv.peer.send(0.Cuchar, b, flagUnsequenced)
 
-proc sendPubChat*(server: PServer; msg: string) =
+proc sendPubChat*(server: PServer; msg: String) =
   var chat = newCsChat("", msg)
-  server.send HChat, chat
+  server.send hChat, chat
 
 proc handlePackets*(server: PServer; buf: PBuffer) =
   while not buf.atEnd():
@@ -80,22 +80,22 @@ proc handleFilePartRecv*(serv: PServer; buffer: PBuffer) {.procvar.} =
     echo "setting current file size"
     currentFileTransfer.data.setLen f.fileSize
   let len = f.data.len
-  copymem(
+  copyMem(
     addr currentFileTransfer.data[f.pos],
     addr f.data[0],
     len)
-  currentFileTransfer.pos = f.pos + len.int32
+  currentFileTransfer.pos = f.pos + len.Int32
   if currentFileTransfer.pos == f.fileSize: #file should be done, rizzight
     currentFileTransfer.data = uncompress(
       currentFileTransfer.data, currentFileTransfer.fullLen)
     currentFileTransfer.readyToSave = true
     var resp: CsFileChallenge
     resp.checksum = toMD5(currentFileTransfer.data)
-    serv.send HFileChallenge, resp
+    serv.send hFileChallenge, resp
     echo "responded with challenge (ready to save)"
   else:
     var resp = newCsFilepartAck(currentFileTransfer.pos)
-    serv.send HFileTransfer, resp
+    serv.send hFileTransfer, resp
     echo "responded for next part"
 
 proc saveCurrentFile() =
@@ -106,7 +106,7 @@ proc saveCurrentFile() =
   if not existsDir(parent):
     createDir(parent)
     echo("Created dir")
-  writeFile path, currentFIleTransfer.data
+  writeFile path, currentFileTransfer.data
   echo "Write file"
 
 ## HChallengeResult
@@ -135,8 +135,8 @@ proc handleFileChallenge*(serv: PServer; buffer: PBuffer) {.procvar.} =
     echo "got file challenge, sending sum"
   currentFileTransfer.fileName = challenge.file
   currentFileTransfer.assetType = challenge.assetType
-  currentFileTransfer.fullLen = challenge.fullLen.int
+  currentFileTransfer.fullLen = challenge.fullLen.Int
   currentFileTransfer.pos = 0
   currentFileTransfer.data.setLen 0
   currentFileTransfer.readyToSave = false
-  serv.send HFileChallenge, resp
+  serv.send hFileChallenge, resp

@@ -3,7 +3,7 @@ discard """
   errormsg: "type mismatch"
 """
 
-type a = enum b,c,d
+type A = enum b,c,d
 a.items()
 
 

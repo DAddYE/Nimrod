@@ -11,21 +11,21 @@ import strutils, parseopt, tables, os
 
 type
   PTask* = ref object
-    desc*: string
+    desc*: String
     action*: TTaskFunction
   TTaskFunction* = proc() {.closure.}
 var 
   tasks* = initTable[string, PTask](16)
 
-proc newTask*(desc: string; action: TTaskFunction): PTask
-proc runTask*(name: string) {.inline.}
-proc shell*(cmd: varargs[string, `$`]): int {.discardable.}
-proc cd*(dir: string) {.inline.}
+proc newTask*(desc: String; action: TTaskFunction): PTask
+proc runTask*(name: String) {.inline.}
+proc shell*(cmd: Varargs[String, `$`]): Int {.discardable.}
+proc cd*(dir: String) {.inline.}
 
-template nakeImports*(): stmt {.immediate.} =
+template nakeImports*(): Stmt {.immediate.} =
   import tables, parseopt, strutils, os
 
-template task*(name: string; description: string; body: stmt): stmt {.dirty, immediate.} =
+template task*(name: String; description: String; body: Stmt): Stmt {.dirty, immediate.} =
   block:
     var t = newTask(description, proc() {.closure.} =
       body)
@@ -40,7 +40,7 @@ proc runTask*(name: string) = tasks[name].action()
 proc shell*(cmd: varargs[string, `$`]): int =
   result = execShellCmd(cmd.join(" "))
 proc cd*(dir: string) = setCurrentDir(dir)
-template withDir*(dir: string; body: stmt): stmt =
+template withDir*(dir: String; body: Stmt): Stmt =
   ## temporary cd
   ## withDir "foo":
   ##   # inside foo
@@ -62,12 +62,12 @@ when isMainModule:
 else:
   addQuitProc(proc() {.noconv.} =
     var 
-      task: string
-      printTaskList: bool
-    for kind, key, val in getOpt():
+      task: String
+      printTaskList: Bool
+    for kind, key, val in getopt():
       case kind
       of cmdLongOption, cmdShortOption:
-        case key.tolower
+        case key.toLower
         of "tasks", "t":
           printTaskList = true
         else: 

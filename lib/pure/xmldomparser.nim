@@ -19,12 +19,12 @@ type
   EParserError* = object of EInvalidValue ## Raised when an unexpected XML Parser event occurs
 
   # For namespaces
-  xmlnsAttr = tuple[name, value: string, ownerElement: PElement]
+  XmlnsAttr = tuple[name, value: String, ownerElement: PElement]
 
-var nsList: seq[xmlnsAttr] = @[] # Used for storing namespaces
+var nsList: Seq[XmlnsAttr] = @[] # Used for storing namespaces
 
-proc getNS(prefix: string): string =
-  var defaultNS: seq[string] = @[]
+proc getNS(prefix: String): String =
+  var defaultNS: Seq[String] = @[]
 
   for key, value, tag in items(nsList):
     if ":" in key:
@@ -49,7 +49,7 @@ proc parseText(x: var TXmlParser, doc: var PDocument): PText =
 proc parseElement(x: var TXmlParser, doc: var PDocument): PElement =
   var n = doc.createElement("")
 
-  while True:
+  while true:
     case x.kind()
     of xmlEof:
       break
@@ -63,7 +63,7 @@ proc parseElement(x: var TXmlParser, doc: var PDocument): PElement =
       if x.elementName == n.nodeName:
         # n.normalize() # Remove any whitespace etc.
         
-        var ns: string
+        var ns: String
         if x.elementName.contains(':'):
           ns = getNS(x.elementName.split(':')[0])
         else:
@@ -102,7 +102,7 @@ proc parseElement(x: var TXmlParser, doc: var PDocument): PElement =
     of xmlComment:
       n.appendChild(doc.createComment(x.charData()))
     of xmlPI:
-      n.appendChild(doc.createProcessingInstruction(x.PIName(), x.PIRest()))
+      n.appendChild(doc.createProcessingInstruction(x.pIName(), x.pIRest()))
       
     of xmlWhitespace, xmlElementClose, xmlEntity, xmlSpecial:
       # Unused 'events'
@@ -121,37 +121,37 @@ proc loadXMLStream*(stream: PStream): PDocument =
   var x: TXmlParser
   open(x, stream, nil, {reportComments})
   
-  var XmlDoc: PDocument
-  var DOM: PDOMImplementation = getDOM()
+  var xmlDoc: PDocument
+  var dom: PDOMImplementation = getDOM()
   
-  while True:
+  while true:
     x.next()
     case x.kind()
     of xmlEof:
       break
     of xmlElementStart, xmlElementOpen:
-      var el: PElement = parseElement(x, XmlDoc)
-      XmlDoc = dom.createDocument(el)
+      var el: PElement = parseElement(x, xmlDoc)
+      xmlDoc = dom.createDocument(el)
     of xmlWhitespace, xmlElementClose, xmlEntity, xmlSpecial:
       # Unused 'events'
     else:
       raise newException(EParserError, "Unexpected XML Parser event")
 
-  return XmlDoc
+  return xmlDoc
 
-proc loadXML*(xml: string): PDocument =
+proc loadXML*(xml: String): PDocument =
   ## Loads and parses XML from a string specified by ``xml``, and returns 
   ## a ``PDocument``
   var s = newStringStream(xml)
   return loadXMLStream(s)
   
     
-proc loadXMLFile*(path: string): PDocument =
+proc loadXMLFile*(path: String): PDocument =
   ## Loads and parses XML from a file specified by ``path``, and returns 
   ## a ``PDocument``
   
   var s = newFileStream(path, fmRead)
-  if s == nil: raise newException(EIO, "Unable to read file " & path)
+  if s == nil: raise newException(Eio, "Unable to read file " & path)
   return loadXMLStream(s)
 
 

@@ -9,7 +9,7 @@ import events
 
 type
   TPrintEventArgs = object of TEventArgs
-    user*: string
+    user*: String
 
 proc handleprintevent*(e: TEventArgs) =
     write(stdout, "HandlePrintEvent: Output -> Handled print event\n")
@@ -34,7 +34,7 @@ ee.emit("print", eventargs)
 
 type
   TSomeObject = object of TObject
-    PrintEvent: TEventHandler
+    printEvent: TEventHandler
 
 var obj: TSomeObject
 obj.PrintEvent = initEventHandler("print")

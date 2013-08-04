@@ -17,9 +17,9 @@ const
   wordExcess* = 32768
 
 type
-  TRegister* = range[0..255]
-  TDest* = range[-1 .. 255]
-  TInstr* = distinct uint32
+  TRegister* = Range[0..255]
+  TDest* = Range[-1 .. 255]
+  TInstr* = distinct Uint32
 
   TOpcode* = enum
     opcEof,         # end of code
@@ -118,7 +118,7 @@ type
 
   TBlock* = object
     label*: PSym
-    fixups*: seq[TPosition]
+    fixups*: Seq[TPosition]
 
   TSlotKind* = enum   # We try to re-use slots in a smart way to
                       # minimize allocations; however the VM supports arbitrary
@@ -134,25 +134,25 @@ type
     slotTempComplex   # some complex temporary (n.sons field is used)
 
   PProc* = ref object
-    blocks*: seq[TBlock]    # blocks; temp data structure
-    slots*: array[TRegister, tuple[inUse: bool, kind: TSlotKind]]
-    maxSlots*: int
+    blocks*: Seq[TBlock]    # blocks; temp data structure
+    slots*: Array[TRegister, tuple[inUse: Bool, kind: TSlotKind]]
+    maxSlots*: Int
     
   PCtx* = ref TCtx
   TCtx* = object of passes.TPassContext # code gen context
-    code*: seq[TInstr]
-    debug*: seq[TLineInfo]  # line info for every instruction; kept separate
+    code*: Seq[TInstr]
+    debug*: Seq[TLineInfo]  # line info for every instruction; kept separate
                             # to not slow down interpretation
     globals*: PNode         # 
     constants*: PNode       # constant data
-    types*: seq[PType]      # some instructions reference types (e.g. 'except')
+    types*: Seq[PType]      # some instructions reference types (e.g. 'except')
     currentExceptionA*, currentExceptionB*: PNode
-    exceptionInstr*: int # index of instruction that raised the exception
+    exceptionInstr*: Int # index of instruction that raised the exception
     prc*: PProc
     module*: PSym
     callsite*: PNode
 
-  TPosition* = distinct int
+  TPosition* = distinct Int
   
 proc newCtx*(module: PSym): PCtx =
   PCtx(code: @[], debug: @[],
@@ -166,8 +166,8 @@ const
   slotSomeTemp* = slotTempUnknown
   relativeJumps* = {opcTJmp, opcFJmp, opcJmp}
 
-template opcode*(x: TInstr): TOpcode {.immediate.} = TOpcode(x.uint32 and 0xff'u32)
-template regA*(x: TInstr): TRegister {.immediate.} = TRegister(x.uint32 shr 8'u32 and 0xff'u32)
-template regB*(x: TInstr): TRegister {.immediate.} = TRegister(x.uint32 shr 16'u32 and 0xff'u32)
-template regC*(x: TInstr): TRegister {.immediate.} = TRegister(x.uint32 shr 24'u32)
-template regBx*(x: TInstr): int {.immediate.} = (x.uint32 shr 16'u32).int
+template opcode*(x: TInstr): TOpcode {.immediate.} = TOpcode(x.Uint32 and 0xff'u32)
+template regA*(x: TInstr): TRegister {.immediate.} = TRegister(x.Uint32 shr 8'u32 and 0xff'u32)
+template regB*(x: TInstr): TRegister {.immediate.} = TRegister(x.Uint32 shr 16'u32 and 0xff'u32)
+template regC*(x: TInstr): TRegister {.immediate.} = TRegister(x.Uint32 shr 24'u32)
+template regBx*(x: TInstr): Int {.immediate.} = (x.Uint32 shr 16'u32).Int

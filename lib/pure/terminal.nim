@@ -44,7 +44,7 @@ when defined(windows):
   var
     oldAttr = getAttributes()
 
-proc setCursorPos*(x, y: int) =
+proc setCursorPos*(x, y: Int) =
   ## sets the terminal's cursor to the (x,y) position. (0,0) is the
   ## upper left of the screen.
   when defined(windows):
@@ -55,7 +55,7 @@ proc setCursorPos*(x, y: int) =
   else:
     stdout.write("\e[" & $y & ';' & $x & 'f')
 
-proc setCursorXPos*(x: int) =
+proc setCursorXPos*(x: Int) =
   ## sets the terminal's cursor to the x position. The y position is
   ## not changed.
   when defined(windows):
@@ -82,7 +82,7 @@ when defined(windows):
     else:
       nil
 
-proc CursorUp*(count=1) =
+proc cursorUp*(count=1) =
   ## Moves the cursor up by `count` rows.
   when defined(windows):
     var p = getCursorPos()
@@ -91,7 +91,7 @@ proc CursorUp*(count=1) =
   else:
     stdout.write("\e[" & $count & 'A')
 
-proc CursorDown*(count=1) =
+proc cursorDown*(count=1) =
   ## Moves the cursor down by `count` rows.
   when defined(windows):
     var p = getCursorPos()
@@ -100,7 +100,7 @@ proc CursorDown*(count=1) =
   else:
     stdout.write("\e[" & $count & 'B')
 
-proc CursorForward*(count=1) =
+proc cursorForward*(count=1) =
   ## Moves the cursor forward by `count` columns.
   when defined(windows):
     var p = getCursorPos()
@@ -109,7 +109,7 @@ proc CursorForward*(count=1) =
   else:
     stdout.write("\e[" & $count & 'C')
 
-proc CursorBackward*(count=1) =
+proc cursorBackward*(count=1) =
   ## Moves the cursor backward by `count` columns.
   when defined(windows):
     var p = getCursorPos()
@@ -149,7 +149,7 @@ else:
     else:
       stdout.write("\e[1J")
 
-proc EraseLine* =
+proc eraseLine* =
   ## Erases the entire current line.
   when defined(windows):
     var scrbuf: TCONSOLE_SCREEN_BUFFER_INFO
@@ -171,7 +171,7 @@ proc EraseLine* =
     stdout.write("\e[2K")
     setCursorXPos(0)
 
-proc EraseScreen* =
+proc eraseScreen* =
   ## Erases the screen with the background colour and moves the cursor to home.
   when defined(windows):
     var scrbuf: TCONSOLE_SCREEN_BUFFER_INFO
@@ -190,7 +190,7 @@ proc EraseScreen* =
   else:
     stdout.write("\e[2J")
 
-proc ResetAttributes* {.noconv.} =
+proc resetAttributes* {.noconv.} =
   ## resets all attributes; it is advisable to register this as a quit proc
   ## with ``system.addQuitProc(resetAttributes)``.
   when defined(windows):
@@ -214,7 +214,7 @@ when not defined(windows):
     gFG = 0
     gBG = 0
 
-proc setStyle*(style: set[TStyle]) =
+proc setStyle*(style: Set[TStyle]) =
   ## sets the terminal style
   when defined(windows):
     var a = 0'i16
@@ -227,7 +227,7 @@ proc setStyle*(style: set[TStyle]) =
     for s in items(style):
       stdout.write("\e[" & $ord(s) & 'm')
 
-proc WriteStyled*(txt: string, style: set[TStyle] = {styleBright}) =
+proc writeStyled*(txt: String, style: Set[TStyle] = {styleBright}) =
   ## writes the text `txt` in a given `style`.
   when defined(windows):
     var old = getAttributes()
@@ -306,10 +306,10 @@ proc setBackgroundColor*(bg: TBackgroundColor, bright=false) =
     if bright: inc(gBG, 60)
     stdout.write("\e[" & $gBG & 'm')
 
-proc isatty*(f: TFile): bool =
+proc isatty*(f: TFile): Bool =
   ## returns true if `f` is associated with a terminal device.
   when defined(posix):
-    proc isatty(fildes: TFileHandle): cint {.
+    proc isatty(fildes: TFileHandle): Cint {.
       importc: "isatty", header: "<unistd.h>".}
   else:
     proc isatty(fildes: TFileHandle): cint {.
@@ -317,13 +317,13 @@ proc isatty*(f: TFile): bool =
   
   result = isatty(fileHandle(f)) != 0'i32
 
-proc styledEchoProcessArg(s: string)               = write stdout, s
+proc styledEchoProcessArg(s: String)               = write stdout, s
 proc styledEchoProcessArg(style: TStyle)           = setStyle({style})
-proc styledEchoProcessArg(style: set[TStyle])      = setStyle style
-proc styledEchoProcessArg(color: TForegroundColor) = setForeGroundColor color
-proc styledEchoProcessArg(color: TBackgroundColor) = setBackGroundColor color
+proc styledEchoProcessArg(style: Set[TStyle])      = setStyle style
+proc styledEchoProcessArg(color: TForegroundColor) = setForegroundColor color
+proc styledEchoProcessArg(color: TBackgroundColor) = setBackgroundColor color
 
-macro styledEcho*(m: varargs[expr]): stmt =
+macro styledEcho*(m: Varargs[Expr]): Stmt =
   ## to be documented.
   let m = callsite()
   result = newNimNode(nnkStmtList)

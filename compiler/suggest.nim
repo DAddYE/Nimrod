@@ -22,7 +22,7 @@ const
 
 #template sectionSuggest(): expr = "##begin\n" & getStackTrace() & "##end\n"
 
-proc SymToStr(s: PSym, isLocal: bool, section: string, li: TLineInfo): string = 
+proc symToStr(s: PSym, isLocal: Bool, section: String, li: TLineInfo): String = 
   result = section
   result.add(sep)
   result.add($s.kind)
@@ -49,18 +49,18 @@ proc SymToStr(s: PSym, isLocal: bool, section: string, li: TLineInfo): string =
   when not defined(noDocgen):
     result.add(s.extractDocComment.escape)
 
-proc SymToStr(s: PSym, isLocal: bool, section: string): string = 
-  result = SymToStr(s, isLocal, section, s.info)
+proc symToStr(s: PSym, isLocal: Bool, section: String): String = 
+  result = symToStr(s, isLocal, section, s.info)
 
-proc filterSym(s: PSym): bool {.inline.} =
+proc filterSym(s: PSym): Bool {.inline.} =
   result = s.name.s[0] in lexer.SymChars and s.kind != skModule
 
-proc fieldVisible*(c: PContext, f: PSym): bool {.inline.} =
+proc fieldVisible*(c: PContext, f: PSym): Bool {.inline.} =
   let fmoduleId = getModule(f).id
   result = sfExported in f.flags or fmoduleId == c.module.id or
       fmoduleId == c.friendModule.id
 
-proc suggestField(c: PContext, s: PSym, outputs: var int) = 
+proc suggestField(c: PContext, s: PSym, outputs: var Int) = 
   if filterSym(s) and fieldVisible(c, s):
     SuggestWriteln(SymToStr(s, isLocal=true, sectionSuggest))
     inc outputs
@@ -68,12 +68,12 @@ proc suggestField(c: PContext, s: PSym, outputs: var int) =
 when not defined(nimhygiene):
   {.pragma: inject.}
 
-template wholeSymTab(cond, section: expr) {.immediate.} =
+template wholeSymTab(cond, section: Expr) {.immediate.} =
   var isLocal = true
   for scope in walkScopes(c.currentScope):
     if scope == c.topLevelScope: isLocal = false
     var entries = sequtils.toSeq(items(scope.symbols))
-    sort(entries) do (a,b: PSym) -> int:
+    sort(entries) do (a,b: PSym) -> Int:
       return cmp(a.name.s, b.name.s)
     for item in entries:
       let it {.inject.} = item
@@ -81,13 +81,13 @@ template wholeSymTab(cond, section: expr) {.immediate.} =
         SuggestWriteln(SymToStr(it, isLocal = isLocal, section))
         inc outputs
 
-proc suggestSymList(c: PContext, list: PNode, outputs: var int) = 
+proc suggestSymList(c: PContext, list: PNode, outputs: var Int) = 
   for i in countup(0, sonsLen(list) - 1): 
     if list.sons[i].kind == nkSym:
       suggestField(c, list.sons[i].sym, outputs)
     #else: InternalError(list.info, "getSymFromList")
 
-proc suggestObject(c: PContext, n: PNode, outputs: var int) = 
+proc suggestObject(c: PContext, n: PNode, outputs: var Int) = 
   case n.kind
   of nkRecList: 
     for i in countup(0, sonsLen(n)-1): suggestObject(c, n.sons[i], outputs)
@@ -99,7 +99,7 @@ proc suggestObject(c: PContext, n: PNode, outputs: var int) =
   of nkSym: suggestField(c, n.sym, outputs)
   else: nil
 
-proc nameFits(c: PContext, s: PSym, n: PNode): bool = 
+proc nameFits(c: PContext, s: PSym, n: PNode): Bool = 
   var op = n.sons[0]
   if op.kind in {nkOpenSymChoice, nkClosedSymChoice}: op = op.sons[0]
   var opr: PIdent
@@ -109,9 +109,9 @@ proc nameFits(c: PContext, s: PSym, n: PNode): bool =
   else: return false
   result = opr.id == s.name.id
 
-proc argsFit(c: PContext, candidate: PSym, n, nOrig: PNode): bool = 
+proc argsFit(c: PContext, candidate: PSym, n, nOrig: PNode): Bool = 
   case candidate.kind 
-  of OverloadableSyms:
+  of overloadableSyms:
     var m: TCandidate
     initCandidate(m, candidate, nil)
     sigmatch.partialMatch(c, n, nOrig, m)
@@ -119,19 +119,19 @@ proc argsFit(c: PContext, candidate: PSym, n, nOrig: PNode): bool =
   else:
     result = false
 
-proc suggestCall(c: PContext, n, nOrig: PNode, outputs: var int) = 
+proc suggestCall(c: PContext, n, nOrig: PNode, outputs: var Int) = 
   wholeSymTab(filterSym(it) and nameFits(c, it, n) and argsFit(c, it, n, nOrig),
               sectionContext)
 
-proc typeFits(c: PContext, s: PSym, firstArg: PType): bool {.inline.} = 
+proc typeFits(c: PContext, s: PSym, firstArg: PType): Bool {.inline.} = 
   if s.typ != nil and sonsLen(s.typ) > 1 and s.typ.sons[1] != nil:
     result = sigmatch.argtypeMatches(c, s.typ.sons[1], firstArg)
 
-proc suggestOperations(c: PContext, n: PNode, typ: PType, outputs: var int) =
+proc suggestOperations(c: PContext, n: PNode, typ: PType, outputs: var Int) =
   assert typ != nil
   wholeSymTab(filterSym(it) and typeFits(c, it, typ), sectionSuggest)
 
-proc suggestEverything(c: PContext, n: PNode, outputs: var int) =
+proc suggestEverything(c: PContext, n: PNode, outputs: var Int) =
   # do not produce too many symbols:
   var isLocal = true
   for scope in walkScopes(c.currentScope):
@@ -142,7 +142,7 @@ proc suggestEverything(c: PContext, n: PNode, outputs: var int) =
         inc outputs
     if scope == c.topLevelScope: break
 
-proc suggestFieldAccess(c: PContext, n: PNode, outputs: var int) =
+proc suggestFieldAccess(c: PContext, n: PNode, outputs: var Int) =
   # special code that deals with ``myObj.``. `n` is NOT the nkDotExpr-node, but
   # ``myObj``.
   var typ = n.Typ
@@ -204,7 +204,7 @@ proc findClosestCall(n: PNode): PNode =
       result = findClosestCall(n.sons[i])
       if result != nil: return
 
-proc isTracked(current: TLineInfo, tokenLen: int): bool =
+proc isTracked(current: TLineInfo, tokenLen: Int): Bool =
   for i in countup(0, high(checkPoints)):
     if current.fileIndex == checkPoints[i].fileIndex:
       if current.line == checkPoints[i].line:
@@ -253,25 +253,25 @@ proc findDefinition(node: PNode, s: PSym) =
 
 type
   TSourceMap = object
-    lines: seq[TLineMap]
+    lines: Seq[TLineMap]
   
   TEntry = object
-    pos: int
+    pos: Int
     sym: PSym
 
   TLineMap = object
-    entries: seq[TEntry]
+    entries: Seq[TEntry]
 
 var
-  gSourceMaps: seq[TSourceMap] = @[]
+  gSourceMaps: Seq[TSourceMap] = @[]
 
-proc ensureIdx[T](x: var T, y: int) =
+proc ensureIdx[T](x: var T, y: Int) =
   if x.len <= y: x.setLen(y+1)
 
-proc ensureSeq[T](x: var seq[T]) =
+proc ensureSeq[T](x: var Seq[T]) =
   if x == nil: newSeq(x, 0)
 
-proc resetSourceMap*(fileIdx: int32) =
+proc resetSourceMap*(fileIdx: Int32) =
   ensureIdx(gSourceMaps, fileIdx)
   gSourceMaps[fileIdx].lines = @[]
 
@@ -282,12 +282,12 @@ proc addToSourceMap(sym: Psym, info: TLineInfo) =
   ensureSeq(gSourceMaps[info.fileIndex].lines[info.line].entries)
   gSourceMaps[info.fileIndex].lines[info.line].entries.add(TEntry(pos: info.col, sym: sym))
 
-proc defFromLine(entries: var seq[TEntry], col: int32) =
+proc defFromLine(entries: var Seq[TEntry], col: Int32) =
   if entries == nil: return
   # The sorting is done lazily here on purpose.
   # No need to pay the price for it unless the user requests
   # "goto definition" on a particular line
-  sort(entries) do (a,b: TEntry) -> int:
+  sort(entries) do (a,b: TEntry) -> Int:
     return cmp(a.pos, b.pos)
   
   for e in entries:

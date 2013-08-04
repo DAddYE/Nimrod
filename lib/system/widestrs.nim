@@ -11,33 +11,33 @@
 ## module! Do not import it directly!
 
 type
-  TUtf16Char* = distinct int16
-  WideCString* = ref array[0.. 1_000_000, TUtf16Char]
+  TUtf16Char* = distinct Int16
+  WideCString* = ref Array[0.. 1_000_000, TUtf16Char]
 
-proc len*(w: WideCString): int =
+proc len*(w: WideCString): Int =
   ## returns the length of a widestring. This traverses the whole string to
   ## find the binary zero end marker!
-  while int16(w[result]) != 0'i16: inc result
+  while Int16(w[result]) != 0'i16: inc result
 
 const
-  UNI_REPLACEMENT_CHAR = TUtf16Char(0xFFFD'i16)
-  UNI_MAX_BMP = 0x0000FFFF
-  UNI_MAX_UTF16 = 0x0010FFFF
-  UNI_MAX_UTF32 = 0x7FFFFFFF
-  UNI_MAX_LEGAL_UTF32 = 0x0010FFFF
+  UniReplacementChar = TUtf16Char(0xFFFD'i16)
+  UniMaxBmp = 0x0000FFFF
+  UniMaxUtf16 = 0x0010FFFF
+  UniMaxUtf32 = 0x7FFFFFFF
+  UniMaxLegalUtf32 = 0x0010FFFF
 
   halfShift = 10
   halfBase = 0x0010000
   halfMask = 0x3FF
 
-  UNI_SUR_HIGH_START = 0xD800
-  UNI_SUR_HIGH_END = 0xDBFF
-  UNI_SUR_LOW_START = 0xDC00
-  UNI_SUR_LOW_END = 0xDFFF
+  UniSurHighStart = 0xD800
+  UniSurHighEnd = 0xDBFF
+  UniSurLowStart = 0xDC00
+  UniSurLowEnd = 0xDFFF
 
-template ones(n: expr): expr = ((1 shl n)-1)
+template ones(n: Expr): Expr = ((1 shl n)-1)
 
-template fastRuneAt(s: cstring, i: int, result: expr, doInc = true) =
+template fastRuneAt(s: Cstring, i: Int, result: Expr, doInc = true) =
   ## Returns the unicode character ``s[i]`` in `result`. If ``doInc == true``
   ## `i` is incremented by the number of bytes that have been processed.
   bind ones
@@ -69,15 +69,15 @@ template fastRuneAt(s: cstring, i: int, result: expr, doInc = true) =
     result = 0xFFFD
     when doInc: inc(i)
 
-iterator runes(s: cstring): int =
+iterator runes(s: Cstring): Int =
   var
     i = 0
-    result: int
+    result: Int
   while s[i] != '\0':
     fastRuneAt(s, i, result, true)
     yield result
 
-proc newWideCString*(source: cstring, L: int): WideCString =
+proc newWideCString*(source: Cstring, L: Int): WideCString =
   unsafeNew(result, L * 4 + 2)
   #result = cast[wideCString](alloc(L * 4 + 2))
   var d = 0
@@ -97,28 +97,28 @@ proc newWideCString*(source: cstring, L: int): WideCString =
     inc d
   result[d] = TUtf16Char(0'i16)
 
-proc newWideCString*(s: cstring): WideCString =
+proc newWideCString*(s: Cstring): WideCString =
   if s.isNil: return nil
 
   when not defined(c_strlen):
-    proc c_strlen(a: CString): int {.nodecl, noSideEffect, importc: "strlen".}
+    proc cStrlen(a: Cstring): Int {.nodecl, noSideEffect, importc: "strlen".}
 
-  let L = cstrlen(s)
+  let L = cStrlen(s)
   result = newWideCString(s, L)
 
-proc newWideCString*(s: string): WideCString =
+proc newWideCString*(s: String): WideCString =
   result = newWideCString(s, s.len)
 
-proc `$`*(w: wideCString, estimate: int): string =
+proc `$`*(w: WideCString, estimate: Int): String =
   result = newStringOfCap(estimate + estimate shr 2)
 
   var i = 0
-  while w[i].int16 != 0'i16:
-    var ch = w[i].int
+  while w[i].Int16 != 0'i16:
+    var ch = w[i].Int
     inc i
     if ch >=% UNI_SUR_HIGH_START and ch <=% UNI_SUR_HIGH_END:
       # If the 16 bits following the high surrogate are in the source buffer...
-      let ch2 = w[i].int
+      let ch2 = w[i].Int
       # If it's a low surrogate, convert to UTF32:
       if ch2 >=% UNI_SUR_LOW_START and ch2 <=% UNI_SUR_LOW_END:
         ch = ((ch -% UNI_SUR_HIGH_START) shr halfShift) +%
@@ -145,5 +145,5 @@ proc `$`*(w: wideCString, estimate: int): string =
       result.add chr(0xFFFD shr 6 and ones(6) or 0b10_0000_00)
       result.add chr(0xFFFD and ones(6) or 0b10_0000_00)
 
-proc `$`*(s: WideCString): string =
+proc `$`*(s: WideCString): String =
   result = s $ 80

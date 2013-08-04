@@ -5,7 +5,7 @@ discard """
 # test nested ifs
 
 var
-    x, y: int
+    x, y: Int
 x = 2
 if x == 0:
     write(stdout, "i == 0")

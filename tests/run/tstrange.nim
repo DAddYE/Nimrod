@@ -4,7 +4,7 @@ discard """
 """
 # test for extremely strange bug
 
-proc ack(x: int, y: int): int =
+proc ack(x: Int, y: Int): Int =
   if x != 0:
     if y != 5:
       return y

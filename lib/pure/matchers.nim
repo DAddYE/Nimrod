@@ -17,7 +17,7 @@ include "system/inclrtl"
 
 import parseutils, strutils
 
-proc validEmailAddress*(s: string): bool {.noSideEffect,
+proc validEmailAddress*(s: String): Bool {.noSideEffect,
   rtl, extern: "nsuValidEmailAddress".} = 
   ## returns true if `s` seems to be a valid e-mail address. 
   ## The checking also uses a domain list.
@@ -44,7 +44,7 @@ proc validEmailAddress*(s: string): bool {.noSideEffect,
      "aero", "jobs", "museum": return true
   return false
 
-proc parseInt*(s: string, value: var int, validRange: TSlice[int]) {.
+proc parseInt*(s: String, value: var Int, validRange: TSlice[Int]) {.
   noSideEffect, rtl, extern: "nmatchParseInt".} =
   ## parses `s` into an integer in the range `validRange`. If successful,
   ## `value` is modified to contain the result. Otherwise no exception is

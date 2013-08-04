@@ -12,7 +12,7 @@
 ## but an extra import.
 
 type
-  SomeUInt = uint|uint8|uint16|uint32|uint64
+  SomeUInt = Uint|Uint8|Uint16|Uint32|Uint64
 
 proc `not`*[T: SomeUInt](x: T): T {.magic: "BitnotI", noSideEffect.}
   ## computes the `bitwise complement` of the integer `x`.
@@ -32,7 +32,7 @@ proc `or`*[T: SomeUInt](x, y: T): T {.magic: "BitorI", noSideEffect.}
 proc `xor`*[T: SomeUInt](x, y: T): T {.magic: "BitxorI", noSideEffect.}
   ## computes the `bitwise xor` of numbers `x` and `y`.
 
-proc `==`*[T: SomeUInt](x, y: T): bool {.magic: "EqI", noSideEffect.}
+proc `==`*[T: SomeUInt](x, y: T): Bool {.magic: "EqI", noSideEffect.}
   ## Compares two unsigned integers for equality.
 
 proc `+`*[T: SomeUInt](x, y: T): T {.magic: "AddU", noSideEffect.}
@@ -52,8 +52,8 @@ proc `mod`*[T: SomeUInt](x, y: T): T {.magic: "ModU", noSideEffect.}
   ## computes the integer modulo operation. This is the same as
   ## ``x - (x div y) * y``.
 
-proc `<=`*[T: SomeUInt](x, y: T): bool {.magic: "LeU", noSideEffect.}
+proc `<=`*[T: SomeUInt](x, y: T): Bool {.magic: "LeU", noSideEffect.}
   ## Returns true iff ``x <= y``.
 
-proc `<`*[T: SomeUInt](x, y: T): bool {.magic: "LtU", noSideEffect.}
+proc `<`*[T: SomeUInt](x, y: T): Bool {.magic: "LtU", noSideEffect.}
   ## Returns true iff ``unsigned(x) < unsigned(y)``.

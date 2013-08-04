@@ -3,13 +3,13 @@ discard """
 """
 
 for i in 0 .. 1:
-  var a: array[0..4, int]
+  var a: Array[0..4, Int]
   if a[0] != 0: quit "bug"
   a[0] = 6
 
 proc main =
   for i in 0 .. 1:
-    var a: array[0..4, int]
+    var a: Array[0..4, Int]
     if a[0] != 0: quit "bug"
     a[0] = 6
 

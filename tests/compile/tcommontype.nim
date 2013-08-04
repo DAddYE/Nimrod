@@ -8,11 +8,11 @@ type
   TCat=object of TAnimal
   PCat=ref TCat
 
-  TAnimalArray=array[0..2,PAnimal]
+  TAnimalArray=Array[0..2,PAnimal]
 
 proc newDog():PDog = new(result)
 proc newCat():PCat = new(result)
-proc test(a:openarray[PAnimal])=
+proc test(a:Openarray[PAnimal])=
   echo("dummy")
 
 #test(newDog(),newCat()) #does not work

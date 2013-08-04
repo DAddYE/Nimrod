@@ -5,14 +5,14 @@ type
     en1, en2, en3, en4, en5, en6
 
   TPoint {.final.} = object
-    x, y, z: int
-    s: array [0..1, string]
+    x, y, z: Int
+    s: Array [0..1, String]
     e: TEnum
 
 var
   p: TPoint
   q: ref TPoint
-  s: seq[ref TPoint]
+  s: Seq[ref TPoint]
 
 p.x = 0
 p.y = 13

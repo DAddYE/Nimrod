@@ -1,15 +1,15 @@
 import tables
 
 type
-  TX = TTable[string, int]
+  TX = TTable[String, Int]
 
-proc foo(models: seq[TX]): seq[int] =
+proc foo(models: Seq[TX]): Seq[Int] =
   result = @[]
   for model in models.items:
     result.add model["foobar"]
 
 type
-  obj = object
-    field: TTable[string, string]
+  Obj = object
+    field: TTable[String, String]
 var t: Obj
 discard initTable[type(t.field), string]()

@@ -3,28 +3,28 @@ import argument_parser, tables, strutils, parseutils
 ## Example defining a subset of wget's functionality
 
 const
-  PARAM_VERSION = @["-V", "--version"]
-  PARAM_HELP = @["-h", "--help"]
-  PARAM_BACKGROUND = @["-b", "--background"]
-  PARAM_OUTPUT = @["-o", "--output"]
-  PARAM_NO_CLOBBER = @["-nc", "--no-clobber"]
-  PARAM_PROGRESS = "--progress"
-  PARAM_NO_PROXY = "--no-proxy"
+  ParamVersion = @["-V", "--version"]
+  ParamHelp = @["-h", "--help"]
+  ParamBackground = @["-b", "--background"]
+  ParamOutput = @["-o", "--output"]
+  ParamNoClobber = @["-nc", "--no-clobber"]
+  ParamProgress = "--progress"
+  ParamNoProxy = "--no-proxy"
 
 
-template P(tnames: varargs[string], thelp: string, ttype = PK_EMPTY,
-    tcallback: Tparameter_callback = nil) =
+template p(tnames: Varargs[String], thelp: String, ttype = PkEmpty,
+    tcallback: TparameterCallback = nil) =
   ## Helper to avoid repetition of parameter adding boilerplate.
-  params.add(new_parameter_specification(ttype, custom_validator = tcallback,
+  params.add(newParameterSpecification(ttype, custom_validator = tcallback,
     help_text = thelp, names = tnames))
 
 
-template got(param: varargs[string]) =
+template got(param: Varargs[String]) =
   ## Just dump the detected options on output.
   if result.options.hasKey(param[0]): echo("Found option '$1'." % [param[0]])
 
 
-proc parse_progress(parameter: string; value: var Tparsed_parameter): string =
+proc parseProgress(parameter: String; value: var TparsedParameter): String =
   ## Custom parser and validator of progress types for PARAM_PROGRESS.
   ##
   ## If the user specifies the PARAM_PROGRESS option this proc will be called
@@ -39,49 +39,49 @@ proc parse_progress(parameter: string; value: var Tparsed_parameter): string =
   result = "The string $1 is not valid, use bar or dot." % [value.str_val]
 
 
-proc process_commandline(): Tcommandline_results =
+proc processCommandline(): TcommandlineResults =
   ## Parses the commandline.
   ##
   ## Returns a Tcommandline_results with at least two positional parameter,
   ## where the last parameter is implied to be the destination of the copying.
-  var params: seq[Tparameter_specification] = @[]
+  var params: Seq[TparameterSpecification] = @[]
 
-  P(PARAM_VERSION, "Shows the version of the program")
-  P(PARAM_HELP, "Shows this help on the commandline", PK_HELP)
-  P(PARAM_BACKGROUND, "Continues execution in the background")
-  P(PARAM_OUTPUT, "Specifies a specific output file name", PK_STRING)
-  P(PARAM_NO_CLOBBER, "Skip downloads that would overwrite existing files")
-  P(PARAM_PROGRESS, "Select progress look (bar or dot)",
-    PK_STRING, parse_progress)
-  P(PARAM_NO_PROXY, "Don't use proxies even if available")
+  P(ParamVersion, "Shows the version of the program")
+  P(ParamHelp, "Shows this help on the commandline", PkHelp)
+  P(ParamBackground, "Continues execution in the background")
+  P(ParamOutput, "Specifies a specific output file name", PkString)
+  P(ParamNoClobber, "Skip downloads that would overwrite existing files")
+  P(ParamProgress, "Select progress look (bar or dot)",
+    PkString, parseProgress)
+  P(ParamNoProxy, "Don't use proxies even if available")
 
   result = parse(params)
 
   if result.positional_parameters.len < 1:
     echo "Missing URL(s) to download"
-    echo_help(params)
+    echoHelp(params)
     quit()
 
-  got(PARAM_NO_CLOBBER)
-  got(PARAM_BACKGROUND)
-  got(PARAM_NO_PROXY)
+  got(ParamNoClobber)
+  got(ParamBackground)
+  got(ParamNoProxy)
 
-  if result.options.hasKey(PARAM_VERSION[0]):
+  if result.options.hasKey(ParamVersion[0]):
     echo "Version 3.1415"
     quit()
 
-  if result.options.hasKey(PARAM_OUTPUT[0]):
+  if result.options.hasKey(ParamOutput[0]):
     if result.positional_parameters.len > 1:
-      echo "Error: can't use $1 option with multiple URLs" % [PARAM_OUTPUT[0]]
-      echo_help(params)
+      echo "Error: can't use $1 option with multiple URLs" % [ParamOutput[0]]
+      echoHelp(params)
       quit()
-    echo "Will download to $1" % [result.options[PARAM_OUTPUT[0]].str_val]
+    echo "Will download to $1" % [result.options[ParamOutput[0]].str_val]
 
-  if result.options.hasKey(PARAM_PROGRESS):
-    echo "Will use progress type $1" % [result.options[PARAM_PROGRESS].str_val]
+  if result.options.hasKey(ParamProgress):
+    echo "Will use progress type $1" % [result.options[ParamProgress].str_val]
 
 
 when isMainModule:
-  let args = process_commandline()
+  let args = processCommandline()
   for param in args.positional_parameters:
     echo "Downloading $1" % param.str_val

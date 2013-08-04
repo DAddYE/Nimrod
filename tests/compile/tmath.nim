@@ -1,6 +1,6 @@
 # tests for the interpreter
 
-proc loops(a: var int) =
+proc loops(a: var Int) =
   nil
   #var
   #  b: int
@@ -9,14 +9,14 @@ proc loops(a: var int) =
   #  b = b + 1
   #a = b
 
-proc mymax(a, b: int): int =
+proc mymax(a, b: Int): Int =
   #loops(result)
   result = a
   if b > a: result = b
 
-proc test(a, b: int) =
+proc test(a, b: Int) =
   var
-    x, y: int
+    x, y: Int
   x = 0
   y = 7
   if x == a + b * 3 - 7 or
@@ -35,7 +35,7 @@ type
     tkNil, tkType, tkConst, tkVar, tkSymbol, tkIf,
     tkWhile, tkFor, tkLoop, tkCase, tkLabel, tkGoto
 
-proc testCase(t: TTokType): int =
+proc testCase(t: TTokType): Int =
   case t
   of tkNil, tkType, tkConst: result = 0
   of tkVar: result = 1
@@ -45,9 +45,9 @@ proc testCase(t: TTokType): int =
   else: result = -1
   test(0, 9) # test the call
 
-proc TestLoops() =
+proc testLoops() =
   var
-    i, j: int
+    i, j: Int
 
   while i >= 0:
     if i mod 3 == 0:
@@ -58,20 +58,20 @@ proc TestLoops() =
       break
     break
 
-  while True:
+  while true:
     break
 
 
 var
-  glob: int
-  a: array [0..5, int]
+  glob: Int
+  a: Array [0..5, Int]
 
 proc main() =
   #glob = 0
   #loops( glob )
   var
-    res: int
-    s: string
+    res: Int
+    s: String
   #write(stdout, mymax(23, 45))
   write(stdout, "Hallo! Wie heiﬂt du? ")
   s = readLine(stdin)

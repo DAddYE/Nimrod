@@ -2,7 +2,7 @@ discard """
   file: "tcurrncy.nim"
   output: "25"
 """
-template Additive(typ: typeDesc): stmt =
+template additive(typ: TypeDesc): Stmt =
   proc `+` *(x, y: typ): typ {.borrow.}
   proc `-` *(x, y: typ): typ {.borrow.}
   
@@ -10,28 +10,28 @@ template Additive(typ: typeDesc): stmt =
   proc `+` *(x: typ): typ {.borrow.}
   proc `-` *(x: typ): typ {.borrow.}
 
-template Multiplicative(typ, base: typeDesc): stmt {.immediate.} =
+template multiplicative(typ, base: TypeDesc): Stmt {.immediate.} =
   proc `*` *(x: typ, y: base): typ {.borrow.}
   proc `*` *(x: base, y: typ): typ {.borrow.}
   proc `div` *(x: typ, y: base): typ {.borrow.}
   proc `mod` *(x: typ, y: base): typ {.borrow.}
 
-template Comparable(typ: typeDesc): stmt =
-  proc `<` * (x, y: typ): bool {.borrow.}
-  proc `<=` * (x, y: typ): bool {.borrow.}
-  proc `==` * (x, y: typ): bool {.borrow.}
+template comparable(typ: TypeDesc): Stmt =
+  proc `<` * (x, y: typ): Bool {.borrow.}
+  proc `<=` * (x, y: typ): Bool {.borrow.}
+  proc `==` * (x, y: typ): Bool {.borrow.}
 
-template DefineCurrency(typ, base: expr): stmt {.immediate.} =
+template defineCurrency(typ, base: Expr): Stmt {.immediate.} =
   type
     typ* = distinct base
   Additive(typ)
   Multiplicative(typ, base)
   Comparable(typ)
   
-  proc `$` * (t: typ): string {.borrow.}
+  proc `$` * (t: typ): String {.borrow.}
 
-DefineCurrency(TDollar, int)
-DefineCurrency(TEuro, int)
+DefineCurrency(TDollar, Int)
+DefineCurrency(TEuro, Int)
 echo($( 12.TDollar + 13.TDollar )) #OUT 25
 
 

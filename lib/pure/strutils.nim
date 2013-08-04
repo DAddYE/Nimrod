@@ -21,7 +21,7 @@ import parseutils
 include "system/inclrtl"
 
 type
-  TCharSet* = set[char] # for compatibility with Nim
+  TCharSet* = Set[Char] # for compatibility with Nim
 
 const
   Whitespace* = {' ', '\t', '\v', '\r', '\l', '\f'}
@@ -54,7 +54,7 @@ proc toLower*(c: Char): Char {.noSideEffect, procvar,
   else:
     result = c
 
-proc toLower*(s: string): string {.noSideEffect, procvar,
+proc toLower*(s: String): String {.noSideEffect, procvar,
   rtl, extern: "nsuToLowerStr".} =
   ## Converts `s` into lower case. This works only for the letters A-Z.
   ## See `unicode.toLower` for a version that works for any Unicode character.
@@ -67,11 +67,11 @@ proc toUpper*(c: Char): Char {.noSideEffect, procvar,
   ## Converts `c` into upper case. This works only for the letters a-z.
   ## See `unicode.toUpper` for a version that works for any Unicode character.
   if c in {'a'..'z'}:
-    result = Chr(Ord(c) - (Ord('a') - Ord('A')))
+    result = chr(ord(c) - (Ord('a') - Ord('A')))
   else:
     result = c
 
-proc toUpper*(s: string): string {.noSideEffect, procvar,
+proc toUpper*(s: String): String {.noSideEffect, procvar,
   rtl, extern: "nsuToUpperStr".} =
   ## Converts `s` into upper case. This works only for the letters a-z.
   ## See `unicode.toUpper` for a version that works for any Unicode character.
@@ -79,13 +79,13 @@ proc toUpper*(s: string): string {.noSideEffect, procvar,
   for i in 0..len(s) - 1:
     result[i] = toUpper(s[i])
 
-proc capitalize*(s: string): string {.noSideEffect, procvar,
+proc capitalize*(s: String): String {.noSideEffect, procvar,
   rtl, extern: "nsuCapitalize".} =
   ## Converts the first character of `s` into upper case.
   ## This works only for the letters a-z.
   result = toUpper(s[0]) & substr(s, 1)
 
-proc normalize*(s: string): string {.noSideEffect, procvar,
+proc normalize*(s: String): String {.noSideEffect, procvar,
   rtl, extern: "nsuNormalize".} =
   ## Normalizes the string `s`. That means to convert it to lower case and
   ## remove any '_'. This is needed for Nimrod identifiers for example.
@@ -93,14 +93,14 @@ proc normalize*(s: string): string {.noSideEffect, procvar,
   var j = 0
   for i in 0..len(s) - 1:
     if s[i] in {'A'..'Z'}:
-      result[j] = Chr(Ord(s[i]) + (Ord('a') - Ord('A')))
+      result[j] = chr(ord(s[i]) + (Ord('a') - Ord('A')))
       inc j
     elif s[i] != '_':
       result[j] = s[i]
       inc j
   if j != s.len: setLen(result, j)
 
-proc cmpIgnoreCase*(a, b: string): int {.noSideEffect,
+proc cmpIgnoreCase*(a, b: String): Int {.noSideEffect,
   rtl, extern: "nsuCmpIgnoreCase", procvar, operator: 4.} =
   ## Compares two strings in a case insensitive manner. Returns:
   ##
@@ -118,7 +118,7 @@ proc cmpIgnoreCase*(a, b: string): int {.noSideEffect,
 {.push checks: off, line_trace: off .} # this is a hot-spot in the compiler!
                                        # thus we compile without checks here
 
-proc cmpIgnoreStyle*(a, b: string): int {.noSideEffect,
+proc cmpIgnoreStyle*(a, b: String): Int {.noSideEffect,
   rtl, extern: "nsuCmpIgnoreStyle", procvar, operator: 3.} =
   ## Compares two strings normalized (i.e. case and
   ## underscores do not matter). Returns:
@@ -128,7 +128,7 @@ proc cmpIgnoreStyle*(a, b: string): int {.noSideEffect,
   ## | > 0 iff a > b
   var i = 0
   var j = 0
-  while True:
+  while true:
     while a[i] == '_': inc(i)
     while b[j] == '_': inc(j) # BUGFIX: typo
     var aa = toLower(a[i])
@@ -140,13 +140,13 @@ proc cmpIgnoreStyle*(a, b: string): int {.noSideEffect,
 
 {.pop.}
 
-proc strip*(s: string, leading = true, trailing = true): string {.noSideEffect,
+proc strip*(s: String, leading = true, trailing = true): String {.noSideEffect,
   rtl, extern: "nsuStrip", operator: 5.} =
   ## Strips whitespace from `s` and returns the resulting string.
   ## If `leading` is true, leading whitespace is stripped.
   ## If `trailing` is true, trailing whitespace is stripped.
   const
-    chars: set[Char] = Whitespace
+    chars: Set[Char] = Whitespace
   var
     first = 0
     last = len(s)-1
@@ -156,16 +156,16 @@ proc strip*(s: string, leading = true, trailing = true): string {.noSideEffect,
     while last >= 0 and s[last] in chars: dec(last)
   result = substr(s, first, last)
 
-proc toOctal*(c: char): string {.noSideEffect, rtl, extern: "nsuToOctal".} =
+proc toOctal*(c: Char): String {.noSideEffect, rtl, extern: "nsuToOctal".} =
   ## Converts a character `c` to its octal representation. The resulting
   ## string may not have a leading zero. Its length is always exactly 3.
   result = newString(3)
   var val = ord(c)
   for i in countdown(2, 0):
-    result[i] = Chr(val mod 8 + ord('0'))
+    result[i] = chr(val mod 8 + ord('0'))
     val = val div 8
 
-iterator split*(s: string, seps: set[char] = Whitespace): string =
+iterator split*(s: String, seps: Set[Char] = Whitespace): String =
   ## Splits the string `s` into substrings using a group of separators.
   ##
   ## Substrings are separated by a substring containing only `seps`. Note
@@ -218,7 +218,7 @@ iterator split*(s: string, seps: set[char] = Whitespace): string =
     if first <= last-1:
       yield substr(s, first, last-1)
 
-iterator split*(s: string, sep: char): string =
+iterator split*(s: String, sep: Char): String =
   ## Splits the string `s` into substrings using a single separator.
   ##
   ## Substrings are separated by the character `sep`.
@@ -254,7 +254,7 @@ iterator split*(s: string, sep: char): string =
       yield substr(s, first, last-1)
       inc(last)
 
-iterator splitLines*(s: string): string =
+iterator splitLines*(s: String): String =
   ## Splits the string `s` into its containing lines. Every newline
   ## combination (CR, LF, CR-LF) is supported. The result strings contain
   ## no trailing ``\n``.
@@ -288,13 +288,13 @@ iterator splitLines*(s: string): string =
     else: break # was '\0'
     first = last
 
-proc splitLines*(s: string): seq[string] {.noSideEffect,
+proc splitLines*(s: String): Seq[String] {.noSideEffect,
   rtl, extern: "nsuSplitLines".} =
   ## The same as the `splitLines` iterator, but is a proc that returns a
   ## sequence of substrings.
   accumulateResult(splitLines(s))
 
-proc countLines*(s: string): int {.noSideEffect,
+proc countLines*(s: String): Int {.noSideEffect,
   rtl, extern: "nsuCountLines".} =
   ## same as ``len(splitLines(s))``, but much more efficient.
   var i = 0
@@ -307,19 +307,19 @@ proc countLines*(s: string): int {.noSideEffect,
     else: nil
     inc i
 
-proc split*(s: string, seps: set[char] = Whitespace): seq[string] {.
+proc split*(s: String, seps: Set[Char] = Whitespace): Seq[String] {.
   noSideEffect, rtl, extern: "nsuSplitCharSet".} =
   ## The same as the `split` iterator, but is a proc that returns a
   ## sequence of substrings.
   accumulateResult(split(s, seps))
 
-proc split*(s: string, sep: char): seq[string] {.noSideEffect,
+proc split*(s: String, sep: Char): Seq[String] {.noSideEffect,
   rtl, extern: "nsuSplitChar".} =
   ## The same as the `split` iterator, but is a proc that returns a sequence
   ## of substrings.
   accumulateResult(split(s, sep))
 
-proc toHex*(x: BiggestInt, len: int): string {.noSideEffect,
+proc toHex*(x: BiggestInt, len: Int): String {.noSideEffect,
   rtl, extern: "nsuToHex".} =
   ## Converts `x` to its hexadecimal representation. The resulting string
   ## will be exactly `len` characters long. No prefix like ``0x``
@@ -333,7 +333,7 @@ proc toHex*(x: BiggestInt, len: int): string {.noSideEffect,
     result[j] = HexChars[toU32(x shr shift) and 0xF'i32]
     shift = shift + 4
 
-proc intToStr*(x: int, minchars: int = 1): string {.noSideEffect,
+proc intToStr*(x: Int, minchars: Int = 1): String {.noSideEffect,
   rtl, extern: "nsuIntToStr".} =
   ## Converts `x` to its decimal representation. The resulting string
   ## will be minimally `minchars` characters long. This is achieved by
@@ -344,7 +344,7 @@ proc intToStr*(x: int, minchars: int = 1): string {.noSideEffect,
   if x < 0:
     result = '-' & result
 
-proc ParseInt*(s: string): int {.noSideEffect, procvar,
+proc parseInt*(s: String): Int {.noSideEffect, procvar,
   rtl, extern: "nsuParseInt".} =
   ## Parses a decimal integer value contained in `s`. If `s` is not
   ## a valid integer, `EInvalidValue` is raised.
@@ -352,7 +352,7 @@ proc ParseInt*(s: string): int {.noSideEffect, procvar,
   if L != s.len or L == 0:
     raise newException(EInvalidValue, "invalid integer: " & s)
 
-proc ParseBiggestInt*(s: string): biggestInt {.noSideEffect, procvar,
+proc parseBiggestInt*(s: String): BiggestInt {.noSideEffect, procvar,
   rtl, extern: "nsuParseBiggestInt".} =
   ## Parses a decimal integer value contained in `s`. If `s` is not
   ## a valid integer, `EInvalidValue` is raised.
@@ -360,7 +360,7 @@ proc ParseBiggestInt*(s: string): biggestInt {.noSideEffect, procvar,
   if L != s.len or L == 0:
     raise newException(EInvalidValue, "invalid integer: " & s)
 
-proc ParseFloat*(s: string): float {.noSideEffect, procvar,
+proc parseFloat*(s: String): Float {.noSideEffect, procvar,
   rtl, extern: "nsuParseFloat".} =
   ## Parses a decimal floating point value contained in `s`. If `s` is not
   ## a valid floating point number, `EInvalidValue` is raised. ``NAN``,
@@ -369,7 +369,7 @@ proc ParseFloat*(s: string): float {.noSideEffect, procvar,
   if L != s.len or L == 0:
     raise newException(EInvalidValue, "invalid float: " & s)
 
-proc ParseHexInt*(s: string): int {.noSideEffect, procvar,
+proc parseHexInt*(s: String): Int {.noSideEffect, procvar,
   rtl, extern: "nsuParseHexInt".} =
   ## Parses a hexadecimal integer value contained in `s`. If `s` is not
   ## a valid integer, `EInvalidValue` is raised. `s` can have one of the
@@ -393,7 +393,7 @@ proc ParseHexInt*(s: string): int {.noSideEffect, procvar,
     of '\0': break
     else: raise newException(EInvalidValue, "invalid integer: " & s)
 
-proc parseBool*(s: string): bool =
+proc parseBool*(s: String): Bool =
   ## Parses a value into a `bool`. If ``s`` is one of the following values:
   ## ``y, yes, true, 1, on``, then returns `true`. If ``s`` is one of the
   ## following values: ``n, no, false, 0, off``, then returns `false`.
@@ -403,7 +403,7 @@ proc parseBool*(s: string): bool =
   of "n", "no", "false", "0", "off": result = false
   else: raise newException(EInvalidValue, "cannot interpret as a bool: " & s)
 
-proc parseEnum*[T: enum](s: string): T =
+proc parseEnum*[T: enum](s: String): T =
   ## parses an enum ``T``. Raises ``EInvalidValue`` for an invalid value in 
   ## `s`. The comparison is done in a style insensitive way.
   for e in low(T)..high(T):
@@ -411,7 +411,7 @@ proc parseEnum*[T: enum](s: string): T =
       return e
   raise newException(EInvalidValue, "invalid enum value: " & s)
 
-proc parseEnum*[T: enum](s: string, default: T): T =
+proc parseEnum*[T: enum](s: String, default: T): T =
   ## parses an enum ``T``. Uses `default` for an invalid value in 
   ## `s`. The comparison is done in a style insensitive way.
   for e in low(T)..high(T):
@@ -419,7 +419,7 @@ proc parseEnum*[T: enum](s: string, default: T): T =
       return e
   result = default
 
-proc repeatChar*(count: int, c: Char = ' '): string {.noSideEffect,
+proc repeatChar*(count: Int, c: Char = ' '): String {.noSideEffect,
   rtl, extern: "nsuRepeatChar".} =
   ## Returns a string of length `count` consisting only of
   ## the character `c`. You can use this proc to left align strings. Example:
@@ -434,13 +434,13 @@ proc repeatChar*(count: int, c: Char = ' '): string {.noSideEffect,
   result = newString(count)
   for i in 0..count-1: result[i] = c
 
-proc repeatStr*(count: int, s: string): string {.noSideEffect,
+proc repeatStr*(count: Int, s: String): String {.noSideEffect,
   rtl, extern: "nsuRepeatStr".} =
   ## Returns `s` concatenated `count` times.
   result = newStringOfCap(count*s.len)
   for i in 0..count-1: result.add(s)
 
-proc align*(s: string, count: int, padding = ' '): string {.
+proc align*(s: String, count: Int, padding = ' '): String {.
   noSideEffect, rtl, extern: "nsuAlignString".} =
   ## Aligns a string `s` with `padding`, so that is of length `count`.
   ## `padding` characters (by default spaces) are added before `s` resulting in
@@ -461,8 +461,8 @@ proc align*(s: string, count: int, padding = ' '): string {.
   else:
     result = s
 
-iterator tokenize*(s: string, seps: set[char] = Whitespace): tuple[
-  token: string, isSep: bool] =
+iterator tokenize*(s: String, seps: Set[Char] = Whitespace): tuple[
+  token: String, isSep: Bool] =
   ## Tokenizes the string `s` into substrings.
   ##
   ## Substrings are separated by a substring containing only `seps`.
@@ -495,16 +495,16 @@ iterator tokenize*(s: string, seps: set[char] = Whitespace): tuple[
       break
     i = j
 
-proc wordWrap*(s: string, maxLineWidth = 80,
+proc wordWrap*(s: String, maxLineWidth = 80,
                splitLongWords = true,
-               seps: set[char] = whitespace,
-               newLine = "\n"): string {.
+               seps: Set[Char] = whitespace,
+               newLine = "\n"): String {.
                noSideEffect, rtl, extern: "nsuWordWrap".} =
   ## word wraps `s`.
   result = newStringOfCap(s.len + s.len shr 6)
-  var SpaceLeft = maxLineWidth
+  var spaceLeft = maxLineWidth
   for word, isSep in tokenize(s, seps):
-    if len(word) > SpaceLeft:
+    if len(word) > spaceLeft:
       if splitLongWords and len(word) > maxLineWidth:
         result.add(substr(word, 0, spaceLeft-1))
         var w = spaceLeft+1
@@ -512,19 +512,19 @@ proc wordWrap*(s: string, maxLineWidth = 80,
         while wordLeft > 0:
           result.add(newLine)
           var L = min(maxLineWidth, wordLeft)
-          SpaceLeft = maxLineWidth - L
+          spaceLeft = maxLineWidth - L
           result.add(substr(word, w, w+L-1))
           inc(w, L)
           dec(wordLeft, L)
       else:
-        SpaceLeft = maxLineWidth - len(Word)
+        spaceLeft = maxLineWidth - len(word)
         result.add(newLine)
         result.add(word)
     else:
-      SpaceLeft = SpaceLeft - len(Word)
+      spaceLeft = spaceLeft - len(word)
       result.add(word)
 
-proc unindent*(s: string, eatAllIndent = false): string {.
+proc unindent*(s: String, eatAllIndent = false): String {.
                noSideEffect, rtl, extern: "nsuUnindent".} =
   ## unindents `s`.
   result = newStringOfCap(s.len)
@@ -551,7 +551,7 @@ proc unindent*(s: string, eatAllIndent = false): string {.
       result.add(s[i])
     inc i
 
-proc startsWith*(s, prefix: string): bool {.noSideEffect,
+proc startsWith*(s, prefix: String): Bool {.noSideEffect,
   rtl, extern: "nsuStartsWith".} =
   ## Returns true iff ``s`` starts with ``prefix``.
   ## If ``prefix == ""`` true is returned.
@@ -561,7 +561,7 @@ proc startsWith*(s, prefix: string): bool {.noSideEffect,
     if s[i] != prefix[i]: return false
     inc(i)
 
-proc endsWith*(s, suffix: string): bool {.noSideEffect,
+proc endsWith*(s, suffix: String): Bool {.noSideEffect,
   rtl, extern: "nsuEndsWith".} =
   ## Returns true iff ``s`` ends with ``suffix``.
   ## If ``suffix == ""`` true is returned.
@@ -572,7 +572,7 @@ proc endsWith*(s, suffix: string): bool {.noSideEffect,
     inc(i)
   if suffix[i] == '\0': return true
 
-proc continuesWith*(s, substr: string, start: int): bool {.noSideEffect,
+proc continuesWith*(s, substr: String, start: Int): Bool {.noSideEffect,
   rtl, extern: "nsuContinuesWith".} =
   ## Returns true iff ``s`` continues with ``substr`` at position ``start``.
   ## If ``substr == ""`` true is returned.
@@ -582,7 +582,7 @@ proc continuesWith*(s, substr: string, start: int): bool {.noSideEffect,
     if s[i+start] != substr[i]: return false
     inc(i)
 
-proc addSep*(dest: var string, sep = ", ", startLen = 0) {.noSideEffect,
+proc addSep*(dest: var String, sep = ", ", startLen = 0) {.noSideEffect,
                                                            inline.} =
   ## A shorthand for:
   ##
@@ -602,13 +602,13 @@ proc addSep*(dest: var string, sep = ", ", startLen = 0) {.noSideEffect,
   ##   add(arr, "]")
   if dest.len > startLen: add(dest, sep)
 
-proc allCharsInSet*(s: string, theSet: TCharSet): bool =
+proc allCharsInSet*(s: String, theSet: TCharSet): Bool =
   ## returns true iff each character of `s` is in the set `theSet`.
   for c in items(s):
     if c notin theSet: return false
   return true
 
-proc abbrev*(s: string, possibilities: openarray[string]): int =
+proc abbrev*(s: String, possibilities: Openarray[String]): Int =
   ## returns the index of the first item in `possibilities` if not
   ## ambiguous; -1 if no item has been found; -2 if multiple items
   ## match.
@@ -623,7 +623,7 @@ proc abbrev*(s: string, possibilities: openarray[string]): int =
 
 # ---------------------------------------------------------------------------
 
-proc join*(a: openArray[string], sep: string): string {.
+proc join*(a: Openarray[String], sep: String): String {.
   noSideEffect, rtl, extern: "nsuJoinSep".} =
   ## concatenates all strings in `a` separating them with `sep`.
   if len(a) > 0:
@@ -637,7 +637,7 @@ proc join*(a: openArray[string], sep: string): string {.
   else:
     result = ""
 
-proc join*(a: openArray[string]): string {.
+proc join*(a: Openarray[String]): String {.
   noSideEffect, rtl, extern: "nsuJoin".} =
   ## concatenates all strings in `a`.
   if len(a) > 0:
@@ -649,14 +649,14 @@ proc join*(a: openArray[string]): string {.
     result = ""
 
 type
-  TSkipTable = array[Char, int]
+  TSkipTable = Array[Char, Int]
 
-proc preprocessSub(sub: string, a: var TSkipTable) =
+proc preprocessSub(sub: String, a: var TSkipTable) =
   var m = len(sub)
   for i in 0..0xff: a[chr(i)] = m+1
   for i in 0..m-1: a[sub[i]] = m-i
 
-proc findAux(s, sub: string, start: int, a: TSkipTable): int =
+proc findAux(s, sub: String, start: Int, a: TSkipTable): Int =
   # fast "quick search" algorithm:
   var
     m = len(sub)
@@ -671,7 +671,7 @@ proc findAux(s, sub: string, start: int, a: TSkipTable): int =
     inc(j, a[s[j+m]])
   return -1
 
-proc find*(s, sub: string, start: int = 0): int {.noSideEffect,
+proc find*(s, sub: String, start: Int = 0): Int {.noSideEffect,
   rtl, extern: "nsuFindStr", operator: 6.} =
   ## Searches for `sub` in `s` starting at position `start`. Searching is
   ## case-sensitive. If `sub` is not in `s`, -1 is returned.
@@ -679,7 +679,7 @@ proc find*(s, sub: string, start: int = 0): int {.noSideEffect,
   preprocessSub(sub, a)
   result = findAux(s, sub, start, a)
 
-proc find*(s: string, sub: char, start: int = 0): int {.noSideEffect,
+proc find*(s: String, sub: Char, start: Int = 0): Int {.noSideEffect,
   rtl, extern: "nsuFindChar".} =
   ## Searches for `sub` in `s` starting at position `start`. Searching is
   ## case-sensitive. If `sub` is not in `s`, -1 is returned.
@@ -687,7 +687,7 @@ proc find*(s: string, sub: char, start: int = 0): int {.noSideEffect,
     if sub == s[i]: return i
   return -1
 
-proc find*(s: string, chars: set[char], start: int = 0): int {.noSideEffect,
+proc find*(s: String, chars: Set[Char], start: Int = 0): Int {.noSideEffect,
   rtl, extern: "nsuFindCharSet".} =
   ## Searches for `chars` in `s` starting at position `start`. If `s` contains
   ## none of the characters in `chars`, -1 is returned.
@@ -695,7 +695,7 @@ proc find*(s: string, chars: set[char], start: int = 0): int {.noSideEffect,
     if s[i] in chars: return i
   return -1
 
-proc rfind*(s, sub: string, start: int = -1): int {.noSideEffect.} =
+proc rfind*(s, sub: String, start: Int = -1): Int {.noSideEffect.} =
   ## Searches for `sub` in `s` in reverse, starting at `start` and going
   ## backwards to 0. Searching is case-sensitive. If `sub` is not in `s`, -1 is
   ## returned.
@@ -709,7 +709,7 @@ proc rfind*(s, sub: string, start: int = -1): int {.noSideEffect.} =
     if result != -1: return
   return -1
 
-proc quoteIfContainsWhite*(s: string): string =
+proc quoteIfContainsWhite*(s: String): String =
   ## returns ``'"' & s & '"'`` if `s` contains a space and does not
   ## start with a quote, else returns `s`
   if find(s, {' ', '\t'}) >= 0 and s[0] != '"':
@@ -717,19 +717,19 @@ proc quoteIfContainsWhite*(s: string): string =
   else:
     result = s
 
-proc contains*(s: string, c: char): bool {.noSideEffect.} =
+proc contains*(s: String, c: Char): Bool {.noSideEffect.} =
   ## Same as ``find(s, c) >= 0``.
   return find(s, c) >= 0
 
-proc contains*(s, sub: string): bool {.noSideEffect.} =
+proc contains*(s, sub: String): Bool {.noSideEffect.} =
   ## Same as ``find(s, sub) >= 0``.
   return find(s, sub) >= 0
 
-proc contains*(s: string, chars: set[char]): bool {.noSideEffect.} =
+proc contains*(s: String, chars: Set[Char]): Bool {.noSideEffect.} =
   ## Same as ``find(s, chars) >= 0``.
   return find(s, chars) >= 0
 
-proc replace*(s, sub: string, by = ""): string {.noSideEffect,
+proc replace*(s, sub: String, by = ""): String {.noSideEffect,
   rtl, extern: "nsuReplaceStr", operator: 1.} =
   ## Replaces `sub` in `s` by the string `by`.
   var a {.noinit.}: TSkipTable
@@ -745,7 +745,7 @@ proc replace*(s, sub: string, by = ""): string {.noSideEffect,
   # copy the rest:
   add result, substr(s, i)
 
-proc replace*(s: string, sub, by: char): string {.noSideEffect,
+proc replace*(s: String, sub, by: Char): String {.noSideEffect,
   rtl, extern: "nsuReplaceChar".} =
   ## optimized version for characters.
   result = newString(s.len)
@@ -755,7 +755,7 @@ proc replace*(s: string, sub, by: char): string {.noSideEffect,
     else: result[i] = s[i]
     inc(i)
 
-proc replaceWord*(s, sub: string, by = ""): string {.noSideEffect,
+proc replaceWord*(s, sub: String, by = ""): String {.noSideEffect,
   rtl, extern: "nsuReplaceWord".} =
   ## Replaces `sub` in `s` by the string `by`. Each occurance of `sub`
   ## has to be surrounded by word boundaries (comparable to ``\\w`` in
@@ -780,7 +780,7 @@ proc replaceWord*(s, sub: string, by = ""): string {.noSideEffect,
   # copy the rest:
   add result, substr(s, i)
 
-proc delete*(s: var string, first, last: int) {.noSideEffect,
+proc delete*(s: var String, first, last: Int) {.noSideEffect,
   rtl, extern: "nsuDelete".} =
   ## Deletes in `s` the characters at position `first` .. `last`. This modifies
   ## `s` itself, it does not return a copy.
@@ -791,9 +791,9 @@ proc delete*(s: var string, first, last: int) {.noSideEffect,
     s[i] = s[j]
     inc(i)
     inc(j)
-  setlen(s, newLen)
+  setLen(s, newLen)
 
-proc ParseOctInt*(s: string): int {.noSideEffect,
+proc parseOctInt*(s: String): Int {.noSideEffect,
   rtl, extern: "nsuParseOctInt".} =
   ## Parses an octal integer value contained in `s`. If `s` is not
   ## a valid integer, `EInvalidValue` is raised. `s` can have one of the
@@ -810,7 +810,7 @@ proc ParseOctInt*(s: string): int {.noSideEffect,
     of '\0': break
     else: raise newException(EInvalidValue, "invalid integer: " & s)
 
-proc toOct*(x: BiggestInt, len: int): string {.noSideEffect,
+proc toOct*(x: BiggestInt, len: Int): String {.noSideEffect,
   rtl, extern: "nsuToOct".} =
   ## converts `x` into its octal representation. The resulting string is
   ## always `len` characters long. No leading ``0o`` prefix is generated.
@@ -820,11 +820,11 @@ proc toOct*(x: BiggestInt, len: int): string {.noSideEffect,
   assert(len > 0)
   result = newString(len)
   for j in countdown(len-1, 0):
-    result[j] = chr(int((x and mask) shr shift) + ord('0'))
+    result[j] = chr(Int((x and mask) shr shift) + ord('0'))
     shift = shift + 3
     mask = mask shl 3
 
-proc toBin*(x: BiggestInt, len: int): string {.noSideEffect,
+proc toBin*(x: BiggestInt, len: Int): String {.noSideEffect,
   rtl, extern: "nsuToBin".} =
   ## converts `x` into its binary representation. The resulting string is
   ## always `len` characters long. No leading ``0b`` prefix is generated.
@@ -834,11 +834,11 @@ proc toBin*(x: BiggestInt, len: int): string {.noSideEffect,
   assert(len > 0)
   result = newString(len)
   for j in countdown(len-1, 0):
-    result[j] = chr(int((x and mask) shr shift) + ord('0'))
+    result[j] = chr(Int((x and mask) shr shift) + ord('0'))
     shift = shift + 1
     mask = mask shl 1
 
-proc insertSep*(s: string, sep = '_', digits = 3): string {.noSideEffect,
+proc insertSep*(s: String, sep = '_', digits = 3): String {.noSideEffect,
   rtl, extern: "nsuInsertSep".} =
   ## inserts the separator `sep` after `digits` digits from right to left.
   ## Even though the algorithm works with any string `s`, it is only useful
@@ -857,7 +857,7 @@ proc insertSep*(s: string, sep = '_', digits = 3): string {.noSideEffect,
     inc(j)
     dec(L)
 
-proc escape*(s: string, prefix = "\"", suffix = "\""): string {.noSideEffect,
+proc escape*(s: String, prefix = "\"", suffix = "\""): String {.noSideEffect,
   rtl, extern: "nsuEscape".} =
   ## Escapes a string `s`. This does these operations (at the same time):
   ## * replaces any ``\`` by ``\\``
@@ -881,7 +881,7 @@ proc escape*(s: string, prefix = "\"", suffix = "\""): string {.noSideEffect,
     else: add(result, c)
   add(result, suffix)
 
-proc unescape*(s: string, prefix = "\"", suffix = "\""): string {.noSideEffect,
+proc unescape*(s: String, prefix = "\"", suffix = "\""): String {.noSideEffect,
   rtl, extern: "nsuUnescape".} =
   ## Unescapes a string `s`. This complements ``escape`` as it performs the
   ## opposite operations.
@@ -894,7 +894,7 @@ proc unescape*(s: string, prefix = "\"", suffix = "\""): string {.noSideEffect,
     raise newException(EInvalidValue,
                        "String does not start with a prefix of: " & prefix)
   i.inc()
-  while True:
+  while true:
     if i == s.len-suffix.len: break
     case s[i]
     of '\\':
@@ -919,7 +919,7 @@ proc unescape*(s: string, prefix = "\"", suffix = "\""): string {.noSideEffect,
     raise newException(EInvalidValue,
                        "String does not end with a suffix of: " & suffix)
 
-proc validIdentifier*(s: string): bool {.noSideEffect,
+proc validIdentifier*(s: String): Bool {.noSideEffect,
   rtl, extern: "nsuValidIdentifier".} =
   ## returns true if `s` is a valid identifier. A valid identifier starts
   ## with a character of the set `IdentStartChars` and is followed by any
@@ -929,7 +929,7 @@ proc validIdentifier*(s: string): bool {.noSideEffect,
       if s[i] notin IdentChars: return false
     return true
 
-proc editDistance*(a, b: string): int {.noSideEffect,
+proc editDistance*(a, b: String): Int {.noSideEffect,
   rtl, extern: "nsuEditDistance".} =
   ## returns the edit distance between `a` and `b`. This uses the 
   ## `Levenshtein`:idx: distance algorithm with only a linear memory overhead.
@@ -965,16 +965,16 @@ proc editDistance*(a, b: string): int {.noSideEffect,
   var half = len1 shr 1
   # initalize first row:
   #var row = cast[ptr array[0..high(int) div 8, int]](alloc(len2*sizeof(int)))
-  var row: seq[int]
+  var row: Seq[Int]
   newSeq(row, len2)
   var e = s + len2 - 1 # end marker
   for i in 1..len2 - half - 1: row[i] = i
   row[0] = len1 - half - 1
   for i in 1 .. len1 - 1:
     var char1 = a[i + s - 1]
-    var char2p: int
-    var D, x: int
-    var p: int
+    var char2p: Int
+    var d, x: Int
+    var p: Int
     if i >= len1 - half:
       # skip the upper triangle:
       var offset = i - len1 + half
@@ -984,33 +984,33 @@ proc editDistance*(a, b: string): int {.noSideEffect,
       inc(p)
       inc(char2p)
       x = row[p] + 1
-      D = x
+      d = x
       if x > c3: x = c3
       row[p] = x
       inc(p)
     else:
       p = 1
       char2p = 0
-      D = i
+      d = i
       x = i
     if i <= half + 1:
       # skip the lower triangle:
       e = len2 + i - half - 2
     # main:
     while p <= e:
-      dec(D)
-      var c3 = D + ord(char1 != b[char2p + s])
+      dec(d)
+      var c3 = d + ord(char1 != b[char2p + s])
       inc(char2p)
       inc(x)
       if x > c3: x = c3
-      D = row[p] + 1
-      if x > D: x = D
+      d = row[p] + 1
+      if x > d: x = d
       row[p] = x
       inc(p)
     # lower triangle sentinel:
     if i <= half:
-      dec(D)
-      var c3 = D + ord(char1 != b[char2p + s])
+      dec(d)
+      var c3 = d + ord(char1 != b[char2p + s])
       inc(x)
       if x > c3: x = c3
       row[p] = x
@@ -1020,7 +1020,7 @@ proc editDistance*(a, b: string): int {.noSideEffect,
 
 # floating point formating:
 
-proc c_sprintf(buf, frmt: CString) {.nodecl, importc: "sprintf", varargs,
+proc cSprintf(buf, frmt: Cstring) {.nodecl, importc: "sprintf", varargs,
                                      noSideEffect.}
 
 type
@@ -1030,7 +1030,7 @@ type
     ffScientific       ## use scientific notation (using ``e`` character)
 
 proc formatBiggestFloat*(f: BiggestFloat, format: TFloatFormat = ffDefault,
-                         precision = 16): string {.noSideEffect, operator: 2,
+                         precision = 16): String {.noSideEffect, operator: 2,
                                                   rtl, extern: "nsu$1".} =
   ## converts a floating point value `f` to a string.
   ##
@@ -1042,10 +1042,10 @@ proc formatBiggestFloat*(f: BiggestFloat, format: TFloatFormat = ffDefault,
   ## after the decimal point for Nimrod's ``biggestFloat`` type.
   ## 
   ## If ``precision == 0``, it uses the 
-  const floatFormatToChar: array[TFloatFormat, char] = ['g', 'f', 'e']
+  const floatFormatToChar: Array[TFloatFormat, Char] = ['g', 'f', 'e']
   var
-    frmtstr {.noinit.}: array[0..5, char]
-    buf: array[0..80, char]
+    frmtstr {.noinit.}: Array[0..5, Char]
+    buf: Array[0..80, Char]
   frmtstr[0] = '%'
   if precision > 0:
     frmtstr[1] = '#'
@@ -1053,15 +1053,15 @@ proc formatBiggestFloat*(f: BiggestFloat, format: TFloatFormat = ffDefault,
     frmtstr[3] = '*'
     frmtstr[4] = floatFormatToChar[format]
     frmtstr[5] = '\0'
-    c_sprintf(buf, frmtstr, precision, f)
+    cSprintf(buf, frmtstr, precision, f)
   else:
     frmtstr[1] = floatFormatToChar[format]
     frmtstr[2] = '\0'
-    c_sprintf(buf, frmtstr, f)
+    cSprintf(buf, frmtstr, f)
   result = $buf
 
-proc formatFloat*(f: float, format: TFloatFormat = ffDefault,
-                  precision = 16): string {.noSideEffect, operator: 2,
+proc formatFloat*(f: Float, format: TFloatFormat = ffDefault,
+                  precision = 16): String {.noSideEffect, operator: 2,
                                            rtl, extern: "nsu$1".} =
   ## converts a floating point value `f` to a string.
   ##
@@ -1073,7 +1073,7 @@ proc formatFloat*(f: float, format: TFloatFormat = ffDefault,
   ## after the decimal point for Nimrod's ``float`` type.
   result = formatBiggestFloat(f, format, precision)
 
-proc formatSize*(bytes: biggestInt, decimalSep = '.'): string =
+proc formatSize*(bytes: BiggestInt, decimalSep = '.'): String =
   ## Rounds and formats `bytes`. Examples:
   ##
   ## .. code-block:: nimrod
@@ -1081,7 +1081,7 @@ proc formatSize*(bytes: biggestInt, decimalSep = '.'): string =
   ##    formatSize(1'i64 shl 31 + 300'i64) == "2.204GB"
   ##    formatSize(4096) == "4KB"
   ##
-  template frmt(a, b, c: expr): expr =
+  template frmt(a, b, c: Expr): Expr =
     let bs = $b
     insertSep($a) & decimalSep & bs.substr(0, 2) & c
   let gigabytes = bytes shr 30
@@ -1096,7 +1096,7 @@ proc formatSize*(bytes: biggestInt, decimalSep = '.'): string =
   else:
     result = insertSep($bytes) & "B"
 
-proc findNormalized(x: string, inArray: openarray[string]): int =
+proc findNormalized(x: String, inArray: Openarray[String]): Int =
   var i = 0
   while i < high(inArray):
     if cmpIgnoreStyle(x, inArray[i]) == 0: return i
@@ -1107,7 +1107,7 @@ proc findNormalized(x: string, inArray: openarray[string]): int =
 proc invalidFormatString() {.noinline.} =
   raise newException(EInvalidValue, "invalid format string")  
 
-proc addf*(s: var string, formatstr: string, a: varargs[string, `$`]) {.
+proc addf*(s: var String, formatstr: String, a: Varargs[String, `$`]) {.
   noSideEffect, rtl, extern: "nsuAddf".} =
   ## The same as ``add(s, formatstr % a)``, but more efficient.
   const PatternChars = {'a'..'z', 'A'..'Z', '0'..'9', '\128'..'\255', '_'}
@@ -1156,7 +1156,7 @@ proc addf*(s: var string, formatstr: string, a: varargs[string, `$`]) {.
       add s, formatstr[i]
       inc(i)
 
-proc `%` *(formatstr: string, a: openarray[string]): string {.noSideEffect,
+proc `%` *(formatstr: String, a: Openarray[String]): String {.noSideEffect,
   rtl, extern: "nsuFormatOpenArray".} =
   ## The `substitution`:idx: operator performs string substitutions in
   ## `formatstr` and returns a modified `formatstr`. This is often called
@@ -1199,13 +1199,13 @@ proc `%` *(formatstr: string, a: openarray[string]): string {.noSideEffect,
   result = newStringOfCap(formatstr.len + a.len shl 4)
   addf(result, formatstr, a)
 
-proc `%` *(formatstr, a: string): string {.noSideEffect,
+proc `%` *(formatstr, a: String): String {.noSideEffect,
   rtl, extern: "nsuFormatSingleElem".} =
   ## This is the same as ``formatstr % [a]``.
   result = newStringOfCap(formatstr.len + a.len)
   addf(result, formatstr, [a])
 
-proc format*(formatstr: string, a: varargs[string, `$`]): string {.noSideEffect,
+proc format*(formatstr: String, a: Varargs[String, `$`]): String {.noSideEffect,
   rtl, extern: "nsuFormatVarargs".} =
   ## This is the same as ``formatstr % a`` except that it supports
   ## auto stringification.

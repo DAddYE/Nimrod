@@ -23,7 +23,7 @@ else:
   {.hint: "unknown case".}
 
 var
-  s: string
+  s: String
 write(stdout, "compiled at " & system.compileDate &
               " " & compileTime & "\n")
 echo getDateStr()

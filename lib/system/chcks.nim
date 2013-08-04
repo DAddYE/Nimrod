@@ -9,7 +9,7 @@
 
 # Implementation of some runtime checks.
 
-proc raiseRangeError(val: biggestInt) {.compilerproc, noreturn, noinline.} =
+proc raiseRangeError(val: BiggestInt) {.compilerproc, noreturn, noinline.} =
   when hostOs == "standalone":
     sysFatal(EOutOfRange, "value out of range")
   else:
@@ -18,7 +18,7 @@ proc raiseRangeError(val: biggestInt) {.compilerproc, noreturn, noinline.} =
 proc raiseIndexError() {.compilerproc, noreturn, noinline.} =
   sysFatal(EInvalidIndex, "index out of bounds")
 
-proc raiseFieldError(f: string) {.compilerproc, noreturn, noinline.} =
+proc raiseFieldError(f: String) {.compilerproc, noreturn, noinline.} =
   sysFatal(EInvalidField, f, " is not accessible")
 
 proc chckIndx(i, a, b: int): int =
@@ -33,7 +33,7 @@ proc chckRange(i, a, b: int): int =
   else:
     raiseRangeError(i)
 
-proc chckRange64(i, a, b: int64): int64 {.compilerproc.} =
+proc chckRange64(i, a, b: Int64): Int64 {.compilerproc.} =
   if i >= a and i <= b:
     return i
   else:
@@ -67,7 +67,7 @@ proc chckObjAsgn(a, b: PNimType) {.compilerproc, inline.} =
   if a != b:
     sysFatal(EInvalidObjectAssignment, "invalid object assignment")
 
-proc isObj(obj, subclass: PNimType): bool {.compilerproc.} =
+proc isObj(obj, subclass: PNimType): Bool {.compilerproc.} =
   # checks if obj is of type subclass:
   var x = obj
   if x == subclass: return true # optimized fast path

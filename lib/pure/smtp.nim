@@ -36,15 +36,15 @@ type
     debug: Bool
   
   TMessage* {.final.} = object
-    msgTo: seq[string]
-    msgCc: seq[string]
-    msgSubject: string
+    msgTo: Seq[String]
+    msgCc: Seq[String]
+    msgSubject: String
     msgOtherHeaders: PStringTable
-    msgBody: string
+    msgBody: String
   
-  EInvalidReply* = object of EIO
+  EInvalidReply* = object of Eio
   
-proc debugSend(smtp: TSMTP, cmd: string) =
+proc debugSend(smtp: TSMTP, cmd: String) =
   if smtp.debug:
     echo("C:" & cmd)
   smtp.sock.send(cmd)
@@ -54,19 +54,19 @@ proc debugRecv(smtp: var TSMTP): TaintedString =
   smtp.sock.readLine(line)
 
   if smtp.debug:
-    echo("S:" & line.string)
+    echo("S:" & line.String)
   return line
 
-proc quitExcpt(smtp: TSMTP, msg: string) =
+proc quitExcpt(smtp: TSMTP, msg: String) =
   smtp.debugSend("QUIT")
   raise newException(EInvalidReply, msg)
 
-proc checkReply(smtp: var TSMTP, reply: string) =
+proc checkReply(smtp: var TSMTP, reply: String) =
   var line = smtp.debugRecv()
-  if not line.string.startswith(reply):
-    quitExcpt(smtp, "Expected " & reply & " reply, got: " & line.string)
+  if not line.String.startsWith(reply):
+    quitExcpt(smtp, "Expected " & reply & " reply, got: " & line.String)
 
-proc connect*(address: string, port = 25, 
+proc connect*(address: String, port = 25, 
               ssl = false, debug = false): TSMTP =
   ## Establishes a connection with a SMTP server.
   ## May fail with EInvalidReply or with a socket error.
@@ -85,7 +85,7 @@ proc connect*(address: string, port = 25,
   result.debugSend("HELO " & address & "\c\L")
   result.checkReply("250")
 
-proc auth*(smtp: var TSMTP, username, password: string) =
+proc auth*(smtp: var TSMTP, username, password: String) =
   ## Sends an AUTH command to the server to login as the `username` 
   ## using `password`.
   ## May fail with EInvalidReply.
@@ -99,8 +99,8 @@ proc auth*(smtp: var TSMTP, username, password: string) =
   smtp.debugSend(encode(password) & "\c\L")
   smtp.checkReply("235") # Check whether the authentification was successful.
 
-proc sendmail*(smtp: var TSMTP, fromaddr: string,
-               toaddrs: seq[string], msg: string) =
+proc sendmail*(smtp: var TSMTP, fromaddr: String,
+               toaddrs: Seq[String], msg: String) =
   ## Sends `msg` from `fromaddr` to `toaddr`. 
   ## Messages may be formed using ``createMessage`` by converting the
   ## TMessage into a string.
@@ -123,8 +123,8 @@ proc close*(smtp: TSMTP) =
   smtp.debugSend("QUIT\c\L")
   smtp.sock.close()
 
-proc createMessage*(mSubject, mBody: string, mTo, mCc: seq[string],
-                otherHeaders: openarray[tuple[name, value: string]]): TMessage =
+proc createMessage*(mSubject, mBody: String, mTo, mCc: Seq[String],
+                otherHeaders: Openarray[tuple[name, value: String]]): TMessage =
   ## Creates a new MIME compliant message.
   result.msgTo = mTo
   result.msgCc = mCc
@@ -134,8 +134,8 @@ proc createMessage*(mSubject, mBody: string, mTo, mCc: seq[string],
   for n, v in items(otherHeaders):
     result.msgOtherHeaders[n] = v
 
-proc createMessage*(mSubject, mBody: string, mTo,
-                    mCc: seq[string] = @[]): TMessage =
+proc createMessage*(mSubject, mBody: String, mTo,
+                    mCc: Seq[String] = @[]): TMessage =
   ## Alternate version of the above.
   result.msgTo = mTo
   result.msgCc = mCc
@@ -143,7 +143,7 @@ proc createMessage*(mSubject, mBody: string, mTo,
   result.msgBody = mBody
   result.msgOtherHeaders = newStringTable()
 
-proc `$`*(msg: TMessage): string =
+proc `$`*(msg: TMessage): String =
   ## stringify for ``TMessage``.
   result = ""
   if msg.msgTo.len() > 0:
@@ -173,7 +173,7 @@ when isMainModule:
                           @["someone@yahoo.com", "someone@gmail.com"])
   echo(msg)
 
-  var smtp = connect("smtp.gmail.com", 465, True, True)
+  var smtp = connect("smtp.gmail.com", 465, true, true)
   smtp.auth("someone", "password")
   smtp.sendmail("someone@gmail.com", 
                 @["someone@yahoo.com", "someone@gmail.com"], $msg)

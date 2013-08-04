@@ -8,7 +8,7 @@ import math
 import os
 import strutils
 
-type TComplex = tuple[re, im: float]
+type TComplex = tuple[re, im: Float]
 
 proc `+` (a, b: TComplex): TComplex =
     return (a.re + b.re, a.im + b.im)
@@ -17,7 +17,7 @@ proc `*` (a, b: TComplex): TComplex =
     result.re = a.re * b.re - a.im * b.im
     result.im = a.re * b.im + a.im * b.re
 
-proc abs2 (a: TComplex): float =
+proc abs2 (a: TComplex): Float =
     return a.re * a.re + a.im * a.im
 
 var size    = parseInt (paramStr (1))
@@ -29,12 +29,12 @@ stdout.write ($size)
 stdout.write (" ")
 stdout.writeln ($size)
 
-var fsize = float (size)
+var fsize = Float (size)
 for y in 0 .. size-1:
-    var fy = 2.0 * float (y) / fsize - 1.0
+    var fy = 2.0 * Float (y) / fsize - 1.0
     for x in 0 .. size-1:
         var z = (0.0, 0.0)
-        var c = (float (2*x) / fsize - 1.5, fy)
+        var c = (Float (2*x) / fsize - 1.5, fy)
 
         block iter:
             for i in 0 .. 49:

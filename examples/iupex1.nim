@@ -31,7 +31,7 @@ var dlg = Iup.Dialog(box)
 Iup.SetAttribute(dlg, "TITLE", "IupTabs")
 Iup.SetAttribute(dlg, "SIZE", "200x100")
 
-discard ShowXY(dlg, IUP_CENTER, IUP_CENTER)
-discard MainLoop()
-Close()
+discard showXY(dlg, IUP_CENTER, IUP_CENTER)
+discard mainLoop()
+close()
 

@@ -8,13 +8,13 @@ import strutils
 
 type
   TObj = object
-    x, y: int
+    x, y: Int
 
-proc q(x: pointer not nil) =
+proc q(x: Pointer not nil) =
   nil
 
 proc p() =
-  var x: pointer
+  var x: Pointer
   let y = x
   if not y.isNil or y != x:
     q(y)

@@ -3,13 +3,13 @@ discard """
   output: "555\ntest\nmulti lines\n99999999\nend"
   disabled: true
 """
-proc foo(bar, baz: proc (x: int): int) =
+proc foo(bar, baz: proc (x: Int): Int) =
   echo bar(555)
   echo baz(99999999)
 
-foo do (x: int) -> int:
+foo do (x: Int) -> Int:
   return x
-do (x: int) -> int:
+do (x: Int) -> Int:
   echo("test")
   echo("multi lines")
   return x

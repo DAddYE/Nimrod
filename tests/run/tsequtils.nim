@@ -13,17 +13,17 @@ Distnct: [1, 2, 3, 4, 5, 7]'''
 
 import sequtils, marshal
 
-proc testFindWhere(item : int) : bool =
+proc testFindWhere(item : Int) : Bool =
   if item != 1: return true
 
-var seq1: seq[int] = @[]
+var seq1: Seq[Int] = @[]
 
 seq1.add(1)
 seq1.add(3)
 seq1.add(5)
 seq1.add(7)
 
-var seq2: seq[int] = @[2, 4, 6]
+var seq2: Seq[Int] = @[2, 4, 6]
 var final = zip(seq1, seq2)
 
 echo "Zip: ", $$(final)
@@ -36,13 +36,13 @@ for itms in filter(seq1, testFindWhere):
 
 #Test findWhere as a proc
 
-var fullseq: seq[int] = filter(seq1, testFindWhere)
+var fullseq: Seq[Int] = filter(seq1, testFindWhere)
 
 echo "Filter: ", $$(fullseq)
 
 #Test findIt as a template
 
-var finditval: seq[int] = filterIt(seq1, it!=5)
+var finditval: Seq[Int] = filterIt(seq1, it!=5)
 
 echo "FilterIt: ", $$(finditval)
 

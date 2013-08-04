@@ -19,15 +19,15 @@ import osproc, times, os, strutils
 
 type
   TDebOptions* = object
-    buildDepends*, pkgDepends*, shortDesc*: string
-    licenses*: seq[tuple[files, license: string]]
+    buildDepends*, pkgDepends*, shortDesc*: String
+    licenses*: Seq[tuple[files, license: String]]
 
-template addN(r: string) =
+template addN(r: String) =
   result.add(r)
   result.add("\n")
 
-proc createControl(pkgName, maintainer, shortDesc, desc: string,
-                   buildDepends, pkgDepends: string = ""): string =
+proc createControl(pkgName, maintainer, shortDesc, desc: String,
+                   buildDepends, pkgDepends: String = ""): String =
   ## pkgName: Should be the package name, no spaces.
   ## maintainer: firstName lastName <email>
   ## shortDesc: short description of the application
@@ -64,8 +64,8 @@ proc createControl(pkgName, maintainer, shortDesc, desc: string,
   
   addN("Description: " & shortDesc & "\n" & formattedDesc)
 
-proc createCopyright(pkgName, mtnName, mtnEmail, version: string, 
-                     licenses: seq[tuple[files, license: string]]): string =
+proc createCopyright(pkgName, mtnName, mtnEmail, version: String, 
+                     licenses: Seq[tuple[files, license: String]]): String =
   ## pkgName: Package name
   ## mtnName: Maintainer name
   ## mtnEmail: Maintainer email
@@ -84,14 +84,14 @@ proc createCopyright(pkgName, mtnName, mtnEmail, version: string,
     addN("Files: " & f)
     addN("License: " & license)
 
-proc formatDateTime(t: TTimeInfo, timezone: string): string =
+proc formatDateTime(t: TTimeInfo, timezone: String): String =
   var day = ($t.weekday)[0..2] & ", "
   
   return "$1$2 $3 $4 $5:$6:$7 $8" % [day, intToStr(t.monthday, 2),
     ($t.month)[0..2], $t.year, intToStr(t.hour, 2), intToStr(t.minute, 2),
     intToStr(t.second, 2), timezone]
 
-proc createChangelog(pkgName, version, maintainer: string): string =
+proc createChangelog(pkgName, version, maintainer: String): String =
   ## pkgName: package name
   ## version: package version
   ## maintainer: firstName lastName <email>
@@ -101,9 +101,9 @@ proc createChangelog(pkgName, version, maintainer: string): string =
   addN("  * Initial release.")
   addN("")
   addN(" -- " & maintainer & "  " &
-       formatDateTime(getGmTime(getTime()), "+0000"))
+       formatDateTime(getGMTime(getTime()), "+0000"))
 
-proc createRules(): string =
+proc createRules(): String =
   ## Creates a nimrod application-agnostic rules file for building deb packages.
   ## Please note: this assumes the c sources have been built and the
   ## ``build.sh`` and ``install.sh`` files are available.
@@ -120,11 +120,11 @@ proc createRules(): string =
   addN("override_dh_auto_install:")
   addN("\t./install.sh debian/tmp")
 
-proc createIncludeBinaries(binaries: seq[string]): string =
+proc createIncludeBinaries(binaries: Seq[String]): String =
   return join(binaries, "\n")
 
-proc createDotInstall(pkgName: string, binaries, config, docs,
-    lib: seq[string]): string =
+proc createDotInstall(pkgName: String, binaries, config, docs,
+    lib: Seq[String]): String =
   result = ""
   for b in binaries:
     addN(pkgName / b & " " & "usr/bin/")
@@ -135,15 +135,15 @@ proc createDotInstall(pkgName: string, binaries, config, docs,
   for l1 in lib:
     addN(pkgName / l1 & " " & "usr/lib/nimrod")
 
-proc makeMtn(name, email: string): string =
+proc makeMtn(name, email: String): String =
   return name & " <" & email & ">"
 
-proc assertSuccess(exitCode: int) =
+proc assertSuccess(exitCode: Int) =
   doAssert(exitCode == QuitSuccess)
 
-proc prepDeb*(packName, version, mtnName, mtnEmail, shortDesc, desc: string,
-              licenses: seq[tuple[files, license: string]], binaries,
-              config, docs, lib: seq[string],
+proc prepDeb*(packName, version, mtnName, mtnEmail, shortDesc, desc: String,
+              licenses: Seq[tuple[files, license: String]], binaries,
+              config, docs, lib: Seq[String],
               buildDepends, pkgDepends = "") =
   ## binaries/config/docs/lib: files relative to nimrod's root, that need to
   ##   be installed.
@@ -168,7 +168,7 @@ proc prepDeb*(packName, version, mtnName, mtnEmail, shortDesc, desc: string,
   echo("Creating necessary files in debian/")
   createDir(workingDir / upstreamSource / "debian")
   
-  template writeDebian(f, s: string): expr =
+  template writeDebian(f, s: String): Expr =
     writeFile(workingDir / upstreamSource / "debian" / f, s)
   
   var controlFile = createControl(pkgName, makeMtn(mtnName, mtnEmail),

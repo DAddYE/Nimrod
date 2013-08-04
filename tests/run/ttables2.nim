@@ -5,7 +5,7 @@ discard """
 
 import tables
 
-proc TestHashIntInt() =
+proc testHashIntInt() =
   var tab = initTable[int,int]()
   for i in 1..1_000_000:
     tab[i] = i
@@ -15,7 +15,7 @@ proc TestHashIntInt() =
 
 proc run1() =         # occupied Memory stays constant, but
   for i in 1 .. 50:   # aborts at run: 44 on win32 with 3.2GB with out of memory
-    TestHashIntInt()
+    testHashIntInt()
 
 run1()
 echo "true"

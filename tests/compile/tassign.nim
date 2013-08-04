@@ -2,11 +2,11 @@
 
 type
   TRec = object
-    x, y: int
-    s: string
-    seq: seq[string]
-    arr: seq[seq[array[0..3, string]]]
-  TRecSeq = seq[TRec]
+    x, y: Int
+    s: String
+    seq: Seq[String]
+    arr: Seq[Seq[Array[0..3, String]]]
+  TRecSeq = Seq[TRec]
 
 proc test() =
   var

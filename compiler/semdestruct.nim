@@ -15,9 +15,9 @@
 # generation (needed for recursive types)
 # 2) DestructorIsTrivial: completed the analysis before and determined
 # that the type has a trivial destructor
-var AnalyzingDestructor, DestructorIsTrivial: PSym
-new(AnalyzingDestructor)
-new(DestructorIsTrivial)
+var analyzingDestructor, destructorIsTrivial: PSym
+new(analyzingDestructor)
+new(destructorIsTrivial)
 
 var
   destructorName = getIdent"destroy_"
@@ -25,7 +25,7 @@ var
   destructorPragma = newIdentNode(getIdent"destructor", UnknownLineInfo())
   rangeDestructorProc*: PSym
 
-proc instantiateDestructor(c: PContext, typ: PType): bool
+proc instantiateDestructor(c: PContext, typ: PType): Bool
 
 proc doDestructorStuff(c: PContext, s: PSym, n: PNode) =
   let t = s.typ.sons[1].skipTypes({tyVar})
@@ -57,7 +57,7 @@ proc destroyCase(c: PContext, n: PNode, holder: PNode): PNode =
     var caseBranch = newNode(n[i].kind, n[i].info, n[i].sons[0 .. -2])
     let recList = n[i].lastSon
     var destroyRecList = newNode(nkStmtList, n[i].info, @[])
-    template addField(f: expr): stmt =
+    template addField(f: Expr): Stmt =
       let stmt = destroyField(c, f, holder)
       if stmt != nil:
         destroyRecList.addSon(stmt)
@@ -82,7 +82,7 @@ proc generateDestructor(c: PContext, t: PType): PNode =
   ## generate a destructor for a user-defined object or tuple type
   ## returns nil if the destructor turns out to be trivial
   
-  template addLine(e: expr): stmt =
+  template addLine(e: Expr): Stmt =
     if result == nil: result = newNode(nkStmtList)
     result.addSon(e)
 
@@ -105,7 +105,7 @@ proc generateDestructor(c: PContext, t: PType): PNode =
   # base classes' destructors will be automatically called by
   # semProcAux for both auto-generated and user-defined destructors
 
-proc instantiateDestructor(c: PContext, typ: PType): bool =
+proc instantiateDestructor(c: PContext, typ: PType): Bool =
   # returns true if the type already had a user-defined
   # destructor or if the compiler generated a default
   # member-wise one
@@ -114,7 +114,7 @@ proc instantiateDestructor(c: PContext, typ: PType): bool =
   if t.destructor != nil:
     # XXX: This is not entirely correct for recursive types, but we need
     # it temporarily to hide the "destroy is already defined" problem
-    return t.destructor notin [AnalyzingDestructor, DestructorIsTrivial]
+    return t.destructor notin [analyzingDestructor, destructorIsTrivial]
   
   case t.kind
   of tySequence, tyArray, tyArrayConstr, tyOpenArray, tyVarargs:

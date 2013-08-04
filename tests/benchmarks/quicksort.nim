@@ -2,9 +2,9 @@ import os
 import strutils
 
 # Generate some pseudo-random data
-var seed: tuple[s1, s2, s3: int32] = (2'i32, 8'i32, 16'i32)
+var seed: tuple[s1, s2, s3: Int32] = (2'i32, 8'i32, 16'i32)
 
-proc random(): int32 =
+proc random(): Int32 =
     seed = (((((((seed[0] and 0x0007_FFFF'i32) shl 13'i32) xor seed[0]) shr
                19'i32) and 0x0000_1FFF'i32) xor
              ((seed[0] and 0x000F_FFFE'i32) shl 12'i32)),
@@ -20,13 +20,13 @@ proc random(): int32 =
 
 var n = 9999999
 
-var data: seq[int32]
+var data: Seq[Int32]
 newSeq (data, n)
 for i in 0 .. data.high():
     data[i] = random()
 
 
-proc `$` (d: seq[int32]): string =
+proc `$` (d: Seq[Int32]): String =
     result = "[ "
     for i in items (d):
         result.addSep (", ", 2)
@@ -34,7 +34,7 @@ proc `$` (d: seq[int32]): string =
     result.add (" ]")
 
 # Sort the data
-proc sort (start, stop: int) =
+proc sort (start, stop: Int) =
     if stop <= start+1:
         return
 

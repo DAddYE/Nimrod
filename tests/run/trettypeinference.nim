@@ -5,10 +5,10 @@ discard """
 
 import typetraits
 
-proc plus(a, b): auto = a + b
-proc makePair(a, b): auto = (first: a, second: b)
+proc plus(a, b): Auto = a + b
+proc makePair(a, b): Auto = (first: a, second: b)
 
-proc `+`(a, b: string): seq[string] = @[a, b]
+proc `+`(a, b: String): Seq[String] = @[a, b]
 
 var i = plus(10, 20)
 var s = plus("A", "B")
@@ -19,7 +19,7 @@ static: assert p[0].type is string
 echo i.type.name
 echo s.type.name
 
-proc inst(a): auto =
+proc inst(a): Auto =
   static: echo "instantiated for ", a.type.name
   result = a
 

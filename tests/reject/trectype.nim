@@ -5,20 +5,20 @@ discard """
 # (mainly for the C code generator)
 
 type
-  PA = ref TA
-  TA = array [0..2, PA]
+  Pa = ref TA
+  TA = Array [0..2, Pa]
 
   PRec = ref TRec
   TRec {.final.} = object
     a, b: TA
 
   P1 = ref T1
-  PB = ref TB
-  TB = array [0..3, P1]
-  T1 = array [0..6, PB]
+  Pb = ref TB
+  TB = Array [0..3, P1]
+  T1 = Array [0..6, Pb]
 
 var
-  x: PA
+  x: Pa
 new(x)
 #ERROR_MSG internal error: cannot generate C type for: PA
 

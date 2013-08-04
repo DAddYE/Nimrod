@@ -42,7 +42,7 @@ type
     allowCast,                ## allow unsafe language feature: 'cast'
     allowFFI,                 ## allow the FFI
     allowInfiniteLoops        ## allow endless loops
-  TSandboxFlags* = set[TSandboxFlag]
+  TSandboxFlags* = Set[TSandboxFlag]
 
   TEvalContext* = object of passes.TPassContext
     module*: PSym
@@ -58,7 +58,7 @@ type
 
   TEvalFlag = enum 
     efNone, efLValue
-  TEvalFlags = set[TEvalFlag]
+  TEvalFlags = Set[TEvalFlag]
 
 const
   evalMaxIterations = 500_000 # max iterations of all loops
@@ -84,7 +84,7 @@ proc pushStackFrame*(c: PEvalContext, t: PStackFrame) {.inline.} =
 
 proc popStackFrame*(c: PEvalContext) {.inline.} =
   if c.tos != nil: c.tos = c.tos.next
-  else: InternalError("popStackFrame")
+  else: internalError("popStackFrame")
 
 proc evalMacroCall*(c: PEvalContext, n, nOrig: PNode, sym: PSym): PNode
 proc evalAux(c: PEvalContext, n: PNode, flags: TEvalFlags): PNode
@@ -97,10 +97,10 @@ proc raiseCannotEval(c: PEvalContext, info: TLineInfo): PNode =
 proc stackTraceAux(x: PStackFrame) =
   if x != nil:
     stackTraceAux(x.next)
-    var info = if x.call != nil: x.call.info else: UnknownLineInfo()
+    var info = if x.call != nil: x.call.info else: unknownLineInfo()
     # we now use the same format as in system/except.nim
     var s = toFilename(info)
-    var line = toLineNumber(info)
+    var line = toLinenumber(info)
     if line > 0:
       add(s, '(')
       add(s, $line)
@@ -108,14 +108,14 @@ proc stackTraceAux(x: PStackFrame) =
     if x.prc != nil:
       for k in 1..max(1, 25-s.len): add(s, ' ')
       add(s, x.prc.name.s)
-    MsgWriteln(s)
+    msgWriteln(s)
 
 proc stackTrace(c: PEvalContext, info: TLineInfo, msg: TMsgKind, arg = "") = 
-  MsgWriteln("stack trace: (most recent call last)")
+  msgWriteln("stack trace: (most recent call last)")
   stackTraceAux(c.tos)
-  LocalError(info, msg, arg)
+  localError(info, msg, arg)
 
-template isSpecial(n: PNode): bool = n.kind == nkExceptBranch
+template isSpecial(n: PNode): Bool = n.kind == nkExceptBranch
 template bailout() {.dirty.} =
   if isSpecial(result): return
 
@@ -155,10 +155,10 @@ proc evalCase(c: PEvalContext, n: PNode): PNode =
       result = evalAux(c, lastSon(n.sons[i]), {})
 
 var 
-  gWhileCounter: int # Use a counter to prevent endless loops!
+  gWhileCounter: Int # Use a counter to prevent endless loops!
                      # We make this counter global, because otherwise
                      # nested loops could make the compiler extremely slow.
-  gNestedEvals: int  # count the recursive calls to ``evalAux`` to prevent
+  gNestedEvals: Int  # count the recursive calls to ``evalAux`` to prevent
                      # endless recursion
 
 proc evalWhile(c: PEvalContext, n: PNode): PNode = 
@@ -249,7 +249,7 @@ proc getNullValueAux(obj: PNode, result: PNode) =
     addSon(p, newSymNode(s, result.info))
     addSon(p, getNullValue(s.typ, result.info))
     addSon(result, p)
-  else: InternalError(result.info, "getNullValueAux")
+  else: internalError(result.info, "getNullValueAux")
   
 proc getNullValue(typ: PType, info: TLineInfo): PNode = 
   var t = skipTypes(typ, abstractRange-{tyTypeDesc})
@@ -260,7 +260,7 @@ proc getNullValue(typ: PType, info: TLineInfo): PNode =
   of tyUInt..tyUInt64:
     result = newNodeIT(nkUIntLit, info, t)
   of tyFloat..tyFloat128: 
-    result = newNodeIt(nkFloatLit, info, t)
+    result = newNodeIT(nkFloatLit, info, t)
   of tyVar, tyPointer, tyPtr, tyRef, tyCString, tySequence, tyString, tyExpr, 
      tyStmt, tyTypeDesc, tyProc:
     result = newNodeIT(nkNilLit, info, t)
@@ -274,7 +274,7 @@ proc getNullValue(typ: PType, info: TLineInfo): PNode =
       base = base.sons[0]
   of tyArray, tyArrayConstr: 
     result = newNodeIT(nkBracket, info, t)
-    for i in countup(0, int(lengthOrd(t)) - 1): 
+    for i in countup(0, Int(lengthOrd(t)) - 1): 
       addSon(result, getNullValue(elemType(t), info))
   of tyTuple:
     # XXX nkExprColonExpr is out of fashion ...
@@ -288,13 +288,13 @@ proc getNullValue(typ: PType, info: TLineInfo): PNode =
       addSon(result, p)
   of tySet:
     result = newNodeIT(nkCurly, info, t)    
-  else: InternalError("getNullValue: " & $t.kind)
+  else: internalError("getNullValue: " & $t.kind)
   
 proc evalVarValue(c: PEvalContext, n: PNode): PNode =
   result = evalAux(c, n, {})
   if result.kind in {nkType..nkNilLit}: result = result.copyNode
 
-proc allocSlot(c: PStackFrame; sym: PSym): int =
+proc allocSlot(c: PStackFrame; sym: PSym): Int =
   result = sym.position + ord(sym.kind == skParam)
   if result == 0 and sym.kind != skResult:
     result = c.slots.len
@@ -309,7 +309,7 @@ proc setSlot(c: PStackFrame, sym: PSym, val: PNode) =
 
 proc setVar(c: PEvalContext, v: PSym, n: PNode) =
   if sfGlobal notin v.flags: setSlot(c.tos, v, n)
-  else: IdNodeTablePut(c.globals, v, n)
+  else: idNodeTablePut(c.globals, v, n)
 
 proc evalVar(c: PEvalContext, n: PNode): PNode =
   for i in countup(0, sonsLen(n) - 1):
@@ -354,7 +354,7 @@ proc evalVar(c: PEvalContext, n: PNode): PNode =
             for j in countup(0, sonsLen(result) - 1): addSon(x, result.sons[j])
   result = emptyNode
 
-proc aliasNeeded(n: PNode, flags: TEvalFlags): bool = 
+proc aliasNeeded(n: PNode, flags: TEvalFlags): Bool = 
   result = efLValue in flags or n.typ == nil or 
     n.typ.kind in {tyExpr, tyStmt, tyTypeDesc}
 
@@ -377,7 +377,7 @@ proc evalVariable(c: PStackFrame, sym: PSym, flags: TEvalFlags): PNode =
 
 proc evalGlobalVar(c: PEvalContext, s: PSym, flags: TEvalFlags): PNode =
   if sfCompileTime in s.flags or c.mode == emRepl:
-    result = IdNodeTableGet(c.globals, s)
+    result = idNodeTableGet(c.globals, s)
     if result != nil: 
       if not aliasNeeded(result, flags): 
         result = copyTree(result)
@@ -394,7 +394,7 @@ proc evalGlobalVar(c: PEvalContext, s: PSym, flags: TEvalFlags): PNode =
       else:
         result = evalAux(c, result, {})
         if isSpecial(result): return
-      IdNodeTablePut(c.globals, s, result)
+      idNodeTablePut(c.globals, s, result)
   else:
     result = raiseCannotEval(nil, s.info)
 
@@ -406,7 +406,7 @@ proc evalCall(c: PEvalContext, n: PNode): PNode =
   d.call = n
   var prc = n.sons[0]
   let isClosure = prc.kind == nkClosure
-  setlen(d.slots, sonsLen(n) + ord(isClosure))
+  setLen(d.slots, sonsLen(n) + ord(isClosure))
   if isClosure:
     #debug prc
     evalX(prc.sons[1], {efLValue})
@@ -419,11 +419,11 @@ proc evalCall(c: PEvalContext, n: PNode): PNode =
   prc = result
   # bind the actual params to the local parameter of a new binding
   if prc.kind != nkSym: 
-    InternalError(n.info, "evalCall " & n.renderTree)
+    internalError(n.info, "evalCall " & n.renderTree)
     return
   d.prc = prc.sym
   if prc.sym.kind notin {skProc, skConverter, skMacro}:
-    InternalError(n.info, "evalCall")
+    internalError(n.info, "evalCall")
     return
   for i in countup(1, sonsLen(n) - 1): 
     evalX(n.sons[i], {})
@@ -452,14 +452,14 @@ proc evalArrayAccess(c: PEvalContext, n: PNode, flags: TEvalFlags): PNode =
   case x.kind
   of nkPar:
     if (idx >= 0) and (idx < sonsLen(x)): 
-      result = x.sons[int(idx)]
+      result = x.sons[Int(idx)]
       if result.kind == nkExprColonExpr: result = result.sons[1]
       if not aliasNeeded(result, flags): result = copyTree(result)
     else: 
       stackTrace(c, n.info, errIndexOutOfBounds)
   of nkBracket, nkMetaNode: 
     if (idx >= 0) and (idx < sonsLen(x)): 
-      result = x.sons[int(idx)]
+      result = x.sons[Int(idx)]
       if not aliasNeeded(result, flags): result = copyTree(result)
     else: 
       stackTrace(c, n.info, errIndexOutOfBounds)
@@ -467,7 +467,7 @@ proc evalArrayAccess(c: PEvalContext, n: PNode, flags: TEvalFlags): PNode =
     if efLValue in flags: return raiseCannotEval(c, n.info)
     result = newNodeIT(nkCharLit, x.info, getSysType(tyChar))
     if (idx >= 0) and (idx < len(x.strVal)): 
-      result.intVal = ord(x.strVal[int(idx) + 0])
+      result.intVal = ord(x.strVal[Int(idx) + 0])
     elif idx == len(x.strVal): 
       nil
     else: 
@@ -498,7 +498,7 @@ proc evalAsgn(c: PEvalContext, n: PNode): PNode =
     if result.kind notin {nkIntLit, nkCharLit}: return c.raiseCannotEval(n.info)
 
     if idx >= 0 and idx < len(x.strVal):
-      x.strVal[int(idx)] = chr(int(result.intVal))
+      x.strVal[Int(idx)] = chr(Int(result.intVal))
     else:
       stackTrace(c, n.info, errIndexOutOfBounds)
   else:
@@ -565,7 +565,7 @@ proc evalSym(c: PEvalContext, n: PNode, flags: TEvalFlags): PNode =
   if result == nil or mask * s.flags != {}:
     result = raiseCannotEval(c, n.info)
 
-proc evalIncDec(c: PEvalContext, n: PNode, sign: biggestInt): PNode = 
+proc evalIncDec(c: PEvalContext, n: PNode, sign: BiggestInt): PNode = 
   evalX(n.sons[1], {efLValue})
   var a = result
   evalX(n.sons[2], {})
@@ -575,25 +575,25 @@ proc evalIncDec(c: PEvalContext, n: PNode, sign: biggestInt): PNode =
   else: return raiseCannotEval(c, n.info)
   result = emptyNode
 
-proc getStrValue(n: PNode): string = 
+proc getStrValue(n: PNode): String = 
   case n.kind
   of nkStrLit..nkTripleStrLit: result = n.strVal
   else: 
-    InternalError(n.info, "getStrValue")
+    internalError(n.info, "getStrValue")
     result = ""
 
 proc evalEcho(c: PEvalContext, n: PNode): PNode = 
   for i in countup(1, sonsLen(n) - 1): 
     evalX(n.sons[i], {})
-    Write(stdout, getStrValue(result))
+    write(stdout, getStrValue(result))
   writeln(stdout, "")
   result = emptyNode
 
 proc evalExit(c: PEvalContext, n: PNode): PNode = 
   if c.mode in {emRepl, emStatic}:
     evalX(n.sons[1], {})
-    Message(n.info, hintQuitCalled)
-    quit(int(getOrdValue(result)))
+    message(n.info, hintQuitCalled)
+    quit(Int(getOrdValue(result)))
   else:
     result = raiseCannotEval(c, n.info)
 
@@ -612,7 +612,7 @@ proc evalNew(c: PEvalContext, n: PNode): PNode =
   evalX(n.sons[1], {efLValue})
   var a = result
   var t = skipTypes(n.sons[1].typ, abstractVar)
-  if a.kind == nkEmpty: InternalError(n.info, "first parameter is empty")
+  if a.kind == nkEmpty: internalError(n.info, "first parameter is empty")
   myreset(a)
   let u = getNullValue(t.sons[0], n.info)
   a.kind = u.kind
@@ -755,7 +755,7 @@ proc evalHigh(c: PEvalContext, n: PNode): PNode =
   of tyOpenArray, tySequence, tyVarargs: 
     result = newIntNodeT(sonsLen(result)-1, n)
   of tyString: result = newIntNodeT(len(result.strVal) - 1, n)
-  else: InternalError(n.info, "evalHigh")
+  else: internalError(n.info, "evalHigh")
 
 proc evalOf(c: PEvalContext, n: PNode): PNode = 
   result = evalAux(c, n.sons[1], {})
@@ -771,9 +771,9 @@ proc evalSetLengthStr(c: PEvalContext, n: PNode): PNode =
   var b = result
   case a.kind
   of nkStrLit..nkTripleStrLit: 
-    var newLen = int(getOrdValue(b))
-    setlen(a.strVal, newLen)
-  else: InternalError(n.info, "evalSetLengthStr")
+    var newLen = Int(getOrdValue(b))
+    setLen(a.strVal, newLen)
+  else: internalError(n.info, "evalSetLengthStr")
   result = emptyNode
 
 proc evalSetLengthSeq(c: PEvalContext, n: PNode): PNode = 
@@ -784,11 +784,11 @@ proc evalSetLengthSeq(c: PEvalContext, n: PNode): PNode =
   if isSpecial(result): return 
   var b = result
   if a.kind != nkBracket: 
-    InternalError(n.info, "evalSetLengthSeq")
+    internalError(n.info, "evalSetLengthSeq")
     return
-  var newLen = int(getOrdValue(b))
+  var newLen = Int(getOrdValue(b))
   var oldLen = sonsLen(a)
-  setlen(a.sons, newLen)
+  setLen(a.sons, newLen)
   for i in countup(oldLen, newLen - 1): 
     a.sons[i] = getNullValue(skipTypes(n.sons[1].typ, abstractVar), n.info)
   result = emptyNode
@@ -801,13 +801,13 @@ proc evalNewSeq(c: PEvalContext, n: PNode): PNode =
   if isSpecial(result): return 
   var b = result
   var t = skipTypes(n.sons[1].typ, abstractVar)
-  if a.kind == nkEmpty: InternalError(n.info, "first parameter is empty")
+  if a.kind == nkEmpty: internalError(n.info, "first parameter is empty")
   myreset(a)
   a.kind = nkBracket
   a.info = n.info
   a.typ = t
   a.sons = nil
-  var L = int(getOrdValue(b))
+  var L = Int(getOrdValue(b))
   newSeq(a.sons, L)
   for i in countup(0, L-1): 
     a.sons[i] = getNullValue(t.sons[0], n.info)
@@ -844,7 +844,7 @@ proc evalAppendStrCh(c: PEvalContext, n: PNode): PNode =
   if isSpecial(result): return 
   var b = result
   case a.kind
-  of nkStrLit..nkTripleStrLit: add(a.strVal, chr(int(getOrdValue(b))))
+  of nkStrLit..nkTripleStrLit: add(a.strVal, chr(Int(getOrdValue(b))))
   else: return raiseCannotEval(c, n.info)
   result = emptyNode
 
@@ -886,22 +886,22 @@ proc evalRepr(c: PEvalContext, n: PNode): PNode =
   if isSpecial(result): return 
   result = newStrNodeT(renderTree(result, {renderNoComments}), n)
 
-proc isEmpty(n: PNode): bool =
+proc isEmpty(n: PNode): Bool =
   result = n != nil and n.kind == nkEmpty
 
 proc evalParseExpr(c: PEvalContext, n: PNode): PNode =
   var code = evalAux(c, n.sons[1], {})
   var ast = parseString(code.getStrValue, code.info.toFilename,
-                        code.info.line.int)
+                        code.info.line.Int)
   if sonsLen(ast) != 1:
-    GlobalError(code.info, errExprExpected, "multiple statements")
+    globalError(code.info, errExprExpected, "multiple statements")
   result = ast.sons[0]
   #result.typ = newType(tyExpr, c.module)
 
 proc evalParseStmt(c: PEvalContext, n: PNode): PNode =
   var code = evalAux(c, n.sons[1], {})
   result = parseString(code.getStrValue, code.info.toFilename,
-                       code.info.line.int)
+                       code.info.line.Int)
   #result.typ = newType(tyStmt, c.module)
  
 proc evalTypeTrait*(n: PNode, context: PSym): PNode =
@@ -948,13 +948,13 @@ proc evalIsOp*(n: PNode): PNode =
 
 proc expectString(n: PNode) =
   if n.kind notin nkStrKinds:
-    GlobalError(n.info, errStringLiteralExpected)
+    globalError(n.info, errStringLiteralExpected)
 
 proc evalSlurp*(e: PNode, module: PSym): PNode =
   expectString(e)
   result = newNodeIT(nkStrLit, e.info, getSysType(tyString))
   try:
-    var filename = e.strVal.FindFile
+    var filename = e.strVal.findFile
     result.strVal = readFile(filename)
     # we produce a fake include statement for every slurped filename, so that
     # the module dependencies are accurate:    
@@ -962,9 +962,9 @@ proc evalSlurp*(e: PNode, module: PSym): PNode =
       newStrNode(nkStrLit, filename)]))
   except EIO:
     result.strVal = ""
-    LocalError(e.info, errCannotOpenFile, e.strVal)
+    localError(e.info, errCannotOpenFile, e.strVal)
 
-proc readOutput(p: PProcess): string =
+proc readOutput(p: PProcess): String =
   result = ""
   var output = p.outputStream
   discard p.waitForExit
@@ -1006,7 +1006,7 @@ proc evalExpandToAst(c: PEvalContext, original: PNode): PNode =
     macroCall.sons[0] = newIdentNode(expandedSym.name, expandedSym.info)
     result = evalMacroCall(c, macroCall, original, expandedSym)
   else:
-    InternalError(macroCall.info,
+    internalError(macroCall.info,
       "ExpandToAst: expanded symbol is no macro or template")
     result = emptyNode
 
@@ -1063,7 +1063,7 @@ proc evalMagicOrCall(c: PEvalContext, n: PNode): PNode =
     if isSpecial(result): return 
     var k = getOrdValue(result)
     if not (a.kind in {nkEmpty..nkNilLit}) and (k >= 0) and (k < sonsLen(a)): 
-      result = a.sons[int(k)]
+      result = a.sons[Int(k)]
       if result == nil: result = newNode(nkEmpty)
     else: 
       stackTrace(c, n.info, errIndexOutOfBounds)
@@ -1079,7 +1079,7 @@ proc evalMagicOrCall(c: PEvalContext, n: PNode): PNode =
     if isSpecial(result): return 
     var k = getOrdValue(b)
     if (k >= 0) and (k < sonsLen(a)) and not (a.kind in {nkEmpty..nkNilLit}): 
-      a.sons[int(k)] = result
+      a.sons[Int(k)] = result
     else: 
       stackTrace(c, n.info, errIndexOutOfBounds)
     result = emptyNode
@@ -1108,8 +1108,8 @@ proc evalMagicOrCall(c: PEvalContext, n: PNode): PNode =
     var b = result
     result = evalAux(c, n.sons[3], {efLValue})
     if isSpecial(result): return 
-    for i in countup(0, int(getOrdValue(result)) - 1): 
-      delSon(a, int(getOrdValue(b)))
+    for i in countup(0, Int(getOrdValue(result)) - 1): 
+      delSon(a, Int(getOrdValue(b)))
     result = emptyNode
   of mNKind: 
     result = evalAux(c, n.sons[1], {})
@@ -1229,7 +1229,7 @@ proc evalMagicOrCall(c: PEvalContext, n: PNode): PNode =
     var a = result
     if k < 0 or k > ord(high(TNodeKind)): 
       internalError(n.info, "request to create a NimNode with invalid kind")
-    result = newNodeI(TNodeKind(int(k)), 
+    result = newNodeI(TNodeKind(Int(k)), 
       if a.kind == nkNilLit: n.info else: a.info)
   of mNCopyNimNode:
     result = evalAux(c, n.sons[1], {efLValue})
@@ -1269,7 +1269,7 @@ proc evalMagicOrCall(c: PEvalContext, n: PNode): PNode =
     if a.kind == nkSym:
       result.strVal = a.sym.name.s
     else:
-      if a.kind != nkIdent: InternalError(n.info, "no ident node")
+      if a.kind != nkIdent: internalError(n.info, "no ident node")
       result.strVal = a.ident.s
   of mEqIdent: 
     result = evalAux(c, n.sons[1], {})
@@ -1299,12 +1299,12 @@ proc evalMagicOrCall(c: PEvalContext, n: PNode): PNode =
   of mNHint: 
     result = evalAux(c, n.sons[1], {})
     if isSpecial(result): return 
-    Message(n.info, hintUser, getStrValue(result))
+    message(n.info, hintUser, getStrValue(result))
     result = emptyNode
   of mNWarning: 
     result = evalAux(c, n.sons[1], {})
     if isSpecial(result): return 
-    Message(n.info, warnUser, getStrValue(result))
+    message(n.info, warnUser, getStrValue(result))
     result = emptyNode
   of mNError: 
     result = evalAux(c, n.sons[1], {})
@@ -1320,7 +1320,7 @@ proc evalMagicOrCall(c: PEvalContext, n: PNode): PNode =
     if isSpecial(result): return 
     var a = result
     result = newNodeIT(nkStrLit, n.info, n.typ)
-    result.strVal = newString(int(getOrdValue(a)))
+    result.strVal = newString(Int(getOrdValue(a)))
   of mNewStringOfCap:
     result = evalAux(c, n.sons[1], {})
     if isSpecial(result): return 
@@ -1447,9 +1447,9 @@ proc evalAux(c: PEvalContext, n: PNode, flags: TEvalFlags): PNode =
   of nkEmpty: 
     # nkEmpty occurs once in each trace that I looked at
     result = n
-  else: InternalError(n.info, "evalAux: " & $n.kind)
+  else: internalError(n.info, "evalAux: " & $n.kind)
   if result == nil:
-    InternalError(n.info, "evalAux: returned nil " & $n.kind)
+    internalError(n.info, "evalAux: returned nil " & $n.kind)
   inc(gNestedEvals)
 
 proc tryEval(c: PEvalContext, n: PNode): PNode =
@@ -1493,7 +1493,7 @@ proc evalMacroCall(c: PEvalContext, n, nOrig: PNode, sym: PSym): PNode =
   # XXX GlobalError() is ugly here, but I don't know a better solution for now
   inc(evalTemplateCounter)
   if evalTemplateCounter > 100:
-    GlobalError(n.info, errTemplateInstantiationTooNested)
+    globalError(n.info, errTemplateInstantiationTooNested)
 
   c.callsite = nOrig
   var s = newStackFrame()
@@ -1501,7 +1501,7 @@ proc evalMacroCall(c: PEvalContext, n, nOrig: PNode, sym: PSym): PNode =
   s.prc = sym
   var L = n.safeLen
   if L == 0: L = 1
-  setlen(s.slots, L)
+  setLen(s.slots, L)
   # return value:
   s.slots[0] = newNodeIT(nkNilLit, n.info, sym.typ.sons[0])
   # setup parameters:
@@ -1510,7 +1510,7 @@ proc evalMacroCall(c: PEvalContext, n, nOrig: PNode, sym: PSym): PNode =
   discard eval(c, optBody(c, sym))
   result = s.slots[0]
   popStackFrame(c)
-  if cyclicTree(result): GlobalError(n.info, errCyclicTree)
+  if cyclicTree(result): globalError(n.info, errCyclicTree)
   dec(evalTemplateCounter)
   c.callsite = nil
 
@@ -1520,7 +1520,7 @@ proc myOpen(module: PSym): PPassContext =
   pushStackFrame(c, newStackFrame())
   result = c
 
-var oldErrorCount: int
+var oldErrorCount: Int
 
 proc myProcess(c: PPassContext, n: PNode): PNode =
   # don't eval errornous code:

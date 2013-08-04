@@ -5,12 +5,12 @@ discard """
 var
   calls = 0
   
-proc `&&`(s: varargs[string]): string =
+proc `&&`(s: Varargs[String]): String =
   result = s[0]
   for i in 1..len(s)-1: result.add s[i]
   inc calls
 
-template optConc{ `&&` * a }(a: string): expr = &&a
+template optConc{ `&&` * a }(a: String): Expr = &&a
 
 let space = " "
 echo "my" && (space & "awe" && "some " ) && "concat"

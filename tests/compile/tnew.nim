@@ -5,17 +5,17 @@
 type
   PNode = ref TNode
   TNode = object
-    data: int
-    str: string
+    data: Int
+    str: String
     le, ri: PNode
 
-  TStressTest = ref array [0..45, array [1..45, TNode]]
+  TStressTest = ref Array [0..45, Array [1..45, TNode]]
 
 proc finalizer(n: PNode) =
   write(stdout, n.data)
   write(stdout, " is now freed\n")
 
-proc newNode(data: int, le, ri: PNode): PNode =
+proc newNode(data: Int, le, ri: PNode): PNode =
   new(result, finalizer)
   result.le = le
   result.ri = ri

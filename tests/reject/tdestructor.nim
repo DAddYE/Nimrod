@@ -5,8 +5,8 @@ discard """
 
 type  
   TMyObj = object
-    x, y: int
-    p: pointer
+    x, y: Int
+    p: Pointer
     
 proc destruct(o: var TMyObj) {.destructor.} =
   if o.p != nil: dealloc o.p
@@ -15,7 +15,7 @@ proc open: TMyObj =
   result = TMyObj(x: 1, y: 2, p: alloc(3))
 
 
-proc `$`(x: TMyObj): string = $x.y
+proc `$`(x: TMyObj): String = $x.y
 
 echo open()
 

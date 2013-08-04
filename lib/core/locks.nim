@@ -37,7 +37,7 @@ const
                           ## when compiled with ``-d:preventDeadlocks``.
 
 var
-  deadlocksPrevented*: int ## counts the number of times a 
+  deadlocksPrevented*: Int ## counts the number of times a 
                            ## deadlock has been prevented
 
 when noDeadlocks:
@@ -50,17 +50,17 @@ when noDeadlocks:
       if locks[i] >= locks[i+1]: return false
     result = true
 
-proc InitLock*(lock: var TLock) {.inline.} =
+proc initLock*(lock: var TLock) {.inline.} =
   ## Initializes the given lock.
-  InitSysLock(lock)
+  initSysLock(lock)
 
-proc DeinitLock*(lock: var TLock) {.inline.} =
+proc deinitLock*(lock: var TLock) {.inline.} =
   ## Frees the resources associated with the lock.
-  DeinitSys(lock)
+  deinitSys(lock)
 
-proc TryAcquire*(lock: var TLock): bool {.tags: [FAquireLock].} = 
+proc tryAcquire*(lock: var TLock): Bool {.tags: [FAquireLock].} = 
   ## Tries to acquire the given lock. Returns `true` on success.
-  result = TryAcquireSys(lock)
+  result = tryAcquireSys(lock)
   when noDeadlocks:
     if not result: return
     # we have to add it to the ordered list. Oh, and we might fail if
@@ -90,7 +90,7 @@ proc TryAcquire*(lock: var TLock): bool {.tags: [FAquireLock].} =
     inc(locksLen)
     assert OrderedLocks()
 
-proc Acquire*(lock: var TLock) {.tags: [FAquireLock].} =
+proc acquire*(lock: var TLock) {.tags: [FAquireLock].} =
   ## Acquires the given lock.
   when nodeadlocks:
     var p = addr(lock)
@@ -133,9 +133,9 @@ proc Acquire*(lock: var TLock) {.tags: [FAquireLock].} =
     inc(locksLen)
     assert OrderedLocks()
   else:
-    AcquireSys(lock)
+    acquireSys(lock)
   
-proc Release*(lock: var TLock) {.tags: [FReleaseLock].} =
+proc release*(lock: var TLock) {.tags: [FReleaseLock].} =
   ## Releases the given lock.
   when nodeadlocks:
     var p = addr(lock)
@@ -145,20 +145,20 @@ proc Release*(lock: var TLock) {.tags: [FReleaseLock].} =
         for j in i..L-2: locks[j] = locks[j+1]
         dec locksLen
         break
-  ReleaseSys(lock)
+  releaseSys(lock)
 
 
-proc InitCond*(cond: var TCond) {.inline.} =
+proc initCond*(cond: var TCond) {.inline.} =
   ## Initializes the given condition variable.
-  InitSysCond(cond)
+  initSysCond(cond)
 
-proc DeinitCond*(cond: var TCond) {.inline.} =
+proc deinitCond*(cond: var TCond) {.inline.} =
   ## Frees the resources associated with the lock.
-  DeinitSysCond(cond)
+  deinitSysCond(cond)
 
 proc wait*(cond: var TCond, lock: var TLock) {.inline.} =
   ## waits on the condition variable `cond`. 
-  WaitSysCond(cond, lock)
+  waitSysCond(cond, lock)
   
 proc signal*(cond: var TCond) {.inline.} =
   ## sends a signal to the condition variable `cond`. 

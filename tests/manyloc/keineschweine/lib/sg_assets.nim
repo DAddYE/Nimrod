@@ -16,25 +16,25 @@ when not defined(NoChipmunk):
 
 type
   TChecksumFile* = object
-    unpackedSize*: int
+    unpackedSize*: Int
     sum*: MD5Digest
-    compressed*: string
+    compressed*: String
   PZoneSettings* = ref TZoneSettings
   TZoneSettings* = object
-    vehicles: seq[PVehicleRecord]
-    items: seq[PItemRecord]
-    objects: seq[PObjectRecord]
-    bullets: seq[PBulletRecord]
+    vehicles: Seq[PVehicleRecord]
+    items: Seq[PItemRecord]
+    objects: Seq[PObjectRecord]
+    bullets: Seq[PBulletRecord]
     levelSettings: PLevelSettings
   PLevelSettings* = ref TLevelSettings
   TLevelSettings* = object
     size*: TVector2i
-    starfield*: seq[PSpriteSheet]
+    starfield*: Seq[PSpriteSheet]
   PVehicleRecord* = ref TVehicleRecord
   TVehicleRecord* = object
-    id*: int16
-    name*: string
-    playable*: bool
+    id*: Int16
+    name*: String
+    playable*: Bool
     anim*: PAnimationRecord
     physics*: TPhysicsRecord
     handling*: THandlingRecord
@@ -42,18 +42,18 @@ type
     Projectile, Utility, Ammo
   PObjectRecord* = ref TObjectRecord
   TObjectRecord* = object
-    id*: int16
-    name*: string
+    id*: Int16
+    name*: String
     anim*: PAnimationRecord
     physics*: TPhysicsRecord
   PItemRecord* = ref TItemRecord
   TItemRecord* = object
-    id*: int16
-    name*: string
+    id*: Int16
+    name*: String
     anim*: PAnimationRecord
     physics*: TPhysicsRecord ##apply when the item is dropped in the arena
-    cooldown*: float
-    energyCost*: float
+    cooldown*: Float
+    energyCost*: Float
     useSound*: PSoundRecord
     case kind*: TItemKind
     of Projectile: 
@@ -62,46 +62,46 @@ type
       nil
   PBulletRecord* = ref TBulletRecord
   TBulletRecord* = object
-    id*: int16
-    name*: string
+    id*: Int16
+    name*: String
     anim*: PAnimationRecord
     physics*: TPhysicsRecord
-    lifetime*, inheritVelocity*, baseVelocity*: float
+    lifetime*, inheritVelocity*, baseVelocity*: Float
     explosion*: TExplosionRecord
     trail*: TTrailRecord
   TTrailRecord* = object
     anim*: PAnimationRecord
-    timer*: float ##how often it should be created
+    timer*: Float ##how often it should be created
   TPhysicsRecord* = object
-    mass*: float
-    radius*: float
-    moment*: float
+    mass*: Float
+    radius*: Float
+    moment*: Float
   THandlingRecord = object
-    thrust*, top_speed*: float
-    reverse*, strafe*, rotation*: float
+    thrust*, topSpeed*: Float
+    reverse*, strafe*, rotation*: Float
   TSoulRecord = object
-    energy*: int
-    health*: int
+    energy*: Int
+    health*: Int
   TExplosionRecord* = object
     anim*: PAnimationRecord
     sound*: PSoundRecord 
   PAnimationRecord* = ref TAnimationRecord
   TAnimationRecord* = object
     spriteSheet*: PSpriteSheet
-    angle*: float
-    delay*: float  ##animation delay
+    angle*: Float
+    delay*: Float  ##animation delay
   PSoundRecord* = ref TSoundRecord
   TSoundRecord* = object
-    file*: string
+    file*: String
     when defined(NoSFML):
       contents*: TChecksumFile
     else:
       soundBuf*: PSoundBuffer 
   PSpriteSheet* = ref TSpriteSheet
   TSpriteSheet* = object 
-    file*: string
-    framew*,frameh*: int
-    rows*, cols*: int
+    file*: String
+    framew*,frameh*: Int
+    rows*, cols*: Int
     when defined(NoSFML):
       contents*: TChecksumFile
     when not defined(NoSFML):
@@ -110,43 +110,43 @@ type
   TGameState* = enum
     Lobby, Transitioning, Field
 const
-  TAU* = PI * 2.0
+  Tau* = PI * 2.0
   MomentMult* = 0.62 ## global moment of inertia multiplier
 var 
   cfg: PZoneSettings
-  SpriteSheets* = initTable[string, PSpriteSheet](64)
-  SoundCache  * = initTable[string, PSoundRecord](64)
-  nameToVehID*: TTable[string, int]
-  nameToItemID*: TTable[string, int]
-  nameToObjID*: TTable[string, int]
-  nameToBulletID*: TTable[string, int]
+  spriteSheets* = initTable[string, PSpriteSheet](64)
+  soundCache  * = initTable[string, PSoundRecord](64)
+  nameToVehID*: TTable[String, Int]
+  nameToItemID*: TTable[String, Int]
+  nameToObjID*: TTable[String, Int]
+  nameToBulletID*: TTable[String, Int]
   activeState = Lobby
 
-proc newSprite(filename: string; errors: var seq[string]): PSpriteSheet
-proc load*(ss: PSpriteSheet): bool {.discardable.}
-proc newSound(filename: string; errors: var seq[string]): PSoundRecord
-proc load*(s: PSoundRecord): bool {.discardable.}
+proc newSprite(filename: String; errors: var Seq[String]): PSpriteSheet
+proc load*(ss: PSpriteSheet): Bool {.discardable.}
+proc newSound(filename: String; errors: var Seq[String]): PSoundRecord
+proc load*(s: PSoundRecord): Bool {.discardable.}
 
-proc validateSettings*(settings: PJsonNode; errors: var seq[string]): bool
-proc loadSettings*(rawJson: string, errors: var seq[string]): bool
-proc loadSettingsFromFile*(filename: string, errors: var seq[string]): bool
+proc validateSettings*(settings: PJsonNode; errors: var Seq[String]): Bool
+proc loadSettings*(rawJson: String, errors: var Seq[String]): Bool
+proc loadSettingsFromFile*(filename: String, errors: var Seq[String]): Bool
 
-proc fetchVeh*(name: string): PVehicleRecord
-proc fetchItm*(itm: string): PItemRecord
-proc fetchObj*(name: string): PObjectRecord
-proc fetchBullet(name: string): PBulletRecord
+proc fetchVeh*(name: String): PVehicleRecord
+proc fetchItm*(itm: String): PItemRecord
+proc fetchObj*(name: String): PObjectRecord
+proc fetchBullet(name: String): PBulletRecord
 
-proc importLevel(data: PJsonNode; errors: var seq[string]): PLevelSettings
-proc importVeh(data: PJsonNode; errors: var seq[string]): PVehicleRecord
-proc importObject(data: PJsonNode; errors: var seq[string]): PObjectRecord
-proc importItem(data: PJsonNode; errors: var seq[string]): PItemRecord
+proc importLevel(data: PJsonNode; errors: var Seq[String]): PLevelSettings
+proc importVeh(data: PJsonNode; errors: var Seq[String]): PVehicleRecord
+proc importObject(data: PJsonNode; errors: var Seq[String]): PObjectRecord
+proc importItem(data: PJsonNode; errors: var Seq[String]): PItemRecord
 proc importPhys(data: PJsonNode): TPhysicsRecord
-proc importAnim(data: PJsonNode; errors: var seq[string]): PAnimationRecord
+proc importAnim(data: PJsonNode; errors: var Seq[String]): PAnimationRecord
 proc importHandling(data: PJsonNode): THandlingRecord
-proc importBullet(data: PJsonNode; errors: var seq[string]): PBulletRecord
+proc importBullet(data: PJsonNode; errors: var Seq[String]): PBulletRecord
 proc importSoul(data: PJsonNode): TSoulRecord
-proc importExplosion(data: PJsonNode; errors: var seq[string]): TExplosionRecord
-proc importSound(data: PJsonNode; errors: var seq[string]; fieldName: string = nil): PSoundRecord
+proc importExplosion(data: PJsonNode; errors: var Seq[String]): TExplosionRecord
+proc importSound(data: PJsonNode; errors: var Seq[String]; fieldName: String = nil): PSoundRecord
 
 ## this is the only pipe between lobby and main.nim
 proc getActiveState*(): TGameState =
@@ -159,12 +159,12 @@ proc doneWithSaidTransition*() =
   activeState = Field
 
 
-proc checksumFile*(filename: string): TChecksumFile =
+proc checksumFile*(filename: String): TChecksumFile =
   let fullText = readFile(filename)
   result.unpackedSize = fullText.len
   result.sum = toMD5(fullText)
   result.compressed = compress(fullText)
-proc checksumStr*(str: string): TChecksumFile =
+proc checksumStr*(str: String): TChecksumFile =
   result.unpackedSize = str.len
   result.sum = toMD5(str)
   result.compressed = compress(str)
@@ -182,7 +182,7 @@ proc loadAllAssets*() =
   var 
     loaded = 0
     failed = 0
-  for name, ss in SpriteSheets.pairs():
+  for name, ss in spriteSheets.pairs():
     if load(ss):
       inc loaded
     else:
@@ -190,7 +190,7 @@ proc loadAllAssets*() =
   echo loaded," sprites loaded. ", failed, " sprites failed."
   loaded = 0
   failed = 0
-  for name, s in SoundCache.pairs():
+  for name, s in soundCache.pairs():
     if load(s):
       inc loaded
     else:
@@ -204,7 +204,7 @@ iterator playableVehicles*(): PVehicleRecord =
     if v.playable:
       yield v
 
-template allAssets*(body: stmt) {.dirty.}=
+template allAssets*(body: Stmt) {.dirty.}=
   block: 
     var assetType = FGraphics
     for file, asset in pairs(SpriteSheets):
@@ -213,19 +213,19 @@ template allAssets*(body: stmt) {.dirty.}=
     for file, asset in pairs(SoundCache):
       body
 
-template cacheImpl(procName, cacheName, resultType: expr; body: stmt) {.dirty, immediate.} =
-  proc procName*(filename: string; errors: var seq[string]): resulttype =
+template cacheImpl(procName, cacheName, resultType: Expr; body: Stmt) {.dirty, immediate.} =
+  proc procName*(filename: string; errors: var seq[string]): resultType =
     if hasKey(cacheName, filename):
       return cacheName[filename]
     new(result, free)
     body
     cacheName[filename] = result
 
-template checkFile(path: expr): stmt {.dirty, immediate.} =
+template checkFile(path: Expr): Stmt {.dirty, immediate.} =
   if not existsFile(path):
     errors.add("File missing: "& path)
 
-cacheImpl newSprite, SpriteSheets, PSpriteSheet:
+cacheImpl newSprite, spriteSheets, PSpriteSheet:
   result.file = filename
   if filename =~ re"\S+_(\d+)x(\d+)\.\S\S\S":
     result.framew = strutils.parseInt(matches[0])
@@ -235,18 +235,18 @@ cacheImpl newSprite, SpriteSheets, PSpriteSheet:
     errors.add "Bad file: "&filename&" must be in format name_WxH.png"
     return
 
-cacheImpl newSound, SoundCache, PSoundRecord:
+cacheImpl newSound, soundCache, PSoundRecord:
   result.file = filename
   checkFile("data/sfx"/result.file)
 
-proc expandPath*(assetType: TAssetType; fileName: string): string =
+proc expandPath*(assetType: TAssetType; fileName: String): String =
   result = "data/"
   case assetType
   of FGraphics: result.add "gfx/"
   of FSound:    result.add "sfx/"
   else: nil
   result.add fileName
-proc expandPath*(fc: ScFileChallenge): string {.inline.} =
+proc expandPath*(fc: ScFileChallenge): String {.inline.} =
   result = expandPath(fc.assetType, fc.file)
 
 when defined(NoSFML):
@@ -267,8 +267,8 @@ else:
       echo "Image could not be loaded"
       return
     let size = image.getSize()
-    ss.rows = int(size.y / ss.frameh) #y is h
-    ss.cols = int(size.x / ss.framew) #x is w
+    ss.rows = Int(size.y / ss.frameh) #y is h
+    ss.cols = Int(size.x / ss.framew) #x is w
     ss.tex = newTexture(image)
     image.destroy()
     ss.sprite = newSprite()
@@ -281,7 +281,7 @@ else:
     if not s.soundBuf.isNil:
       result = true
 
-template addError(e: expr): stmt {.immediate.} =
+template addError(e: Expr): Stmt {.immediate.} =
   errors.add(e)
   result = false
 proc validateSettings*(settings: PJsonNode, errors: var seq[string]): bool =
@@ -396,7 +396,7 @@ proc loadSettings*(rawJson: string, errors: var seq[string]): bool =
     inc vID
   result = (errors.len == 0)
 
-proc `$`*(obj: PSpriteSheet): string =
+proc `$`*(obj: PSpriteSheet): String =
   return "<Sprite $1 ($2x$3) $4 rows $5 cols>" % [obj.file, $obj.framew, $obj.frameh, $obj.rows, $obj.cols]
 
 proc fetchVeh*(name: string): PVehicleRecord =
@@ -408,21 +408,21 @@ proc fetchObj*(name: string): PObjectRecord =
 proc fetchBullet(name: string): PBulletRecord =
   return cfg.bullets[nameToBulletID[name]]
 
-proc getField(node: PJsonNode, field: string, target: var float) =
+proc getField(node: PJsonNode, field: String, target: var Float) =
   if not node.hasKey(field):
     return
   if node[field].kind == JFloat:
     target = node[field].fnum
   elif node[field].kind == JInt:
-    target = node[field].num.float
-proc getField(node: PJsonNode, field: string, target: var int) =
+    target = node[field].num.Float
+proc getField(node: PJsonNode, field: String, target: var Int) =
   if not node.hasKey(field):
     return
   if node[field].kind == JInt:
-    target = node[field].num.int
+    target = node[field].num.Int
   elif node[field].kind == JFloat:
-    target = node[field].fnum.int
-proc getField(node: PJsonNode; field: string; target: var bool) =
+    target = node[field].fnum.Int
+proc getField(node: PJsonNode; field: String; target: var Bool) =
   if not node.hasKey(field):
     return
   case node[field].kind
@@ -434,11 +434,11 @@ proc getField(node: PJsonNode; field: string; target: var bool) =
     target = (node[field].fnum != 0.0)
   else: nil
 
-template checkKey(node: expr; key: string): stmt =
+template checkKey(node: Expr; key: String): Stmt =
   if not hasKey(node, key):
     return
 
-proc importTrail(data: PJsonNode; errors: var seq[string]): TTrailRecord =
+proc importTrail(data: PJsonNode; errors: var Seq[String]): TTrailRecord =
   checkKey(data, "trail")
   result.anim = importAnim(data["trail"], errors)
   result.timer = 1000.0
@@ -533,10 +533,10 @@ proc importVeh(data: PJsonNode; errors: var seq[string]): PVehicleRecord =
     return
   var vehData = data[1]
   result.name = data[0].str
-  result.anim = importAnim(vehdata, errors)
-  result.physics = importPhys(vehdata)
-  result.handling = importHandling(vehdata)
-  vehdata.getField("playable", result.playable)
+  result.anim = importAnim(vehData, errors)
+  result.physics = importPhys(vehData)
+  result.handling = importHandling(vehData)
+  vehData.getField("playable", result.playable)
   if result.anim.spriteSheet.isNil and result.playable:
     result.playable = false
 proc importObject(data: PJsonNode; errors: var seq[string]): PObjectRecord =
@@ -569,7 +569,7 @@ proc importItem(data: PJsonNode; errors: var seq[string]): PItemRecord =
     if data[2]["bullet"].kind == JString:
       result.bullet = fetchBullet(data[2]["bullet"].str)
     elif data[2]["bullet"].kind == JInt:
-      result.bullet = cfg.bullets[data[2]["bullet"].num.int]
+      result.bullet = cfg.bullets[data[2]["bullet"].num.Int]
     elif data[2]["bullet"].kind == JObject: 
       result.bullet = importBullet(data[2]["bullet"], errors)
     else:

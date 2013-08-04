@@ -265,31 +265,31 @@ else:
     const prefix = ""
 
   const
-    E2BIG = 7.cint
-    EINVAL = 22.cint
+    E2big = 7.cint
+    Einval = 22.cint
   when defined(linux):
     const EILSEQ = 84.cint
   elif defined(macosx):
-    const EILSEQ = 92.cint
+    const Eilseq = 92.cint
   elif defined(bsd):
     const EILSEQ = 86.cint
   elif defined(solaris):
     const EILSEQ = 88.cint
 
-  var errno {.importc, header: "<errno.h>".}: cint
+  var errno {.importc, header: "<errno.h>".}: Cint
 
-  proc iconvOpen(tocode, fromcode: cstring): PConverter {.
+  proc iconvOpen(tocode, fromcode: Cstring): PConverter {.
     importc: prefix & "iconv_open", cdecl, dynlib: iconvDll.}
   proc iconvClose(c: PConverter) {.
     importc: prefix & "iconv_close", cdecl, dynlib: iconvDll.}
-  proc iconv(c: PConverter, inbuf: var cstring, inbytesLeft: var int,
-             outbuf: var cstring, outbytesLeft: var int): int {.
+  proc iconv(c: PConverter, inbuf: var Cstring, inbytesLeft: var Int,
+             outbuf: var Cstring, outbytesLeft: var Int): Int {.
     importc: prefix & "iconv", cdecl, dynlib: iconvDll.}
-  proc iconv(c: PConverter, inbuf: pointer, inbytesLeft: pointer,
-             outbuf: var cstring, outbytesLeft: var int): int {.
+  proc iconv(c: PConverter, inbuf: Pointer, inbytesLeft: Pointer,
+             outbuf: var Cstring, outbytesLeft: var Int): Int {.
     importc: prefix & "iconv", cdecl, dynlib: iconvDll.}
   
-proc getCurrentEncoding*(): string =
+proc getCurrentEncoding*(): String =
   ## retrieves the current encoding. On Unix, always "UTF-8" is returned.
   when defined(windows):
     result = codePageToName(GetACP())
@@ -400,47 +400,47 @@ when defined(windows):
 
 else:
 
-  proc convert*(c: PConverter, s: string): string =
+  proc convert*(c: PConverter, s: String): String =
     result = newString(s.len)
-    var inLen = len(S)
+    var inLen = len(s)
     var outLen = len(result)
-    var src = cstring(S)
-    var dst = cstring(result)
-    var iconvres: int
-    while InLen > 0:
+    var src = Cstring(s)
+    var dst = Cstring(result)
+    var iconvres: Int
+    while inLen > 0:
       iconvres = iconv(c, src, inLen, dst, outLen)
       if iconvres == -1:
         var lerr = errno
         if lerr == EILSEQ or lerr == EINVAL:
           # unknown char, skip
-          Dst[0] = Src[0]
-          src = cast[cstring](cast[int](src) + 1)
-          dst = cast[cstring](cast[int](dst) + 1)
+          dst[0] = src[0]
+          src = cast[Cstring](cast[Int](src) + 1)
+          dst = cast[Cstring](cast[Int](dst) + 1)
           dec(inLen)
           dec(outLen)
         elif lerr == E2BIG:
-          var offset = cast[int](dst) - cast[int](cstring(result))
+          var offset = cast[Int](dst) - cast[Int](Cstring(result))
           setLen(result, len(result)+inLen*2+5)
           # 5 is minimally one utf-8 char
-          dst = cast[cstring](cast[int](cstring(result)) + offset)
+          dst = cast[Cstring](cast[Int](Cstring(result)) + offset)
           outLen = len(result) - offset
         else:
-          OSError()
+          oSError()
     # iconv has a buffer that needs flushing, specially if the last char is 
     # not '\0'
-    discard iconv(c, nil, nil, dst, outlen)
+    discard iconv(c, nil, nil, dst, outLen)
     if iconvres == Cint(-1) and errno == E2BIG:
-      var offset = cast[int](dst) - cast[int](cstring(result))
+      var offset = cast[Int](dst) - cast[Int](Cstring(result))
       setLen(result, len(result)+inLen*2+5)
       # 5 is minimally one utf-8 char
-      dst = cast[cstring](cast[int](cstring(result)) + offset)
+      dst = cast[Cstring](cast[Int](Cstring(result)) + offset)
       outLen = len(result) - offset
-      discard iconv(c, nil, nil, dst, outlen)
+      discard iconv(c, nil, nil, dst, outLen)
     # trim output buffer
-    setLen(result, len(result) - outlen)
+    setLen(result, len(result) - outLen)
 
-proc convert*(s: string, destEncoding = "UTF-8", 
-                         srcEncoding = "CP1252"): string =
+proc convert*(s: String, destEncoding = "UTF-8", 
+                         srcEncoding = "CP1252"): String =
   ## converts `s` to `destEncoding`. It assumed that `s` is in `srcEncoding`.
   ## This opens a converter, uses it and closes it again and is thus more
   ## convienent but also likely less efficient than re-using a converter.

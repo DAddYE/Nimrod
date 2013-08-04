@@ -5,24 +5,24 @@ discard """
 # simple check for one dimensional arrays
 
 type
-  TMyArray = array[0..2, int]
-  TMyRecord = tuple[x, y: int]
+  TMyArray = Array[0..2, Int]
+  TMyRecord = tuple[x, y: Int]
 
-proc sum(a: TMyarray): int =
+proc sum(a: TMyarray): Int =
   result = 0
   var i = 0
   while i < len(a):
     inc(result, a[i])
     inc(i)
 
-proc sum(a: openarray[int]): int =
+proc sum(a: Openarray[Int]): Int =
   result = 0
   var i = 0
   while i < len(a):
     inc(result, a[i])
     inc(i)
 
-proc getPos(r: TMyRecord): int =
+proc getPos(r: TMyRecord): Int =
   result = r.x + r.y
 
 write(stdout, sum([1, 2, 3, 4]))

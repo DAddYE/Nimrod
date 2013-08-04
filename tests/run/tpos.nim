@@ -4,26 +4,26 @@ discard """
 """
 # test this particular function
 
-proc mypos(sub, s: string, start: int = 0): int =
+proc mypos(sub, s: String, start: Int = 0): Int =
   var
-    i, j, M, N: int
-  M = sub.len
-  N = s.len
+    i, j, m, n: Int
+  m = sub.len
+  n = s.len
   i = start
   j = 0
-  if i >= N:
+  if i >= n:
     result = -1
   else:
-    while True:
+    while true:
       if s[i] == sub[j]:
-        Inc(i)
-        Inc(j)
+        inc(i)
+        inc(j)
       else:
         i = i - j + 1
         j = 0
-      if (j >= M) or (i >= N): break
-    if j >= M:
-      result = i - M
+      if (j >= m) or (i >= n): break
+    if j >= m:
+      result = i - m
     else:
       result = -1
 

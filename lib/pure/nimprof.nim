@@ -32,11 +32,11 @@ when not defined(system.TStackTrace):
 # We use a simple hash table of bounded size to keep track of the stack traces:
 type
   TProfileEntry = object
-    total: int
+    total: Int
     st: TStackTrace
-  TProfileData = array [0..64*1024-1, ptr TProfileEntry]
+  TProfileData = Array [0..64*1024-1, ptr TProfileEntry]
 
-proc `==`(a, b: TStackTrace): bool =
+proc `==`(a, b: TStackTrace): Bool =
   for i in 0 .. high(a):
     if a[i] != b[i]: return false
   result = true
@@ -52,7 +52,7 @@ var
 when not defined(memProfiler):
   var interval: TNanos = 5_000_000 - tickCountCorrection # 5ms
 
-  proc setSamplingFrequency*(intervalInUs: int) =
+  proc setSamplingFrequency*(intervalInUs: Int) =
     ## set this to change the sampling frequency. Default value is 5ms.
     ## Set it to 0 to disable time based profiling; it uses an imprecise
     ## instruction count measure instead then.
@@ -65,13 +65,13 @@ when withThreads:
 
   InitLock profilingLock
 
-proc hookAux(st: TStackTrace, costs: int) =
+proc hookAux(st: TStackTrace, costs: Int) =
   # this is quite performance sensitive!
   when withThreads: Acquire profilingLock
   inc totalCalls
   var last = high(st)
   while last > 0 and isNil(st[last]): dec last
-  var h = hash(pointer(st[last])) and high(profileData)
+  var h = hash(Pointer(st[last])) and high(profileData)
   
   # we use probing for maxChainLen entries and replace the encountered entry
   # with the minimal 'total' value:
@@ -131,17 +131,17 @@ else:
   proc hook(st: TStackTrace) {.nimcall.} =
     if interval == 0:
       hookAux(st, 1)
-    elif getticks() - t0 > interval:
+    elif getTicks() - t0 > interval:
       hookAux(st, 1)
-      t0 = getticks()  
+      t0 = getTicks()  
 
-proc getTotal(x: ptr TProfileEntry): int =
+proc getTotal(x: ptr TProfileEntry): Int =
   result = if isNil(x): 0 else: x.total
 
-proc cmpEntries(a, b: ptr TProfileEntry): int =
+proc cmpEntries(a, b: ptr TProfileEntry): Int =
   result = b.getTotal - a.getTotal
 
-proc `//`(a, b: int): string =
+proc `//`(a, b: Int): String =
   result = format("$1/$2 = $3%", a, b, formatFloat(a / b * 100.0, ffDefault, 2))
 
 proc writeProfile() {.noconv.} =
@@ -185,7 +185,7 @@ proc writeProfile() {.noconv.} =
     echo "... failed"
 
 var
-  disabled: int
+  disabled: Int
 
 proc disableProfiling*() =
   when defined(system.TStackTrace):

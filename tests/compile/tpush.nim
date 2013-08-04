@@ -3,13 +3,13 @@
 {.push warnings: off, hints: off.}
 proc noWarning() =
   var
-    x: int
+    x: Int
   echo(x)
 
 {.pop.}
 
-proc WarnMe() =
+proc warnMe() =
   var
-    x: int
+    x: Int
   echo(x)
 

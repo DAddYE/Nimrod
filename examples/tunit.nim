@@ -23,7 +23,7 @@ suite "my suite":
   test "second suite test":
     echo "test var: " & testVar
 
-proc foo: bool =
+proc foo: Bool =
   echo "running foo"
   return true
 

@@ -10,12 +10,12 @@ type
     x: T
 
   TFoo[T] = object
-    data: array[0..100, T]
+    data: Array[0..100, T]
 
 converter toFoo[T](a: TFoo2[T]): TFoo[T] =
   result.data[0] = a.x
 
-proc p(a: TFoo[int]) =
+proc p(a: TFoo[Int]) =
   echo a.data[0]
 
 proc q[T](a: TFoo[T]) =
@@ -23,7 +23,7 @@ proc q[T](a: TFoo[T]) =
 
 
 var
-  aa: TFoo2[int]
+  aa: TFoo2[Int]
 aa.x = 666
 
 p aa

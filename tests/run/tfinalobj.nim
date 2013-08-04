@@ -4,7 +4,7 @@ discard """
 
 type
   TA = object {.pure, final.} 
-    x: string
+    x: String
     
 var
   a: TA

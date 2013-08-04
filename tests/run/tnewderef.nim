@@ -3,7 +3,7 @@ discard """
 
 """
 
-var x: ref int
+var x: ref Int
 new(x)
 x[] = 3
 

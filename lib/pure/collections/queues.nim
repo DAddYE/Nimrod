@@ -13,16 +13,16 @@ import math
 
 type
   TQueue* {.pure, final.}[T] = object ## a queue
-    data: seq[T]
-    rd, wr, count, mask: int
+    data: Seq[T]
+    rd, wr, count, mask: Int
     
 proc initQueue*[T](initialSize=4): TQueue[T] =
   ## creates a new queue. `initialSize` needs to be a power of 2.
-  assert IsPowerOfTwo(initialSize)
+  assert isPowerOfTwo(initialSize)
   result.mask = initialSize-1
   newSeq(result.data, initialSize)
 
-proc len*[T](q: TQueue[T]): int =
+proc len*[T](q: TQueue[T]): Int =
   ## returns the number of elements of `q`.
   result = q.count
 
@@ -39,7 +39,7 @@ proc add*[T](q: var TQueue[T], item: T) =
   ## adds an `item` to the end of the queue `q`.
   var cap = q.mask+1
   if q.count >= cap:
-    var n: seq[T]
+    var n: Seq[T]
     newSeq(n, cap*2)
     var i = 0
     for x in items(q):
@@ -64,7 +64,7 @@ proc dequeue*[T](q: var TQueue[T]): T =
   result = q.data[q.rd]
   q.rd = (q.rd + 1) and q.mask
 
-proc `$`*[T](q: TQueue[T]): string = 
+proc `$`*[T](q: TQueue[T]): String = 
   ## turns a queue into its string representation.
   result = "["
   for x in items(q):

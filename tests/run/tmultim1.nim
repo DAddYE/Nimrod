@@ -7,15 +7,15 @@ discard """
 type
   Expression = ref object {.inheritable.}
   Literal = ref object of Expression
-    x: int
+    x: Int
   PlusExpr = ref object of Expression
     a, b: Expression
     
-method eval(e: Expression): int = quit "to override!"
-method eval(e: Literal): int = return e.x
-method eval(e: PlusExpr): int = return eval(e.a) + eval(e.b)
+method eval(e: Expression): Int = quit "to override!"
+method eval(e: Literal): Int = return e.x
+method eval(e: PlusExpr): Int = return eval(e.a) + eval(e.b)
 
-proc newLit(x: int): Literal =
+proc newLit(x: Int): Literal =
   new(result)
   result.x = x
   

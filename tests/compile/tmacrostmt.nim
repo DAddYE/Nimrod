@@ -1,5 +1,5 @@
 import macros
-macro case_token(n: stmt): stmt {.immediate.} =
+macro caseToken(n: Stmt): Stmt {.immediate.} =
   # creates a lexical analyzer from regular expressions
   # ... (implementation is an exercise for the reader :-)
   nil
@@ -18,7 +18,7 @@ case_token: inc i
 
 #bug #488
 
-macro foo: stmt =
+macro foo: Stmt =
   var exp = newCall("whatwhat", newIntLitNode(1))
   if compiles(getAst(exp)): return exp
   else: echo "Does not compute!"

@@ -1,7 +1,7 @@
 # Simple program to test the debugger
 # compile with --debugger:on
 
-proc someComp(x, y: int): int =
+proc someComp(x, y: Int): Int =
   let a = x+y
   if a > 7:
     let b = a*90

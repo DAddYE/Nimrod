@@ -6,23 +6,23 @@ discard """
 
 type
   TMatrix* = object
-    data: seq[float]
-    fWidth, fHeight: int
+    data: Seq[Float]
+    fWidth, fHeight: Int
 
-template `|`(x, y: int): expr = y * m.fWidth + x
+template `|`(x, y: Int): Expr = y * m.fWidth + x
 
-proc createMatrix*(width, height: int): TMatrix = 
+proc createMatrix*(width, height: Int): TMatrix = 
   result.fWidth = width
   result.fHeight = height
   newSeq(result.data, width*height)
 
-proc width*(m: TMatrix): int {.inline.} = return m.fWidth
-proc height*(m: TMatrix): int {.inline.} = return m.fHeight
+proc width*(m: TMatrix): Int {.inline.} = return m.fWidth
+proc height*(m: TMatrix): Int {.inline.} = return m.fHeight
 
-proc `[]`*(m: TMatrix, x, y: int): float {.inline.} =
+proc `[]`*(m: TMatrix, x, y: Int): Float {.inline.} =
   result = m.data[x|y]
 
-proc `[]=`*(m: var TMatrix, x, y: int, val: float) {.inline.} =
+proc `[]=`*(m: var TMatrix, x, y: Int, val: Float) {.inline.} =
   m.data[x|y] = val
   
 proc `-|`*(m: TMatrix): TMatrix =

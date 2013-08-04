@@ -17,47 +17,47 @@ import
 when defined(Windows):
   import windows, ShellAPI, os
 
-proc info*(window: PWindow, msg: string) =
+proc info*(window: PWindow, msg: String) =
   ## Shows an information message to the user. The process waits until the
   ## user presses the OK button.
   when defined(Windows):
     discard MessageBoxA(0, msg, "Information", MB_OK or MB_ICONINFORMATION)
   else:
-    var dialog = message_dialog_new(window,
+    var dialog = messageDialogNew(window,
                 DIALOG_MODAL or DIALOG_DESTROY_WITH_PARENT,
-                MESSAGE_INFO, BUTTONS_OK, "%s", cstring(msg))
+                MessageInfo, ButtonsOk, "%s", Cstring(msg))
     setTitle(dialog, "Information")
     discard run(dialog)
     destroy(PWidget(dialog))
 
-proc warning*(window: PWindow, msg: string) =
+proc warning*(window: PWindow, msg: String) =
   ## Shows a warning message to the user. The process waits until the user
   ## presses the OK button.
   when defined(Windows):
     discard MessageBoxA(0, msg, "Warning", MB_OK or MB_ICONWARNING)
   else:
-    var dialog = DIALOG(message_dialog_new(window,
+    var dialog = dialog(messageDialogNew(window,
                 DIALOG_MODAL or DIALOG_DESTROY_WITH_PARENT,
-                MESSAGE_WARNING, BUTTONS_OK, "%s", cstring(msg)))
+                MessageWarning, ButtonsOk, "%s", Cstring(msg)))
     setTitle(dialog, "Warning")
     discard run(dialog)
     destroy(PWidget(dialog))
 
-proc error*(window: PWindow, msg: string) =
+proc error*(window: PWindow, msg: String) =
   ## Shows an error message to the user. The process waits until the user
   ## presses the OK button.
   when defined(Windows):
     discard MessageBoxA(0, msg, "Error", MB_OK or MB_ICONERROR)
   else:
-    var dialog = DIALOG(message_dialog_new(window,
+    var dialog = dialog(messageDialogNew(window,
                 DIALOG_MODAL or DIALOG_DESTROY_WITH_PARENT,
-                MESSAGE_ERROR, BUTTONS_OK, "%s", cstring(msg)))
+                MessageError, ButtonsOk, "%s", Cstring(msg)))
     setTitle(dialog, "Error")
     discard run(dialog)
     destroy(PWidget(dialog))
 
 
-proc ChooseFileToOpen*(window: PWindow, root: string = ""): string =
+proc chooseFileToOpen*(window: PWindow, root: String = ""): String =
   ## Opens a dialog that requests a filename from the user. Returns ""
   ## if the user closed the dialog without selecting a file. On Windows,
   ## the native dialog is used, else the GTK dialog is used.
@@ -78,21 +78,21 @@ proc ChooseFileToOpen*(window: PWindow, root: string = ""): string =
     else:
       result = ""
   else:
-    var chooser = file_chooser_dialog_new("Open File", window,
-                FILE_CHOOSER_ACTION_OPEN, 
-                STOCK_CANCEL, RESPONSE_CANCEL,
-                STOCK_OPEN, RESPONSE_OK, nil)
+    var chooser = fileChooserDialogNew("Open File", window,
+                FileChooserActionOpen, 
+                StockCancel, RESPONSE_CANCEL,
+                StockOpen, RESPONSE_OK, nil)
     if root.len > 0:
-      discard set_current_folder(chooser, root)
-    if run(chooser) == cint(RESPONSE_OK):
-      var x = get_filename(chooser)
+      discard setCurrentFolder(chooser, root)
+    if run(chooser) == Cint(RESPONSE_OK):
+      var x = getFilename(chooser)
       result = $x
-      g_free(x)
+      gFree(x)
     else:
       result = ""
     destroy(PWidget(chooser))
 
-proc ChooseFilesToOpen*(window: PWindow, root: string = ""): seq[string] =
+proc chooseFilesToOpen*(window: PWindow, root: String = ""): Seq[String] =
   ## Opens a dialog that requests filenames from the user. Returns ``@[]``
   ## if the user closed the dialog without selecting a file. On Windows,
   ## the native dialog is used, else the GTK dialog is used.
@@ -134,26 +134,26 @@ proc ChooseFilesToOpen*(window: PWindow, root: string = ""): seq[string] =
         # the windows API is
         add(result, path) 
   else:
-    var chooser = file_chooser_dialog_new("Open Files", window,
-                FILE_CHOOSER_ACTION_OPEN,
-                STOCK_CANCEL, RESPONSE_CANCEL,
-                STOCK_OPEN, RESPONSE_OK, nil)
+    var chooser = fileChooserDialogNew("Open Files", window,
+                FileChooserActionOpen,
+                StockCancel, RESPONSE_CANCEL,
+                StockOpen, RESPONSE_OK, nil)
     if root.len > 0:
-      discard set_current_folder(chooser, root)
-    set_select_multiple(chooser, true)
+      discard setCurrentFolder(chooser, root)
+    setSelectMultiple(chooser, true)
     result = @[]
-    if run(chooser) == cint(RESPONSE_OK):
-      var L = get_filenames(chooser)
+    if run(chooser) == Cint(RESPONSE_OK):
+      var L = getFilenames(chooser)
       var it = L
       while it != nil:
-        add(result, $cast[cstring](it.data))
-        g_free(it.data)
+        add(result, $cast[Cstring](it.data))
+        gFree(it.data)
         it = it.next
       free(L)
     destroy(PWidget(chooser))
 
 
-proc ChooseFileToSave*(window: PWindow, root: string = ""): string =
+proc chooseFileToSave*(window: PWindow, root: String = ""): String =
   ## Opens a dialog that requests a filename to save to from the user.
   ## Returns "" if the user closed the dialog without selecting a file.
   ## On Windows, the native dialog is used, else the GTK dialog is used.
@@ -174,23 +174,23 @@ proc ChooseFileToSave*(window: PWindow, root: string = ""): string =
     else:
       result = ""
   else:
-    var chooser = file_chooser_dialog_new("Save File", window,
-                FILE_CHOOSER_ACTION_SAVE,
-                STOCK_CANCEL, RESPONSE_CANCEL,
-                STOCK_SAVE, RESPONSE_OK, nil)
+    var chooser = fileChooserDialogNew("Save File", window,
+                FileChooserActionSave,
+                StockCancel, RESPONSE_CANCEL,
+                StockSave, RESPONSE_OK, nil)
     if root.len > 0:
-      discard set_current_folder(chooser, root)
-    set_do_overwrite_confirmation(chooser, true)
-    if run(chooser) == cint(RESPONSE_OK):
-      var x = get_filename(chooser)
+      discard setCurrentFolder(chooser, root)
+    setDoOverwriteConfirmation(chooser, true)
+    if run(chooser) == Cint(RESPONSE_OK):
+      var x = getFilename(chooser)
       result = $x
-      g_free(x)
+      gFree(x)
     else:
       result = ""
     destroy(PWidget(chooser))
 
 
-proc ChooseDir*(window: PWindow, root: string = ""): string =
+proc chooseDir*(window: PWindow, root: String = ""): String =
   ## Opens a dialog that requests a directory from the user.
   ## Returns "" if the user closed the dialog without selecting a directory.
   ## On Windows, the native dialog is used, else the GTK dialog is used.
@@ -210,16 +210,16 @@ proc ChooseDir*(window: PWindow, root: string = ""): string =
       Result = $TempPath
       discard GlobalFreePtr(lpItemID)
   else:
-    var chooser = file_chooser_dialog_new("Select Directory", window,
-                FILE_CHOOSER_ACTION_SELECT_FOLDER,
-                STOCK_CANCEL, RESPONSE_CANCEL,
-                STOCK_OPEN, RESPONSE_OK, nil)
+    var chooser = fileChooserDialogNew("Select Directory", window,
+                FileChooserActionSelectFolder,
+                StockCancel, RESPONSE_CANCEL,
+                StockOpen, RESPONSE_OK, nil)
     if root.len > 0:
-      discard set_current_folder(chooser, root)
-    if run(chooser) == cint(RESPONSE_OK):
-      var x = get_filename(chooser)
+      discard setCurrentFolder(chooser, root)
+    if run(chooser) == Cint(RESPONSE_OK):
+      var x = getFilename(chooser)
       result = $x
-      g_free(x)
+      gFree(x)
     else:
       result = ""
     destroy(PWidget(chooser))

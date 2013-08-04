@@ -22,16 +22,16 @@ when not defined(nimhygiene):
 type
   TSlotEnum = enum seEmpty, seFilled, seDeleted
   TKeyValuePair[A] = tuple[slot: TSlotEnum, key: A]
-  TKeyValuePairSeq[A] = seq[TKeyValuePair[A]]
+  TKeyValuePairSeq[A] = Seq[TKeyValuePair[A]]
   TSet* {.final, myShallow.}[A] = object ## a generic hash set
     data: TKeyValuePairSeq[A]
-    counter: int
+    counter: Int
 
-proc len*[A](s: TSet[A]): int =
+proc len*[A](s: TSet[A]): Int =
   ## returns the number of keys in `s`.
   result = s.counter
 
-proc card*[A](s: TSet[A]): int =
+proc card*[A](s: TSet[A]): Int =
   ## alias for `len`.
   result = s.counter
 
@@ -43,7 +43,7 @@ iterator items*[A](s: TSet[A]): A =
 const
   growthFactor = 2
 
-proc mustRehash(length, counter: int): bool {.inline.} =
+proc mustRehash(length, counter: Int): Bool {.inline.} =
   assert(length > counter)
   result = (length * 2 < counter * 3) or (length - counter < 4)
 
@@ -65,38 +65,38 @@ template rawInsertImpl() {.dirty.} =
   data[h].key = key
   data[h].slot = seFilled
 
-proc RawGet[A](s: TSet[A], key: A): int =
+proc rawGet[A](s: TSet[A], key: A): Int =
   rawGetImpl()
 
-proc contains*[A](s: TSet[A], key: A): bool =
+proc contains*[A](s: TSet[A], key: A): Bool =
   ## returns true iff `key` is in `s`.
-  var index = RawGet(s, key)
+  var index = rawGet(s, key)
   result = index >= 0
 
-proc RawInsert[A](s: var TSet[A], data: var TKeyValuePairSeq[A], key: A) =
+proc rawInsert[A](s: var TSet[A], data: var TKeyValuePairSeq[A], key: A) =
   rawInsertImpl()
 
-proc Enlarge[A](s: var TSet[A]) =
+proc enlarge[A](s: var TSet[A]) =
   var n: TKeyValuePairSeq[A]
   newSeq(n, len(s.data) * growthFactor)
   for i in countup(0, high(s.data)):
-    if s.data[i].slot == seFilled: RawInsert(s, n, s.data[i].key)
+    if s.data[i].slot == seFilled: rawInsert(s, n, s.data[i].key)
   swap(s.data, n)
 
 template inclImpl() {.dirty.} =
-  var index = RawGet(s, key)
+  var index = rawGet(s, key)
   if index < 0:
-    if mustRehash(len(s.data), s.counter): Enlarge(s)
-    RawInsert(s, s.data, key)
+    if mustRehash(len(s.data), s.counter): enlarge(s)
+    rawInsert(s, s.data, key)
     inc(s.counter)
 
 template containsOrInclImpl() {.dirty.} =
-  var index = RawGet(s, key)
+  var index = rawGet(s, key)
   if index >= 0:
     result = true
   else:
-    if mustRehash(len(s.data), s.counter): Enlarge(s)
-    RawInsert(s, s.data, key)
+    if mustRehash(len(s.data), s.counter): enlarge(s)
+    rawInsert(s, s.data, key)
     inc(s.counter)
 
 proc incl*[A](s: var TSet[A], key: A) =
@@ -105,12 +105,12 @@ proc incl*[A](s: var TSet[A], key: A) =
 
 proc excl*[A](s: var TSet[A], key: A) =
   ## excludes `key` from the set `s`.
-  var index = RawGet(s, key)
+  var index = rawGet(s, key)
   if index >= 0:
     s.data[index].slot = seDeleted
     dec(s.counter)
 
-proc containsOrIncl*[A](s: var TSet[A], key: A): bool =
+proc containsOrIncl*[A](s: var TSet[A], key: A): Bool =
   ## returns true if `s` contains `key`, otherwise `key` is included in `s`
   ## and false is returned.
   containsOrInclImpl()
@@ -122,19 +122,19 @@ proc initSet*[A](initialSize=64): TSet[A] =
   result.counter = 0
   newSeq(result.data, initialSize)
 
-proc toSet*[A](keys: openarray[A]): TSet[A] =
+proc toSet*[A](keys: Openarray[A]): TSet[A] =
   ## creates a new hash set that contains the given `keys`.
   result = initSet[A](nextPowerOfTwo(keys.len+10))
   for key in items(keys): result.incl(key)
 
-template dollarImpl(): stmt {.dirty.} =
+template dollarImpl(): Stmt {.dirty.} =
   result = "{"
   for key in items(s):
     if result.len > 1: result.add(", ")
     result.add($key)
   result.add("}")
 
-proc `$`*[A](s: TSet[A]): string =
+proc `$`*[A](s: TSet[A]): String =
   ## The `$` operator for hash sets.
   dollarImpl()
 
@@ -142,22 +142,22 @@ proc `$`*[A](s: TSet[A]): string =
 
 type
   TOrderedKeyValuePair[A] = tuple[
-    slot: TSlotEnum, next: int, key: A]
-  TOrderedKeyValuePairSeq[A] = seq[TOrderedKeyValuePair[A]]
+    slot: TSlotEnum, next: Int, key: A]
+  TOrderedKeyValuePairSeq[A] = Seq[TOrderedKeyValuePair[A]]
   TOrderedSet* {.
       final, myShallow.}[A] = object ## set that remembers insertion order
     data: TOrderedKeyValuePairSeq[A]
-    counter, first, last: int
+    counter, first, last: Int
 
-proc len*[A](s: TOrderedSet[A]): int {.inline.} =
+proc len*[A](s: TOrderedSet[A]): Int {.inline.} =
   ## returns the number of keys in `s`.
   result = s.counter
 
-proc card*[A](s: TOrderedSet[A]): int {.inline.} =
+proc card*[A](s: TOrderedSet[A]): Int {.inline.} =
   ## alias for `len`.
   result = s.counter
 
-template forAllOrderedPairs(yieldStmt: stmt) {.dirty, immediate.} =
+template forAllOrderedPairs(yieldStmt: Stmt) {.dirty, immediate.} =
   var h = s.first
   while h >= 0:
     var nxt = s.data[h].next
@@ -169,15 +169,15 @@ iterator items*[A](s: TOrderedSet[A]): A =
   forAllOrderedPairs:
     yield s.data[h].key
 
-proc RawGet[A](s: TOrderedSet[A], key: A): int =
+proc rawGet[A](s: TOrderedSet[A], key: A): Int =
   rawGetImpl()
 
-proc contains*[A](s: TOrderedSet[A], key: A): bool =
+proc contains*[A](s: TOrderedSet[A], key: A): Bool =
   ## returns true iff `key` is in `s`.
-  var index = RawGet(s, key)
+  var index = rawGet(s, key)
   result = index >= 0
 
-proc RawInsert[A](s: var TOrderedSet[A], 
+proc rawInsert[A](s: var TOrderedSet[A], 
                   data: var TOrderedKeyValuePairSeq[A], key: A) =
   rawInsertImpl()
   data[h].next = -1
@@ -185,7 +185,7 @@ proc RawInsert[A](s: var TOrderedSet[A],
   if s.last >= 0: data[s.last].next = h
   s.last = h
 
-proc Enlarge[A](s: var TOrderedSet[A]) =
+proc enlarge[A](s: var TOrderedSet[A]) =
   var n: TOrderedKeyValuePairSeq[A]
   newSeq(n, len(s.data) * growthFactor)
   var h = s.first
@@ -194,7 +194,7 @@ proc Enlarge[A](s: var TOrderedSet[A]) =
   while h >= 0:
     var nxt = s.data[h].next
     if s.data[h].slot == seFilled: 
-      RawInsert(s, n, s.data[h].key)
+      rawInsert(s, n, s.data[h].key)
     h = nxt
   swap(s.data, n)
 
@@ -202,7 +202,7 @@ proc incl*[A](s: var TOrderedSet[A], key: A) =
   ## includes an element `key` in `s`.
   inclImpl()
 
-proc containsOrIncl*[A](s: var TOrderedSet[A], key: A): bool =
+proc containsOrIncl*[A](s: var TOrderedSet[A], key: A): Bool =
   ## returns true if `s` contains `key`, otherwise `key` is included in `s`
   ## and false is returned.
   containsOrInclImpl()
@@ -216,12 +216,12 @@ proc initOrderedSet*[A](initialSize=64): TOrderedSet[A] =
   result.last = -1
   newSeq(result.data, initialSize)
 
-proc toOrderedSet*[A](keys: openarray[A]): TOrderedSet[A] =
+proc toOrderedSet*[A](keys: Openarray[A]): TOrderedSet[A] =
   ## creates a new ordered hash set that contains the given `keys`.
   result = initOrderedSet[A](nextPowerOfTwo(keys.len+10))
   for key in items(keys): result.incl(key)
 
-proc `$`*[A](s: TOrderedSet[A]): string =
+proc `$`*[A](s: TOrderedSet[A]): String =
   ## The `$` operator for ordered hash sets.
   dollarImpl()
 

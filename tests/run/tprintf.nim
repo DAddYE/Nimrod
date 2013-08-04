@@ -4,7 +4,7 @@ discard """
 """
 # Test a printf proc
 
-proc printf(file: TFile, args: openarray[string]) =
+proc printf(file: TFile, args: Openarray[String]) =
   var i = 0
   while i < args.len:
     write(file, args[i])

@@ -1,8 +1,8 @@
 type 
-  PA[T] = ref TA[T]
+  Pa[T] = ref TA[T]
   TA[T] = object
     field: T
-var a: PA[string]
+var a: Pa[String]
 new(a)
 a.field = "some string"
 

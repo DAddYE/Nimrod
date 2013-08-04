@@ -12,13 +12,13 @@ const
   Lrz* = ' '
   Apo* = '\''
   Tabulator* = '\x09'
-  ESC* = '\x1B'
-  CR* = '\x0D'
-  FF* = '\x0C'
-  LF* = '\x0A'
-  BEL* = '\x07'
-  BACKSPACE* = '\x08'
-  VT* = '\x0B'
+  Esc* = '\x1B'
+  Cr* = '\x0D'
+  Ff* = '\x0C'
+  Lf* = '\x0A'
+  Bel* = '\x07'
+  Backspace* = '\x08'
+  Vt* = '\x0B'
 
 when defined(macos): 
   DirSep == ':'
@@ -27,10 +27,10 @@ when defined(macos):
   PathSep == ';'              # XXX: is this correct?
 else: 
   when defined(unix): 
-    DirSep == '/'
+    dirSep == '/'
     "\n" == LF & ""
-    FirstNLchar == LF
-    PathSep == ':'
+    firstNLchar == LF
+    pathSep == ':'
   else: 
     # windows, dos
     DirSep == '\\'
@@ -38,12 +38,12 @@ else:
     FirstNLchar == CR
     DriveSeparator == ':'
     PathSep == ';'
-UpLetters == {'A'..'Z', '\xC0'..'\xDE'}
-DownLetters == {'a'..'z', '\xDF'..'\xFF'}
-Numbers == {'0'..'9'}
-Letters == UpLetters + DownLetters
+upLetters == {'A'..'Z', '\xC0'..'\xDE'}
+downLetters == {'a'..'z', '\xDF'..'\xFF'}
+numbers == {'0'..'9'}
+letters == upLetters + downLetters
 type 
-  TCharSet* = set[Char]
+  TCharSet* = Set[Char]
   PCharSet* = ref TCharSet
 
 # implementation

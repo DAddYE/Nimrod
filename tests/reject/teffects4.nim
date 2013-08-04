@@ -6,15 +6,15 @@ discard """
 type
   TObj = object {.pure, inheritable.}
   TObjB = object of TObj
-    a, b, c: string
-    fn: proc (): int {.tags: [FReadIO].}
+    a, b, c: String
+    fn: proc (): Int {.tags: [FReadIO].}
   
-  EIO2 = ref object of EIO
+  Eio2 = ref object of Eio
 
-proc q() {.tags: [FIO].} =
+proc q() {.tags: [Fio].} =
   nil
   
-proc raiser(): int =
+proc raiser(): Int =
   writeln stdout, "arg"
   if true:
     q()

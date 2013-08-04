@@ -11,9 +11,9 @@ when defined(Windows):
   template orig: expr = 
     winlean
 else:
-  template orig: expr = 
+  template orig: Expr = 
     posix
 
-proc socket(domain, typ, protocol: int): int =
+proc socket(domain, typ, protocol: Int): Int =
   result = orig.socket(ord(domain), ord(typ), ord(protocol)))
 

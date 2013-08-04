@@ -63,44 +63,44 @@ type
 
 
   PRSTNode* = ref TRstNode    ## an RST node
-  TRstNodeSeq* = seq[PRstNode]
+  TRstNodeSeq* = Seq[PRSTNode]
   TRSTNode* {.acyclic, final.} = object ## an RST node's description
     kind*: TRstNodeKind       ## the node's kind
-    text*: string             ## valid for leafs in the AST; and the title of
+    text*: String             ## valid for leafs in the AST; and the title of
                               ## the document or the section
-    level*: int               ## valid for some node kinds
+    level*: Int               ## valid for some node kinds
     sons*: TRstNodeSeq        ## the node's sons
 
-proc len*(n: PRstNode): int = 
+proc len*(n: PRSTNode): Int = 
   result = len(n.sons)
 
-proc newRstNode*(kind: TRstNodeKind): PRstNode = 
+proc newRstNode*(kind: TRstNodeKind): PRSTNode = 
   new(result)
   result.sons = @[]
   result.kind = kind
 
-proc newRstNode*(kind: TRstNodeKind, s: string): PRstNode = 
+proc newRstNode*(kind: TRstNodeKind, s: String): PRSTNode = 
   result = newRstNode(kind)
   result.text = s
 
-proc lastSon*(n: PRstNode): PRstNode = 
+proc lastSon*(n: PRSTNode): PRSTNode = 
   result = n.sons[len(n.sons)-1]
 
-proc add*(father, son: PRstNode) =
+proc add*(father, son: PRSTNode) =
   add(father.sons, son)
 
-proc addIfNotNil*(father, son: PRstNode) = 
+proc addIfNotNil*(father, son: PRSTNode) = 
   if son != nil: add(father, son)
 
 
 type
   TRenderContext {.pure.} = object
-    indent: int
-    verbatim: int
+    indent: Int
+    verbatim: Int
 
-proc renderRstToRst(d: var TRenderContext, n: PRstNode, result: var string)
+proc renderRstToRst(d: var TRenderContext, n: PRSTNode, result: var String)
 
-proc renderRstSons(d: var TRenderContext, n: PRstNode, result: var string) = 
+proc renderRstSons(d: var TRenderContext, n: PRSTNode, result: var String) = 
   for i in countup(0, len(n) - 1): 
     renderRstToRst(d, n.sons[i], result)
   
@@ -108,7 +108,7 @@ proc renderRstToRst(d: var TRenderContext, n: PRstNode, result: var string) =
   # this is needed for the index generation; it may also be useful for
   # debugging, but most code is already debugged...
   const 
-    lvlToChar: array[0..8, char] = ['!', '=', '-', '~', '`', '<', '*', '|', '+']
+    lvlToChar: Array[0..8, Char] = ['!', '=', '-', '~', '`', '<', '*', '|', '+']
   if n == nil: return
   var ind = repeatChar(d.indent)
   case n.kind
@@ -120,11 +120,11 @@ proc renderRstToRst(d: var TRenderContext, n: PRstNode, result: var string) =
     
     let oldLen = result.len
     renderRstSons(d, n, result)
-    let HeadlineLen = result.len - oldLen
+    let headlineLen = result.len - oldLen
 
     result.add("\n")
     result.add(ind)
-    result.add repeatChar(HeadlineLen, lvlToChar[n.level])
+    result.add repeatChar(headlineLen, lvlToChar[n.level])
   of rnOverline:
     result.add("\n")
     result.add(ind)
@@ -132,7 +132,7 @@ proc renderRstToRst(d: var TRenderContext, n: PRstNode, result: var string) =
     var headline = ""
     renderRstSons(d, n, headline)
     
-    let lvl = repeatChar(headline.Len - d.indent, lvlToChar[n.level])
+    let lvl = repeatChar(headline.len - d.indent, lvlToChar[n.level])
     result.add(lvl)
     result.add("\n")
     result.add(headline)
@@ -281,7 +281,7 @@ proc renderRstToRst(d: var TRenderContext, n: PRstNode, result: var string) =
   else:
     result.add("Error: cannot render: " & $n.kind)
   
-proc renderRstToRst*(n: PRstNode, result: var string) =
+proc renderRstToRst*(n: PRSTNode, result: var String) =
   ## renders `n` into its string representation and appends to `result`.
   var d: TRenderContext
   renderRstToRst(d, n, result)

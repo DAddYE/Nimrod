@@ -17,7 +17,7 @@ proc setTexParams() =
   ?glTexParameteri(GLtexture2D, GLTextureWrapT, GLClampToEdge)
 
 proc whiteTex*(): TTex =
-  if gWhiteTex.id.int != 0:
+  if gWhiteTex.id.Int != 0:
     return gWhiteTex
 
   ?glGenTextures(1, gWhiteTex.id.addr)

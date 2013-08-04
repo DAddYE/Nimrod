@@ -11,7 +11,7 @@
 
 import strtabs, times
 
-proc parseCookies*(s: string): PStringTable = 
+proc parseCookies*(s: String): PStringTable = 
   ## parses cookies into a string table.
   result = newStringTable(modeCaseInsensitive)
   var i = 0
@@ -28,8 +28,8 @@ proc parseCookies*(s: string): PStringTable =
     if s[i] == '\0': break
     inc(i) # skip ';'
 
-proc setCookie*(key, value: string, domain = "", path = "", 
-                expires = "", noName = false): string =
+proc setCookie*(key, value: String, domain = "", path = "", 
+                expires = "", noName = false): String =
   ## Creates a command in the format of 
   ## ``Set-Cookie: key=value; Domain=...; ...``
   result = ""
@@ -39,15 +39,15 @@ proc setCookie*(key, value: string, domain = "", path = "",
   if path != "": result.add("; Path=" & path)
   if expires != "": result.add("; Expires=" & expires)
 
-proc setCookie*(key, value: string, expires: TTimeInfo,
-                domain = "", path = "", noName = false): string =
+proc setCookie*(key, value: String, expires: TTimeInfo,
+                domain = "", path = "", noName = false): String =
   ## Creates a command in the format of 
   ## ``Set-Cookie: key=value; Domain=...; ...``
   ##
   ## **Note:** UTC is assumed as the timezone for ``expires``.
   
   return setCookie(key, value, domain, path,
-            format(expires, "ddd',' dd MMM yyyy HH:mm:ss 'UTC'"), noname)
+            format(expires, "ddd',' dd MMM yyyy HH:mm:ss 'UTC'"), noName)
   
 when isMainModule:
   var tim = TTime(int(getTime()) + 76 * (60 * 60 * 24))

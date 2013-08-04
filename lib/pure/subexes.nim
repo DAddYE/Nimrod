@@ -19,7 +19,7 @@ from strutils import parseInt, cmpIgnoreStyle, Digits
 include "system/inclrtl"
 
 
-proc findNormalized(x: string, inArray: openarray[string]): int =
+proc findNormalized(x: String, inArray: Openarray[String]): Int =
   var i = 0
   while i < high(inArray):
     if cmpIgnoreStyle(x, inArray[i]) == 0: return i
@@ -31,27 +31,27 @@ type
   EInvalidSubex* = object of EInvalidValue ## exception that is raised for
                                            ## an invalid subex
 
-proc raiseInvalidFormat(msg: string) {.noinline.} =
+proc raiseInvalidFormat(msg: String) {.noinline.} =
   raise newException(EInvalidSubex, "invalid format string: " & msg)
 
 type
   TFormatParser = object {.pure, final.}
-    f: cstring
-    num, i, lineLen: int
+    f: Cstring
+    num, i, lineLen: Int
 
-template call(x: stmt) {.immediate.} =
+template call(x: Stmt) {.immediate.} =
   p.i = i
   x
   i = p.i
 
-template callNoLineLenTracking(x: stmt) {.immediate.} =
+template callNoLineLenTracking(x: Stmt) {.immediate.} =
   let oldLineLen = p.lineLen
   p.i = i
   x
   i = p.i
   p.lineLen = oldLineLen
 
-proc getFormatArg(p: var TFormatParser, a: openArray[string]): int =
+proc getFormatArg(p: var TFormatParser, a: Openarray[String]): Int =
   const PatternChars = {'a'..'z', 'A'..'Z', '0'..'9', '\128'..'\255', '_'}
   var i = p.i
   var f = p.f
@@ -84,21 +84,21 @@ proc getFormatArg(p: var TFormatParser, a: openArray[string]): int =
   if result >=% a.len: raiseInvalidFormat("index out of bounds: " & $result)
   p.i = i
 
-proc scanDollar(p: var TFormatParser, a: openarray[string], s: var string)
+proc scanDollar(p: var TFormatParser, a: Openarray[String], s: var String)
 
-proc emitChar(p: var TFormatParser, x: var string, ch: char) {.inline.} =
+proc emitChar(p: var TFormatParser, x: var String, ch: Char) {.inline.} =
   x.add(ch)
   if ch == '\L': p.lineLen = 0
   else: inc p.lineLen
 
-proc emitStrLinear(p: var TFormatParser, x: var string, y: string) {.inline.} =
+proc emitStrLinear(p: var TFormatParser, x: var String, y: String) {.inline.} =
   for ch in items(y): emitChar(p, x, ch)
 
-proc emitStr(p: var TFormatParser, x: var string, y: string) {.inline.} =
+proc emitStr(p: var TFormatParser, x: var String, y: String) {.inline.} =
   x.add(y)
   inc p.lineLen, y.len
 
-proc scanQuote(p: var TFormatParser, x: var string, toAdd: bool) =
+proc scanQuote(p: var TFormatParser, x: var String, toAdd: Bool) =
   var i = p.i+1
   var f = p.f
   while true:
@@ -113,8 +113,8 @@ proc scanQuote(p: var TFormatParser, x: var string, toAdd: bool) =
       inc i
   p.i = i
 
-proc scanBranch(p: var TFormatParser, a: openArray[string],
-                x: var string, choice: int) =
+proc scanBranch(p: var TFormatParser, a: Openarray[String],
+                x: var String, choice: Int) =
   var i = p.i
   var f = p.f
   var c = 0
@@ -160,7 +160,7 @@ proc scanBranch(p: var TFormatParser, a: openArray[string],
     i = last
   p.i = i+1
 
-proc scanSlice(p: var TFormatParser, a: openarray[string]): tuple[x, y: int] =
+proc scanSlice(p: var TFormatParser, a: Openarray[String]): tuple[x, y: Int] =
   var slice = false
   var i = p.i
   var f = p.f
@@ -201,7 +201,7 @@ proc scanDollar(p: var TFormatParser, a: openarray[string], s: var string) =
     inc i
     var start = i
     call: scanBranch(p, a, s, -1)
-    var x: int
+    var x: Int
     if f[i] == '{':
       inc i
       call: x = getFormatArg(p, a)
@@ -229,8 +229,8 @@ proc scanDollar(p: var TFormatParser, a: openarray[string], s: var string) =
         emitStrLinear p, s, sep
         for j in x..y: emitStr p, s, a[j]
     else:
-      block StringJoin:
-        block OptionalLineLengthSpecifier:
+      block stringJoin:
+        block optionalLineLengthSpecifier:
           var maxLen = 0
           case f[i]
           of '0'..'9':
@@ -290,20 +290,20 @@ proc scanDollar(p: var TFormatParser, a: openarray[string], s: var string) =
 
 
 type
-  TSubex* = distinct string ## string that contains a substitution expression
+  TSubex* = distinct String ## string that contains a substitution expression
 
-proc subex*(s: string): TSubex =
+proc subex*(s: String): TSubex =
   ## constructs a *substitution expression* from `s`. Currently this performs
   ## no syntax checking but this may change in later versions.
   result = TSubex(s)
 
-proc addf*(s: var string, formatstr: TSubex, a: varargs[string, `$`]) {.
+proc addf*(s: var String, formatstr: TSubex, a: Varargs[String, `$`]) {.
            noSideEffect, rtl, extern: "nfrmtAddf".} =
   ## The same as ``add(s, formatstr % a)``, but more efficient.
   var p: TFormatParser
-  p.f = formatstr.string
+  p.f = formatstr.String
   var i = 0
-  while i < len(formatstr.string):
+  while i < len(formatstr.String):
     if p.f[i] == '$':
       inc i
       call: scanDollar(p, a, s)
@@ -311,28 +311,28 @@ proc addf*(s: var string, formatstr: TSubex, a: varargs[string, `$`]) {.
       emitChar(p, s, p.f[i])
       inc(i)
 
-proc `%` *(formatstr: TSubex, a: openarray[string]): string {.noSideEffect,
+proc `%` *(formatstr: TSubex, a: Openarray[String]): String {.noSideEffect,
   rtl, extern: "nfrmtFormatOpenArray".} =
   ## The `substitution`:idx: operator performs string substitutions in
   ## `formatstr` and returns a modified `formatstr`. This is often called
   ## `string interpolation`:idx:.
   ##
-  result = newStringOfCap(formatstr.string.len + a.len shl 4)
+  result = newStringOfCap(formatstr.String.len + a.len shl 4)
   addf(result, formatstr, a)
 
-proc `%` *(formatstr: TSubex, a: string): string {.noSideEffect,
+proc `%` *(formatstr: TSubex, a: String): String {.noSideEffect,
   rtl, extern: "nfrmtFormatSingleElem".} =
   ## This is the same as ``formatstr % [a]``.
-  result = newStringOfCap(formatstr.string.len + a.len)
+  result = newStringOfCap(formatstr.String.len + a.len)
   addf(result, formatstr, [a])
 
-proc format*(formatstr: TSubex, a: varargs[string, `$`]): string {.noSideEffect,
+proc format*(formatstr: TSubex, a: Varargs[String, `$`]): String {.noSideEffect,
   rtl, extern: "nfrmtFormatVarargs".} =
   ## The `substitution`:idx: operator performs string substitutions in
   ## `formatstr` and returns a modified `formatstr`. This is often called
   ## `string interpolation`:idx:.
   ##
-  result = newStringOfCap(formatstr.string.len + a.len shl 4)
+  result = newStringOfCap(formatstr.String.len + a.len shl 4)
   addf(result, formatstr, a)
 
 {.pop.}

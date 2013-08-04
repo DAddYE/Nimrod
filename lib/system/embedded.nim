@@ -10,10 +10,10 @@
 
 # Bare-bones implementation of some things for embedded targets.
 
-proc chckIndx(i, a, b: int): int {.inline, compilerproc.}
-proc chckRange(i, a, b: int): int {.inline, compilerproc.}
-proc chckRangeF(x, a, b: float): float {.inline, compilerproc.}
-proc chckNil(p: pointer) {.inline, compilerproc.}
+proc chckIndx(i, a, b: Int): Int {.inline, compilerproc.}
+proc chckRange(i, a, b: Int): Int {.inline, compilerproc.}
+proc chckRangeF(x, a, b: Float): Float {.inline, compilerproc.}
+proc chckNil(p: Pointer) {.inline, compilerproc.}
 
 proc pushFrame(s: PFrame) {.compilerRtl, inl, exportc: "nimFrame".} = nil
 proc popFrame {.compilerRtl, inl.} = nil
@@ -32,12 +32,12 @@ const
 proc quitOrDebug() {.inline.} =
   quit(1)
 
-proc raiseException(e: ref E_Base, ename: CString) {.compilerRtl.} =
+proc raiseException(e: ref E_Base, ename: Cstring) {.compilerRtl.} =
   sysFatal(ENoExceptionToReraise, "exception handling is not available")
 
 proc reraiseException() {.compilerRtl.} =
   sysFatal(ENoExceptionToReraise, "no exception to reraise")
 
-proc WriteStackTrace() = nil
+proc writeStackTrace() = nil
 
 proc setControlCHook(hook: proc () {.noconv.}) = nil

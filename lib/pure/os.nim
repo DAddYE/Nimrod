@@ -39,7 +39,7 @@ type
   FWriteDir* = object of FWriteIO ## effect that denotes a write operation to
                                   ## the directory structure
 
-  TOSErrorCode* = distinct int32 ## Specifies an OS Error Code.
+  TOSErrorCode* = distinct Int32 ## Specifies an OS Error Code.
 
 const
   doslike = defined(windows) or defined(OS2) or defined(DOS)
@@ -166,14 +166,14 @@ else: # UNIX-like operating system
 
 when defined(macosx) or defined(bsd):
   var
-    pathMax {.importc: "PATH_MAX", header: "<stdlib.h>".}: cint
+    pathMax {.importc: "PATH_MAX", header: "<stdlib.h>".}: Cint
 
 const
   ExtSep* = '.'
     ## The character which separates the base filename from the extension;
     ## for example, the '.' in ``os.nim``.
 
-proc OSErrorMsg*(): string {.rtl, extern: "nos$1", deprecated.} =
+proc oSErrorMsg*(): String {.rtl, extern: "nos$1", deprecated.} =
   ## Retrieves the operating system's error flag, ``errno``.
   ## On Windows ``GetLastError`` is checked before ``errno``.
   ## Returns "" if no error occured.
@@ -200,7 +200,7 @@ proc OSErrorMsg*(): string {.rtl, extern: "nos$1", deprecated.} =
     result = $os.strerror(errno)
 
 {.push warning[deprecated]: off.}
-proc OSError*(msg: string = "") {.noinline, rtl, extern: "nos$1", deprecated.} =
+proc oSError*(msg: String = "") {.noinline, rtl, extern: "nos$1", deprecated.} =
   ## raises an EOS exception with the given message ``msg``.
   ## If ``msg == ""``, the operating system's error flag
   ## (``errno``) is converted to a readable error message. On Windows
@@ -209,16 +209,16 @@ proc OSError*(msg: string = "") {.noinline, rtl, extern: "nos$1", deprecated.} =
   ##
   ## **Deprecated since version 0.9.4**: use the other ``OSError`` proc.
   if len(msg) == 0:
-    var m = OSErrorMsg()
-    raise newException(EOS, if m.len > 0: m else: "unknown OS error")
+    var m = oSErrorMsg()
+    raise newException(Eos, if m.len > 0: m else: "unknown OS error")
   else:
-    raise newException(EOS, msg)
+    raise newException(Eos, msg)
 {.pop.}
 
-proc `==`*(err1, err2: TOSErrorCode): bool {.borrow.}
-proc `$`*(err: TOSErrorCode): string {.borrow.}
+proc `==`*(err1, err2: TOSErrorCode): Bool {.borrow.}
+proc `$`*(err: TOSErrorCode): String {.borrow.}
 
-proc OSErrorMsg*(errorCode: TOSErrorCode): string =
+proc oSErrorMsg*(errorCode: TOSErrorCode): String =
   ## Converts an OS error code into a human readable string.
   ##
   ## The error code can be retrieved using the ``OSLastError`` proc.
@@ -246,9 +246,9 @@ proc OSErrorMsg*(errorCode: TOSErrorCode): string =
           if msgbuf != nil: LocalFree(msgbuf)
   else:
     if errorCode != TOSErrorCode(0'i32):
-      result = $os.strerror(errorCode.int32)
+      result = $os.strerror(errorCode.Int32)
 
-proc OSError*(errorCode: TOSErrorCode) =
+proc oSError*(errorCode: TOSErrorCode) =
   ## Raises an ``EOS`` exception. The ``errorCode`` will determine the
   ## message, ``OSErrorMsg`` will be used to get this message.
   ##
@@ -256,14 +256,14 @@ proc OSError*(errorCode: TOSErrorCode) =
   ##
   ## If the error code is ``0`` or an error message could not be retrieved,
   ## the message ``unknown OS error`` will be used.
-  let msg = OSErrorMsg(errorCode)
+  let msg = oSErrorMsg(errorCode)
   if msg == "":
-    raise newException(EOS, "unknown OS error")
+    raise newException(Eos, "unknown OS error")
   else:
-    raise newException(EOS, msg)
+    raise newException(Eos, msg)
 
 {.push stackTrace:off.}
-proc OSLastError*(): TOSErrorCode =
+proc oSLastError*(): TOSErrorCode =
   ## Retrieves the last operating system error code.
   ##
   ## This procedure is useful in the event when an OS call fails. In that case
@@ -283,7 +283,7 @@ proc OSLastError*(): TOSErrorCode =
     result = TOSErrorCode(errno)
 {.pop.}
 
-proc UnixToNativePath*(path: string): string {.
+proc unixToNativePath*(path: String): String {.
   noSideEffect, rtl, extern: "nos$1".} =
   ## Converts an UNIX-like path to a native one.
   ##
@@ -356,7 +356,7 @@ when defined(windows):
 
     template getFilename(f: expr): expr = $f.cFilename
     
-proc existsFile*(filename: string): bool {.rtl, extern: "nos$1", 
+proc existsFile*(filename: String): Bool {.rtl, extern: "nos$1", 
                                           tags: [FReadDir].} =
   ## Returns true if the file exists, false otherwise.
   when defined(windows):
@@ -370,7 +370,7 @@ proc existsFile*(filename: string): bool {.rtl, extern: "nos$1",
     var res: TStat
     return stat(filename, res) >= 0'i32 and S_ISREG(res.st_mode)
 
-proc existsDir*(dir: string): bool {.rtl, extern: "nos$1", tags: [FReadDir].} =
+proc existsDir*(dir: String): Bool {.rtl, extern: "nos$1", tags: [FReadDir].} =
   ## Returns true iff the directory `dir` exists. If `dir` is a file, false
   ## is returned.
   when defined(windows):
@@ -384,11 +384,11 @@ proc existsDir*(dir: string): bool {.rtl, extern: "nos$1", tags: [FReadDir].} =
     var res: TStat
     return stat(dir, res) >= 0'i32 and S_ISDIR(res.st_mode)
 
-proc getLastModificationTime*(file: string): TTime {.rtl, extern: "nos$1".} =
+proc getLastModificationTime*(file: String): TTime {.rtl, extern: "nos$1".} =
   ## Returns the `file`'s last modification time.
   when defined(posix):
     var res: TStat
-    if stat(file, res) < 0'i32: OSError(OSLastError())
+    if stat(file, res) < 0'i32: oSError(oSLastError())
     return res.st_mtime
   else:
     var f: TWIN32_Find_Data
@@ -397,11 +397,11 @@ proc getLastModificationTime*(file: string): TTime {.rtl, extern: "nos$1".} =
     result = winTimeToUnixTime(rdFileTime(f.ftLastWriteTime))
     findclose(h)
 
-proc getLastAccessTime*(file: string): TTime {.rtl, extern: "nos$1".} =
+proc getLastAccessTime*(file: String): TTime {.rtl, extern: "nos$1".} =
   ## Returns the `file`'s last read or write access time.
   when defined(posix):
     var res: TStat
-    if stat(file, res) < 0'i32: OSError(OSLastError())
+    if stat(file, res) < 0'i32: oSError(oSLastError())
     return res.st_atime
   else:
     var f: TWIN32_Find_Data
@@ -410,11 +410,11 @@ proc getLastAccessTime*(file: string): TTime {.rtl, extern: "nos$1".} =
     result = winTimeToUnixTime(rdFileTime(f.ftLastAccessTime))
     findclose(h)
 
-proc getCreationTime*(file: string): TTime {.rtl, extern: "nos$1".} = 
+proc getCreationTime*(file: String): TTime {.rtl, extern: "nos$1".} = 
   ## Returns the `file`'s creation time.
   when defined(posix):
     var res: TStat
-    if stat(file, res) < 0'i32: OSError(OSLastError())
+    if stat(file, res) < 0'i32: oSError(oSLastError())
     return res.st_ctime
   else:
     var f: TWIN32_Find_Data
@@ -423,12 +423,12 @@ proc getCreationTime*(file: string): TTime {.rtl, extern: "nos$1".} =
     result = winTimeToUnixTime(rdFileTime(f.ftCreationTime))
     findclose(h)
 
-proc fileNewer*(a, b: string): bool {.rtl, extern: "nos$1".} =
+proc fileNewer*(a, b: String): Bool {.rtl, extern: "nos$1".} =
   ## Returns true if the file `a` is newer than file `b`, i.e. if `a`'s
   ## modification time is later than `b`'s.
   result = getLastModificationTime(a) - getLastModificationTime(b) > 0
 
-proc getCurrentDir*(): string {.rtl, extern: "nos$1", tags: [].} =
+proc getCurrentDir*(): String {.rtl, extern: "nos$1", tags: [].} =
   ## Returns the `current working directory`:idx:.
   const bufsize = 512 # should be enough
   when defined(windows):
@@ -445,11 +445,11 @@ proc getCurrentDir*(): string {.rtl, extern: "nos$1", tags: [].} =
   else:
     result = newString(bufsize)
     if getcwd(result, bufsize) != nil:
-      setlen(result, c_strlen(result))
+      setLen(result, cStrlen(result))
     else:
-      OSError(OSLastError())
+      oSError(oSLastError())
 
-proc setCurrentDir*(newDir: string) {.inline, tags: [].} =
+proc setCurrentDir*(newDir: String) {.inline, tags: [].} =
   ## Sets the `current working directory`:idx:; `EOS` is raised if
   ## `newDir` cannot been set.
   when defined(Windows):
@@ -458,9 +458,9 @@ proc setCurrentDir*(newDir: string) {.inline, tags: [].} =
     else:
       if SetCurrentDirectoryA(newDir) == 0'i32: OSError(OSLastError())
   else:
-    if chdir(newDir) != 0'i32: OSError(OSLastError())
+    if chdir(newDir) != 0'i32: oSError(oSLastError())
 
-proc JoinPath*(head, tail: string): string {.
+proc joinPath*(head, tail: String): String {.
   noSideEffect, rtl, extern: "nos$1".} =
   ## Joins two directory names to one.
   ##
@@ -498,16 +498,16 @@ proc JoinPath*(head, tail: string): string {.
     else:
       result = head & DirSep & tail
 
-proc JoinPath*(parts: varargs[string]): string {.noSideEffect,
+proc joinPath*(parts: Varargs[String]): String {.noSideEffect,
   rtl, extern: "nos$1OpenArray".} =
   ## The same as `JoinPath(head, tail)`, but works with any number of directory
   ## parts. You need to pass at least one element or the proc will assert in
   ## debug builds and crash on release builds.
   result = parts[0]
   for i in 1..high(parts):
-    result = JoinPath(result, parts[i])
+    result = joinPath(result, parts[i])
 
-proc `/` * (head, tail: string): string {.noSideEffect.} =
+proc `/` * (head, tail: String): String {.noSideEffect.} =
   ## The same as ``JoinPath(head, tail)``
   ##
   ## Here are some examples for Unix:
@@ -517,9 +517,9 @@ proc `/` * (head, tail: string): string {.noSideEffect.} =
   ##   assert "" / "lib" == "lib"
   ##   assert "" / "/lib" == "/lib"
   ##   assert "usr/" / "/lib" == "usr/lib"
-  return JoinPath(head, tail)
+  return joinPath(head, tail)
 
-proc SplitPath*(path: string): tuple[head, tail: string] {.
+proc splitPath*(path: String): tuple[head, tail: String] {.
   noSideEffect, rtl, extern: "nos$1".} =
   ## Splits a directory into (head, tail), so that
   ## ``JoinPath(head, tail) == path``.
@@ -544,7 +544,7 @@ proc SplitPath*(path: string): tuple[head, tail: string] {.
     result.head = ""
     result.tail = path
 
-proc parentDir*(path: string): string {.
+proc parentDir*(path: String): String {.
   noSideEffect, rtl, extern: "nos$1".} =
   ## Returns the parent directory of `path`.
   ##
@@ -566,13 +566,13 @@ proc parentDir*(path: string): string {.
   else:
     result = path
 
-proc isRootDir*(path: string): bool {.
+proc isRootDir*(path: String): Bool {.
   noSideEffect, rtl, extern: "nos$1".} =
   ## Checks whether a given `path` is a root directory 
   var p = parentDir(path)
   result = p == path or p.len == 0
 
-iterator parentDirs*(path: string, fromRoot=false, inclusive=true): string =
+iterator parentDirs*(path: String, fromRoot=false, inclusive=true): String =
   ## Walks over all parent directories of a given `path`
   ##
   ## If `fromRoot` is set, the traversal will start from the file system root
@@ -596,15 +596,15 @@ iterator parentDirs*(path: string, fromRoot=false, inclusive=true): string =
 
     if inclusive: yield path
 
-proc `/../` * (head, tail: string): string {.noSideEffect.} =
+proc `/../` * (head, tail: String): String {.noSideEffect.} =
   ## The same as ``parentDir(head) / tail``
   return parentDir(head) / tail
 
-proc normExt(ext: string): string =
+proc normExt(ext: String): String =
   if ext == "" or ext[0] == extSep: result = ext # no copy needed here
   else: result = extSep & ext
 
-proc searchExtPos(s: string): int =
+proc searchExtPos(s: String): Int =
   # BUGFIX: do not search until 0! .DS_Store is no file extension!
   result = -1
   for i in countdown(len(s)-1, 1):
@@ -614,7 +614,7 @@ proc searchExtPos(s: string): int =
     elif s[i] in {dirsep, altsep}:
       break # do not skip over path
 
-proc splitFile*(path: string): tuple[dir, name, ext: string] {.
+proc splitFile*(path: String): tuple[dir, name, ext: String] {.
   noSideEffect, rtl, extern: "nos$1".} =
   ## Splits a filename into (dir, filename, extension).
   ## `dir` does not end in `DirSep`.
@@ -647,7 +647,7 @@ proc splitFile*(path: string): tuple[dir, name, ext: string] {.
     result.name = substr(path, sepPos+1, dotPos-1)
     result.ext = substr(path, dotPos)
 
-proc extractFilename*(path: string): string {.
+proc extractFilename*(path: String): String {.
   noSideEffect, rtl, extern: "nos$1".} =
   ## Extracts the filename of a given `path`. This is the same as 
   ## ``name & ext`` from ``splitFile(path)``.
@@ -656,7 +656,7 @@ proc extractFilename*(path: string): string {.
   else:
     result = splitPath(path).tail
 
-proc expandFilename*(filename: string): string {.rtl, extern: "nos$1",
+proc expandFilename*(filename: String): String {.rtl, extern: "nos$1",
   tags: [FReadDir].} =
   ## Returns the full path of `filename`, raises EOS in case of an error.
   when defined(windows):
@@ -676,9 +676,9 @@ proc expandFilename*(filename: string): string {.rtl, extern: "nos$1",
       setLen(result, L)
   elif defined(macosx) or defined(bsd):
     # On Mac OS X 10.5, realpath does not allocate the buffer on its own
-    var pathBuffer: cstring = newString(pathMax)
+    var pathBuffer: Cstring = newString(pathMax)
     var resultBuffer = realpath(filename, pathBuffer)
-    if resultBuffer == nil: OSError(OSLastError())
+    if resultBuffer == nil: oSError(oSLastError())
     result = $resultBuffer
   else:
     var res = realpath(filename, nil)
@@ -686,7 +686,7 @@ proc expandFilename*(filename: string): string {.rtl, extern: "nos$1",
     result = $res
     c_free(res)
  
-proc ChangeFileExt*(filename, ext: string): string {.
+proc changeFileExt*(filename, ext: String): String {.
   noSideEffect, rtl, extern: "nos$1".} =
   ## Changes the file extension to `ext`.
   ##
@@ -699,7 +699,7 @@ proc ChangeFileExt*(filename, ext: string): string {.
   if extPos < 0: result = filename & normExt(ext)
   else: result = substr(filename, 0, extPos-1) & normExt(ext)
 
-proc addFileExt*(filename, ext: string): string {.
+proc addFileExt*(filename, ext: String): String {.
   noSideEffect, rtl, extern: "nos$1".} =
   ## Adds the file extension `ext` to `filename`, unless
   ## `filename` already has an extension.
@@ -711,7 +711,7 @@ proc addFileExt*(filename, ext: string): string {.
   if extPos < 0: result = filename & normExt(ext)
   else: result = filename
 
-proc cmpPaths*(pathA, pathB: string): int {.
+proc cmpPaths*(pathA, pathB: String): Int {.
   noSideEffect, rtl, extern: "nos$1".} =
   ## Compares two paths.
   ##
@@ -726,7 +726,7 @@ proc cmpPaths*(pathA, pathB: string): int {.
   else:
     result = cmpIgnoreCase(pathA, pathB)
 
-proc isAbsolute*(path: string): bool {.rtl, noSideEffect, extern: "nos$1".} =
+proc isAbsolute*(path: String): Bool {.rtl, noSideEffect, extern: "nos$1".} =
   ## Checks whether a given `path` is absolute.
   ##
   ## On Windows, network paths are considered absolute too.
@@ -741,7 +741,7 @@ proc isAbsolute*(path: string): bool {.rtl, noSideEffect, extern: "nos$1".} =
   elif defined(posix):
     result = path[0] == '/'
 
-proc sameFile*(path1, path2: string): bool {.rtl, extern: "nos$1", 
+proc sameFile*(path1, path2: String): Bool {.rtl, extern: "nos$1", 
   tags: [FReadDir].} =
   ## Returns True if both pathname arguments refer to the same physical 
   ## file or directory. Raises an exception if any of the files does not
@@ -795,11 +795,11 @@ proc sameFile*(path1, path2: string): bool {.rtl, extern: "nos$1",
   else:
     var a, b: TStat
     if stat(path1, a) < 0'i32 or stat(path2, b) < 0'i32:
-      OSError(OSLastError())
+      oSError(oSLastError())
     else:
       result = a.st_dev == b.st_dev and a.st_ino == b.st_ino
 
-proc sameFileContent*(path1, path2: string): bool {.rtl, extern: "nos$1",
+proc sameFileContent*(path1, path2: String): Bool {.rtl, extern: "nos$1",
   tags: [FReadIO].} =
   ## Returns True if both pathname arguments refer to files with identical
   ## binary content.
@@ -813,7 +813,7 @@ proc sameFileContent*(path1, path2: string): bool {.rtl, extern: "nos$1",
     return false
   var bufA = alloc(bufsize)
   var bufB = alloc(bufsize)
-  while True:
+  while true:
     var readA = readBuffer(a, bufA, bufsize)
     var readB = readBuffer(b, bufB, bufsize)
     if readA != readB:
@@ -830,7 +830,7 @@ proc sameFileContent*(path1, path2: string): bool {.rtl, extern: "nos$1",
   close(a)
   close(b)
 
-proc copyFile*(source, dest: string) {.rtl, extern: "nos$1", 
+proc copyFile*(source, dest: String) {.rtl, extern: "nos$1", 
   tags: [FReadIO, FWriteIO].} =
   ## Copies a file from `source` to `dest`.
   ##
@@ -852,41 +852,41 @@ proc copyFile*(source, dest: string) {.rtl, extern: "nos$1",
     # generic version of copyFile which works for any platform:
     const bufSize = 8000 # better for memory manager
     var d, s: TFile
-    if not open(s, source): OSError(OSLastError())
+    if not open(s, source): oSError(oSLastError())
     if not open(d, dest, fmWrite):
       close(s)
-      OSError(OSLastError())
+      oSError(oSLastError())
     var buf = alloc(bufsize)
-    while True:
+    while true:
       var bytesread = readBuffer(s, buf, bufsize)
       if bytesread > 0:
         var byteswritten = writeBuffer(d, buf, bytesread)
-        if bytesread != bytesWritten:
+        if bytesread != byteswritten:
           dealloc(buf)
           close(s)
           close(d)
-          OSError(OSLastError())
+          oSError(oSLastError())
       if bytesread != bufSize: break
     dealloc(buf)
     close(s)
     close(d)
 
-proc moveFile*(source, dest: string) {.rtl, extern: "nos$1", 
+proc moveFile*(source, dest: String) {.rtl, extern: "nos$1", 
   tags: [FReadIO, FWriteIO].} =
   ## Moves a file from `source` to `dest`. If this fails, `EOS` is raised.
-  if crename(source, dest) != 0'i32:
-    raise newException(EOS, $strerror(errno))
+  if cRename(source, dest) != 0'i32:
+    raise newException(Eos, $strerror(errno))
 
 when not defined(ENOENT):
   var ENOENT {.importc, header: "<errno.h>".}: cint
 
-proc removeFile*(file: string) {.rtl, extern: "nos$1", tags: [FWriteDir].} =
+proc removeFile*(file: String) {.rtl, extern: "nos$1", tags: [FWriteDir].} =
   ## Removes the `file`. If this fails, `EOS` is raised. This does not fail
   ## if the file never existed in the first place.
-  if cremove(file) != 0'i32 and errno != ENOENT:
-    raise newException(EOS, $strerror(errno))
+  if cRemove(file) != 0'i32 and errno != ENOENT:
+    raise newException(Eos, $strerror(errno))
 
-proc execShellCmd*(command: string): int {.rtl, extern: "nos$1", 
+proc execShellCmd*(command: String): Int {.rtl, extern: "nos$1", 
   tags: [FExecIO].} =
   ## Executes a `shell command`:idx:.
   ##
@@ -896,14 +896,14 @@ proc execShellCmd*(command: string): int {.rtl, extern: "nos$1",
   ## the process has finished. To execute a program without having a
   ## shell involved, use the `execProcess` proc of the `osproc`
   ## module.
-  result = csystem(command)
+  result = cSystem(command)
 
 # Environment handling cannot be put into RTL, because the ``envPairs`` 
 # iterator depends on ``environment``.
 
 var
-  envComputed {.threadvar.}: bool
-  environment {.threadvar.}: seq[string]
+  envComputed {.threadvar.}: Bool
+  environment {.threadvar.}: Seq[String]
 
 when defined(windows):
   # because we support Windows GUI applications, things get really
@@ -958,7 +958,7 @@ else:
     proc NSGetEnviron(): ptr cstringArray {.
       importc: "_NSGetEnviron", header: "<crt_externs.h>".}
   else:
-    var gEnv {.importc: "environ".}: cstringArray
+    var gEnv {.importc: "environ".}: CstringArray
 
   proc getEnvVarsC() =
     # retrieves the variables of char** env of C's main proc
@@ -967,20 +967,20 @@ else:
       when useNSGetEnviron:
         var gEnv = NSGetEnviron()[]
       var i = 0
-      while True:
+      while true:
         if gEnv[i] == nil: break
         add environment, $gEnv[i]
         inc(i)
       envComputed = true
 
-proc findEnvVar(key: string): int =
+proc findEnvVar(key: String): Int =
   getEnvVarsC()
   var temp = key & '='
   for i in 0..high(environment):
     if startsWith(environment[i], temp): return i
   return -1
 
-proc getEnv*(key: string): TaintedString {.tags: [FReadEnv].} =
+proc getEnv*(key: String): TaintedString {.tags: [FReadEnv].} =
   ## Returns the value of the `environment variable`:idx: named `key`.
   ##
   ## If the variable does not exist, "" is returned. To distinguish
@@ -990,17 +990,17 @@ proc getEnv*(key: string): TaintedString {.tags: [FReadEnv].} =
   if i >= 0:
     return TaintedString(substr(environment[i], find(environment[i], '=')+1))
   else:
-    var env = cgetenv(key)
+    var env = cGetenv(key)
     if env == nil: return TaintedString("")
     result = TaintedString($env)
 
-proc existsEnv*(key: string): bool {.tags: [FReadEnv].} =
+proc existsEnv*(key: String): Bool {.tags: [FReadEnv].} =
   ## Checks whether the environment variable named `key` exists.
   ## Returns true if it exists, false otherwise.
-  if cgetenv(key) != nil: return true
+  if cGetenv(key) != nil: return true
   else: return findEnvVar(key) >= 0
 
-proc putEnv*(key, val: string) {.tags: [FWriteEnv].} =
+proc putEnv*(key, val: String) {.tags: [FWriteEnv].} =
   ## Sets the value of the `environment variable`:idx: named `key` to `val`.
   ## If an error occurs, `EInvalidEnvVar` is raised.
 
@@ -1015,8 +1015,8 @@ proc putEnv*(key, val: string) {.tags: [FWriteEnv].} =
     add environment, (key & '=' & val)
     indx = high(environment)
   when defined(unix):
-    if cputenv(environment[indx]) != 0'i32:
-      OSError(OSLastError())
+    if cPutenv(environment[indx]) != 0'i32:
+      oSError(oSLastError())
   else:
     when useWinUnicode:
       var k = newWideCString(key)
@@ -1035,7 +1035,7 @@ iterator envPairs*(): tuple[key, value: TaintedString] {.tags: [FReadEnv].} =
     yield (TaintedString(substr(environment[i], 0, p-1)), 
            TaintedString(substr(environment[i], p+1)))
 
-iterator walkFiles*(pattern: string): string {.tags: [FReadDir].} =
+iterator walkFiles*(pattern: String): String {.tags: [FReadDir].} =
   ## Iterate over all the files that match the `pattern`. On POSIX this uses
   ## the `glob`:idx: call.
   ##
@@ -1055,7 +1055,7 @@ iterator walkFiles*(pattern: string): string {.tags: [FReadDir].} =
   else: # here we use glob
     var
       f: TGlob
-      res: int
+      res: Int
     f.gl_offs = 0
     f.gl_pathc = 0
     f.gl_pathv = nil
@@ -1073,7 +1073,7 @@ type
     pcDir,                ## path refers to a directory
     pcLinkToDir           ## path refers to a symbolic link to a directory
 
-iterator walkDir*(dir: string): tuple[kind: TPathComponent, path: string] {.
+iterator walkDir*(dir: String): tuple[kind: TPathComponent, path: String] {.
   tags: [FReadDir].} =
   ## walks over the directory `dir` and yields for each directory or file in
   ## `dir`. The component type and full path for each item is returned.
@@ -1108,10 +1108,10 @@ iterator walkDir*(dir: string): tuple[kind: TPathComponent, path: string] {.
         if findnextFile(h, f) == 0'i32: break
       findclose(h)
   else:
-    var d = openDir(dir)
+    var d = opendir(dir)
     if d != nil:
       while true:
-        var x = readDir(d)
+        var x = readdir(d)
         if x == nil: break
         var y = $x.d_name
         if y != "." and y != "..":
@@ -1122,9 +1122,9 @@ iterator walkDir*(dir: string): tuple[kind: TPathComponent, path: string] {.
           if S_ISDIR(s.st_mode): k = pcDir
           if S_ISLNK(s.st_mode): k = succ(k)
           yield (k, y)
-      discard closeDir(d)
+      discard closedir(d)
 
-iterator walkDirRec*(dir: string, filter={pcFile, pcDir}): string {.
+iterator walkDirRec*(dir: String, filter={pcFile, pcDir}): String {.
   tags: [FReadDir].} =
   ## walks over the directory `dir` and yields for each file in `dir`. The 
   ## full path for each file is returned.
@@ -1147,7 +1147,7 @@ iterator walkDirRec*(dir: string, filter={pcFile, pcDir}): string {.
         of pcFile, pcLinkToFile: yield p
         of pcDir, pcLinkToDir: stack.add(p)
 
-proc rawRemoveDir(dir: string) = 
+proc rawRemoveDir(dir: String) = 
   when defined(windows):
     when useWinUnicode:
       wrapUnary(res, RemoveDirectoryW, dir)
@@ -1158,9 +1158,9 @@ proc rawRemoveDir(dir: string) =
         lastError.int32 != 18'i32 and lastError.int32 != 2'i32:
       OSError(lastError)
   else:
-    if rmdir(dir) != 0'i32 and errno != ENOENT: OSError(OSLastError())
+    if rmdir(dir) != 0'i32 and errno != ENOENT: oSError(oSLastError())
 
-proc removeDir*(dir: string) {.rtl, extern: "nos$1", tags: [
+proc removeDir*(dir: String) {.rtl, extern: "nos$1", tags: [
   FWriteDir, FReadDir].} =
   ## Removes the directory `dir` including all subdirectories and files
   ## in `dir` (recursively).
@@ -1173,10 +1173,10 @@ proc removeDir*(dir: string) {.rtl, extern: "nos$1", tags: [
     of pcDir: removeDir(path)
   rawRemoveDir(dir)
 
-proc rawCreateDir(dir: string) =
+proc rawCreateDir(dir: String) =
   when defined(unix):
     if mkdir(dir, 0o711) != 0'i32 and errno != EEXIST:
-      OSError(OSLastError())
+      oSError(oSLastError())
   else:
     when useWinUnicode:
       wrapUnary(res, CreateDirectoryW, dir)
@@ -1185,7 +1185,7 @@ proc rawCreateDir(dir: string) =
     if res == 0'i32 and GetLastError() != 183'i32:
       OSError(OSLastError())
 
-proc createDir*(dir: string) {.rtl, extern: "nos$1", tags: [FWriteDir].} =
+proc createDir*(dir: String) {.rtl, extern: "nos$1", tags: [FWriteDir].} =
   ## Creates the `directory`:idx: `dir`.
   ##
   ## The directory may contain several subdirectories that do not exist yet.
@@ -1203,7 +1203,7 @@ proc createDir*(dir: string) {.rtl, extern: "nos$1", tags: [FWriteDir].} =
         rawCreateDir(substr(dir, 0, i-1))
   rawCreateDir(dir)
 
-proc copyDir*(source, dest: string) {.rtl, extern: "nos$1", 
+proc copyDir*(source, dest: String) {.rtl, extern: "nos$1", 
   tags: [FWriteIO, FReadIO].} =
   ## Copies a directory from `source` to `dest`. If this fails, `EOS` is raised.
   createDir(dest)
@@ -1216,7 +1216,7 @@ proc copyDir*(source, dest: string) {.rtl, extern: "nos$1",
       copyDir(path, dest / noSource)
     else: nil
 
-proc parseCmdLine*(c: string): seq[string] {.
+proc parseCmdLine*(c: String): Seq[String] {.
   noSideEffect, rtl, extern: "nos$1".} =
   ## Splits a command line into several components;  
   ## This proc is only occassionally useful, better use the `parseopt` module.
@@ -1317,14 +1317,14 @@ type
     fpOthersWrite,         ## write access for others
     fpOthersRead           ## read access for others
 
-proc getFilePermissions*(filename: string): set[TFilePermission] {.
+proc getFilePermissions*(filename: String): Set[TFilePermission] {.
   rtl, extern: "nos$1", tags: [FReadDir].} =
   ## retrieves file permissions for `filename`. `OSError` is raised in case of
   ## an error. On Windows, only the ``readonly`` flag is checked, every other
   ## permission is available in any case.
   when defined(posix):
     var a: TStat
-    if stat(filename, a) < 0'i32: OSError(OSLastError())
+    if stat(filename, a) < 0'i32: oSError(oSLastError())
     result = {}
     if (a.st_mode and S_IRUSR) != 0'i32: result.incl(fpUserRead)
     if (a.st_mode and S_IWUSR) != 0'i32: result.incl(fpUserWrite)
@@ -1349,7 +1349,7 @@ proc getFilePermissions*(filename: string): set[TFilePermission] {.
     else:
       result = {fpUserExec..fpOthersRead}
   
-proc setFilePermissions*(filename: string, permissions: set[TFilePermission]) {.
+proc setFilePermissions*(filename: String, permissions: Set[TFilePermission]) {.
   rtl, extern: "nos$1", tags: [FWriteDir].} =
   ## sets the file permissions for `filename`. `OSError` is raised in case of
   ## an error. On Windows, only the ``readonly`` flag is changed, depending on
@@ -1368,7 +1368,7 @@ proc setFilePermissions*(filename: string, permissions: set[TFilePermission]) {.
     if fpOthersWrite in permissions: p = p or S_IWOTH
     if fpOthersExec in permissions: p = p or S_IXOTH
     
-    if chmod(filename, p) != 0: OSError(OSLastError())
+    if chmod(filename, p) != 0: oSError(oSLastError())
   else:
     when useWinUnicode:
       wrapUnary(res, GetFileAttributesW, filename)
@@ -1385,7 +1385,7 @@ proc setFilePermissions*(filename: string, permissions: set[TFilePermission]) {.
       var res2 = SetFileAttributesA(filename, res)
     if res2 == - 1'i32: OSError(OSLastError())
   
-proc copyFileWithPermissions*(source, dest: string,
+proc copyFileWithPermissions*(source, dest: String,
                               ignorePermissionErrors = true) =
   ## Copies a file from `source` to `dest` preserving file permissions.
   ##
@@ -1405,8 +1405,8 @@ proc copyFileWithPermissions*(source, dest: string,
       if not ignorePermissionErrors:
         raise
 
-proc inclFilePermissions*(filename: string, 
-                          permissions: set[TFilePermission]) {.
+proc inclFilePermissions*(filename: String, 
+                          permissions: Set[TFilePermission]) {.
   rtl, extern: "nos$1", tags: [FReadDir, FWriteDir].} =
   ## a convenience procedure for: 
   ##
@@ -1414,8 +1414,8 @@ proc inclFilePermissions*(filename: string,
   ##   setFilePermissions(filename, getFilePermissions(filename)+permissions)
   setFilePermissions(filename, getFilePermissions(filename)+permissions)
 
-proc exclFilePermissions*(filename: string, 
-                          permissions: set[TFilePermission]) {.
+proc exclFilePermissions*(filename: String, 
+                          permissions: Set[TFilePermission]) {.
   rtl, extern: "nos$1", tags: [FReadDir, FWriteDir].} =
   ## a convenience procedure for: 
   ##
@@ -1423,20 +1423,20 @@ proc exclFilePermissions*(filename: string,
   ##   setFilePermissions(filename, getFilePermissions(filename)-permissions)
   setFilePermissions(filename, getFilePermissions(filename)-permissions)
 
-proc getHomeDir*(): string {.rtl, extern: "nos$1", tags: [FReadEnv].} =
+proc getHomeDir*(): String {.rtl, extern: "nos$1", tags: [FReadEnv].} =
   ## Returns the home directory of the current user.
   ##
   ## This proc is wrapped by the expandTilde proc for the convenience of
   ## processing paths coming from user configuration files.
   when defined(windows): return string(getEnv("USERPROFILE")) & "\\"
-  else: return string(getEnv("HOME")) & "/"
+  else: return String(getEnv("HOME")) & "/"
 
-proc getConfigDir*(): string {.rtl, extern: "nos$1", tags: [FReadEnv].} =
+proc getConfigDir*(): String {.rtl, extern: "nos$1", tags: [FReadEnv].} =
   ## Returns the config directory of the current user for applications.
   when defined(windows): return string(getEnv("APPDATA")) & "\\"
-  else: return string(getEnv("HOME")) & "/.config/"
+  else: return String(getEnv("HOME")) & "/.config/"
 
-proc getTempDir*(): string {.rtl, extern: "nos$1", tags: [FReadEnv].} =
+proc getTempDir*(): String {.rtl, extern: "nos$1", tags: [FReadEnv].} =
   ## Returns the temporary directory of the current user for applications to
   ## save temporary files in.
   when defined(windows): return string(getEnv("TEMP")) & "\\"
@@ -1470,14 +1470,14 @@ when defined(windows):
 elif not defined(createNimRtl):
   # On Posix, there is no portable way to get the command line from a DLL.
   var
-    cmdCount {.importc: "cmdCount".}: cint
-    cmdLine {.importc: "cmdLine".}: cstringArray
+    cmdCount {.importc: "cmdCount".}: Cint
+    cmdLine {.importc: "cmdLine".}: CstringArray
 
-  proc paramStr*(i: int): TaintedString {.tags: [FReadIO].} =
+  proc paramStr*(i: Int): TaintedString {.tags: [FReadIO].} =
     if i < cmdCount and i >= 0: return TaintedString($cmdLine[i])
     raise newException(EInvalidIndex, "invalid index")
 
-  proc paramCount*(): int {.tags: [FReadIO].} = return cmdCount-1
+  proc paramCount*(): Int {.tags: [FReadIO].} = return cmdCount-1
 
 when defined(linux) or defined(solaris) or defined(bsd) or defined(aix):
   proc getApplAux(procPath: string): string =
@@ -1490,17 +1490,17 @@ when defined(linux) or defined(solaris) or defined(bsd) or defined(aix):
 
 when defined(macosx):
   type
-    cuint32* {.importc: "unsigned int", nodecl.} = int
+    Cuint32* {.importc: "unsigned int", nodecl.} = Int
     ## This is the same as the type ``uint32_t`` in *C*.
   
   # a really hacky solution: since we like to include 2 headers we have to
   # define two procs which in reality are the same
-  proc getExecPath1(c: cstring, size: var cuint32) {.
+  proc getExecPath1(c: Cstring, size: var Cuint32) {.
     importc: "_NSGetExecutablePath", header: "<sys/param.h>".}
-  proc getExecPath2(c: cstring, size: var cuint32): bool {.
+  proc getExecPath2(c: Cstring, size: var Cuint32): Bool {.
     importc: "_NSGetExecutablePath", header: "<mach-o/dyld.h>".}
 
-proc getAppFilename*(): string {.rtl, extern: "nos$1", tags: [FReadIO].} =
+proc getAppFilename*(): String {.rtl, extern: "nos$1", tags: [FReadIO].} =
   ## Returns the filename of the application's executable.
   ##
   ## This procedure will resolve symlinks.
@@ -1529,9 +1529,9 @@ proc getAppFilename*(): string {.rtl, extern: "nos$1", tags: [FReadIO].} =
   elif defined(freebsd):
     result = getApplAux("/proc/" & $getpid() & "/file")
   elif defined(macosx):
-    var size: cuint32
+    var size: Cuint32
     getExecPath1(nil, size)
-    result = newString(int(size))
+    result = newString(Int(size))
     if getExecPath2(result, size):
       result = "" # error!
     if result.len > 0:
@@ -1549,24 +1549,24 @@ proc getAppFilename*(): string {.rtl, extern: "nos$1", tags: [FReadIO].} =
           var x = JoinPath(p, result)
           if ExistsFile(x): return x
 
-proc getApplicationFilename*(): string {.rtl, extern: "nos$1", deprecated.} =
+proc getApplicationFilename*(): String {.rtl, extern: "nos$1", deprecated.} =
   ## Returns the filename of the application's executable.
   ## **Deprecated since version 0.8.12**: use ``getAppFilename`` 
   ## instead.
   result = getAppFilename()
 
-proc getApplicationDir*(): string {.rtl, extern: "nos$1", deprecated.} =
+proc getApplicationDir*(): String {.rtl, extern: "nos$1", deprecated.} =
   ## Returns the directory of the application's executable.
   ## **Deprecated since version 0.8.12**: use ``getAppDir`` 
   ## instead.
   result = splitFile(getAppFilename()).dir
 
-proc getAppDir*(): string {.rtl, extern: "nos$1", tags: [FReadIO].} =
+proc getAppDir*(): String {.rtl, extern: "nos$1", tags: [FReadIO].} =
   ## Returns the directory of the application's executable.
   ## **Note**: This does not work reliably on BSD.
   result = splitFile(getAppFilename()).dir
 
-proc sleep*(milsecs: int) {.rtl, extern: "nos$1", tags: [FTime].} =
+proc sleep*(milsecs: Int) {.rtl, extern: "nos$1", tags: [FTime].} =
   ## sleeps `milsecs` milliseconds.
   when defined(windows):
     winlean.sleep(int32(milsecs))
@@ -1576,7 +1576,7 @@ proc sleep*(milsecs: int) {.rtl, extern: "nos$1", tags: [FTime].} =
     a.tv_nsec = (milsecs mod 1000) * 1000 * 1000
     discard posix.nanosleep(a, b)
 
-proc getFileSize*(file: string): biggestInt {.rtl, extern: "nos$1",
+proc getFileSize*(file: String): BiggestInt {.rtl, extern: "nos$1",
   tags: [FReadIO].} =
   ## returns the file size of `file`. Can raise ``EOS``. 
   when defined(windows):
@@ -1590,22 +1590,22 @@ proc getFileSize*(file: string): biggestInt {.rtl, extern: "nos$1",
     if open(f, file): 
       result = getFileSize(f)
       close(f)
-    else: OSError(OSLastError())
+    else: oSError(oSLastError())
 
-proc findExe*(exe: string): string {.tags: [FReadDir, FReadEnv].} = 
+proc findExe*(exe: String): String {.tags: [FReadDir, FReadEnv].} = 
   ## Searches for `exe` in the current working directory and then
   ## in directories listed in the ``PATH`` environment variable. 
   ## Returns "" if the `exe` cannot be found. On DOS-like platforms, `exe` 
   ## is added an ``.exe`` file extension if it has no extension.
   result = addFileExt(exe, os.exeExt)
-  if ExistsFile(result): return
-  var path = string(os.getEnv("PATH"))
+  if existsFile(result): return
+  var path = String(os.getEnv("PATH"))
   for candidate in split(path, pathSep): 
     var x = candidate / result
-    if ExistsFile(x): return x
+    if existsFile(x): return x
   result = ""
 
-proc expandTilde*(path: string): string =
+proc expandTilde*(path: String): String =
   ## Expands a path starting with ``~/`` to a full path.
   ##
   ## If `path` starts with the tilde character and is followed by `/` or `\\`

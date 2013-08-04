@@ -25,39 +25,39 @@
 
 import libcurl, streams
 
-proc curlwrapperWrite(p: pointer, size, nmemb: int, 
-                      data: pointer): int {.cdecl.} = 
+proc curlwrapperWrite(p: Pointer, size, nmemb: Int, 
+                      data: Pointer): Int {.cdecl.} = 
   var stream = cast[PStream](data)
   stream.writeData(p, size*nmemb)
   return size*nmemb
 
-proc URLretrieveStream*(url: string): PStream = 
+proc uRLretrieveStream*(url: String): PStream = 
   ## retrieves the given `url` and returns a stream which one can read from to
   ## obtain the contents. Returns nil if an error occurs.
   result = newStringStream()
-  var hCurl = easy_init() 
+  var hCurl = easyInit() 
   if hCurl == nil: return nil
-  if easy_setopt(hCurl, OPT_URL, url) != E_OK: return nil
-  if easy_setopt(hCurl, OPT_WRITEFUNCTION, 
-                      curlwrapperWrite) != E_OK: return nil
-  if easy_setopt(hCurl, OPT_WRITEDATA, result) != E_OK: return nil
-  if easy_perform(hCurl) != E_OK: return nil
-  easy_cleanup(hCurl)
+  if easySetopt(hCurl, OptUrl, url) != EOk: return nil
+  if easySetopt(hCurl, OptWritefunction, 
+                      curlwrapperWrite) != EOk: return nil
+  if easySetopt(hCurl, OptWritedata, result) != EOk: return nil
+  if easyPerform(hCurl) != EOk: return nil
+  easyCleanup(hCurl)
   
-proc URLretrieveString*(url: string): TaintedString = 
+proc uRLretrieveString*(url: String): TaintedString = 
   ## retrieves the given `url` and returns the contents. Returns nil if an
   ## error occurs.
   var stream = newStringStream()
-  var hCurl = easy_init()
+  var hCurl = easyInit()
   if hCurl == nil: return
-  if easy_setopt(hCurl, OPT_URL, url) != E_OK: return
-  if easy_setopt(hCurl, OPT_WRITEFUNCTION, 
-                      curlwrapperWrite) != E_OK: return
-  if easy_setopt(hCurl, OPT_WRITEDATA, stream) != E_OK: return
-  if easy_perform(hCurl) != E_OK: return
-  easy_cleanup(hCurl)
+  if easySetopt(hCurl, OptUrl, url) != EOk: return
+  if easySetopt(hCurl, OptWritefunction, 
+                      curlwrapperWrite) != EOk: return
+  if easySetopt(hCurl, OptWritedata, stream) != EOk: return
+  if easyPerform(hCurl) != EOk: return
+  easyCleanup(hCurl)
   result = stream.data.TaintedString
 
 when isMainModule:
-  echo URLretrieveString("http://nimrod-code.org/")
+  echo uRLretrieveString("http://nimrod-code.org/")
 

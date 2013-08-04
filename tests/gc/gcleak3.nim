@@ -7,16 +7,16 @@ when defined(GC_setMaxPause):
 
 type
   TSomething = object
-    s: string
-    s1: string
-var s: seq[TSomething] = @[]
+    s: String
+    s1: String
+var s: Seq[TSomething] = @[]
 for i in 0..1024:
   var obj: TSomething
   obj.s = "blah"
   obj.s1 = "asd"
   s.add(obj)
 
-proc limit*[t](a: var seq[t]) =
+proc limit*[T](a: var Seq[T]) =
   var loop = s.len() - 512
   for i in 0..loop:
     #echo i

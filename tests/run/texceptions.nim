@@ -16,7 +16,7 @@ FINALLY
 
 echo ""
 
-proc no_expcetion =
+proc noExpcetion =
   try:
     echo "BEFORE"
 
@@ -27,15 +27,15 @@ proc no_expcetion =
   finally:
     echo "FINALLY"
 
-try: no_expcetion()
+try: noExpcetion()
 except: echo "RECOVER"
 
 echo ""
 
-proc reraise_in_except =
+proc reraiseInExcept =
   try:
     echo "BEFORE"
-    raise newException(EIO, "")
+    raise newException(Eio, "")
 
   except EIO:
     echo "EXCEPT"
@@ -44,15 +44,15 @@ proc reraise_in_except =
   finally:
     echo "FINALLY"
 
-try: reraise_in_except()
+try: reraiseInExcept()
 except: echo "RECOVER"
 
 echo ""
 
-proc return_in_except =
+proc returnInExcept =
   try:
     echo "BEFORE"
-    raise newException(EIO, "")
+    raise newException(Eio, "")
 
   except:
     echo "EXCEPT"
@@ -61,6 +61,6 @@ proc return_in_except =
   finally:
     echo "FINALLY"
 
-try: return_in_except()
+try: returnInExcept()
 except: echo "RECOVER"
 

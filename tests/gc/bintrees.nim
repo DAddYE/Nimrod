@@ -6,21 +6,21 @@ type
   PNode = ref TNode
   TNode {.final, acyclic.} = object
     left, right: PNode
-    item: int
+    item: Int
 
-proc checkTree(node: PNode): int =
+proc checkTree(node: PNode): Int =
   result = node.item
   if node.left != nil:
     inc result, checkTree(node.left) - checkTree(node.right)
 
-proc makeTreeAux(item, depth: int): PNode =
+proc makeTreeAux(item, depth: Int): PNode =
   new(result)
   result.item = item
   if depth > 0:
     result.left = makeTreeAux(2 * item - 1, depth - 1)
     result.right = makeTreeAux(2 * item,    depth - 1)
 
-proc makeTree(item, depth: int): PNode =
+proc makeTree(item, depth: Int): PNode =
   #GC_disable()
   result = makeTreeAux(item, depth)
   #GC_enable()
@@ -48,7 +48,7 @@ proc main =
 
   echo("long lived tree of depth ", maxDepth, "\t check: ",
       longLivedTree.checkTree)
-  echo GC_getstatistics()
+  echo gCGetStatistics()
 
 main()
 

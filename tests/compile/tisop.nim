@@ -4,7 +4,7 @@ type
   TRecord = (tuple) or (object)
   
   TFoo[T, U] = object
-    x: int
+    x: Int
 
     when T is string:
       y: float
@@ -16,20 +16,20 @@ type
 
   E = enum A, B, C
 
-macro m(t: typedesc): typedesc =
+macro m(t: TypeDesc): TypeDesc =
   if t is enum:
-    result = string
+    result = String
   else:
-    result = int
+    result = Int
 
-var f: TFoo[int, int]
+var f: TFoo[Int, Int]
 static: assert(f.y.type.name == "string")
 
 when compiles(f.z):
   {.error: "Foo should not have a `z` field".}
 
 proc p(a, b) =
-  when a.type is int:
+  when a.type is Int:
     static: assert false
 
   var f: TFoo[m(a.type), b.type]

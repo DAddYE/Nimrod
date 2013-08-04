@@ -1,7 +1,7 @@
 type
   TThing = object of TObject
   TUnit = object of TThing
-    x: int
+    x: Int
 
 method collide(a, b: TThing) {.inline.} =
   quit "to override!"

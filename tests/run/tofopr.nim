@@ -6,12 +6,12 @@ discard """
 
 type
   TMyType = object {.inheritable.}
-    len: int
-    data: string
+    len: Int
+    data: String
     
   TOtherType = object of TMyType
    
-proc p(x: TMyType): bool = 
+proc p(x: TMyType): Bool = 
   return x of TOtherType
     
 var

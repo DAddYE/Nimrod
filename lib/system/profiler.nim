@@ -19,7 +19,7 @@ const
   MaxTraceLen = 20 # tracking the last 20 calls is enough
 
 type
-  TStackTrace* = array [0..MaxTraceLen-1, cstring]
+  TStackTrace* = Array [0..MaxTraceLen-1, Cstring]
   TProfilerHook* = proc (st: TStackTrace) {.nimcall.}
 
 proc captureStackTrace(f: PFrame, st: var TStackTrace) =
@@ -73,7 +73,7 @@ else:
     profilerHook*: TProfilerHook
       ## set this variable to provide a procedure that implements a profiler in
       ## user space. See the `nimprof` module for a reference implementation.
-    gTicker {.threadvar.}: int
+    gTicker {.threadvar.}: Int
 
   proc callProfilerHook(hook: TProfilerHook) {.noinline.} =
     # 'noinline' so that 'nimProfile' does not perform the stack allocation

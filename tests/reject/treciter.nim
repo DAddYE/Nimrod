@@ -5,7 +5,7 @@ discard """
 """
 # Test that an error message occurs for a recursive iterator
 
-iterator myrec(n: int): int =
+iterator myrec(n: Int): Int =
   for x in myrec(n-1): #ERROR_MSG recursive dependency: 'myrec'
     yield x
 

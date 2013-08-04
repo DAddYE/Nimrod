@@ -13,11 +13,11 @@ void printFloats(void) {
 }
 """.}
 
-proc c_printf(frmt: CString) {.importc: "printf", header: "<stdio.h>", varargs.}
+proc cPrintf(frmt: Cstring) {.importc: "printf", header: "<stdio.h>", varargs.}
 proc printFloats {.importc, nodecl.}
 
-var x: float = 1.234567890123456789
-c_printf("Nimrod    %.10f, %.10f ", exp(x), cos(x))
+var x: Float = 1.234567890123456789
+cPrintf("Nimrod    %.10f, %.10f ", exp(x), cos(x))
 printFloats()
 
 

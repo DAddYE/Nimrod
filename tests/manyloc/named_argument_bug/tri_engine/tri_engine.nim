@@ -38,16 +38,16 @@ void main()
 
 var gW, gH: Natural = 0
 
-proc w*(): int =
+proc w*(): Int =
   gW
 
-proc h*(): int =
+proc h*(): Int =
   gH
 
 type
   PRenderer = ref object
     primitiveProgram: TProgram
-    primitives: seq[PPrimitive]
+    primitives: Seq[PPrimitive]
 
 proc setupGL() =
   ?glEnable(GLblend)
@@ -89,7 +89,7 @@ proc draw*(o: PRenderer) =
 
   enableVertAttribArrs()
   var zSortedPrimitives = o.primitives
-  zSortedPrimitives.sort(proc(x, y: PPrimitive): int =
+  zSortedPrimitives.sort(proc(x, y: PPrimitive): Int =
     if x.z < y.z:
       -1
     elif x.z > y.z:

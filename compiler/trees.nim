@@ -12,13 +12,13 @@
 import 
   ast, astalgo, lexer, msgs, strutils, wordrecg
 
-proc hasSon(father, son: PNode): bool = 
+proc hasSon(father, son: PNode): Bool = 
   for i in countup(0, sonsLen(father) - 1): 
     if father.sons[i] == son: 
       return true
   result = false
 
-proc cyclicTreeAux(n, s: PNode): bool = 
+proc cyclicTreeAux(n, s: PNode): Bool = 
   if n == nil: 
     return false
   if hasSon(s, n): 
@@ -32,11 +32,11 @@ proc cyclicTreeAux(n, s: PNode): bool =
   result = false
   delSon(s, m)
 
-proc cyclicTree*(n: PNode): bool = 
+proc cyclicTree*(n: PNode): Bool = 
   var s = newNodeI(nkEmpty, n.info)
   result = cyclicTreeAux(n, s)
 
-proc ExprStructuralEquivalent*(a, b: PNode): bool = 
+proc exprStructuralEquivalent*(a, b: PNode): Bool = 
   result = false
   if a == b: 
     result = true
@@ -53,10 +53,10 @@ proc ExprStructuralEquivalent*(a, b: PNode): bool =
     else: 
       if sonsLen(a) == sonsLen(b): 
         for i in countup(0, sonsLen(a) - 1): 
-          if not ExprStructuralEquivalent(a.sons[i], b.sons[i]): return 
+          if not exprStructuralEquivalent(a.sons[i], b.sons[i]): return 
         result = true
   
-proc sameTree*(a, b: PNode): bool = 
+proc sameTree*(a, b: PNode): Bool = 
   result = false
   if a == b: 
     result = true
@@ -87,7 +87,7 @@ proc getOpSym*(op: PNode): PSym =
   if not (op.kind in {nkCall, nkHiddenCallConv, nkCommand, nkCallStrLit}): 
     result = nil
   else: 
-    if (sonsLen(op) <= 0): InternalError(op.info, "getOpSym")
+    if (sonsLen(op) <= 0): internalError(op.info, "getOpSym")
     elif op.sons[0].Kind == nkSym: result = op.sons[0].sym
     else: result = nil
   
@@ -99,15 +99,15 @@ proc getMagic*(op: PNode): TMagic =
     else: result = mNone
   else: result = mNone
   
-proc TreeToSym*(t: PNode): PSym = 
+proc treeToSym*(t: PNode): PSym = 
   result = t.sym
 
-proc isConstExpr*(n: PNode): bool = 
+proc isConstExpr*(n: PNode): Bool = 
   result = (n.kind in
       {nkCharLit..nkInt64Lit, nkStrLit..nkTripleStrLit, 
        nkFloatLit..nkFloat64Lit, nkNilLit}) or (nfAllConst in n.flags)
 
-proc isDeepConstExpr*(n: PNode): bool =
+proc isDeepConstExpr*(n: PNode): Bool =
   case n.kind
   of nkCharLit..nkInt64Lit, nkStrLit..nkTripleStrLit, 
       nkFloatLit..nkFloat64Lit, nkNilLit:
@@ -134,12 +134,12 @@ proc flattenTree*(root: PNode, op: TMagic): PNode =
     addSon(result, copyNode(root.sons[0]))
     flattenTreeAux(result, root, op)
 
-proc SwapOperands*(op: PNode) = 
+proc swapOperands*(op: PNode) = 
   var tmp = op.sons[1]
   op.sons[1] = op.sons[2]
   op.sons[2] = tmp
 
-proc IsRange*(n: PNode): bool {.inline.} = 
+proc isRange*(n: PNode): Bool {.inline.} = 
   if n.kind == nkInfix:
     if n[0].kind == nkIdent and n[0].ident.id == ord(wDotDot) or
         n[0].kind in {nkClosedSymChoice, nkOpenSymChoice} and 
@@ -163,6 +163,6 @@ proc flattenStmts*(n: PNode): PNode =
   if result.len == 1:
     result = result.sons[0]
 
-proc extractRange*(k: TNodeKind, n: PNode, a, b: int): PNode =
+proc extractRange*(k: TNodeKind, n: PNode, a, b: Int): PNode =
   result = newNodeI(k, n.info, b-a+1)
   for i in 0 .. b-a: result.sons[i] = n.sons[i+a]

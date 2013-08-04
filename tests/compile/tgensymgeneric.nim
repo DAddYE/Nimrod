@@ -7,9 +7,9 @@
 
 type
   TA = object
-    x: int
+    x: Int
   TB = object
-    x: string
+    x: String
 
 template genImpl() =
   var gensymed: T

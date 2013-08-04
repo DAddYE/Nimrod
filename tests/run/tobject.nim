@@ -1,9 +1,9 @@
 import unittest
 
 type Obj = object
-  foo: int
+  foo: Int
 
-proc makeObj(x: int): Obj = 
+proc makeObj(x: Int): Obj = 
   result.foo = x
 
 suite "object basic methods":

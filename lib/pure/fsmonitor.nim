@@ -27,9 +27,9 @@ import inotify, os, asyncio, tables
 type
   PFSMonitor* = ref TFSMonitor
   TFSMonitor = object of TObject
-    fd: cint
+    fd: Cint
     handleEvent: proc (m: PFSMonitor, ev: TMonitorEvent) {.closure.}
-    targets: TTable[cint, string]
+    targets: TTable[Cint, String]
   
   TMonitorEventType* = enum ## Monitor event type
     MonitorAccess,       ## File was accessed.
@@ -48,15 +48,15 @@ type
   TMonitorEvent* = object
     case kind*: TMonitorEventType  ## Type of the event.
     of MonitorMoveSelf, MonitorMoved:
-      oldPath*: string          ## Old absolute location
-      newPath*: string          ## New absolute location
+      oldPath*: String          ## Old absolute location
+      newPath*: String          ## New absolute location
     else:
-      fullname*: string         ## Absolute filename of the file/directory affected.
-    name*: string             ## Non absolute filepath of the file/directory
+      fullname*: String         ## Absolute filename of the file/directory affected.
+    name*: String             ## Non absolute filepath of the file/directory
                               ## affected relative to the directory watched.
                               ## "" if this event refers to the file/directory
                               ## watched.
-    wd*: cint                 ## Watch descriptor.
+    wd*: Cint                 ## Watch descriptor.
 
 const
   MaxEvents = 100
@@ -67,97 +67,97 @@ proc newMonitor*(): PFSMonitor =
   result.fd = inotifyInit()
   result.targets = initTable[cint, string]()
   if result.fd < 0:
-    OSError()
+    oSError()
 
-proc add*(monitor: PFSMonitor, target: string,
-               filters = {MonitorAll}): cint {.discardable.} =
+proc add*(monitor: PFSMonitor, target: String,
+               filters = {MonitorAll}): Cint {.discardable.} =
   ## Adds ``target`` which may be a directory or a file to the list of
   ## watched paths of ``monitor``.
   ## You can specify the events to report using the ``filters`` parameter.
   
-  var INFilter = -1
+  var iNFilter = -1
   for f in filters:
     case f
-    of MonitorAccess: INFilter = INFilter and IN_ACCESS
-    of MonitorAttrib: INFilter = INFilter and IN_ATTRIB
-    of MonitorCloseWrite: INFilter = INFilter and IN_CLOSE_WRITE
-    of MonitorCloseNoWrite: INFilter = INFilter and IN_CLOSE_NO_WRITE
-    of MonitorCreate: INFilter = INFilter and IN_CREATE
-    of MonitorDelete: INFilter = INFilter and IN_DELETE
-    of MonitorDeleteSelf: INFilter = INFilter and IN_DELETE_SELF
-    of MonitorModify: INFilter = INFilter and IN_MODIFY
-    of MonitorMoveSelf: INFilter = INFilter and IN_MOVE_SELF
-    of MonitorMoved: INFilter = INFilter and IN_MOVED_FROM and IN_MOVED_TO
-    of MonitorOpen: INFilter = INFilter and IN_OPEN
-    of MonitorAll: INFilter = INFilter and IN_ALL_EVENTS
+    of MonitorAccess: iNFilter = iNFilter and IN_ACCESS
+    of MonitorAttrib: iNFilter = iNFilter and IN_ATTRIB
+    of MonitorCloseWrite: iNFilter = iNFilter and IN_CLOSE_WRITE
+    of MonitorCloseNoWrite: iNFilter = iNFilter and IN_CLOSE_NO_WRITE
+    of MonitorCreate: iNFilter = iNFilter and IN_CREATE
+    of MonitorDelete: iNFilter = iNFilter and IN_DELETE
+    of MonitorDeleteSelf: iNFilter = iNFilter and IN_DELETE_SELF
+    of MonitorModify: iNFilter = iNFilter and IN_MODIFY
+    of MonitorMoveSelf: iNFilter = iNFilter and IN_MOVE_SELF
+    of MonitorMoved: iNFilter = iNFilter and IN_MOVED_FROM and IN_MOVED_TO
+    of MonitorOpen: iNFilter = iNFilter and IN_OPEN
+    of MonitorAll: iNFilter = iNFilter and IN_ALL_EVENTS
   
-  result = inotifyAddWatch(monitor.fd, target, INFilter.uint32)
+  result = inotifyAddWatch(monitor.fd, target, iNFilter.Uint32)
   if result < 0:
-    OSError()
+    oSError()
   monitor.targets.add(result, target)
 
-proc del*(monitor: PFSMonitor, wd: cint) =
+proc del*(monitor: PFSMonitor, wd: Cint) =
   ## Removes watched directory or file as specified by ``wd`` from ``monitor``.
   ##
   ## If ``wd`` is not a part of ``monitor`` an EOS error is raised.
   if inotifyRmWatch(monitor.fd, wd) < 0:
-    OSError()
+    oSError()
 
-proc getEvent(m: PFSMonitor, fd: cint): seq[TMonitorEvent] =
+proc getEvent(m: PFSMonitor, fd: Cint): Seq[TMonitorEvent] =
   result = @[]
-  let size = (sizeof(TINotifyEvent)+2000)*MaxEvents
+  let size = (sizeof(TinotifyEvent)+2000)*MaxEvents
   var buffer = newString(size)
 
   let le = read(fd, addr(buffer[0]), size)
 
-  var movedFrom: TTable[cint, tuple[wd: cint, old: string]] = 
+  var movedFrom: TTable[Cint, tuple[wd: Cint, old: String]] = 
             initTable[cint, tuple[wd: cint, old: string]]()
 
   var i = 0
   while i < le:
-    var event = cast[ptr TINotifyEvent](addr(buffer[i]))
+    var event = cast[ptr TinotifyEvent](addr(buffer[i]))
     var mev: TMonitorEvent
     mev.wd = event.wd
-    if event.len.int != 0:
-      mev.name = newString(event.len.int)
-      copyMem(addr(mev.name[0]), addr event.name, event.len.int-1)
+    if event.len.Int != 0:
+      mev.name = newString(event.len.Int)
+      copyMem(addr(mev.name[0]), addr event.name, event.len.Int-1)
     else:
       mev.name = ""
     
-    if (event.mask.int and IN_MOVED_FROM) != 0: 
+    if (event.mask.Int and IN_MOVED_FROM) != 0: 
       # Moved from event, add to m's collection
-      movedFrom.add(event.cookie.cint, (mev.wd, mev.name))
-      inc(i, sizeof(TINotifyEvent) + event.len.int)
+      movedFrom.add(event.cookie.Cint, (mev.wd, mev.name))
+      inc(i, sizeof(TinotifyEvent) + event.len.Int)
       continue
-    elif (event.mask.int and IN_MOVED_TO) != 0: 
+    elif (event.mask.Int and IN_MOVED_TO) != 0: 
       mev.kind = MonitorMoved
       assert movedFrom.hasKey(event.cookie.cint)
       # Find the MovedFrom event.
-      mev.oldPath = movedFrom[event.cookie.cint].old
+      mev.oldPath = movedFrom[event.cookie.Cint].old
       mev.newPath = "" # Set later
       # Delete it from the TTable
-      movedFrom.del(event.cookie.cint)
-    elif (event.mask.int and IN_ACCESS) != 0: mev.kind = MonitorAccess
-    elif (event.mask.int and IN_ATTRIB) != 0: mev.kind = MonitorAttrib
-    elif (event.mask.int and IN_CLOSE_WRITE) != 0: 
+      movedFrom.del(event.cookie.Cint)
+    elif (event.mask.Int and IN_ACCESS) != 0: mev.kind = MonitorAccess
+    elif (event.mask.Int and IN_ATTRIB) != 0: mev.kind = MonitorAttrib
+    elif (event.mask.Int and IN_CLOSE_WRITE) != 0: 
       mev.kind = MonitorCloseWrite
-    elif (event.mask.int and IN_CLOSE_NOWRITE) != 0: 
+    elif (event.mask.Int and IN_CLOSE_NOWRITE) != 0: 
       mev.kind = MonitorCloseNoWrite
-    elif (event.mask.int and IN_CREATE) != 0: mev.kind = MonitorCreate
-    elif (event.mask.int and IN_DELETE) != 0: 
+    elif (event.mask.Int and IN_CREATE) != 0: mev.kind = MonitorCreate
+    elif (event.mask.Int and IN_DELETE) != 0: 
       mev.kind = MonitorDelete
-    elif (event.mask.int and IN_DELETE_SELF) != 0: 
+    elif (event.mask.Int and IN_DELETE_SELF) != 0: 
       mev.kind = MonitorDeleteSelf
-    elif (event.mask.int and IN_MODIFY) != 0: mev.kind = MonitorModify
-    elif (event.mask.int and IN_MOVE_SELF) != 0: 
+    elif (event.mask.Int and IN_MODIFY) != 0: mev.kind = MonitorModify
+    elif (event.mask.Int and IN_MOVE_SELF) != 0: 
       mev.kind = MonitorMoveSelf
-    elif (event.mask.int and IN_OPEN) != 0: mev.kind = MonitorOpen
+    elif (event.mask.Int and IN_OPEN) != 0: mev.kind = MonitorOpen
     
     if mev.kind != MonitorMoved:
       mev.fullname = ""
     
     result.add(mev)
-    inc(i, sizeof(TINotifyEvent) + event.len.int)
+    inc(i, sizeof(TinotifyEvent) + event.len.Int)
 
   # If movedFrom events have not been matched with a moveTo. File has
   # been moved to an unwatched location, emit a MonitorDelete.
@@ -168,7 +168,7 @@ proc getEvent(m: PFSMonitor, fd: cint): seq[TMonitorEvent] =
     mev.name = t.old
     result.add(mev)
 
-proc FSMonitorRead(h: PObject) =
+proc fSMonitorRead(h: PObject) =
   var events = PFSMonitor(h).getEvent(PFSMonitor(h).fd)
   #var newEv: TMonitorEvent
   for ev in events:
@@ -186,7 +186,7 @@ proc toDelegate(m: PFSMonitor): PDelegate =
   result.deleVal = m
   result.fd = m.fd
   result.mode = fmRead
-  result.handleRead = FSMonitorRead
+  result.handleRead = fSMonitorRead
   result.open = true
 
 proc register*(d: PDispatcher, monitor: PFSMonitor,

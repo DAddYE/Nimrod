@@ -7,16 +7,16 @@ var
   screen, greeting: PSurface
   r: TRect
   event: TEvent
-  bgColor = colChocolate.int32
+  bgColor = colChocolate.Int32
 
 if init(INIT_VIDEO) != 0:
   quit "SDL failed to initialize!"
 
-screen = SetVideoMode(640, 480, 16, SWSURFACE or ANYFORMAT)
+screen = setVideoMode(640, 480, 16, SWSURFACE or ANYFORMAT)
 if screen.isNil:
   quit($sdl.getError())
 
-greeting = IMG_load("tux.png")
+greeting = iMGLoad("tux.png")
 if greeting.isNil:
   echo "Failed to load tux.png"
 else:
@@ -28,7 +28,7 @@ else:
 r.x = 0
 r.y = 0
 
-block game_loop:
+block gameLoop:
   while true:
     
     while pollEvent(addr event) > 0:
@@ -36,7 +36,7 @@ block game_loop:
       of QUITEV:
         break game_loop
       of KEYDOWN:
-        if EvKeyboard(addr event).keysym.sym == K_ESCAPE:
+        if evKeyboard(addr event).keysym.sym == K_ESCAPE:
           break game_loop
       else:
         discard

@@ -5,12 +5,12 @@ discard """
 
 type
   TMsg = tuple[
-    file: string,
-    line: int,       
-    msg: string,
-    err: bool]
+    file: String,
+    line: Int,       
+    msg: String,
+    err: Bool]
 
-var s: seq[TMsg] = @[]
+var s: Seq[TMsg] = @[]
 
 s.add(("fA", 13, "msg1", false))
 s.add(("fB", 14, "msg2", true))

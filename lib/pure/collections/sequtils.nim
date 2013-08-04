@@ -26,7 +26,7 @@
 when not defined(nimhygiene):
   {.pragma: dirty.}
 
-proc concat*[T](seqs: varargs[seq[T]]): seq[T] =
+proc concat*[T](seqs: Varargs[Seq[T]]): Seq[T] =
   ## Takes several sequences' items and returns them inside a new sequence.
   ##
   ## Example:
@@ -47,7 +47,7 @@ proc concat*[T](seqs: varargs[seq[T]]): seq[T] =
       result[i] = itm
       inc(i)
 
-proc distnct*[T](seq1: seq[T]): seq[T] =
+proc distnct*[T](seq1: Seq[T]): Seq[T] =
   ## Returns a new sequence without duplicates.
   ##
   ## This proc is `misspelled` on purpose to avoid a clash with the keyword
@@ -66,7 +66,7 @@ proc distnct*[T](seq1: seq[T]): seq[T] =
   for itm in items(seq1):
     if not result.contains(itm): result.add(itm)
     
-proc zip*[S, T](seq1: seq[S], seq2: seq[T]): seq[tuple[a: S, b: T]] =
+proc zip*[S, T](seq1: Seq[S], seq2: Seq[T]): Seq[tuple[a: S, b: T]] =
   ## Returns a new sequence with a combination of the two input sequences.
   ##
   ## For convenience you can access the returned tuples through the named
@@ -88,7 +88,7 @@ proc zip*[S, T](seq1: seq[S], seq2: seq[T]): seq[tuple[a: S, b: T]] =
   newSeq(result, m)
   for i in 0 .. m-1: result[i] = (seq1[i], seq2[i])
 
-iterator filter*[T](seq1: seq[T], pred: proc(item: T): bool {.closure.}): T =
+iterator filter*[T](seq1: Seq[T], pred: proc(item: T): Bool {.closure.}): T =
   ## Iterates through a sequence and yields every item that fulfills the
   ## predicate.
   ##
@@ -103,7 +103,7 @@ iterator filter*[T](seq1: seq[T], pred: proc(item: T): bool {.closure.}): T =
     var item = seq1[i]
     if pred(item): yield seq1[i]
 
-proc filter*[T](seq1: seq[T], pred: proc(item: T): bool {.closure.}): seq[T] =
+proc filter*[T](seq1: Seq[T], pred: proc(item: T): Bool {.closure.}): Seq[T] =
   ## Returns a new sequence with all the items that fulfilled the predicate.
   ##
   ## Example:
@@ -117,7 +117,7 @@ proc filter*[T](seq1: seq[T], pred: proc(item: T): bool {.closure.}): seq[T] =
   ##   assert f2 == @["yellow"]
   accumulateResult(filter(seq1, pred))
 
-template filterIt*(seq1, pred: expr): expr {.immediate.} =
+template filterIt*(seq1, pred: Expr): Expr {.immediate.} =
   ## Returns a new sequence with all the items that fulfilled the predicate.
   ##
   ## Unlike the `proc` version, the predicate needs to be an expression using
@@ -136,7 +136,7 @@ template filterIt*(seq1, pred: expr): expr {.immediate.} =
     if pred: result.add(it)
   result
 
-template toSeq*(iter: expr): expr {.immediate.} =
+template toSeq*(iter: Expr): Expr {.immediate.} =
   ## Transforms any iterator into a sequence.
   ##
   ## Example:
@@ -149,11 +149,11 @@ template toSeq*(iter: expr): expr {.immediate.} =
   ##         result = true)
   ##   assert odd_numbers == @[1, 3, 5, 7, 9]
   ##
-  var result {.gensym.}: seq[type(iter)] = @[]
+  var result {.gensym.}: Seq[type(iter)] = @[]
   for x in iter: add(result, x)
   result
 
-template foldl*(sequence, operation: expr): expr =
+template foldl*(sequence, operation: Expr): Expr =
   ## Template to fold a sequence from left to right, returning the accumulation.
   ##
   ## The sequence is required to have at least a single element. Debug versions
@@ -189,7 +189,7 @@ template foldl*(sequence, operation: expr): expr =
     result = operation
   result
 
-template foldr*(sequence, operation: expr): expr =
+template foldr*(sequence, operation: Expr): Expr =
   ## Template to fold a sequence from right to left, returning the accumulation.
   ##
   ## The sequence is required to have at least a single element. Debug versions

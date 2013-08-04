@@ -8,7 +8,7 @@ import
 ## Convert an integer to a Roman numeral
 # See http://en.wikipedia.org/wiki/Roman_numerals for reference
 
-proc raiseInvalidValue(msg: string) {.noreturn.} =
+proc raiseInvalidValue(msg: String) {.noreturn.} =
   # Yes, we really need a shorthand for this code...
   var e: ref EInvalidValue
   new(e)
@@ -19,7 +19,7 @@ proc raiseInvalidValue(msg: string) {.noreturn.} =
 # --> No. Why introduce additional state into such a simple and nice
 # interface? State is evil. :D
 
-proc RomanToDecimal(romanVal: string): int =
+proc romanToDecimal(romanVal: String): Int =
   result = 0
   var prevVal = 0
   for i in countdown(romanVal.len - 1, 0):
@@ -40,7 +40,7 @@ proc RomanToDecimal(romanVal: string): int =
       dec(result, val)
     prevVal = val
 
-proc DecimalToRoman(decValParam: int): string =
+proc decimalToRoman(decValParam: Int): String =
   # Apparently numbers cannot be above 4000
   # Well, they can be (using overbar or parenthesis notation)
   # but I see little interest (beside coding challenge) in coding them as
@@ -60,10 +60,10 @@ proc DecimalToRoman(decValParam: int): string =
       result.add(key)
 
 for i in 1..100:
-  if RomanToDecimal(DecimalToRoman(i)) != i: quit "BUG"
+  if romanToDecimal(decimalToRoman(i)) != i: quit "BUG"
 
 for i in items([1238, 1777, 3830, 2401, 379, 33, 940, 3973]):
-  if RomanToDecimal(DecimalToRoman(i)) != i: quit "BUG"
+  if romanToDecimal(decimalToRoman(i)) != i: quit "BUG"
  
 echo "success" #OUT success
 

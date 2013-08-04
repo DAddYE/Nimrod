@@ -8,7 +8,7 @@ import unicode, sequtils
 type
   TThing = object of TObject
   TUnit = object of TThing
-    x: int
+    x: Int
 
 method collide(a, b: TThing) {.inline.} =
   quit "to override!"
@@ -24,6 +24,6 @@ var
 
 let
   input = readFile("its_full_of_procs.nim")
-  letters = toSeq(runes(string(input)))
+  letters = toSeq(runes(String(input)))
 
 collide(a, b) # output: 2

@@ -2,10 +2,10 @@
 
 type
   TPoint2d {.inheritable.} = object
-    x, y: int
+    x, y: Int
 
   TPoint3d = object of TPoint2d
-    z: int # added a field
+    z: Int # added a field
 
 proc getPoint( p: var TPoint2d) =
   {.breakpoint.}

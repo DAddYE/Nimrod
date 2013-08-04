@@ -6,27 +6,27 @@ discard """
 type
   TClassOfTCustomObject {.pure, inheritable.} = object
     base* : ptr TClassOfTCustomObject
-    className* : string
+    className* : String
   TClassOfTobj = object of TClassOfTCustomObject
     nil
   TCustomObject = ref object {.inheritable.}
     class* : ptr TClassOfTCustomObject
   TObj = ref object of TCustomObject
-    data: int
+    data: Int
 
-var ClassOfTObj: TClassOfTObj
+var classOfTObj: TClassOfTObj
 
 proc initClassOfTObj() =
-  ClassOfTObj.base = nil
-  ClassOfTObj.className = "TObj"
+  classOfTObj.base = nil
+  classOfTObj.className = "TObj"
 
 initClassOfTObj()
 
 proc initialize*(self: TObj) =
-  self.class = addr ClassOfTObj
+  self.class = addr classOfTObj
   # this generates wrong C code: && instead of &
 
-proc newInstance(T: typedesc): T =
+proc newInstance(T: TypeDesc): T =
   mixin initialize
   new(result)
   initialize(result)
@@ -35,7 +35,7 @@ var o = TObj.newInstance()
 
 type
     TestObj* = object of TObject
-        t:int
+        t:Int
     SubObject* = object of TestObj
 
 method test*(t:var TestObj) =

@@ -1,13 +1,13 @@
 import streams
 from strutils import repeatChar
 
-proc readPaddedStr*(s: PStream, length: int, padChar = '\0'): TaintedString = 
+proc readPaddedStr*(s: PStream, length: Int, padChar = '\0'): TaintedString = 
   var lastChr = length
   result = s.readStr(length)
   while lastChr >= 0 and result[lastChr - 1] == padChar: dec(lastChr)
   result.setLen(lastChr)
 
-proc writePaddedStr*(s: PStream, str: string, length: int, padChar = '\0') =
+proc writePaddedStr*(s: PStream, str: String, length: Int, padChar = '\0') =
   if str.len < length:
     s.write(str)
     s.write(repeatChar(length - str.len, padChar))
@@ -20,8 +20,8 @@ proc readLEStr*(s: PStream): TaintedString =
   var len = s.readInt16()
   result = s.readStr(len)
 
-proc writeLEStr*(s: PStream, str: string) =
-  s.write(str.len.int16)
+proc writeLEStr*(s: PStream, str: String) =
+  s.write(str.len.Int16)
   s.write(str)
 
 when isMainModule:

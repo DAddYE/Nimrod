@@ -36,14 +36,14 @@
 
 type
   TEventArgs* = object of TObject ## Base object for event arguments that are passed to callback functions.
-  TEventHandler* = tuple[name: string, handlers: seq[proc(e:TEventArgs) {.closure.}]] ## An eventhandler for an event.
+  TEventHandler* = tuple[name: String, handlers: Seq[proc(e:TEventArgs) {.closure.}]] ## An eventhandler for an event.
 
 type
   TEventEmitter* = object {.pure, final.} ## An object that fires events and holds event handlers for an object.
-    s: seq[TEventHandler]
+    s: Seq[TEventHandler]
   EInvalidEvent* = object of EInvalidValue
     
-proc initEventHandler*(name: string): TEventHandler =
+proc initEventHandler*(name: String): TEventHandler =
   ## Initializes an EventHandler with the specified name and returns it.
   result.handlers = @[]
   result.name = name
@@ -59,7 +59,7 @@ proc removeHandler*(handler: var TEventHandler, func: proc(e: TEventArgs) {.clos
       handler.handlers.del(i)
       break
     
-proc containsHandler*(handler: var TEventHandler, func: proc(e: TEventArgs) {.closure.}): bool =
+proc containsHandler*(handler: var TEventHandler, func: proc(e: TEventArgs) {.closure.}): Bool =
   ## Checks if a callback is registered to this event handler.
   return handler.handlers.contains(func)
 
@@ -68,15 +68,15 @@ proc clearHandlers*(handler: var TEventHandler) =
   ## Clears all of the callbacks from the event handler.
   setLen(handler.handlers, 0)
 
-proc getEventhandler(emitter: var TEventEmitter, event: string): int =
+proc getEventhandler(emitter: var TEventEmitter, event: String): Int =
   for k in 0..high(emitter.s):
     if emitter.s[k].name == event: return k
   return -1
 
-proc on*(emitter: var TEventEmitter, event: string, func: proc(e: TEventArgs) {.closure.}) =
+proc on*(emitter: var TEventEmitter, event: String, func: proc(e: TEventArgs) {.closure.}) =
   ## Assigns a event handler with the specified callback. If the event
   ## doesn't exist, it will be created.
-  var i = getEventHandler(emitter, event)
+  var i = getEventhandler(emitter, event)
   if i < 0:
     var eh = initEventHandler(event)
     addHandler(eh, func)
@@ -89,9 +89,9 @@ proc emit*(emitter: var TEventEmitter, eventhandler: var TEventHandler,
   ## Fires an event handler with specified event arguments.
   for func in items(eventhandler.handlers): func(args)
 
-proc emit*(emitter: var TEventEmitter, event: string, args: TEventArgs) =
+proc emit*(emitter: var TEventEmitter, event: String, args: TEventArgs) =
   ## Fires an event handler with specified event arguments.
-  var i = getEventHandler(emitter, event)
+  var i = getEventhandler(emitter, event)
   if i >= 0:
     emit(emitter, emitter.s[i], args)
   else:

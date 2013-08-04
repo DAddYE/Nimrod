@@ -8,6 +8,6 @@ discard """
 type
   TNone {.exportc: "_NONE", final.} = object
 
-proc TNone(a, b: int) = nil #ERROR_MSG attempt to redefine 'TNone'
+proc tNone(a, b: Int) = nil #ERROR_MSG attempt to redefine 'TNone'
 
 

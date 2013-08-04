@@ -13,9 +13,9 @@ stdout.writeln(repr({'a'..'z', 'A'..'Z'}))
 
 type
   TObj {.pure, inheritable.} = object
-    data: int
+    data: Int
   TFoo = ref object of TObj
-    d2: float
+    d2: Float
 var foo: TFoo
 new(foo)
 

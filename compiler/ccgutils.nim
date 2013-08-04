@@ -24,17 +24,17 @@ proc getPragmaStmt*(n: PNode, w: TSpecialWord): PNode =
       if whichPragma(n[i]) == w: return n[i]
   else: nil
 
-proc stmtsContainPragma*(n: PNode, w: TSpecialWord): bool =
+proc stmtsContainPragma*(n: PNode, w: TSpecialWord): Bool =
   result = getPragmaStmt(n, w) != nil
 
-proc hashString*(s: string): biggestInt = 
+proc hashString*(s: String): BiggestInt = 
   # has to be the same algorithm as system.hashString!
-  if CPU[targetCPU].bit == 64: 
+  if Cpu[targetCPU].bit == 64: 
     # we have to use the same bitwidth
     # as the target CPU
     var b = 0'i64
     for i in countup(0, len(s) - 1): 
-      b = b +% Ord(s[i])
+      b = b +% ord(s[i])
       b = b +% `shl`(b, 10)
       b = b xor `shr`(b, 6)
     b = b +% `shl`(b, 3)
@@ -44,7 +44,7 @@ proc hashString*(s: string): biggestInt =
   else: 
     var a = 0'i32
     for i in countup(0, len(s) - 1): 
-      a = a +% Ord(s[i]).int32
+      a = a +% ord(s[i]).Int32
       a = a +% `shl`(a, 10'i32)
       a = a xor `shr`(a, 6'i32)
     a = a +% `shl`(a, 3'i32)
@@ -53,11 +53,11 @@ proc hashString*(s: string): biggestInt =
     result = a
 
 var 
-  gTypeTable: array[TTypeKind, TIdTable]
-  gCanonicalTypes: array[TTypeKind, PType]
+  gTypeTable: Array[TTypeKind, TIdTable]
+  gCanonicalTypes: Array[TTypeKind, PType]
 
 proc initTypeTables() = 
-  for i in countup(low(TTypeKind), high(TTypeKind)): InitIdTable(gTypeTable[i])
+  for i in countup(low(TTypeKind), high(TTypeKind)): initIdTable(gTypeTable[i])
 
 proc resetCaches* =
   ## XXX: fix that more properly
@@ -70,7 +70,7 @@ when false:
     for i in countup(low(TTypeKind), high(TTypeKind)): 
       echo i, " ", gTypeTable[i].counter
   
-proc GetUniqueType*(key: PType): PType = 
+proc getUniqueType*(key: PType): PType = 
   # this is a hotspot in the compiler!
   if key == nil: return 
   var k = key.kind
@@ -87,11 +87,11 @@ proc GetUniqueType*(key: PType): PType =
       gCanonicalTypes[k] = key
       result = key
   of tyTypeDesc, tyTypeClass:
-    InternalError("value expected, but got a type")
+    internalError("value expected, but got a type")
   of tyGenericParam:
-    InternalError("GetUniqueType")
+    internalError("GetUniqueType")
   of tyGenericInst, tyDistinct, tyOrdinal, tyMutable, tyConst, tyIter:
-    result = GetUniqueType(lastSon(key))
+    result = getUniqueType(lastSon(key))
   of tyArrayConstr, tyGenericInvokation, tyGenericBody,
      tyOpenArray, tyArray, tySet, tyRange, tyTuple,
      tyPtr, tyRef, tySequence, tyForward, tyVarargs, tyProxy, tyVar:
@@ -102,33 +102,33 @@ proc GetUniqueType*(key: PType): PType =
 
     # we have to do a slow linear search because types may need
     # to be compared by their structure:
-    if IdTableHasObjectAsKey(gTypeTable[k], key): return key 
+    if idTableHasObjectAsKey(gTypeTable[k], key): return key 
     for h in countup(0, high(gTypeTable[k].data)): 
       var t = PType(gTypeTable[k].data[h].key)
       if t != nil and sameBackendType(t, key): 
         return t
-    IdTablePut(gTypeTable[k], key, key)
+    idTablePut(gTypeTable[k], key, key)
     result = key
   of tyObject:
     if tfFromGeneric notin key.flags:
       # fast case; lookup per id suffices:
-      result = PType(IdTableGet(gTypeTable[k], key))
+      result = PType(idTableGet(gTypeTable[k], key))
       if result == nil: 
-        IdTablePut(gTypeTable[k], key, key)
+        idTablePut(gTypeTable[k], key, key)
         result = key
     else:
       # ugly slow case: need to compare by structure
-      if IdTableHasObjectAsKey(gTypeTable[k], key): return key
+      if idTableHasObjectAsKey(gTypeTable[k], key): return key
       for h in countup(0, high(gTypeTable[k].data)): 
         var t = PType(gTypeTable[k].data[h].key)
         if t != nil and sameType(t, key): 
           return t
-      IdTablePut(gTypeTable[k], key, key)
+      idTablePut(gTypeTable[k], key, key)
       result = key
   of tyEnum:
-    result = PType(IdTableGet(gTypeTable[k], key))
+    result = PType(idTableGet(gTypeTable[k], key))
     if result == nil: 
-      IdTablePut(gTypeTable[k], key, key)
+      idTablePut(gTypeTable[k], key, key)
       result = key
   of tyProc:
     # tyVar is not 100% correct, but would speeds things up a little:
@@ -136,17 +136,17 @@ proc GetUniqueType*(key: PType): PType =
       result = key
     else:
       # ugh, we need the canon here:
-      if IdTableHasObjectAsKey(gTypeTable[k], key): return key 
+      if idTableHasObjectAsKey(gTypeTable[k], key): return key 
       for h in countup(0, high(gTypeTable[k].data)): 
         var t = PType(gTypeTable[k].data[h].key)
         if t != nil and sameBackendType(t, key): 
           return t
-      IdTablePut(gTypeTable[k], key, key)
+      idTablePut(gTypeTable[k], key, key)
       result = key
       
-proc TableGetType*(tab: TIdTable, key: PType): PObject = 
+proc tableGetType*(tab: TIdTable, key: PType): PObject = 
   # returns nil if we need to declare this type
-  result = IdTableGet(tab, key)
+  result = idTableGet(tab, key)
   if (result == nil) and (tab.counter > 0): 
     # we have to do a slow linear search because types may need
     # to be compared by their structure:
@@ -156,20 +156,20 @@ proc TableGetType*(tab: TIdTable, key: PType): PObject =
         if sameType(t, key): 
           return tab.data[h].val
 
-proc makeSingleLineCString*(s: string): string =
+proc makeSingleLineCString*(s: String): String =
   result = "\""
   for c in items(s):
     result.add(c.toCChar)
   result.add('\"')
 
-proc makeLLVMString*(s: string): PRope = 
+proc makeLLVMString*(s: String): PRope = 
   const MaxLineLength = 64
   result = nil
   var res = "c\""
   for i in countup(0, len(s) - 1): 
     if (i + 1) mod MaxLineLength == 0: 
       app(result, toRope(res))
-      setlen(res, 0)
+      setLen(res, 0)
     case s[i]
     of '\0'..'\x1F', '\x80'..'\xFF', '\"', '\\': 
       add(res, '\\')
@@ -178,4 +178,4 @@ proc makeLLVMString*(s: string): PRope =
   add(res, "\\00\"")
   app(result, toRope(res))
 
-InitTypeTables()
+initTypeTables()

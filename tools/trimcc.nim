@@ -2,11 +2,11 @@
 
 import strutils, os
 
-proc newName(f: string): string =
+proc newName(f: String): String =
   var (dir, name, ext) = splitFile(f)
   return dir / "trim_" & name & ext
 
-proc walker(dir: string) = 
+proc walker(dir: String) = 
   for kind, path in walkDir(dir):
     case kind
     of pcFile:

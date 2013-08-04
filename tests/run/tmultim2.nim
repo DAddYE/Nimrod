@@ -7,9 +7,9 @@ discard """
 type
   TThing = object {.inheritable.}
   TUnit = object of TThing
-    x: int
+    x: Int
   TParticle = object of TThing
-    a, b: int
+    a, b: Int
     
 method collide(a, b: TThing) {.inline.} =
   quit "to override!"

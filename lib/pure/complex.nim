@@ -19,20 +19,20 @@ import
   math
  
 const
-  EPS = 5.0e-6 ## Epsilon used for float comparisons (should be smaller
+  Eps = 5.0e-6 ## Epsilon used for float comparisons (should be smaller
                ## if float is really float64, but w/ the current version
                ## it seems to be float32?)
 
 
 type
-  TComplex* = tuple[re, im: float]
+  TComplex* = tuple[re, im: Float]
     ## a complex number, consisting of a real and an imaginary part
 
-proc `==` *(x, y: TComplex): bool =
+proc `==` *(x, y: TComplex): Bool =
   ## Compare two complex numbers `x` and `y` for equality.
   result = x.re == y.re and x.im == y.im
 
-proc `=~` *(x, y: TComplex): bool =
+proc `=~` *(x, y: TComplex): Bool =
   ## Compare two complex numbers `x` and `y` approximately.
   result = abs(x.re-y.re)<EPS and abs(x.im-y.im)<EPS
 
@@ -41,12 +41,12 @@ proc `+` *(x, y: TComplex): TComplex =
   result.re = x.re + y.re
   result.im = x.im + y.im
 
-proc `+` *(x: TComplex, y: float): TComplex =
+proc `+` *(x: TComplex, y: Float): TComplex =
   ## Add complex `x` to float `y`.
   result.re = x.re + y
   result.im = x.im
 
-proc `+` *(x: float, y: TComplex): TComplex =
+proc `+` *(x: Float, y: TComplex): TComplex =
   ## Add float `x` to complex `y`.
   result.re = x + y.re
   result.im = y.im
@@ -62,11 +62,11 @@ proc `-` *(x, y: TComplex): TComplex =
   result.re = x.re - y.re
   result.im = x.im - y.im
 
-proc `-` *(x: TComplex, y: float): TComplex =
+proc `-` *(x: TComplex, y: Float): TComplex =
   ## Subtracts float `y` from complex `x`.
   result = x + (-y)
 
-proc `-` *(x: float, y: TComplex): TComplex =
+proc `-` *(x: Float, y: TComplex): TComplex =
   ## Subtracts complex `y` from float `x`.
   result = x + (-y)
 
@@ -74,7 +74,7 @@ proc `-` *(x: float, y: TComplex): TComplex =
 proc `/` *(x, y: TComplex): TComplex =
   ## Divide `x` by `y`.
   var
-    r, den: float
+    r, den: Float
   if abs(y.re) < abs(y.im):
     r = y.re / y.im
     den = y.im + r * y.re
@@ -86,12 +86,12 @@ proc `/` *(x, y: TComplex): TComplex =
     result.re = (x.re + r * x.im) / den
     result.im = (x.im - r * x.re) / den
 
-proc `/` *(x : TComplex, y: float ): TComplex =
+proc `/` *(x : TComplex, y: Float ): TComplex =
   ## Divide complex `x` by float `y`.
   result.re = x.re/y
   result.im = x.im/y
 
-proc `/` *(x : float, y: TComplex ): TComplex =
+proc `/` *(x : Float, y: TComplex ): TComplex =
   ## Divide float `x` by complex `y`.
   var num : TComplex = (x, 0.0)
   result = num/y
@@ -102,22 +102,22 @@ proc `*` *(x, y: TComplex): TComplex =
   result.re = x.re * y.re - x.im * y.im
   result.im = x.im * y.re + x.re * y.im
 
-proc `*` *(x: float, y: TComplex): TComplex =
+proc `*` *(x: Float, y: TComplex): TComplex =
   ## Multiply float `x` with complex `y`.
   result.re = x * y.re
   result.im = x * y.im
 
-proc `*` *(x: TComplex, y: float): TComplex =
+proc `*` *(x: TComplex, y: Float): TComplex =
   ## Multiply complex `x` with float `y`.
   result.re = x.re * y
   result.im = x.im * y
 
 
-proc abs*(z: TComplex): float =
+proc abs*(z: TComplex): Float =
   ## Return the distance from (0,0) to `z`.
 
   # optimized by checking special cases (sqrt is expensive)
-  var x, y, temp: float
+  var x, y, temp: Float
 
   x = abs(z.re)
   y = abs(z.im)
@@ -135,7 +135,7 @@ proc abs*(z: TComplex): float =
 
 proc sqrt*(z: TComplex): TComplex =
   ## Square root for a complex number `z`.
-  var x, y, w, r: float
+  var x, y, w, r: Float
 
   if z.re == 0.0 and z.im == 0.0:
     result = z
@@ -247,7 +247,7 @@ proc cosh*(z: TComplex): TComplex =
   result = 0.5*(exp(z)+exp(-z))
 
 
-proc `$`*(z: TComplex): string =
+proc `$`*(z: TComplex): String =
   ## Returns `z`'s string representation as ``"(re, im)"``.
   result = "(" & $z.re & ", " & $z.im & ")"
 

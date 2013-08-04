@@ -1,5 +1,5 @@
 
-iterator xrange(fromm, to: int, step = 1): tuple[x, y: int] =
+iterator xrange(fromm, to: Int, step = 1): tuple[x, y: Int] =
   var a = fromm
   while a <= to:
     yield (a, a+1)

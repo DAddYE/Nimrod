@@ -10,7 +10,7 @@ discard """
 
 type
   TGen[T] = object
-  TSpef = TGen[string]
+  TSpef = TGen[String]
   
 var
   s: TSpef

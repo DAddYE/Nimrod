@@ -8,11 +8,11 @@ import db_sqlite, parseutils, strutils, times
 type
   TTodo* = object
     ## A todo object holding the information serialized to the database.
-    id: int64                 ## Unique identifier of the object in the
+    id: Int64                 ## Unique identifier of the object in the
                               ## database, use the getId() accessor to read it.
-    text*: string             ## Description of the task to do.
-    priority*: int            ## The priority can be any user defined integer.
-    isDone*: bool             ## Done todos are still kept marked.
+    text*: String             ## Description of the task to do.
+    priority*: Int            ## The priority can be any user defined integer.
+    isDone*: Bool             ## Done todos are still kept marked.
     modificationDate: TTime   ## The modification time can't be modified from
                               ## outside of this module, use the
                               ## getModificationDate accessor.
@@ -20,12 +20,12 @@ type
   TPagedParams* = object
     ## Contains parameters for a query, initialize default values with
     ## initDefaults().
-    pageSize*: int64          ## Lines per returned query page, -1 for
+    pageSize*: Int64          ## Lines per returned query page, -1 for
                               ## unlimited.
-    priorityAscending*: bool  ## Sort results by ascending priority.
-    dateAscending*: bool      ## Sort results by ascending modification date.
-    showUnchecked*: bool      ## Get unchecked objects.
-    showChecked*: bool        ## Get checked objects.
+    priorityAscending*: Bool  ## Sort results by ascending priority.
+    dateAscending*: Bool      ## Sort results by ascending modification date.
+    showUnchecked*: Bool      ## Get unchecked objects.
+    showChecked*: Bool        ## Get checked objects.
 
 
 # - General procs
@@ -35,14 +35,14 @@ proc initDefaults*(params: var TPagedParams) =
   ##
   ## Note that you should always provide a non zero pageSize, either a specific
   ## positive value or negative for unbounded query results.
-  params.pageSize = high(int64)
+  params.pageSize = high(Int64)
   params.priorityAscending = false
   params.dateAscending = false
   params.showUnchecked = true
   params.showChecked = false
 
 
-proc openDatabase*(path: string): TDbConn =
+proc openDatabase*(path: String): TDbConn =
   ## Creates or opens the sqlite3 database.
   ##
   ## Pass the path to the sqlite database, if the database doesn't exist it
@@ -63,7 +63,7 @@ proc openDatabase*(path: string): TDbConn =
 
 # - Procs related to TTodo objects
 #
-proc initFromDB(id: int64; text: string; priority: int, isDone: bool;
+proc initFromDB(id: Int64; text: String; priority: Int, isDone: Bool;
                modificationDate: TTime): TTodo =
   ## Returns an initialized TTodo object created from database parameters.
   ##
@@ -76,7 +76,7 @@ proc initFromDB(id: int64; text: string; priority: int, isDone: bool;
   result.modificationDate = modificationDate
 
 
-proc getId*(todo: TTodo): int64 =
+proc getId*(todo: TTodo): Int64 =
   ## Accessor returning the value of the private id property.
   return todo.id
 
@@ -86,7 +86,7 @@ proc getModificationDate*(todo: TTodo): TTime =
   return todo.modificationDate
 
 
-proc update*(todo: var TTodo; conn: TDbConn): bool =
+proc update*(todo: var TTodo; conn: TDbConn): Bool =
   ## Checks the database for the object and refreshes its variables.
   ##
   ## Use this method if you (or another entity) have modified the database and
@@ -99,7 +99,7 @@ proc update*(todo: var TTodo; conn: TDbConn): bool =
     FROM Todos WHERE id = ?"""
 
   try:
-    let rows = conn.GetAllRows(query, $todo.id)
+    let rows = conn.getAllRows(query, $todo.id)
     if len(rows) < 1:
       return
     assert(1 == len(rows), "Woah, didn't expect so many rows")
@@ -112,7 +112,7 @@ proc update*(todo: var TTodo; conn: TDbConn): bool =
     echo("Something went wrong selecting for id " & $todo.id)
 
 
-proc save*(todo: var TTodo; conn: TDbConn): bool =
+proc save*(todo: var TTodo; conn: TDbConn): Bool =
   ## Saves the current state of text, priority and isDone to the database.
   ##
   ## Returns true if the database object was updated (in which case the
@@ -126,7 +126,7 @@ proc save*(todo: var TTodo; conn: TDbConn): bool =
       SET desc = ?, priority = ?, is_done = ?, modification_date = ?
       WHERE id = ?"""
     rowsUpdated = conn.execAffectedRows(query, $todo.text,
-      $todo.priority, $todo.isDone, $int(currentDate), $todo.id)
+      $todo.priority, $todo.isDone, $Int(currentDate), $todo.id)
 
   if 1 == rowsUpdated:
     todo.modificationDate = currentDate
@@ -135,7 +135,7 @@ proc save*(todo: var TTodo; conn: TDbConn): bool =
 
 # - Procs dealing directly with the database
 #
-proc addTodo*(conn: TDbConn; priority: int; text: string): TTodo =
+proc addTodo*(conn: TDbConn; priority: Int; text: String): TTodo =
   ## Inserts a new todo into the database.
   ##
   ## Returns the generated todo object. If there is an error EDb will be raised.
@@ -144,12 +144,12 @@ proc addTodo*(conn: TDbConn; priority: int; text: string): TTodo =
     query = sql"""INSERT INTO Todos
       (priority, is_done, desc, modification_date)
       VALUES (?, 'false', ?, ?)"""
-    todoId = conn.insertId(query, priority, text, $int(currentDate))
+    todoId = conn.insertID(query, priority, text, $Int(currentDate))
 
   result = initFromDB(todoId, text, priority, false, currentDate)
 
 
-proc deleteTodo*(conn: TDbConn; todoId: int64): int64 {.discardable.} =
+proc deleteTodo*(conn: TDbConn; todoId: Int64): Int64 {.discardable.} =
   ## Deletes the specified todo identifier.
   ##
   ## Returns the number of rows which were affected (1 or 0)
@@ -157,7 +157,7 @@ proc deleteTodo*(conn: TDbConn; todoId: int64): int64 {.discardable.} =
   result = conn.execAffectedRows(query, $todoId)
 
 
-proc getNumEntries*(conn: TDbConn): int =
+proc getNumEntries*(conn: TDbConn): Int =
   ## Returns the number of entries in the Todos table.
   ##
   ## If the function succeeds, returns the zero or positive value, if something
@@ -172,7 +172,7 @@ proc getNumEntries*(conn: TDbConn): int =
 
 
 proc getPagedTodos*(conn: TDbConn; params: TPagedParams;
-                    page = 0'i64): seq[TTodo] =
+                    page = 0'i64): Seq[TTodo] =
   ## Returns the todo entries for a specific page.
   ##
   ## Pages are calculated based on the params.pageSize parameter, which can be
@@ -186,7 +186,7 @@ proc getPagedTodos*(conn: TDbConn; params: TPagedParams;
   if not params.showUnchecked and not params.showChecked: return
 
   let
-    order_by = [
+    orderBy = [
       if params.priorityAscending: "ASC" else: "DESC",
       if params.dateAscending: "ASC" else: "DESC"]
 
@@ -194,7 +194,7 @@ proc getPagedTodos*(conn: TDbConn; params: TPagedParams;
       FROM Todos
       WHERE is_done = ? OR is_done = ?
       ORDER BY priority $1, modification_date $2, id DESC
-      LIMIT ? * ?,?""" % order_by)
+      LIMIT ? * ?,?""" % orderBy)
 
     args = @[$params.showChecked, $(not params.showUnchecked),
       $params.pageSize, $page, $params.pageSize]
@@ -202,15 +202,15 @@ proc getPagedTodos*(conn: TDbConn; params: TPagedParams;
   #echo("Query " & string(query))
   #echo("args: " & args.join(", "))
 
-  var newId: biggestInt
+  var newId: BiggestInt
   for row in conn.fastRows(query, args):
     let numChars = row[0].parseBiggestInt(newId)
     assert(numChars > 0, "Huh, couldn't parse identifier from database?")
-    result.add(initFromDB(int64(newId), row[1], row[2].parseInt,
+    result.add(initFromDB(Int64(newId), row[1], row[2].parseInt,
         row[3].parseBool, TTime(row[4].parseInt)))
 
 
-proc getTodo*(conn: TDbConn; todoId: int64): ref TTodo =
+proc getTodo*(conn: TDbConn; todoId: Int64): ref TTodo =
   ## Returns a reference to a TTodo or nil if the todo could not be found.
   var tempTodo: TTodo
   tempTodo.id = todoId

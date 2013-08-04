@@ -3,15 +3,15 @@ discard """
   output: "5 - [1]"
 """
 type
-  TProc = proc (n: int, m: openarray[int64]) {.nimcall.}
+  TProc = proc (n: Int, m: Openarray[Int64]) {.nimcall.}
 
-proc Foo(x: int, P: TProc) =
-  P(x, [ 1'i64 ])
+proc foo(x: Int, P: TProc) =
+  p(x, [ 1'i64 ])
 
-proc Bar(n: int, m: openarray[int64]) =
+proc bar(n: Int, m: Openarray[Int64]) =
   echo($n & " - " & repr(m))
 
-Foo(5, Bar) #OUT 5 - [1]
+foo(5, bar) #OUT 5 - [1]
 
 
 

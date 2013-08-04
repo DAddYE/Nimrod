@@ -17,7 +17,7 @@ when defined(windows):
 else:
   import os, osproc
 
-proc openDefaultBrowser*(url: string) =
+proc openDefaultBrowser*(url: String) =
   ## opens `url` with the user's default browser. This does not block.
   ##
   ## Under Windows, ``ShellExecute`` is used. Under Mac OS X the ``open``

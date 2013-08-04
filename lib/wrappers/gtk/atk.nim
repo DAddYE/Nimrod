@@ -12,18 +12,18 @@ else:
   const 
     lib = "libatk-1.0.so"
 type 
-  PImplementor* = pointer
-  PAction* = pointer
-  PComponent* = pointer
-  PDocument* = pointer
-  PEditableText* = pointer
-  PHypertext* = pointer
-  PImage* = pointer
-  PSelection* = pointer
-  PStreamableContent* = pointer
-  PTable* = pointer
-  PText* = pointer
-  PValue* = pointer
+  PImplementor* = Pointer
+  PAction* = Pointer
+  PComponent* = Pointer
+  PDocument* = Pointer
+  PEditableText* = Pointer
+  PHypertext* = Pointer
+  PImage* = Pointer
+  PSelection* = Pointer
+  PStreamableContent* = Pointer
+  PTable* = Pointer
+  PText* = Pointer
+  PValue* = Pointer
   PRelationSet* = ptr TRelationSet
   PStateSet* = ptr TStateSet
   PAttributeSet* = ptr TAttributeSet
@@ -55,16 +55,16 @@ type
     LAYER_POPUP, LAYER_OVERLAY
   PPropertyValues* = ptr TPropertyValues
   TPropertyValues*{.final, pure.} = object 
-    property_name*: cstring
+    property_name*: Cstring
     old_value*: TGValue
     new_value*: TGValue
 
-  TFunction* = proc (data: gpointer): gboolean{.cdecl.}
+  TFunction* = proc (data: Gpointer): Gboolean{.cdecl.}
   PObject* = ptr TObject
   PPAtkObject* = ptr PObject
   TObject* = object of TGObject
-    description*: cstring
-    name*: cstring
+    description*: Cstring
+    name*: Cstring
     accessible_parent*: PObject
     role*: TRole
     relation_set*: PRelationSet
@@ -73,31 +73,31 @@ type
   TPropertyChangeHandler* = proc (para1: PObject, para2: PPropertyValues){.cdecl.}
   PObjectClass* = ptr TObjectClass
   TObjectClass* = object of TGObjectClass
-    get_name*: proc (accessible: PObject): cstring{.cdecl.}
-    get_description*: proc (accessible: PObject): cstring{.cdecl.}
+    get_name*: proc (accessible: PObject): Cstring{.cdecl.}
+    get_description*: proc (accessible: PObject): Cstring{.cdecl.}
     get_parent*: proc (accessible: PObject): PObject{.cdecl.}
-    get_n_children*: proc (accessible: PObject): gint{.cdecl.}
-    ref_child*: proc (accessible: PObject, i: gint): PObject{.cdecl.}
-    get_index_in_parent*: proc (accessible: PObject): gint{.cdecl.}
+    get_n_children*: proc (accessible: PObject): Gint{.cdecl.}
+    ref_child*: proc (accessible: PObject, i: Gint): PObject{.cdecl.}
+    get_index_in_parent*: proc (accessible: PObject): Gint{.cdecl.}
     ref_relation_set*: proc (accessible: PObject): PRelationSet{.cdecl.}
     get_role*: proc (accessible: PObject): TRole{.cdecl.}
     get_layer*: proc (accessible: PObject): TLayer{.cdecl.}
-    get_mdi_zorder*: proc (accessible: PObject): gint{.cdecl.}
+    get_mdi_zorder*: proc (accessible: PObject): Gint{.cdecl.}
     ref_state_set*: proc (accessible: PObject): PStateSet{.cdecl.}
-    set_name*: proc (accessible: PObject, name: cstring){.cdecl.}
-    set_description*: proc (accessible: PObject, description: cstring){.cdecl.}
+    set_name*: proc (accessible: PObject, name: Cstring){.cdecl.}
+    set_description*: proc (accessible: PObject, description: Cstring){.cdecl.}
     set_parent*: proc (accessible: PObject, parent: PObject){.cdecl.}
     set_role*: proc (accessible: PObject, role: TRole){.cdecl.}
     connect_property_change_handler*: proc (accessible: PObject, 
-        handler: TPropertyChangeHandler): guint{.cdecl.}
+        handler: TPropertyChangeHandler): Guint{.cdecl.}
     remove_property_change_handler*: proc (accessible: PObject, 
-        handler_id: guint){.cdecl.}
-    initialize*: proc (accessible: PObject, data: gpointer){.cdecl.}
-    children_changed*: proc (accessible: PObject, change_index: guint, 
-                             changed_child: gpointer){.cdecl.}
-    focus_event*: proc (accessible: PObject, focus_in: gboolean){.cdecl.}
+        handler_id: Guint){.cdecl.}
+    initialize*: proc (accessible: PObject, data: Gpointer){.cdecl.}
+    children_changed*: proc (accessible: PObject, change_index: Guint, 
+                             changed_child: Gpointer){.cdecl.}
+    focus_event*: proc (accessible: PObject, focus_in: Gboolean){.cdecl.}
     property_change*: proc (accessible: PObject, values: PPropertyValues){.cdecl.}
-    state_change*: proc (accessible: PObject, name: cstring, state_set: gboolean){.
+    state_change*: proc (accessible: PObject, name: Cstring, state_set: Gboolean){.
         cdecl.}
     visible_data_changed*: proc (accessible: PObject){.cdecl.}
     pad1*: TFunction
@@ -111,48 +111,48 @@ type
 
   PActionIface* = ptr TActionIface
   TActionIface* = object of TGTypeInterface
-    do_action*: proc (action: PAction, i: gint): gboolean{.cdecl.}
-    get_n_actions*: proc (action: PAction): gint{.cdecl.}
-    get_description*: proc (action: PAction, i: gint): cstring{.cdecl.}
-    get_name*: proc (action: PAction, i: gint): cstring{.cdecl.}
-    get_keybinding*: proc (action: PAction, i: gint): cstring{.cdecl.}
-    set_description*: proc (action: PAction, i: gint, desc: cstring): gboolean{.
+    do_action*: proc (action: PAction, i: Gint): Gboolean{.cdecl.}
+    get_n_actions*: proc (action: PAction): Gint{.cdecl.}
+    get_description*: proc (action: PAction, i: Gint): Cstring{.cdecl.}
+    get_name*: proc (action: PAction, i: Gint): Cstring{.cdecl.}
+    get_keybinding*: proc (action: PAction, i: Gint): Cstring{.cdecl.}
+    set_description*: proc (action: PAction, i: Gint, desc: Cstring): Gboolean{.
         cdecl.}
     pad1*: TFunction
     pad2*: TFunction
 
-  TFocusHandler* = proc (para1: PObject, para2: gboolean){.cdecl.}
+  TFocusHandler* = proc (para1: PObject, para2: Gboolean){.cdecl.}
   PComponentIface* = ptr TComponentIface
   TComponentIface* = object of TGTypeInterface
-    add_focus_handler*: proc (component: PComponent, handler: TFocusHandler): guint{.
+    add_focus_handler*: proc (component: PComponent, handler: TFocusHandler): Guint{.
         cdecl.}
-    contains*: proc (component: PComponent, x: gint, y: gint, 
-                     coord_type: TCoordType): gboolean{.cdecl.}
-    ref_accessible_at_point*: proc (component: PComponent, x: gint, y: gint, 
+    contains*: proc (component: PComponent, x: Gint, y: Gint, 
+                     coord_type: TCoordType): Gboolean{.cdecl.}
+    ref_accessible_at_point*: proc (component: PComponent, x: Gint, y: Gint, 
                                     coord_type: TCoordType): PObject{.cdecl.}
     get_extents*: proc (component: PComponent, x: Pgint, y: Pgint, width: Pgint, 
                         height: Pgint, coord_type: TCoordType){.cdecl.}
     get_position*: proc (component: PComponent, x: Pgint, y: Pgint, 
                          coord_type: TCoordType){.cdecl.}
     get_size*: proc (component: PComponent, width: Pgint, height: Pgint){.cdecl.}
-    grab_focus*: proc (component: PComponent): gboolean{.cdecl.}
-    remove_focus_handler*: proc (component: PComponent, handler_id: guint){.
+    grab_focus*: proc (component: PComponent): Gboolean{.cdecl.}
+    remove_focus_handler*: proc (component: PComponent, handler_id: Guint){.
         cdecl.}
-    set_extents*: proc (component: PComponent, x: gint, y: gint, width: gint, 
-                        height: gint, coord_type: TCoordType): gboolean{.cdecl.}
-    set_position*: proc (component: PComponent, x: gint, y: gint, 
-                         coord_type: TCoordType): gboolean{.cdecl.}
-    set_size*: proc (component: PComponent, width: gint, height: gint): gboolean{.
+    set_extents*: proc (component: PComponent, x: Gint, y: Gint, width: Gint, 
+                        height: Gint, coord_type: TCoordType): Gboolean{.cdecl.}
+    set_position*: proc (component: PComponent, x: Gint, y: Gint, 
+                         coord_type: TCoordType): Gboolean{.cdecl.}
+    set_size*: proc (component: PComponent, width: Gint, height: Gint): Gboolean{.
         cdecl.}
     get_layer*: proc (component: PComponent): TLayer{.cdecl.}
-    get_mdi_zorder*: proc (component: PComponent): gint{.cdecl.}
+    get_mdi_zorder*: proc (component: PComponent): Gint{.cdecl.}
     pad1*: TFunction
     pad2*: TFunction
 
   PDocumentIface* = ptr TDocumentIface
   TDocumentIface* = object of TGTypeInterface
-    get_document_type*: proc (document: PDocument): cstring{.cdecl.}
-    get_document*: proc (document: PDocument): gpointer{.cdecl.}
+    get_document_type*: proc (document: PDocument): Cstring{.cdecl.}
+    get_document*: proc (document: PDocument): Gpointer{.cdecl.}
     pad1*: TFunction
     pad2*: TFunction
     pad3*: TFunction
@@ -165,17 +165,17 @@ type
   PEditableTextIface* = ptr TEditableTextIface
   TEditableTextIface* = object of TGTypeInterface
     set_run_attributes*: proc (text: PEditableText, attrib_set: PAttributeSet, 
-                               start_offset: gint, end_offset: gint): gboolean{.
+                               start_offset: Gint, end_offset: Gint): Gboolean{.
         cdecl.}
-    set_text_contents*: proc (text: PEditableText, `string`: cstring){.cdecl.}
-    insert_text*: proc (text: PEditableText, `string`: cstring, length: gint, 
+    set_text_contents*: proc (text: PEditableText, `string`: Cstring){.cdecl.}
+    insert_text*: proc (text: PEditableText, `string`: Cstring, length: Gint, 
                         position: Pgint){.cdecl.}
-    copy_text*: proc (text: PEditableText, start_pos: gint, end_pos: gint){.
+    copy_text*: proc (text: PEditableText, start_pos: Gint, end_pos: Gint){.
         cdecl.}
-    cut_text*: proc (text: PEditableText, start_pos: gint, end_pos: gint){.cdecl.}
-    delete_text*: proc (text: PEditableText, start_pos: gint, end_pos: gint){.
+    cut_text*: proc (text: PEditableText, start_pos: Gint, end_pos: Gint){.cdecl.}
+    delete_text*: proc (text: PEditableText, start_pos: Gint, end_pos: Gint){.
         cdecl.}
-    paste_text*: proc (text: PEditableText, position: gint){.cdecl.}
+    paste_text*: proc (text: PEditableText, position: Gint){.cdecl.}
     pad1*: TFunction
     pad2*: TFunction
 
@@ -190,12 +190,12 @@ type
   THyperlink* = object of TGObject
   PHyperlinkClass* = ptr THyperlinkClass
   THyperlinkClass* = object of TGObjectClass
-    get_uri*: proc (link: PHyperlink, i: gint): cstring{.cdecl.}
-    get_object*: proc (link: PHyperlink, i: gint): PObject{.cdecl.}
-    get_end_index*: proc (link: PHyperlink): gint{.cdecl.}
-    get_start_index*: proc (link: PHyperlink): gint{.cdecl.}
-    is_valid*: proc (link: PHyperlink): gboolean{.cdecl.}
-    get_n_anchors*: proc (link: PHyperlink): gint{.cdecl.}
+    get_uri*: proc (link: PHyperlink, i: Gint): Cstring{.cdecl.}
+    get_object*: proc (link: PHyperlink, i: Gint): PObject{.cdecl.}
+    get_end_index*: proc (link: PHyperlink): Gint{.cdecl.}
+    get_start_index*: proc (link: PHyperlink): Gint{.cdecl.}
+    is_valid*: proc (link: PHyperlink): Gboolean{.cdecl.}
+    get_n_anchors*: proc (link: PHyperlink): Gint{.cdecl.}
     pad7*: TFunction
     pad8*: TFunction
     pad9*: TFunction
@@ -203,9 +203,9 @@ type
 
   PHypertextIface* = ptr THypertextIface
   THypertextIface* = object of TGTypeInterface
-    get_link*: proc (hypertext: PHypertext, link_index: gint): PHyperlink{.cdecl.}
-    get_n_links*: proc (hypertext: PHypertext): gint{.cdecl.}
-    get_link_index*: proc (hypertext: PHypertext, char_index: gint): gint{.cdecl.}
+    get_link*: proc (hypertext: PHypertext, link_index: Gint): PHyperlink{.cdecl.}
+    get_n_links*: proc (hypertext: PHypertext): Gint{.cdecl.}
+    get_link_index*: proc (hypertext: PHypertext, char_index: Gint): Gint{.cdecl.}
     pad11*: TFunction
     pad12*: TFunction
     pad13*: TFunction
@@ -215,9 +215,9 @@ type
   TImageIface* = object of TGTypeInterface
     get_image_position*: proc (image: PImage, x: Pgint, y: Pgint, 
                                coord_type: TCoordType){.cdecl.}
-    get_image_description*: proc (image: PImage): cstring{.cdecl.}
+    get_image_description*: proc (image: PImage): Cstring{.cdecl.}
     get_image_size*: proc (image: PImage, width: Pgint, height: Pgint){.cdecl.}
-    set_image_description*: proc (image: PImage, description: cstring): gboolean{.
+    set_image_description*: proc (image: PImage, description: Cstring): Gboolean{.
         cdecl.}
     pad15*: TFunction
     pad16*: TFunction
@@ -245,7 +245,7 @@ type
     RELATION_LABEL_FOR, RELATION_LABELLED_BY, RELATION_MEMBER_OF, 
     RELATION_NODE_CHILD_OF, RELATION_LAST_DEFINED
   PRelation* = ptr TRelation
-  PGPtrArray = pointer
+  PGPtrArray = Pointer
   TRelation* = object of TGObject
     target*: PGPtrArray
     relationship*: TRelationType
@@ -262,13 +262,13 @@ type
 
   PSelectionIface* = ptr TSelectionIface
   TSelectionIface* = object of TGTypeInterface
-    add_selection*: proc (selection: PSelection, i: gint): gboolean{.cdecl.}
-    clear_selection*: proc (selection: PSelection): gboolean{.cdecl.}
-    ref_selection*: proc (selection: PSelection, i: gint): PObject{.cdecl.}
-    get_selection_count*: proc (selection: PSelection): gint{.cdecl.}
-    is_child_selected*: proc (selection: PSelection, i: gint): gboolean{.cdecl.}
-    remove_selection*: proc (selection: PSelection, i: gint): gboolean{.cdecl.}
-    select_all_selection*: proc (selection: PSelection): gboolean{.cdecl.}
+    add_selection*: proc (selection: PSelection, i: Gint): Gboolean{.cdecl.}
+    clear_selection*: proc (selection: PSelection): Gboolean{.cdecl.}
+    ref_selection*: proc (selection: PSelection, i: Gint): PObject{.cdecl.}
+    get_selection_count*: proc (selection: PSelection): Gint{.cdecl.}
+    is_child_selected*: proc (selection: PSelection, i: Gint): Gboolean{.cdecl.}
+    remove_selection*: proc (selection: PSelection, i: Gint): Gboolean{.cdecl.}
+    select_all_selection*: proc (selection: PSelection): Gboolean{.cdecl.}
     selection_changed*: proc (selection: PSelection){.cdecl.}
     pad1*: TFunction
     pad2*: TFunction
@@ -284,16 +284,16 @@ type
     STATE_STALE, STATE_TRANSIENT, STATE_VERTICAL, STATE_VISIBLE, 
     STATE_LAST_DEFINED
   PState* = ptr TState
-  TState* = guint64
+  TState* = Guint64
   TStateSet* = object of TGObject
   PStateSetClass* = ptr TStateSetClass
   TStateSetClass* = object of TGObjectClass
   PStreamableContentIface* = ptr TStreamableContentIface
   TStreamableContentIface* = object of TGTypeInterface
-    get_n_mime_types*: proc (streamable: PStreamableContent): gint{.cdecl.}
-    get_mime_type*: proc (streamable: PStreamableContent, i: gint): cstring{.
+    get_n_mime_types*: proc (streamable: PStreamableContent): Gint{.cdecl.}
+    get_mime_type*: proc (streamable: PStreamableContent, i: Gint): Cstring{.
         cdecl.}
-    get_stream*: proc (streamable: PStreamableContent, mime_type: cstring): PGIOChannel{.
+    get_stream*: proc (streamable: PStreamableContent, mime_type: Cstring): PGIOChannel{.
         cdecl.}
     pad21*: TFunction
     pad22*: TFunction
@@ -302,46 +302,46 @@ type
 
   PTableIface* = ptr TTableIface
   TTableIface* = object of TGTypeInterface
-    ref_at*: proc (table: PTable, row: gint, column: gint): PObject{.cdecl.}
-    get_index_at*: proc (table: PTable, row: gint, column: gint): gint{.cdecl.}
-    get_column_at_index*: proc (table: PTable, index: gint): gint{.cdecl.}
-    get_row_at_index*: proc (table: PTable, index: gint): gint{.cdecl.}
-    get_n_columns*: proc (table: PTable): gint{.cdecl.}
-    get_n_rows*: proc (table: PTable): gint{.cdecl.}
-    get_column_extent_at*: proc (table: PTable, row: gint, column: gint): gint{.
+    ref_at*: proc (table: PTable, row: Gint, column: Gint): PObject{.cdecl.}
+    get_index_at*: proc (table: PTable, row: Gint, column: Gint): Gint{.cdecl.}
+    get_column_at_index*: proc (table: PTable, index: Gint): Gint{.cdecl.}
+    get_row_at_index*: proc (table: PTable, index: Gint): Gint{.cdecl.}
+    get_n_columns*: proc (table: PTable): Gint{.cdecl.}
+    get_n_rows*: proc (table: PTable): Gint{.cdecl.}
+    get_column_extent_at*: proc (table: PTable, row: Gint, column: Gint): Gint{.
         cdecl.}
-    get_row_extent_at*: proc (table: PTable, row: gint, column: gint): gint{.
+    get_row_extent_at*: proc (table: PTable, row: Gint, column: Gint): Gint{.
         cdecl.}
     get_caption*: proc (table: PTable): PObject{.cdecl.}
-    get_column_description*: proc (table: PTable, column: gint): cstring{.cdecl.}
-    get_column_header*: proc (table: PTable, column: gint): PObject{.cdecl.}
-    get_row_description*: proc (table: PTable, row: gint): cstring{.cdecl.}
-    get_row_header*: proc (table: PTable, row: gint): PObject{.cdecl.}
+    get_column_description*: proc (table: PTable, column: Gint): Cstring{.cdecl.}
+    get_column_header*: proc (table: PTable, column: Gint): PObject{.cdecl.}
+    get_row_description*: proc (table: PTable, row: Gint): Cstring{.cdecl.}
+    get_row_header*: proc (table: PTable, row: Gint): PObject{.cdecl.}
     get_summary*: proc (table: PTable): PObject{.cdecl.}
     set_caption*: proc (table: PTable, caption: PObject){.cdecl.}
-    set_column_description*: proc (table: PTable, column: gint, 
-                                   description: cstring){.cdecl.}
-    set_column_header*: proc (table: PTable, column: gint, header: PObject){.
+    set_column_description*: proc (table: PTable, column: Gint, 
+                                   description: Cstring){.cdecl.}
+    set_column_header*: proc (table: PTable, column: Gint, header: PObject){.
         cdecl.}
-    set_row_description*: proc (table: PTable, row: gint, description: cstring){.
+    set_row_description*: proc (table: PTable, row: Gint, description: Cstring){.
         cdecl.}
-    set_row_header*: proc (table: PTable, row: gint, header: PObject){.cdecl.}
+    set_row_header*: proc (table: PTable, row: Gint, header: PObject){.cdecl.}
     set_summary*: proc (table: PTable, accessible: PObject){.cdecl.}
-    get_selected_columns*: proc (table: PTable, selected: PPgint): gint{.cdecl.}
-    get_selected_rows*: proc (table: PTable, selected: PPgint): gint{.cdecl.}
-    is_column_selected*: proc (table: PTable, column: gint): gboolean{.cdecl.}
-    is_row_selected*: proc (table: PTable, row: gint): gboolean{.cdecl.}
-    is_selected*: proc (table: PTable, row: gint, column: gint): gboolean{.cdecl.}
-    add_row_selection*: proc (table: PTable, row: gint): gboolean{.cdecl.}
-    remove_row_selection*: proc (table: PTable, row: gint): gboolean{.cdecl.}
-    add_column_selection*: proc (table: PTable, column: gint): gboolean{.cdecl.}
-    remove_column_selection*: proc (table: PTable, column: gint): gboolean{.
+    get_selected_columns*: proc (table: PTable, selected: PPgint): Gint{.cdecl.}
+    get_selected_rows*: proc (table: PTable, selected: PPgint): Gint{.cdecl.}
+    is_column_selected*: proc (table: PTable, column: Gint): Gboolean{.cdecl.}
+    is_row_selected*: proc (table: PTable, row: Gint): Gboolean{.cdecl.}
+    is_selected*: proc (table: PTable, row: Gint, column: Gint): Gboolean{.cdecl.}
+    add_row_selection*: proc (table: PTable, row: Gint): Gboolean{.cdecl.}
+    remove_row_selection*: proc (table: PTable, row: Gint): Gboolean{.cdecl.}
+    add_column_selection*: proc (table: PTable, column: Gint): Gboolean{.cdecl.}
+    remove_column_selection*: proc (table: PTable, column: Gint): Gboolean{.
         cdecl.}
-    row_inserted*: proc (table: PTable, row: gint, num_inserted: gint){.cdecl.}
-    column_inserted*: proc (table: PTable, column: gint, num_inserted: gint){.
+    row_inserted*: proc (table: PTable, row: Gint, num_inserted: Gint){.cdecl.}
+    column_inserted*: proc (table: PTable, column: Gint, num_inserted: Gint){.
         cdecl.}
-    row_deleted*: proc (table: PTable, row: gint, num_deleted: gint){.cdecl.}
-    column_deleted*: proc (table: PTable, column: gint, num_deleted: gint){.
+    row_deleted*: proc (table: PTable, row: Gint, num_deleted: Gint){.cdecl.}
+    column_deleted*: proc (table: PTable, column: Gint, num_deleted: Gint){.
         cdecl.}
     row_reordered*: proc (table: PTable){.cdecl.}
     column_reordered*: proc (table: PTable){.cdecl.}
@@ -354,8 +354,8 @@ type
   TAttributeSet* = TGSList
   PAttribute* = ptr TAttribute
   TAttribute*{.final, pure.} = object 
-    name*: cstring
-    value*: cstring
+    name*: Cstring
+    value*: Cstring
 
   PTextAttribute* = ptr TTextAttribute
   TTextAttribute* = enum 
@@ -376,42 +376,42 @@ type
     TEXT_BOUNDARY_LINE_START, TEXT_BOUNDARY_LINE_END
   PTextIface* = ptr TTextIface
   TTextIface* = object of TGTypeInterface
-    get_text*: proc (text: PText, start_offset: gint, end_offset: gint): cstring{.
+    get_text*: proc (text: PText, start_offset: Gint, end_offset: Gint): Cstring{.
         cdecl.}
-    get_text_after_offset*: proc (text: PText, offset: gint, 
+    get_text_after_offset*: proc (text: PText, offset: Gint, 
                                   boundary_type: TTextBoundary, 
-                                  start_offset: Pgint, end_offset: Pgint): cstring{.
+                                  start_offset: Pgint, end_offset: Pgint): Cstring{.
         cdecl.}
-    get_text_at_offset*: proc (text: PText, offset: gint, 
+    get_text_at_offset*: proc (text: PText, offset: Gint, 
                                boundary_type: TTextBoundary, 
-                               start_offset: Pgint, end_offset: Pgint): cstring{.
+                               start_offset: Pgint, end_offset: Pgint): Cstring{.
         cdecl.}
-    get_character_at_offset*: proc (text: PText, offset: gint): gunichar{.cdecl.}
-    get_text_before_offset*: proc (text: PText, offset: gint, 
+    get_character_at_offset*: proc (text: PText, offset: Gint): Gunichar{.cdecl.}
+    get_text_before_offset*: proc (text: PText, offset: Gint, 
                                    boundary_type: TTextBoundary, 
-                                   start_offset: Pgint, end_offset: Pgint): cstring{.
+                                   start_offset: Pgint, end_offset: Pgint): Cstring{.
         cdecl.}
-    get_caret_offset*: proc (text: PText): gint{.cdecl.}
-    get_run_attributes*: proc (text: PText, offset: gint, start_offset: Pgint, 
+    get_caret_offset*: proc (text: PText): Gint{.cdecl.}
+    get_run_attributes*: proc (text: PText, offset: Gint, start_offset: Pgint, 
                                end_offset: Pgint): PAttributeSet{.cdecl.}
     get_default_attributes*: proc (text: PText): PAttributeSet{.cdecl.}
-    get_character_extents*: proc (text: PText, offset: gint, x: Pgint, y: Pgint, 
+    get_character_extents*: proc (text: PText, offset: Gint, x: Pgint, y: Pgint, 
                                   width: Pgint, height: Pgint, 
                                   coords: TCoordType){.cdecl.}
-    get_character_count*: proc (text: PText): gint{.cdecl.}
-    get_offset_at_point*: proc (text: PText, x: gint, y: gint, 
-                                coords: TCoordType): gint{.cdecl.}
-    get_n_selections*: proc (text: PText): gint{.cdecl.}
-    get_selection*: proc (text: PText, selection_num: gint, start_offset: Pgint, 
-                          end_offset: Pgint): cstring{.cdecl.}
-    add_selection*: proc (text: PText, start_offset: gint, end_offset: gint): gboolean{.
+    get_character_count*: proc (text: PText): Gint{.cdecl.}
+    get_offset_at_point*: proc (text: PText, x: Gint, y: Gint, 
+                                coords: TCoordType): Gint{.cdecl.}
+    get_n_selections*: proc (text: PText): Gint{.cdecl.}
+    get_selection*: proc (text: PText, selection_num: Gint, start_offset: Pgint, 
+                          end_offset: Pgint): Cstring{.cdecl.}
+    add_selection*: proc (text: PText, start_offset: Gint, end_offset: Gint): Gboolean{.
         cdecl.}
-    remove_selection*: proc (text: PText, selection_num: gint): gboolean{.cdecl.}
-    set_selection*: proc (text: PText, selection_num: gint, start_offset: gint, 
-                          end_offset: gint): gboolean{.cdecl.}
-    set_caret_offset*: proc (text: PText, offset: gint): gboolean{.cdecl.}
-    text_changed*: proc (text: PText, position: gint, length: gint){.cdecl.}
-    text_caret_moved*: proc (text: PText, location: gint){.cdecl.}
+    remove_selection*: proc (text: PText, selection_num: Gint): Gboolean{.cdecl.}
+    set_selection*: proc (text: PText, selection_num: Gint, start_offset: Gint, 
+                          end_offset: Gint): Gboolean{.cdecl.}
+    set_caret_offset*: proc (text: PText, offset: Gint): Gboolean{.cdecl.}
+    text_changed*: proc (text: PText, position: Gint, length: Gint){.cdecl.}
+    text_caret_moved*: proc (text: PText, location: Gint){.cdecl.}
     text_selection_changed*: proc (text: PText){.cdecl.}
     pad29*: TFunction
     pad30*: TFunction
@@ -423,15 +423,15 @@ type
   TEventListenerInit* = proc (para1: TEventListenerInitProc){.cdecl.}
   PKeyEventStruct* = ptr TKeyEventStruct
   TKeyEventStruct*{.final, pure.} = object 
-    `type`*: gint
-    state*: guint
-    keyval*: guint
-    length*: gint
-    string*: cstring
-    keycode*: guint16
-    timestamp*: guint32
+    `type`*: Gint
+    state*: Guint
+    keyval*: Guint
+    length*: Gint
+    string*: Cstring
+    keycode*: Guint16
+    timestamp*: Guint32
 
-  TKeySnoopFunc* = proc (event: PKeyEventStruct, func_data: gpointer): gint{.
+  TKeySnoopFunc* = proc (event: PKeyEventStruct, func_data: Gpointer): Gint{.
       cdecl.}
   PKeyEventType* = ptr TKeyEventType
   TKeyEventType* = enum 
@@ -441,868 +441,868 @@ type
   PUtilClass* = ptr TUtilClass
   TUtilClass* = object of TGObjectClass
     add_global_event_listener*: proc (listener: TGSignalEmissionHook, 
-                                      event_type: cstring): guint{.cdecl.}
-    remove_global_event_listener*: proc (listener_id: guint){.cdecl.}
-    add_key_event_listener*: proc (listener: TKeySnoopFunc, data: gpointer): guint{.
+                                      event_type: Cstring): Guint{.cdecl.}
+    remove_global_event_listener*: proc (listener_id: Guint){.cdecl.}
+    add_key_event_listener*: proc (listener: TKeySnoopFunc, data: Gpointer): Guint{.
         cdecl.}
-    remove_key_event_listener*: proc (listener_id: guint){.cdecl.}
+    remove_key_event_listener*: proc (listener_id: Guint){.cdecl.}
     get_root*: proc (): PObject{.cdecl.}
-    get_toolkit_name*: proc (): cstring{.cdecl.}
-    get_toolkit_version*: proc (): cstring{.cdecl.}
+    get_toolkit_name*: proc (): Cstring{.cdecl.}
+    get_toolkit_version*: proc (): Cstring{.cdecl.}
 
   PValueIface* = ptr TValueIface
   TValueIface* = object of TGTypeInterface
     get_current_value*: proc (obj: PValue, value: PGValue){.cdecl.}
     get_maximum_value*: proc (obj: PValue, value: PGValue){.cdecl.}
     get_minimum_value*: proc (obj: PValue, value: PGValue){.cdecl.}
-    set_current_value*: proc (obj: PValue, value: PGValue): gboolean{.cdecl.}
+    set_current_value*: proc (obj: PValue, value: PGValue): Gboolean{.cdecl.}
     pad33*: TFunction
     pad34*: TFunction
 
 
-proc role_register*(name: cstring): TRole{.cdecl, dynlib: lib, 
+proc roleRegister*(name: Cstring): TRole{.cdecl, dynlib: lib, 
     importc: "atk_role_register".}
-proc object_get_type*(): GType{.cdecl, dynlib: lib, 
+proc objectGetType*(): GType{.cdecl, dynlib: lib, 
                                 importc: "atk_object_get_type".}
-proc TYPE_OBJECT*(): GType
-proc `OBJECT`*(obj: pointer): PObject
-proc OBJECT_CLASS*(klass: pointer): PObjectClass
-proc IS_OBJECT*(obj: pointer): bool
-proc IS_OBJECT_CLASS*(klass: pointer): bool
-proc OBJECT_GET_CLASS*(obj: pointer): PObjectClass
-proc TYPE_IMPLEMENTOR*(): GType
-proc IS_IMPLEMENTOR*(obj: pointer): bool
-proc IMPLEMENTOR*(obj: pointer): PImplementor
-proc IMPLEMENTOR_GET_IFACE*(obj: pointer): PImplementorIface
-proc implementor_get_type*(): GType{.cdecl, dynlib: lib, 
+proc typeObject*(): GType
+proc `object`*(obj: Pointer): PObject
+proc objectClass*(klass: Pointer): PObjectClass
+proc isObject*(obj: Pointer): Bool
+proc isObjectClass*(klass: Pointer): Bool
+proc objectGetClass*(obj: Pointer): PObjectClass
+proc typeImplementor*(): GType
+proc isImplementor*(obj: Pointer): Bool
+proc implementor*(obj: Pointer): PImplementor
+proc implementorGetIface*(obj: Pointer): PImplementorIface
+proc implementorGetType*(): GType{.cdecl, dynlib: lib, 
                                      importc: "atk_implementor_get_type".}
-proc ref_accessible*(implementor: PImplementor): PObject{.cdecl, 
+proc refAccessible*(implementor: PImplementor): PObject{.cdecl, 
     dynlib: lib, importc: "atk_implementor_ref_accessible".}
-proc get_name*(accessible: PObject): cstring{.cdecl, dynlib: lib, 
+proc getName*(accessible: PObject): Cstring{.cdecl, dynlib: lib, 
     importc: "atk_object_get_name".}
-proc get_description*(accessible: PObject): cstring{.cdecl, dynlib: lib, 
+proc getDescription*(accessible: PObject): Cstring{.cdecl, dynlib: lib, 
     importc: "atk_object_get_description".}
-proc get_parent*(accessible: PObject): PObject{.cdecl, dynlib: lib, 
+proc getParent*(accessible: PObject): PObject{.cdecl, dynlib: lib, 
     importc: "atk_object_get_parent".}
-proc get_n_accessible_children*(accessible: PObject): gint{.cdecl, 
+proc getNAccessibleChildren*(accessible: PObject): Gint{.cdecl, 
     dynlib: lib, importc: "atk_object_get_n_accessible_children".}
-proc ref_accessible_child*(accessible: PObject, i: gint): PObject{.cdecl, 
+proc refAccessibleChild*(accessible: PObject, i: Gint): PObject{.cdecl, 
     dynlib: lib, importc: "atk_object_ref_accessible_child".}
-proc ref_relation_set*(accessible: PObject): PRelationSet{.cdecl, 
+proc refRelationSet*(accessible: PObject): PRelationSet{.cdecl, 
     dynlib: lib, importc: "atk_object_ref_relation_set".}
-proc get_role*(accessible: PObject): TRole{.cdecl, dynlib: lib, 
+proc getRole*(accessible: PObject): TRole{.cdecl, dynlib: lib, 
     importc: "atk_object_get_role".}
-proc get_layer*(accessible: PObject): TLayer{.cdecl, dynlib: lib, 
+proc getLayer*(accessible: PObject): TLayer{.cdecl, dynlib: lib, 
     importc: "atk_object_get_layer".}
-proc get_mdi_zorder*(accessible: PObject): gint{.cdecl, dynlib: lib, 
+proc getMdiZorder*(accessible: PObject): Gint{.cdecl, dynlib: lib, 
     importc: "atk_object_get_mdi_zorder".}
-proc ref_state_set*(accessible: PObject): PStateSet{.cdecl, dynlib: lib, 
+proc refStateSet*(accessible: PObject): PStateSet{.cdecl, dynlib: lib, 
     importc: "atk_object_ref_state_set".}
-proc get_index_in_parent*(accessible: PObject): gint{.cdecl, dynlib: lib, 
+proc getIndexInParent*(accessible: PObject): Gint{.cdecl, dynlib: lib, 
     importc: "atk_object_get_index_in_parent".}
-proc set_name*(accessible: PObject, name: cstring){.cdecl, dynlib: lib, 
+proc setName*(accessible: PObject, name: Cstring){.cdecl, dynlib: lib, 
     importc: "atk_object_set_name".}
-proc set_description*(accessible: PObject, description: cstring){.cdecl, 
+proc setDescription*(accessible: PObject, description: Cstring){.cdecl, 
     dynlib: lib, importc: "atk_object_set_description".}
-proc set_parent*(accessible: PObject, parent: PObject){.cdecl, 
+proc setParent*(accessible: PObject, parent: PObject){.cdecl, 
     dynlib: lib, importc: "atk_object_set_parent".}
-proc set_role*(accessible: PObject, role: TRole){.cdecl, dynlib: lib, 
+proc setRole*(accessible: PObject, role: TRole){.cdecl, dynlib: lib, 
     importc: "atk_object_set_role".}
-proc connect_property_change_handler*(accessible: PObject, 
-    handler: TPropertyChangeHandler): guint{.cdecl, dynlib: lib, 
+proc connectPropertyChangeHandler*(accessible: PObject, 
+    handler: TPropertyChangeHandler): Guint{.cdecl, dynlib: lib, 
     importc: "atk_object_connect_property_change_handler".}
-proc remove_property_change_handler*(accessible: PObject, 
-    handler_id: guint){.cdecl, dynlib: lib, 
+proc removePropertyChangeHandler*(accessible: PObject, 
+    handler_id: Guint){.cdecl, dynlib: lib, 
                         importc: "atk_object_remove_property_change_handler".}
-proc notify_state_change*(accessible: PObject, state: TState, 
-                                 value: gboolean){.cdecl, dynlib: lib, 
+proc notifyStateChange*(accessible: PObject, state: TState, 
+                                 value: Gboolean){.cdecl, dynlib: lib, 
     importc: "atk_object_notify_state_change".}
-proc initialize*(accessible: PObject, data: gpointer){.cdecl, 
+proc initialize*(accessible: PObject, data: Gpointer){.cdecl, 
     dynlib: lib, importc: "atk_object_initialize".}
-proc role_get_name*(role: TRole): cstring{.cdecl, dynlib: lib, 
+proc roleGetName*(role: TRole): Cstring{.cdecl, dynlib: lib, 
     importc: "atk_role_get_name".}
-proc role_for_name*(name: cstring): TRole{.cdecl, dynlib: lib, 
+proc roleForName*(name: Cstring): TRole{.cdecl, dynlib: lib, 
     importc: "atk_role_for_name".}
-proc TYPE_ACTION*(): GType
-proc IS_ACTION*(obj: pointer): bool
-proc ACTION*(obj: pointer): PAction
-proc ACTION_GET_IFACE*(obj: pointer): PActionIface
-proc action_get_type*(): GType{.cdecl, dynlib: lib, 
+proc typeAction*(): GType
+proc isAction*(obj: Pointer): Bool
+proc action*(obj: Pointer): PAction
+proc actionGetIface*(obj: Pointer): PActionIface
+proc actionGetType*(): GType{.cdecl, dynlib: lib, 
                                 importc: "atk_action_get_type".}
-proc do_action*(action: PAction, i: gint): gboolean{.cdecl, dynlib: lib, 
+proc doAction*(action: PAction, i: Gint): Gboolean{.cdecl, dynlib: lib, 
     importc: "atk_action_do_action".}
-proc get_n_actions*(action: PAction): gint{.cdecl, dynlib: lib, 
+proc getNActions*(action: PAction): Gint{.cdecl, dynlib: lib, 
     importc: "atk_action_get_n_actions".}
-proc get_description*(action: PAction, i: gint): cstring{.cdecl, 
+proc getDescription*(action: PAction, i: Gint): Cstring{.cdecl, 
     dynlib: lib, importc: "atk_action_get_description".}
-proc get_name*(action: PAction, i: gint): cstring{.cdecl, dynlib: lib, 
+proc getName*(action: PAction, i: Gint): Cstring{.cdecl, dynlib: lib, 
     importc: "atk_action_get_name".}
-proc get_keybinding*(action: PAction, i: gint): cstring{.cdecl, 
+proc getKeybinding*(action: PAction, i: Gint): Cstring{.cdecl, 
     dynlib: lib, importc: "atk_action_get_keybinding".}
-proc set_description*(action: PAction, i: gint, desc: cstring): gboolean{.
+proc setDescription*(action: PAction, i: Gint, desc: Cstring): Gboolean{.
     cdecl, dynlib: lib, importc: "atk_action_set_description".}
-proc TYPE_COMPONENT*(): GType
-proc IS_COMPONENT*(obj: pointer): bool
-proc COMPONENT*(obj: pointer): PComponent
-proc COMPONENT_GET_IFACE*(obj: pointer): PComponentIface
-proc component_get_type*(): GType{.cdecl, dynlib: lib, 
+proc typeComponent*(): GType
+proc isComponent*(obj: Pointer): Bool
+proc component*(obj: Pointer): PComponent
+proc componentGetIface*(obj: Pointer): PComponentIface
+proc componentGetType*(): GType{.cdecl, dynlib: lib, 
                                    importc: "atk_component_get_type".}
-proc add_focus_handler*(component: PComponent, handler: TFocusHandler): guint{.
+proc addFocusHandler*(component: PComponent, handler: TFocusHandler): Guint{.
     cdecl, dynlib: lib, importc: "atk_component_add_focus_handler".}
-proc contains*(component: PComponent, x, y: gint, 
-                         coord_type: TCoordType): gboolean{.cdecl, dynlib: lib, 
+proc contains*(component: PComponent, x, y: Gint, 
+                         coord_type: TCoordType): Gboolean{.cdecl, dynlib: lib, 
     importc: "atk_component_contains".}
-proc ref_accessible_at_point*(component: PComponent, x, y: gint, 
+proc refAccessibleAtPoint*(component: PComponent, x, y: Gint, 
                                         coord_type: TCoordType): PObject{.cdecl, 
     dynlib: lib, importc: "atk_component_ref_accessible_at_point".}
-proc get_extents*(component: PComponent, x, y, width, height: Pgint, 
+proc getExtents*(component: PComponent, x, y, width, height: Pgint, 
                             coord_type: TCoordType){.cdecl, dynlib: lib, 
     importc: "atk_component_get_extents".}
-proc get_position*(component: PComponent, x: Pgint, y: Pgint, 
+proc getPosition*(component: PComponent, x: Pgint, y: Pgint, 
                              coord_type: TCoordType){.cdecl, dynlib: lib, 
     importc: "atk_component_get_position".}
-proc get_size*(component: PComponent, width: Pgint, height: Pgint){.
+proc getSize*(component: PComponent, width: Pgint, height: Pgint){.
     cdecl, dynlib: lib, importc: "atk_component_get_size".}
-proc get_layer*(component: PComponent): TLayer{.cdecl, dynlib: lib, 
+proc getLayer*(component: PComponent): TLayer{.cdecl, dynlib: lib, 
     importc: "atk_component_get_layer".}
-proc get_mdi_zorder*(component: PComponent): gint{.cdecl, dynlib: lib, 
+proc getMdiZorder*(component: PComponent): Gint{.cdecl, dynlib: lib, 
     importc: "atk_component_get_mdi_zorder".}
-proc grab_focus*(component: PComponent): gboolean{.cdecl, dynlib: lib, 
+proc grabFocus*(component: PComponent): Gboolean{.cdecl, dynlib: lib, 
     importc: "atk_component_grab_focus".}
-proc remove_focus_handler*(component: PComponent, handler_id: guint){.
+proc removeFocusHandler*(component: PComponent, handler_id: Guint){.
     cdecl, dynlib: lib, importc: "atk_component_remove_focus_handler".}
-proc set_extents*(component: PComponent, x: gint, y: gint, 
-                            width: gint, height: gint, coord_type: TCoordType): gboolean{.
+proc setExtents*(component: PComponent, x: Gint, y: Gint, 
+                            width: Gint, height: Gint, coord_type: TCoordType): Gboolean{.
     cdecl, dynlib: lib, importc: "atk_component_set_extents".}
-proc set_position*(component: PComponent, x: gint, y: gint, 
-                             coord_type: TCoordType): gboolean{.cdecl, 
+proc setPosition*(component: PComponent, x: Gint, y: Gint, 
+                             coord_type: TCoordType): Gboolean{.cdecl, 
     dynlib: lib, importc: "atk_component_set_position".}
-proc set_size*(component: PComponent, width: gint, height: gint): gboolean{.
+proc setSize*(component: PComponent, width: Gint, height: Gint): Gboolean{.
     cdecl, dynlib: lib, importc: "atk_component_set_size".}
-proc TYPE_DOCUMENT*(): GType
-proc IS_DOCUMENT*(obj: pointer): bool
-proc DOCUMENT*(obj: pointer): PDocument
-proc DOCUMENT_GET_IFACE*(obj: pointer): PDocumentIface
-proc document_get_type*(): GType{.cdecl, dynlib: lib, 
+proc typeDocument*(): GType
+proc isDocument*(obj: Pointer): Bool
+proc document*(obj: Pointer): PDocument
+proc documentGetIface*(obj: Pointer): PDocumentIface
+proc documentGetType*(): GType{.cdecl, dynlib: lib, 
                                   importc: "atk_document_get_type".}
-proc get_document_type*(document: PDocument): cstring{.cdecl, 
+proc getDocumentType*(document: PDocument): Cstring{.cdecl, 
     dynlib: lib, importc: "atk_document_get_document_type".}
-proc get_document*(document: PDocument): gpointer{.cdecl, dynlib: lib, 
+proc getDocument*(document: PDocument): Gpointer{.cdecl, dynlib: lib, 
     importc: "atk_document_get_document".}
-proc TYPE_EDITABLE_TEXT*(): GType
-proc IS_EDITABLE_TEXT*(obj: pointer): bool
-proc EDITABLE_TEXT*(obj: pointer): PEditableText
-proc EDITABLE_TEXT_GET_IFACE*(obj: pointer): PEditableTextIface
-proc editable_text_get_type*(): GType{.cdecl, dynlib: lib, 
+proc typeEditableText*(): GType
+proc isEditableText*(obj: Pointer): Bool
+proc editableText*(obj: Pointer): PEditableText
+proc editableTextGetIface*(obj: Pointer): PEditableTextIface
+proc editableTextGetType*(): GType{.cdecl, dynlib: lib, 
                                        importc: "atk_editable_text_get_type".}
-proc set_run_attributes*(text: PEditableText, 
+proc setRunAttributes*(text: PEditableText, 
                                        attrib_set: PAttributeSet, 
-                                       start_offset: gint, end_offset: gint): gboolean{.
+                                       start_offset: Gint, end_offset: Gint): Gboolean{.
     cdecl, dynlib: lib, importc: "atk_editable_text_set_run_attributes".}
-proc set_text_contents*(text: PEditableText, string: cstring){.
+proc setTextContents*(text: PEditableText, string: Cstring){.
     cdecl, dynlib: lib, importc: "atk_editable_text_set_text_contents".}
-proc insert_text*(text: PEditableText, `string`: cstring, 
-                                length: gint, position: Pgint){.cdecl, 
+proc insertText*(text: PEditableText, `string`: Cstring, 
+                                length: Gint, position: Pgint){.cdecl, 
     dynlib: lib, importc: "atk_editable_text_insert_text".}
-proc copy_text*(text: PEditableText, start_pos: gint, 
-                              end_pos: gint){.cdecl, dynlib: lib, 
+proc copyText*(text: PEditableText, start_pos: Gint, 
+                              end_pos: Gint){.cdecl, dynlib: lib, 
     importc: "atk_editable_text_copy_text".}
-proc cut_text*(text: PEditableText, start_pos: gint, end_pos: gint){.
+proc cutText*(text: PEditableText, start_pos: Gint, end_pos: Gint){.
     cdecl, dynlib: lib, importc: "atk_editable_text_cut_text".}
-proc delete_text*(text: PEditableText, start_pos: gint, 
-                                end_pos: gint){.cdecl, dynlib: lib, 
+proc deleteText*(text: PEditableText, start_pos: Gint, 
+                                end_pos: Gint){.cdecl, dynlib: lib, 
     importc: "atk_editable_text_delete_text".}
-proc paste_text*(text: PEditableText, position: gint){.cdecl, 
+proc pasteText*(text: PEditableText, position: Gint){.cdecl, 
     dynlib: lib, importc: "atk_editable_text_paste_text".}
-proc TYPE_GOBJECT_ACCESSIBLE*(): GType
-proc GOBJECT_ACCESSIBLE*(obj: pointer): PGObjectAccessible
-proc GOBJECT_ACCESSIBLE_CLASS*(klass: pointer): PGObjectAccessibleClass
-proc IS_GOBJECT_ACCESSIBLE*(obj: pointer): bool
-proc IS_GOBJECT_ACCESSIBLE_CLASS*(klass: pointer): bool
-proc GOBJECT_ACCESSIBLE_GET_CLASS*(obj: pointer): PGObjectAccessibleClass
-proc gobject_accessible_get_type*(): GType{.cdecl, dynlib: lib, 
+proc typeGobjectAccessible*(): GType
+proc gobjectAccessible*(obj: Pointer): PGObjectAccessible
+proc gobjectAccessibleClass*(klass: Pointer): PGObjectAccessibleClass
+proc isGobjectAccessible*(obj: Pointer): Bool
+proc isGobjectAccessibleClass*(klass: Pointer): Bool
+proc gobjectAccessibleGetClass*(obj: Pointer): PGObjectAccessibleClass
+proc gobjectAccessibleGetType*(): GType{.cdecl, dynlib: lib, 
     importc: "atk_gobject_accessible_get_type".}
-proc accessible_for_object*(obj: PGObject): PObject{.cdecl, dynlib: lib, 
+proc accessibleForObject*(obj: PGObject): PObject{.cdecl, dynlib: lib, 
     importc: "atk_gobject_accessible_for_object".}
-proc get_object*(obj: PGObjectAccessible): PGObject{.cdecl, 
+proc getObject*(obj: PGObjectAccessible): PGObject{.cdecl, 
     dynlib: lib, importc: "atk_gobject_accessible_get_object".}
-proc TYPE_HYPERLINK*(): GType
-proc HYPERLINK*(obj: pointer): PHyperlink
-proc HYPERLINK_CLASS*(klass: pointer): PHyperlinkClass
-proc IS_HYPERLINK*(obj: pointer): bool
-proc IS_HYPERLINK_CLASS*(klass: pointer): bool
-proc HYPERLINK_GET_CLASS*(obj: pointer): PHyperlinkClass
-proc hyperlink_get_type*(): GType{.cdecl, dynlib: lib, 
+proc typeHyperlink*(): GType
+proc hyperlink*(obj: Pointer): PHyperlink
+proc hyperlinkClass*(klass: Pointer): PHyperlinkClass
+proc isHyperlink*(obj: Pointer): Bool
+proc isHyperlinkClass*(klass: Pointer): Bool
+proc hyperlinkGetClass*(obj: Pointer): PHyperlinkClass
+proc hyperlinkGetType*(): GType{.cdecl, dynlib: lib, 
                                    importc: "atk_hyperlink_get_type".}
-proc get_uri*(link: PHyperlink, i: gint): cstring{.cdecl, dynlib: lib, 
+proc getUri*(link: PHyperlink, i: Gint): Cstring{.cdecl, dynlib: lib, 
     importc: "atk_hyperlink_get_uri".}
-proc get_object*(link: PHyperlink, i: gint): PObject{.cdecl, 
+proc getObject*(link: PHyperlink, i: Gint): PObject{.cdecl, 
     dynlib: lib, importc: "atk_hyperlink_get_object".}
-proc get_end_index*(link: PHyperlink): gint{.cdecl, dynlib: lib, 
+proc getEndIndex*(link: PHyperlink): Gint{.cdecl, dynlib: lib, 
     importc: "atk_hyperlink_get_end_index".}
-proc get_start_index*(link: PHyperlink): gint{.cdecl, dynlib: lib, 
+proc getStartIndex*(link: PHyperlink): Gint{.cdecl, dynlib: lib, 
     importc: "atk_hyperlink_get_start_index".}
-proc is_valid*(link: PHyperlink): gboolean{.cdecl, dynlib: lib, 
+proc isValid*(link: PHyperlink): Gboolean{.cdecl, dynlib: lib, 
     importc: "atk_hyperlink_is_valid".}
-proc get_n_anchors*(link: PHyperlink): gint{.cdecl, dynlib: lib, 
+proc getNAnchors*(link: PHyperlink): Gint{.cdecl, dynlib: lib, 
     importc: "atk_hyperlink_get_n_anchors".}
-proc TYPE_HYPERTEXT*(): GType
-proc IS_HYPERTEXT*(obj: pointer): bool
-proc HYPERTEXT*(obj: pointer): PHypertext
-proc HYPERTEXT_GET_IFACE*(obj: pointer): PHypertextIface
-proc hypertext_get_type*(): GType{.cdecl, dynlib: lib, 
+proc typeHypertext*(): GType
+proc isHypertext*(obj: Pointer): Bool
+proc hypertext*(obj: Pointer): PHypertext
+proc hypertextGetIface*(obj: Pointer): PHypertextIface
+proc hypertextGetType*(): GType{.cdecl, dynlib: lib, 
                                    importc: "atk_hypertext_get_type".}
-proc get_link*(hypertext: PHypertext, link_index: gint): PHyperlink{.
+proc getLink*(hypertext: PHypertext, link_index: Gint): PHyperlink{.
     cdecl, dynlib: lib, importc: "atk_hypertext_get_link".}
-proc get_n_links*(hypertext: PHypertext): gint{.cdecl, dynlib: lib, 
+proc getNLinks*(hypertext: PHypertext): Gint{.cdecl, dynlib: lib, 
     importc: "atk_hypertext_get_n_links".}
-proc get_link_index*(hypertext: PHypertext, char_index: gint): gint{.
+proc getLinkIndex*(hypertext: PHypertext, char_index: Gint): Gint{.
     cdecl, dynlib: lib, importc: "atk_hypertext_get_link_index".}
-proc TYPE_IMAGE*(): GType
-proc IS_IMAGE*(obj: pointer): bool
-proc IMAGE*(obj: pointer): PImage
-proc IMAGE_GET_IFACE*(obj: pointer): PImageIface
-proc image_get_type*(): GType{.cdecl, dynlib: lib, importc: "atk_image_get_type".}
-proc get_image_description*(image: PImage): cstring{.cdecl, dynlib: lib, 
+proc typeImage*(): GType
+proc isImage*(obj: Pointer): Bool
+proc image*(obj: Pointer): PImage
+proc imageGetIface*(obj: Pointer): PImageIface
+proc imageGetType*(): GType{.cdecl, dynlib: lib, importc: "atk_image_get_type".}
+proc getImageDescription*(image: PImage): Cstring{.cdecl, dynlib: lib, 
     importc: "atk_image_get_image_description".}
-proc get_image_size*(image: PImage, width: Pgint, height: Pgint){.cdecl, 
+proc getImageSize*(image: PImage, width: Pgint, height: Pgint){.cdecl, 
     dynlib: lib, importc: "atk_image_get_image_size".}
-proc set_image_description*(image: PImage, description: cstring): gboolean{.
+proc setImageDescription*(image: PImage, description: Cstring): Gboolean{.
     cdecl, dynlib: lib, importc: "atk_image_set_image_description".}
-proc get_image_position*(image: PImage, x: Pgint, y: Pgint, 
+proc getImagePosition*(image: PImage, x: Pgint, y: Pgint, 
                                coord_type: TCoordType){.cdecl, dynlib: lib, 
     importc: "atk_image_get_image_position".}
-proc TYPE_OBJECT_FACTORY*(): GType
-proc OBJECT_FACTORY*(obj: pointer): PObjectFactory
-proc OBJECT_FACTORY_CLASS*(klass: pointer): PObjectFactoryClass
-proc IS_OBJECT_FACTORY*(obj: pointer): bool
-proc IS_OBJECT_FACTORY_CLASS*(klass: pointer): bool
-proc OBJECT_FACTORY_GET_CLASS*(obj: pointer): PObjectFactoryClass
-proc object_factory_get_type*(): GType{.cdecl, dynlib: lib, 
+proc typeObjectFactory*(): GType
+proc objectFactory*(obj: Pointer): PObjectFactory
+proc objectFactoryClass*(klass: Pointer): PObjectFactoryClass
+proc isObjectFactory*(obj: Pointer): Bool
+proc isObjectFactoryClass*(klass: Pointer): Bool
+proc objectFactoryGetClass*(obj: Pointer): PObjectFactoryClass
+proc objectFactoryGetType*(): GType{.cdecl, dynlib: lib, 
                                         importc: "atk_object_factory_get_type".}
-proc create_accessible*(factory: PObjectFactory, obj: PGObject): PObject{.
+proc createAccessible*(factory: PObjectFactory, obj: PGObject): PObject{.
     cdecl, dynlib: lib, importc: "atk_object_factory_create_accessible".}
 proc invalidate*(factory: PObjectFactory){.cdecl, dynlib: lib, 
     importc: "atk_object_factory_invalidate".}
-proc get_accessible_type*(factory: PObjectFactory): GType{.cdecl, 
+proc getAccessibleType*(factory: PObjectFactory): GType{.cdecl, 
     dynlib: lib, importc: "atk_object_factory_get_accessible_type".}
-proc TYPE_REGISTRY*(): GType
-proc REGISTRY*(obj: pointer): PRegistry
-proc REGISTRY_CLASS*(klass: pointer): PRegistryClass
-proc IS_REGISTRY*(obj: pointer): bool
-proc IS_REGISTRY_CLASS*(klass: pointer): bool
-proc REGISTRY_GET_CLASS*(obj: pointer): PRegistryClass
-proc registry_get_type*(): GType{.cdecl, dynlib: lib, 
+proc typeRegistry*(): GType
+proc registry*(obj: Pointer): PRegistry
+proc registryClass*(klass: Pointer): PRegistryClass
+proc isRegistry*(obj: Pointer): Bool
+proc isRegistryClass*(klass: Pointer): Bool
+proc registryGetClass*(obj: Pointer): PRegistryClass
+proc registryGetType*(): GType{.cdecl, dynlib: lib, 
                                   importc: "atk_registry_get_type".}
-proc set_factory_type*(registry: PRegistry, `type`: GType, 
+proc setFactoryType*(registry: PRegistry, `type`: GType, 
                                 factory_type: GType){.cdecl, dynlib: lib, 
     importc: "atk_registry_set_factory_type".}
-proc get_factory_type*(registry: PRegistry, `type`: GType): GType{.
+proc getFactoryType*(registry: PRegistry, `type`: GType): GType{.
     cdecl, dynlib: lib, importc: "atk_registry_get_factory_type".}
-proc get_factory*(registry: PRegistry, `type`: GType): PObjectFactory{.
+proc getFactory*(registry: PRegistry, `type`: GType): PObjectFactory{.
     cdecl, dynlib: lib, importc: "atk_registry_get_factory".}
-proc get_default_registry*(): PRegistry{.cdecl, dynlib: lib, 
+proc getDefaultRegistry*(): PRegistry{.cdecl, dynlib: lib, 
     importc: "atk_get_default_registry".}
-proc TYPE_RELATION*(): GType
-proc RELATION*(obj: pointer): PRelation
-proc RELATION_CLASS*(klass: pointer): PRelationClass
-proc IS_RELATION*(obj: pointer): bool
-proc IS_RELATION_CLASS*(klass: pointer): bool
-proc RELATION_GET_CLASS*(obj: pointer): PRelationClass
-proc relation_get_type*(): GType{.cdecl, dynlib: lib, 
+proc typeRelation*(): GType
+proc relation*(obj: Pointer): PRelation
+proc relationClass*(klass: Pointer): PRelationClass
+proc isRelation*(obj: Pointer): Bool
+proc isRelationClass*(klass: Pointer): Bool
+proc relationGetClass*(obj: Pointer): PRelationClass
+proc relationGetType*(): GType{.cdecl, dynlib: lib, 
                                   importc: "atk_relation_get_type".}
-proc relation_type_register*(name: cstring): TRelationType{.cdecl, dynlib: lib, 
+proc relationTypeRegister*(name: Cstring): TRelationType{.cdecl, dynlib: lib, 
     importc: "atk_relation_type_register".}
-proc relation_type_get_name*(`type`: TRelationType): cstring{.cdecl, 
+proc relationTypeGetName*(`type`: TRelationType): Cstring{.cdecl, 
     dynlib: lib, importc: "atk_relation_type_get_name".}
-proc relation_type_for_name*(name: cstring): TRelationType{.cdecl, dynlib: lib, 
+proc relationTypeForName*(name: Cstring): TRelationType{.cdecl, dynlib: lib, 
     importc: "atk_relation_type_for_name".}
-proc relation_new*(targets: PPAtkObject, n_targets: gint, 
+proc relationNew*(targets: PPAtkObject, n_targets: Gint, 
                    relationship: TRelationType): PRelation{.cdecl, dynlib: lib, 
     importc: "atk_relation_new".}
-proc get_relation_type*(relation: PRelation): TRelationType{.cdecl, 
+proc getRelationType*(relation: PRelation): TRelationType{.cdecl, 
     dynlib: lib, importc: "atk_relation_get_relation_type".}
-proc get_target*(relation: PRelation): PGPtrArray{.cdecl, dynlib: lib, 
+proc getTarget*(relation: PRelation): PGPtrArray{.cdecl, dynlib: lib, 
     importc: "atk_relation_get_target".}
-proc TYPE_RELATION_SET*(): GType
-proc RELATION_SET*(obj: pointer): PRelationSet
-proc RELATION_SET_CLASS*(klass: pointer): PRelationSetClass
-proc IS_RELATION_SET*(obj: pointer): bool
-proc IS_RELATION_SET_CLASS*(klass: pointer): bool
-proc RELATION_SET_GET_CLASS*(obj: pointer): PRelationSetClass
-proc relation_set_get_type*(): GType{.cdecl, dynlib: lib, 
+proc typeRelationSet*(): GType
+proc relationSet*(obj: Pointer): PRelationSet
+proc relationSetClass*(klass: Pointer): PRelationSetClass
+proc isRelationSet*(obj: Pointer): Bool
+proc isRelationSetClass*(klass: Pointer): Bool
+proc relationSetGetClass*(obj: Pointer): PRelationSetClass
+proc relationSetGetType*(): GType{.cdecl, dynlib: lib, 
                                       importc: "atk_relation_set_get_type".}
-proc relation_set_new*(): PRelationSet{.cdecl, dynlib: lib, 
+proc relationSetNew*(): PRelationSet{.cdecl, dynlib: lib, 
                                         importc: "atk_relation_set_new".}
 proc contains*(RelationSet: PRelationSet, 
-                            relationship: TRelationType): gboolean{.cdecl, 
+                            relationship: TRelationType): Gboolean{.cdecl, 
     dynlib: lib, importc: "atk_relation_set_contains".}
 proc remove*(RelationSet: PRelationSet, relation: PRelation){.
     cdecl, dynlib: lib, importc: "atk_relation_set_remove".}
 proc add*(RelationSet: PRelationSet, relation: PRelation){.cdecl, 
     dynlib: lib, importc: "atk_relation_set_add".}
-proc get_n_relations*(RelationSet: PRelationSet): gint{.cdecl, 
+proc getNRelations*(RelationSet: PRelationSet): Gint{.cdecl, 
     dynlib: lib, importc: "atk_relation_set_get_n_relations".}
-proc get_relation*(RelationSet: PRelationSet, i: gint): PRelation{.
+proc getRelation*(RelationSet: PRelationSet, i: Gint): PRelation{.
     cdecl, dynlib: lib, importc: "atk_relation_set_get_relation".}
-proc get_relation_by_type*(RelationSet: PRelationSet, 
+proc getRelationByType*(RelationSet: PRelationSet, 
                                         relationship: TRelationType): PRelation{.
     cdecl, dynlib: lib, importc: "atk_relation_set_get_relation_by_type".}
-proc TYPE_SELECTION*(): GType
-proc IS_SELECTION*(obj: pointer): bool
-proc SELECTION*(obj: pointer): PSelection
-proc SELECTION_GET_IFACE*(obj: pointer): PSelectionIface
-proc selection_get_type*(): GType{.cdecl, dynlib: lib, 
+proc typeSelection*(): GType
+proc isSelection*(obj: Pointer): Bool
+proc selection*(obj: Pointer): PSelection
+proc selectionGetIface*(obj: Pointer): PSelectionIface
+proc selectionGetType*(): GType{.cdecl, dynlib: lib, 
                                    importc: "atk_selection_get_type".}
-proc add_selection*(selection: PSelection, i: gint): gboolean{.cdecl, 
+proc addSelection*(selection: PSelection, i: Gint): Gboolean{.cdecl, 
     dynlib: lib, importc: "atk_selection_add_selection".}
-proc clear_selection*(selection: PSelection): gboolean{.cdecl, 
+proc clearSelection*(selection: PSelection): Gboolean{.cdecl, 
     dynlib: lib, importc: "atk_selection_clear_selection".}
-proc ref_selection*(selection: PSelection, i: gint): PObject{.cdecl, 
+proc refSelection*(selection: PSelection, i: Gint): PObject{.cdecl, 
     dynlib: lib, importc: "atk_selection_ref_selection".}
-proc get_selection_count*(selection: PSelection): gint{.cdecl, 
+proc getSelectionCount*(selection: PSelection): Gint{.cdecl, 
     dynlib: lib, importc: "atk_selection_get_selection_count".}
-proc is_child_selected*(selection: PSelection, i: gint): gboolean{.
+proc isChildSelected*(selection: PSelection, i: Gint): Gboolean{.
     cdecl, dynlib: lib, importc: "atk_selection_is_child_selected".}
-proc remove_selection*(selection: PSelection, i: gint): gboolean{.
+proc removeSelection*(selection: PSelection, i: Gint): Gboolean{.
     cdecl, dynlib: lib, importc: "atk_selection_remove_selection".}
-proc select_all_selection*(selection: PSelection): gboolean{.cdecl, 
+proc selectAllSelection*(selection: PSelection): Gboolean{.cdecl, 
     dynlib: lib, importc: "atk_selection_select_all_selection".}
-proc state_type_register*(name: cstring): TStateType{.cdecl, dynlib: lib, 
+proc stateTypeRegister*(name: Cstring): TStateType{.cdecl, dynlib: lib, 
     importc: "atk_state_type_register".}
-proc state_type_get_name*(`type`: TStateType): cstring{.cdecl, dynlib: lib, 
+proc stateTypeGetName*(`type`: TStateType): Cstring{.cdecl, dynlib: lib, 
     importc: "atk_state_type_get_name".}
-proc state_type_for_name*(name: cstring): TStateType{.cdecl, dynlib: lib, 
+proc stateTypeForName*(name: Cstring): TStateType{.cdecl, dynlib: lib, 
     importc: "atk_state_type_for_name".}
-proc TYPE_STATE_SET*(): GType
-proc STATE_SET*(obj: pointer): PStateSet
-proc STATE_SET_CLASS*(klass: pointer): PStateSetClass
-proc IS_STATE_SET*(obj: pointer): bool
-proc IS_STATE_SET_CLASS*(klass: pointer): bool
-proc STATE_SET_GET_CLASS*(obj: pointer): PStateSetClass
-proc state_set_get_type*(): GType{.cdecl, dynlib: lib, 
+proc typeStateSet*(): GType
+proc stateSet*(obj: Pointer): PStateSet
+proc stateSetClass*(klass: Pointer): PStateSetClass
+proc isStateSet*(obj: Pointer): Bool
+proc isStateSetClass*(klass: Pointer): Bool
+proc stateSetGetClass*(obj: Pointer): PStateSetClass
+proc stateSetGetType*(): GType{.cdecl, dynlib: lib, 
                                    importc: "atk_state_set_get_type".}
-proc state_set_new*(): PStateSet{.cdecl, dynlib: lib, 
+proc stateSetNew*(): PStateSet{.cdecl, dynlib: lib, 
                                   importc: "atk_state_set_new".}
-proc is_empty*(StateSet: PStateSet): gboolean{.cdecl, dynlib: lib, 
+proc isEmpty*(StateSet: PStateSet): Gboolean{.cdecl, dynlib: lib, 
     importc: "atk_state_set_is_empty".}
-proc add_state*(StateSet: PStateSet, `type`: TStateType): gboolean{.
+proc addState*(StateSet: PStateSet, `type`: TStateType): Gboolean{.
     cdecl, dynlib: lib, importc: "atk_state_set_add_state".}
-proc add_states*(StateSet: PStateSet, types: PStateType, n_types: gint){.
+proc addStates*(StateSet: PStateSet, types: PStateType, n_types: Gint){.
     cdecl, dynlib: lib, importc: "atk_state_set_add_states".}
-proc clear_states*(StateSet: PStateSet){.cdecl, dynlib: lib, 
+proc clearStates*(StateSet: PStateSet){.cdecl, dynlib: lib, 
     importc: "atk_state_set_clear_states".}
-proc contains_state*(StateSet: PStateSet, `type`: TStateType): gboolean{.
+proc containsState*(StateSet: PStateSet, `type`: TStateType): Gboolean{.
     cdecl, dynlib: lib, importc: "atk_state_set_contains_state".}
-proc contains_states*(StateSet: PStateSet, types: PStateType, 
-                                n_types: gint): gboolean{.cdecl, dynlib: lib, 
+proc containsStates*(StateSet: PStateSet, types: PStateType, 
+                                n_types: Gint): Gboolean{.cdecl, dynlib: lib, 
     importc: "atk_state_set_contains_states".}
-proc remove_state*(StateSet: PStateSet, `type`: TStateType): gboolean{.
+proc removeState*(StateSet: PStateSet, `type`: TStateType): Gboolean{.
     cdecl, dynlib: lib, importc: "atk_state_set_remove_state".}
-proc and_sets*(StateSet: PStateSet, compare_set: PStateSet): PStateSet{.
+proc andSets*(StateSet: PStateSet, compare_set: PStateSet): PStateSet{.
     cdecl, dynlib: lib, importc: "atk_state_set_and_sets".}
-proc or_sets*(StateSet: PStateSet, compare_set: PStateSet): PStateSet{.
+proc orSets*(StateSet: PStateSet, compare_set: PStateSet): PStateSet{.
     cdecl, dynlib: lib, importc: "atk_state_set_or_sets".}
-proc xor_sets*(StateSet: PStateSet, compare_set: PStateSet): PStateSet{.
+proc xorSets*(StateSet: PStateSet, compare_set: PStateSet): PStateSet{.
     cdecl, dynlib: lib, importc: "atk_state_set_xor_sets".}
-proc TYPE_STREAMABLE_CONTENT*(): GType
-proc IS_STREAMABLE_CONTENT*(obj: pointer): bool
-proc STREAMABLE_CONTENT*(obj: pointer): PStreamableContent
-proc STREAMABLE_CONTENT_GET_IFACE*(obj: pointer): PStreamableContentIface
-proc streamable_content_get_type*(): GType{.cdecl, dynlib: lib, 
+proc typeStreamableContent*(): GType
+proc isStreamableContent*(obj: Pointer): Bool
+proc streamableContent*(obj: Pointer): PStreamableContent
+proc streamableContentGetIface*(obj: Pointer): PStreamableContentIface
+proc streamableContentGetType*(): GType{.cdecl, dynlib: lib, 
     importc: "atk_streamable_content_get_type".}
-proc get_n_mime_types*(streamable: PStreamableContent): gint{.
+proc getNMimeTypes*(streamable: PStreamableContent): Gint{.
     cdecl, dynlib: lib, importc: "atk_streamable_content_get_n_mime_types".}
-proc get_mime_type*(streamable: PStreamableContent, i: gint): cstring{.
+proc getMimeType*(streamable: PStreamableContent, i: Gint): Cstring{.
     cdecl, dynlib: lib, importc: "atk_streamable_content_get_mime_type".}
-proc get_stream*(streamable: PStreamableContent, 
-                                    mime_type: cstring): PGIOChannel{.cdecl, 
+proc getStream*(streamable: PStreamableContent, 
+                                    mime_type: Cstring): PGIOChannel{.cdecl, 
     dynlib: lib, importc: "atk_streamable_content_get_stream".}
-proc TYPE_TABLE*(): GType
-proc IS_TABLE*(obj: pointer): bool
-proc TABLE*(obj: pointer): PTable
-proc TABLE_GET_IFACE*(obj: pointer): PTableIface
-proc table_get_type*(): GType{.cdecl, dynlib: lib, importc: "atk_table_get_type".}
-proc ref_at*(table: PTable, row, column: gint): PObject{.cdecl, 
+proc typeTable*(): GType
+proc isTable*(obj: Pointer): Bool
+proc table*(obj: Pointer): PTable
+proc tableGetIface*(obj: Pointer): PTableIface
+proc tableGetType*(): GType{.cdecl, dynlib: lib, importc: "atk_table_get_type".}
+proc refAt*(table: PTable, row, column: Gint): PObject{.cdecl, 
     dynlib: lib, importc: "atk_table_ref_at".}
-proc get_index_at*(table: PTable, row, column: gint): gint{.cdecl, 
+proc getIndexAt*(table: PTable, row, column: Gint): Gint{.cdecl, 
     dynlib: lib, importc: "atk_table_get_index_at".}
-proc get_column_at_index*(table: PTable, index: gint): gint{.cdecl, 
+proc getColumnAtIndex*(table: PTable, index: Gint): Gint{.cdecl, 
     dynlib: lib, importc: "atk_table_get_column_at_index".}
-proc get_row_at_index*(table: PTable, index: gint): gint{.cdecl, 
+proc getRowAtIndex*(table: PTable, index: Gint): Gint{.cdecl, 
     dynlib: lib, importc: "atk_table_get_row_at_index".}
-proc get_n_columns*(table: PTable): gint{.cdecl, dynlib: lib, 
+proc getNColumns*(table: PTable): Gint{.cdecl, dynlib: lib, 
     importc: "atk_table_get_n_columns".}
-proc get_n_rows*(table: PTable): gint{.cdecl, dynlib: lib, 
+proc getNRows*(table: PTable): Gint{.cdecl, dynlib: lib, 
     importc: "atk_table_get_n_rows".}
-proc get_column_extent_at*(table: PTable, row: gint, column: gint): gint{.
+proc getColumnExtentAt*(table: PTable, row: Gint, column: Gint): Gint{.
     cdecl, dynlib: lib, importc: "atk_table_get_column_extent_at".}
-proc get_row_extent_at*(table: PTable, row: gint, column: gint): gint{.
+proc getRowExtentAt*(table: PTable, row: Gint, column: Gint): Gint{.
     cdecl, dynlib: lib, importc: "atk_table_get_row_extent_at".}
-proc get_caption*(table: PTable): PObject{.cdecl, dynlib: lib, 
+proc getCaption*(table: PTable): PObject{.cdecl, dynlib: lib, 
     importc: "atk_table_get_caption".}
-proc get_column_description*(table: PTable, column: gint): cstring{.cdecl, 
+proc getColumnDescription*(table: PTable, column: Gint): Cstring{.cdecl, 
     dynlib: lib, importc: "atk_table_get_column_description".}
-proc get_column_header*(table: PTable, column: gint): PObject{.cdecl, 
+proc getColumnHeader*(table: PTable, column: Gint): PObject{.cdecl, 
     dynlib: lib, importc: "atk_table_get_column_header".}
-proc get_row_description*(table: PTable, row: gint): cstring{.cdecl, 
+proc getRowDescription*(table: PTable, row: Gint): Cstring{.cdecl, 
     dynlib: lib, importc: "atk_table_get_row_description".}
-proc get_row_header*(table: PTable, row: gint): PObject{.cdecl, 
+proc getRowHeader*(table: PTable, row: Gint): PObject{.cdecl, 
     dynlib: lib, importc: "atk_table_get_row_header".}
-proc get_summary*(table: PTable): PObject{.cdecl, dynlib: lib, 
+proc getSummary*(table: PTable): PObject{.cdecl, dynlib: lib, 
     importc: "atk_table_get_summary".}
-proc set_caption*(table: PTable, caption: PObject){.cdecl, dynlib: lib, 
+proc setCaption*(table: PTable, caption: PObject){.cdecl, dynlib: lib, 
     importc: "atk_table_set_caption".}
-proc set_column_description*(table: PTable, column: gint, 
-                                   description: cstring){.cdecl, dynlib: lib, 
+proc setColumnDescription*(table: PTable, column: Gint, 
+                                   description: Cstring){.cdecl, dynlib: lib, 
     importc: "atk_table_set_column_description".}
-proc set_column_header*(table: PTable, column: gint, header: PObject){.
+proc setColumnHeader*(table: PTable, column: Gint, header: PObject){.
     cdecl, dynlib: lib, importc: "atk_table_set_column_header".}
-proc set_row_description*(table: PTable, row: gint, description: cstring){.
+proc setRowDescription*(table: PTable, row: Gint, description: Cstring){.
     cdecl, dynlib: lib, importc: "atk_table_set_row_description".}
-proc set_row_header*(table: PTable, row: gint, header: PObject){.cdecl, 
+proc setRowHeader*(table: PTable, row: Gint, header: PObject){.cdecl, 
     dynlib: lib, importc: "atk_table_set_row_header".}
-proc set_summary*(table: PTable, accessible: PObject){.cdecl, dynlib: lib, 
+proc setSummary*(table: PTable, accessible: PObject){.cdecl, dynlib: lib, 
     importc: "atk_table_set_summary".}
-proc get_selected_columns*(table: PTable, selected: PPgint): gint{.cdecl, 
+proc getSelectedColumns*(table: PTable, selected: PPgint): Gint{.cdecl, 
     dynlib: lib, importc: "atk_table_get_selected_columns".}
-proc get_selected_rows*(table: PTable, selected: PPgint): gint{.cdecl, 
+proc getSelectedRows*(table: PTable, selected: PPgint): Gint{.cdecl, 
     dynlib: lib, importc: "atk_table_get_selected_rows".}
-proc is_column_selected*(table: PTable, column: gint): gboolean{.cdecl, 
+proc isColumnSelected*(table: PTable, column: Gint): Gboolean{.cdecl, 
     dynlib: lib, importc: "atk_table_is_column_selected".}
-proc is_row_selected*(table: PTable, row: gint): gboolean{.cdecl, 
+proc isRowSelected*(table: PTable, row: Gint): Gboolean{.cdecl, 
     dynlib: lib, importc: "atk_table_is_row_selected".}
-proc is_selected*(table: PTable, row: gint, column: gint): gboolean{.
+proc isSelected*(table: PTable, row: Gint, column: Gint): Gboolean{.
     cdecl, dynlib: lib, importc: "atk_table_is_selected".}
-proc add_row_selection*(table: PTable, row: gint): gboolean{.cdecl, 
+proc addRowSelection*(table: PTable, row: Gint): Gboolean{.cdecl, 
     dynlib: lib, importc: "atk_table_add_row_selection".}
-proc remove_row_selection*(table: PTable, row: gint): gboolean{.cdecl, 
+proc removeRowSelection*(table: PTable, row: Gint): Gboolean{.cdecl, 
     dynlib: lib, importc: "atk_table_remove_row_selection".}
-proc add_column_selection*(table: PTable, column: gint): gboolean{.cdecl, 
+proc addColumnSelection*(table: PTable, column: Gint): Gboolean{.cdecl, 
     dynlib: lib, importc: "atk_table_add_column_selection".}
-proc remove_column_selection*(table: PTable, column: gint): gboolean{.
+proc removeColumnSelection*(table: PTable, column: Gint): Gboolean{.
     cdecl, dynlib: lib, importc: "atk_table_remove_column_selection".}
-proc text_attribute_register*(name: cstring): TTextAttribute{.cdecl, 
+proc textAttributeRegister*(name: Cstring): TTextAttribute{.cdecl, 
     dynlib: lib, importc: "atk_text_attribute_register".}
-proc TYPE_TEXT*(): GType
-proc IS_TEXT*(obj: pointer): bool
-proc TEXT*(obj: pointer): PText
-proc TEXT_GET_IFACE*(obj: pointer): PTextIface
-proc text_get_type*(): GType{.cdecl, dynlib: lib, importc: "atk_text_get_type".}
-proc get_text*(text: PText, start_offset: gint, end_offset: gint): cstring{.
+proc typeText*(): GType
+proc isText*(obj: Pointer): Bool
+proc text*(obj: Pointer): PText
+proc textGetIface*(obj: Pointer): PTextIface
+proc textGetType*(): GType{.cdecl, dynlib: lib, importc: "atk_text_get_type".}
+proc getText*(text: PText, start_offset: Gint, end_offset: Gint): Cstring{.
     cdecl, dynlib: lib, importc: "atk_text_get_text".}
-proc get_character_at_offset*(text: PText, offset: gint): gunichar{.cdecl, 
+proc getCharacterAtOffset*(text: PText, offset: Gint): Gunichar{.cdecl, 
     dynlib: lib, importc: "atk_text_get_character_at_offset".}
-proc get_text_after_offset*(text: PText, offset: gint, 
+proc getTextAfterOffset*(text: PText, offset: Gint, 
                                  boundary_type: TTextBoundary, 
-                                 start_offset: Pgint, end_offset: Pgint): cstring{.
+                                 start_offset: Pgint, end_offset: Pgint): Cstring{.
     cdecl, dynlib: lib, importc: "atk_text_get_text_after_offset".}
-proc get_text_at_offset*(text: PText, offset: gint, 
+proc getTextAtOffset*(text: PText, offset: Gint, 
                               boundary_type: TTextBoundary, start_offset: Pgint, 
-                              end_offset: Pgint): cstring{.cdecl, dynlib: lib, 
+                              end_offset: Pgint): Cstring{.cdecl, dynlib: lib, 
     importc: "atk_text_get_text_at_offset".}
-proc get_text_before_offset*(text: PText, offset: gint, 
+proc getTextBeforeOffset*(text: PText, offset: Gint, 
                                   boundary_type: TTextBoundary, 
-                                  start_offset: Pgint, end_offset: Pgint): cstring{.
+                                  start_offset: Pgint, end_offset: Pgint): Cstring{.
     cdecl, dynlib: lib, importc: "atk_text_get_text_before_offset".}
-proc get_caret_offset*(text: PText): gint{.cdecl, dynlib: lib, 
+proc getCaretOffset*(text: PText): Gint{.cdecl, dynlib: lib, 
     importc: "atk_text_get_caret_offset".}
-proc get_character_extents*(text: PText, offset: gint, x: Pgint, y: Pgint, 
+proc getCharacterExtents*(text: PText, offset: Gint, x: Pgint, y: Pgint, 
                                  width: Pgint, height: Pgint, coords: TCoordType){.
     cdecl, dynlib: lib, importc: "atk_text_get_character_extents".}
-proc get_run_attributes*(text: PText, offset: gint, start_offset: Pgint, 
+proc getRunAttributes*(text: PText, offset: Gint, start_offset: Pgint, 
                               end_offset: Pgint): PAttributeSet{.cdecl, 
     dynlib: lib, importc: "atk_text_get_run_attributes".}
-proc get_default_attributes*(text: PText): PAttributeSet{.cdecl, 
+proc getDefaultAttributes*(text: PText): PAttributeSet{.cdecl, 
     dynlib: lib, importc: "atk_text_get_default_attributes".}
-proc get_character_count*(text: PText): gint{.cdecl, dynlib: lib, 
+proc getCharacterCount*(text: PText): Gint{.cdecl, dynlib: lib, 
     importc: "atk_text_get_character_count".}
-proc get_offset_at_point*(text: PText, x: gint, y: gint, coords: TCoordType): gint{.
+proc getOffsetAtPoint*(text: PText, x: Gint, y: Gint, coords: TCoordType): Gint{.
     cdecl, dynlib: lib, importc: "atk_text_get_offset_at_point".}
-proc get_n_selections*(text: PText): gint{.cdecl, dynlib: lib, 
+proc getNSelections*(text: PText): Gint{.cdecl, dynlib: lib, 
     importc: "atk_text_get_n_selections".}
-proc get_selection*(text: PText, selection_num: gint, start_offset: Pgint, 
-                         end_offset: Pgint): cstring{.cdecl, dynlib: lib, 
+proc getSelection*(text: PText, selection_num: Gint, start_offset: Pgint, 
+                         end_offset: Pgint): Cstring{.cdecl, dynlib: lib, 
     importc: "atk_text_get_selection".}
-proc add_selection*(text: PText, start_offset: gint, end_offset: gint): gboolean{.
+proc addSelection*(text: PText, start_offset: Gint, end_offset: Gint): Gboolean{.
     cdecl, dynlib: lib, importc: "atk_text_add_selection".}
-proc remove_selection*(text: PText, selection_num: gint): gboolean{.cdecl, 
+proc removeSelection*(text: PText, selection_num: Gint): Gboolean{.cdecl, 
     dynlib: lib, importc: "atk_text_remove_selection".}
-proc set_selection*(text: PText, selection_num: gint, start_offset: gint, 
-                         end_offset: gint): gboolean{.cdecl, dynlib: lib, 
+proc setSelection*(text: PText, selection_num: Gint, start_offset: Gint, 
+                         end_offset: Gint): Gboolean{.cdecl, dynlib: lib, 
     importc: "atk_text_set_selection".}
-proc set_caret_offset*(text: PText, offset: gint): gboolean{.cdecl, 
+proc setCaretOffset*(text: PText, offset: Gint): Gboolean{.cdecl, 
     dynlib: lib, importc: "atk_text_set_caret_offset".}
 proc free*(attrib_set: PAttributeSet){.cdecl, dynlib: lib, 
     importc: "atk_attribute_set_free".}
-proc text_attribute_get_name*(attr: TTextAttribute): cstring{.cdecl, 
+proc textAttributeGetName*(attr: TTextAttribute): Cstring{.cdecl, 
     dynlib: lib, importc: "atk_text_attribute_get_name".}
-proc text_attribute_for_name*(name: cstring): TTextAttribute{.cdecl, 
+proc textAttributeForName*(name: Cstring): TTextAttribute{.cdecl, 
     dynlib: lib, importc: "atk_text_attribute_for_name".}
-proc text_attribute_get_value*(attr: TTextAttribute, index: gint): cstring{.
+proc textAttributeGetValue*(attr: TTextAttribute, index: Gint): Cstring{.
     cdecl, dynlib: lib, importc: "atk_text_attribute_get_value".}
-proc TYPE_UTIL*(): GType
-proc IS_UTIL*(obj: pointer): bool
-proc UTIL*(obj: pointer): PUtil
-proc UTIL_CLASS*(klass: pointer): PUtilClass
-proc IS_UTIL_CLASS*(klass: pointer): bool
-proc UTIL_GET_CLASS*(obj: pointer): PUtilClass
-proc util_get_type*(): GType{.cdecl, dynlib: lib, importc: "atk_util_get_type".}
-proc add_focus_tracker*(focus_tracker: TEventListener): guint{.cdecl, 
+proc typeUtil*(): GType
+proc isUtil*(obj: Pointer): Bool
+proc util*(obj: Pointer): PUtil
+proc utilClass*(klass: Pointer): PUtilClass
+proc isUtilClass*(klass: Pointer): Bool
+proc utilGetClass*(obj: Pointer): PUtilClass
+proc utilGetType*(): GType{.cdecl, dynlib: lib, importc: "atk_util_get_type".}
+proc addFocusTracker*(focus_tracker: TEventListener): Guint{.cdecl, 
     dynlib: lib, importc: "atk_add_focus_tracker".}
-proc remove_focus_tracker*(tracker_id: guint){.cdecl, dynlib: lib, 
+proc removeFocusTracker*(tracker_id: Guint){.cdecl, dynlib: lib, 
     importc: "atk_remove_focus_tracker".}
-proc focus_tracker_init*(add_function: TEventListenerInit){.cdecl, dynlib: lib, 
+proc focusTrackerInit*(add_function: TEventListenerInit){.cdecl, dynlib: lib, 
     importc: "atk_focus_tracker_init".}
-proc focus_tracker_notify*(anObject: PObject){.cdecl, dynlib: lib, 
+proc focusTrackerNotify*(anObject: PObject){.cdecl, dynlib: lib, 
     importc: "atk_focus_tracker_notify".}
-proc add_global_event_listener*(listener: TGSignalEmissionHook, 
-                                event_type: cstring): guint{.cdecl, dynlib: lib, 
+proc addGlobalEventListener*(listener: TGSignalEmissionHook, 
+                                event_type: Cstring): Guint{.cdecl, dynlib: lib, 
     importc: "atk_add_global_event_listener".}
-proc remove_global_event_listener*(listener_id: guint){.cdecl, dynlib: lib, 
+proc removeGlobalEventListener*(listener_id: Guint){.cdecl, dynlib: lib, 
     importc: "atk_remove_global_event_listener".}
-proc add_key_event_listener*(listener: TKeySnoopFunc, data: gpointer): guint{.
+proc addKeyEventListener*(listener: TKeySnoopFunc, data: Gpointer): Guint{.
     cdecl, dynlib: lib, importc: "atk_add_key_event_listener".}
-proc remove_key_event_listener*(listener_id: guint){.cdecl, dynlib: lib, 
+proc removeKeyEventListener*(listener_id: Guint){.cdecl, dynlib: lib, 
     importc: "atk_remove_key_event_listener".}
-proc get_root*(): PObject{.cdecl, dynlib: lib, importc: "atk_get_root".}
-proc get_toolkit_name*(): cstring{.cdecl, dynlib: lib, 
+proc getRoot*(): PObject{.cdecl, dynlib: lib, importc: "atk_get_root".}
+proc getToolkitName*(): Cstring{.cdecl, dynlib: lib, 
                                    importc: "atk_get_toolkit_name".}
-proc get_toolkit_version*(): cstring{.cdecl, dynlib: lib, 
+proc getToolkitVersion*(): Cstring{.cdecl, dynlib: lib, 
                                       importc: "atk_get_toolkit_version".}
-proc TYPE_VALUE*(): GType
-proc IS_VALUE*(obj: pointer): bool
-proc VALUE*(obj: pointer): PValue
-proc VALUE_GET_IFACE*(obj: pointer): PValueIface
-proc value_get_type*(): GType{.cdecl, dynlib: lib, importc: "atk_value_get_type".}
-proc get_current_value*(obj: PValue, value: PGValue){.cdecl, dynlib: lib, 
+proc typeValue*(): GType
+proc isValue*(obj: Pointer): Bool
+proc value*(obj: Pointer): PValue
+proc valueGetIface*(obj: Pointer): PValueIface
+proc valueGetType*(): GType{.cdecl, dynlib: lib, importc: "atk_value_get_type".}
+proc getCurrentValue*(obj: PValue, value: PGValue){.cdecl, dynlib: lib, 
     importc: "atk_value_get_current_value".}
-proc get_maximum_value*(obj: PValue, value: PGValue){.cdecl, dynlib: lib, 
+proc getMaximumValue*(obj: PValue, value: PGValue){.cdecl, dynlib: lib, 
     importc: "atk_value_get_maximum_value".}
-proc get_minimum_value*(obj: PValue, value: PGValue){.cdecl, dynlib: lib, 
+proc getMinimumValue*(obj: PValue, value: PGValue){.cdecl, dynlib: lib, 
     importc: "atk_value_get_minimum_value".}
-proc set_current_value*(obj: PValue, value: PGValue): gboolean{.cdecl, 
+proc setCurrentValue*(obj: PValue, value: PGValue): Gboolean{.cdecl, 
     dynlib: lib, importc: "atk_value_set_current_value".}
-proc TYPE_OBJECT*(): GType = 
-  result = object_get_type()
+proc typeObject*(): GType = 
+  result = objectGetType()
 
-proc `OBJECT`*(obj: pointer): PObject = 
-  result = cast[PObject](G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_OBJECT()))
+proc `object`*(obj: pointer): PObject = 
+  result = cast[PObject](gTypeCheckInstanceCast(obj, typeObject()))
 
-proc OBJECT_CLASS*(klass: pointer): PObjectClass = 
-  result = cast[PObjectClass](G_TYPE_CHECK_CLASS_CAST(klass, TYPE_OBJECT()))
+proc objectClass*(klass: pointer): PObjectClass = 
+  result = cast[PObjectClass](gTypeCheckClassCast(klass, typeObject()))
 
-proc IS_OBJECT*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_OBJECT())
+proc isObject*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeObject())
 
-proc IS_OBJECT_CLASS*(klass: pointer): bool = 
-  result = G_TYPE_CHECK_CLASS_TYPE(klass, TYPE_OBJECT())
+proc isObjectClass*(klass: pointer): bool = 
+  result = gTypeCheckClassType(klass, typeObject())
 
-proc OBJECT_GET_CLASS*(obj: pointer): PObjectClass = 
-  result = cast[PObjectClass](G_TYPE_INSTANCE_GET_CLASS(obj, TYPE_OBJECT()))
+proc objectGetClass*(obj: pointer): PObjectClass = 
+  result = cast[PObjectClass](gTypeInstanceGetClass(obj, typeObject()))
 
-proc TYPE_IMPLEMENTOR*(): GType = 
-  result = implementor_get_type()
+proc typeImplementor*(): GType = 
+  result = implementorGetType()
 
-proc IS_IMPLEMENTOR*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_IMPLEMENTOR())
+proc isImplementor*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeImplementor())
 
-proc IMPLEMENTOR*(obj: pointer): PImplementor = 
-  result = PImplementor(G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_IMPLEMENTOR()))
+proc implementor*(obj: pointer): PImplementor = 
+  result = PImplementor(gTypeCheckInstanceCast(obj, typeImplementor()))
 
-proc IMPLEMENTOR_GET_IFACE*(obj: pointer): PImplementorIface = 
-  result = cast[PImplementorIface](G_TYPE_INSTANCE_GET_INTERFACE(obj, 
-      TYPE_IMPLEMENTOR()))
+proc implementorGetIface*(obj: pointer): PImplementorIface = 
+  result = cast[PImplementorIface](gTypeInstanceGetInterface(obj, 
+      typeImplementor()))
 
-proc TYPE_ACTION*(): GType = 
-  result = action_get_type()
+proc typeAction*(): GType = 
+  result = actionGetType()
 
-proc IS_ACTION*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_ACTION())
+proc isAction*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeAction())
 
-proc ACTION*(obj: pointer): PAction = 
-  result = PAction(G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_ACTION()))
+proc action*(obj: pointer): PAction = 
+  result = PAction(gTypeCheckInstanceCast(obj, typeAction()))
 
-proc ACTION_GET_IFACE*(obj: pointer): PActionIface = 
-  result = cast[PActionIface](G_TYPE_INSTANCE_GET_INTERFACE(obj, TYPE_ACTION()))
+proc actionGetIface*(obj: pointer): PActionIface = 
+  result = cast[PActionIface](gTypeInstanceGetInterface(obj, typeAction()))
 
-proc TYPE_COMPONENT*(): GType = 
-  result = component_get_type()
+proc typeComponent*(): GType = 
+  result = componentGetType()
 
-proc IS_COMPONENT*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_COMPONENT())
+proc isComponent*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeComponent())
 
-proc COMPONENT*(obj: pointer): PComponent = 
-  result = PComponent(G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_COMPONENT()))
+proc component*(obj: pointer): PComponent = 
+  result = PComponent(gTypeCheckInstanceCast(obj, typeComponent()))
 
-proc COMPONENT_GET_IFACE*(obj: pointer): PComponentIface = 
-  result = cast[PComponentIface](G_TYPE_INSTANCE_GET_INTERFACE(obj, 
-      TYPE_COMPONENT()))
+proc componentGetIface*(obj: pointer): PComponentIface = 
+  result = cast[PComponentIface](gTypeInstanceGetInterface(obj, 
+      typeComponent()))
 
-proc TYPE_DOCUMENT*(): GType = 
-  result = document_get_type()
+proc typeDocument*(): GType = 
+  result = documentGetType()
 
-proc IS_DOCUMENT*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_DOCUMENT())
+proc isDocument*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeDocument())
 
-proc DOCUMENT*(obj: pointer): PDocument = 
-  result = cast[PDocument](G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_DOCUMENT()))
+proc document*(obj: pointer): PDocument = 
+  result = cast[PDocument](gTypeCheckInstanceCast(obj, typeDocument()))
 
-proc DOCUMENT_GET_IFACE*(obj: pointer): PDocumentIface = 
-  result = cast[PDocumentIface](G_TYPE_INSTANCE_GET_INTERFACE(obj, 
-      TYPE_DOCUMENT()))
+proc documentGetIface*(obj: pointer): PDocumentIface = 
+  result = cast[PDocumentIface](gTypeInstanceGetInterface(obj, 
+      typeDocument()))
 
-proc TYPE_EDITABLE_TEXT*(): GType = 
-  result = editable_text_get_type()
+proc typeEditableText*(): GType = 
+  result = editableTextGetType()
 
-proc IS_EDITABLE_TEXT*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_EDITABLE_TEXT())
+proc isEditableText*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeEditableText())
 
-proc EDITABLE_TEXT*(obj: pointer): PEditableText = 
-  result = cast[PEditableText](G_TYPE_CHECK_INSTANCE_CAST(obj, 
-      TYPE_EDITABLE_TEXT()))
+proc editableText*(obj: pointer): PEditableText = 
+  result = cast[PEditableText](gTypeCheckInstanceCast(obj, 
+      typeEditableText()))
 
-proc EDITABLE_TEXT_GET_IFACE*(obj: pointer): PEditableTextIface = 
-  result = cast[PEditableTextIface](G_TYPE_INSTANCE_GET_INTERFACE(obj, 
-      TYPE_EDITABLE_TEXT()))
+proc editableTextGetIface*(obj: pointer): PEditableTextIface = 
+  result = cast[PEditableTextIface](gTypeInstanceGetInterface(obj, 
+      typeEditableText()))
 
-proc TYPE_GOBJECT_ACCESSIBLE*(): GType = 
-  result = gobject_accessible_get_type()
+proc typeGobjectAccessible*(): GType = 
+  result = gobjectAccessibleGetType()
 
-proc GOBJECT_ACCESSIBLE*(obj: pointer): PGObjectAccessible = 
-  result = cast[PGObjectAccessible](G_TYPE_CHECK_INSTANCE_CAST(obj, 
-      TYPE_GOBJECT_ACCESSIBLE()))
+proc gobjectAccessible*(obj: pointer): PGObjectAccessible = 
+  result = cast[PGObjectAccessible](gTypeCheckInstanceCast(obj, 
+      typeGobjectAccessible()))
 
-proc GOBJECT_ACCESSIBLE_CLASS*(klass: pointer): PGObjectAccessibleClass = 
-  result = cast[PGObjectAccessibleClass](G_TYPE_CHECK_CLASS_CAST(klass, 
-      TYPE_GOBJECT_ACCESSIBLE()))
+proc gobjectAccessibleClass*(klass: pointer): PGObjectAccessibleClass = 
+  result = cast[PGObjectAccessibleClass](gTypeCheckClassCast(klass, 
+      typeGobjectAccessible()))
 
-proc IS_GOBJECT_ACCESSIBLE*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_GOBJECT_ACCESSIBLE())
+proc isGobjectAccessible*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeGobjectAccessible())
 
-proc IS_GOBJECT_ACCESSIBLE_CLASS*(klass: pointer): bool = 
-  result = G_TYPE_CHECK_CLASS_TYPE(klass, TYPE_GOBJECT_ACCESSIBLE())
+proc isGobjectAccessibleClass*(klass: pointer): bool = 
+  result = gTypeCheckClassType(klass, typeGobjectAccessible())
 
-proc GOBJECT_ACCESSIBLE_GET_CLASS*(obj: pointer): PGObjectAccessibleClass = 
-  result = cast[PGObjectAccessibleClass](G_TYPE_INSTANCE_GET_CLASS(obj, 
-      TYPE_GOBJECT_ACCESSIBLE()))
+proc gobjectAccessibleGetClass*(obj: pointer): PGObjectAccessibleClass = 
+  result = cast[PGObjectAccessibleClass](gTypeInstanceGetClass(obj, 
+      typeGobjectAccessible()))
 
-proc TYPE_HYPERLINK*(): GType = 
-  result = hyperlink_get_type()
+proc typeHyperlink*(): GType = 
+  result = hyperlinkGetType()
 
-proc HYPERLINK*(obj: pointer): PHyperlink = 
-  result = cast[PHyperlink](G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_HYPERLINK()))
+proc hyperlink*(obj: pointer): PHyperlink = 
+  result = cast[PHyperlink](gTypeCheckInstanceCast(obj, typeHyperlink()))
 
-proc HYPERLINK_CLASS*(klass: pointer): PHyperlinkClass = 
-  result = cast[PHyperlinkClass](G_TYPE_CHECK_CLASS_CAST(klass, TYPE_HYPERLINK()))
+proc hyperlinkClass*(klass: pointer): PHyperlinkClass = 
+  result = cast[PHyperlinkClass](gTypeCheckClassCast(klass, typeHyperlink()))
 
-proc IS_HYPERLINK*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_HYPERLINK())
+proc isHyperlink*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeHyperlink())
 
-proc IS_HYPERLINK_CLASS*(klass: pointer): bool = 
-  result = G_TYPE_CHECK_CLASS_TYPE(klass, TYPE_HYPERLINK())
+proc isHyperlinkClass*(klass: pointer): bool = 
+  result = gTypeCheckClassType(klass, typeHyperlink())
 
-proc HYPERLINK_GET_CLASS*(obj: pointer): PHyperlinkClass = 
-  result = cast[PHyperlinkClass](G_TYPE_INSTANCE_GET_CLASS(obj, TYPE_HYPERLINK()))
+proc hyperlinkGetClass*(obj: pointer): PHyperlinkClass = 
+  result = cast[PHyperlinkClass](gTypeInstanceGetClass(obj, typeHyperlink()))
 
-proc TYPE_HYPERTEXT*(): GType = 
-  result = hypertext_get_type()
+proc typeHypertext*(): GType = 
+  result = hypertextGetType()
 
-proc IS_HYPERTEXT*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_HYPERTEXT())
+proc isHypertext*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeHypertext())
 
-proc HYPERTEXT*(obj: pointer): PHypertext = 
-  result = cast[PHypertext](G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_HYPERTEXT()))
+proc hypertext*(obj: pointer): PHypertext = 
+  result = cast[PHypertext](gTypeCheckInstanceCast(obj, typeHypertext()))
 
-proc HYPERTEXT_GET_IFACE*(obj: pointer): PHypertextIface = 
-  result = cast[PHypertextIface](G_TYPE_INSTANCE_GET_INTERFACE(obj, 
-      TYPE_HYPERTEXT()))
+proc hypertextGetIface*(obj: pointer): PHypertextIface = 
+  result = cast[PHypertextIface](gTypeInstanceGetInterface(obj, 
+      typeHypertext()))
 
-proc TYPE_IMAGE*(): GType = 
-  result = image_get_type()
+proc typeImage*(): GType = 
+  result = imageGetType()
 
-proc IS_IMAGE*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_IMAGE())
+proc isImage*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeImage())
 
-proc IMAGE*(obj: pointer): PImage = 
-  result = cast[PImage](G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_IMAGE()))
+proc image*(obj: pointer): PImage = 
+  result = cast[PImage](gTypeCheckInstanceCast(obj, typeImage()))
 
-proc IMAGE_GET_IFACE*(obj: pointer): PImageIface = 
-  result = cast[PImageIface](G_TYPE_INSTANCE_GET_INTERFACE(obj, TYPE_IMAGE()))
+proc imageGetIface*(obj: pointer): PImageIface = 
+  result = cast[PImageIface](gTypeInstanceGetInterface(obj, typeImage()))
 
-proc TYPE_OBJECT_FACTORY*(): GType = 
-  result = object_factory_get_type()
+proc typeObjectFactory*(): GType = 
+  result = objectFactoryGetType()
 
-proc OBJECT_FACTORY*(obj: pointer): PObjectFactory = 
-  result = cast[PObjectFactory](G_TYPE_CHECK_INSTANCE_CAST(obj, 
-      TYPE_OBJECT_FACTORY()))
+proc objectFactory*(obj: pointer): PObjectFactory = 
+  result = cast[PObjectFactory](gTypeCheckInstanceCast(obj, 
+      typeObjectFactory()))
 
-proc OBJECT_FACTORY_CLASS*(klass: pointer): PObjectFactoryClass = 
-  result = cast[PObjectFactoryClass](G_TYPE_CHECK_CLASS_CAST(klass, 
-      TYPE_OBJECT_FACTORY()))
+proc objectFactoryClass*(klass: pointer): PObjectFactoryClass = 
+  result = cast[PObjectFactoryClass](gTypeCheckClassCast(klass, 
+      typeObjectFactory()))
 
-proc IS_OBJECT_FACTORY*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_OBJECT_FACTORY())
+proc isObjectFactory*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeObjectFactory())
 
-proc IS_OBJECT_FACTORY_CLASS*(klass: pointer): bool = 
-  result = G_TYPE_CHECK_CLASS_TYPE(klass, TYPE_OBJECT_FACTORY())
+proc isObjectFactoryClass*(klass: pointer): bool = 
+  result = gTypeCheckClassType(klass, typeObjectFactory())
 
-proc OBJECT_FACTORY_GET_CLASS*(obj: pointer): PObjectFactoryClass = 
-  result = cast[PObjectFactoryClass](G_TYPE_INSTANCE_GET_CLASS(obj, 
-      TYPE_OBJECT_FACTORY()))
+proc objectFactoryGetClass*(obj: pointer): PObjectFactoryClass = 
+  result = cast[PObjectFactoryClass](gTypeInstanceGetClass(obj, 
+      typeObjectFactory()))
 
-proc TYPE_REGISTRY*(): GType = 
-  result = registry_get_type()
+proc typeRegistry*(): GType = 
+  result = registryGetType()
 
-proc REGISTRY*(obj: pointer): PRegistry = 
-  result = cast[PRegistry](G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_REGISTRY()))
+proc registry*(obj: pointer): PRegistry = 
+  result = cast[PRegistry](gTypeCheckInstanceCast(obj, typeRegistry()))
 
-proc REGISTRY_CLASS*(klass: pointer): PRegistryClass = 
-  result = cast[PRegistryClass](G_TYPE_CHECK_CLASS_CAST(klass, TYPE_REGISTRY()))
+proc registryClass*(klass: pointer): PRegistryClass = 
+  result = cast[PRegistryClass](gTypeCheckClassCast(klass, typeRegistry()))
 
-proc IS_REGISTRY*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_REGISTRY())
+proc isRegistry*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeRegistry())
 
-proc IS_REGISTRY_CLASS*(klass: pointer): bool = 
-  result = G_TYPE_CHECK_CLASS_TYPE(klass, TYPE_REGISTRY())
+proc isRegistryClass*(klass: pointer): bool = 
+  result = gTypeCheckClassType(klass, typeRegistry())
 
-proc REGISTRY_GET_CLASS*(obj: pointer): PRegistryClass = 
-  result = cast[PRegistryClass](G_TYPE_INSTANCE_GET_CLASS(obj, TYPE_REGISTRY()))
+proc registryGetClass*(obj: pointer): PRegistryClass = 
+  result = cast[PRegistryClass](gTypeInstanceGetClass(obj, typeRegistry()))
 
-proc TYPE_RELATION*(): GType = 
-  result = relation_get_type()
+proc typeRelation*(): GType = 
+  result = relationGetType()
 
-proc RELATION*(obj: pointer): PRelation = 
-  result = cast[PRelation](G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_RELATION()))
+proc relation*(obj: pointer): PRelation = 
+  result = cast[PRelation](gTypeCheckInstanceCast(obj, typeRelation()))
 
-proc RELATION_CLASS*(klass: pointer): PRelationClass = 
-  result = cast[PRelationClass](G_TYPE_CHECK_CLASS_CAST(klass, TYPE_RELATION()))
+proc relationClass*(klass: pointer): PRelationClass = 
+  result = cast[PRelationClass](gTypeCheckClassCast(klass, typeRelation()))
 
-proc IS_RELATION*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_RELATION())
+proc isRelation*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeRelation())
 
-proc IS_RELATION_CLASS*(klass: pointer): bool = 
-  result = G_TYPE_CHECK_CLASS_TYPE(klass, TYPE_RELATION())
+proc isRelationClass*(klass: pointer): bool = 
+  result = gTypeCheckClassType(klass, typeRelation())
 
-proc RELATION_GET_CLASS*(obj: pointer): PRelationClass = 
-  result = cast[PRelationClass](G_TYPE_INSTANCE_GET_CLASS(obj, TYPE_RELATION()))
+proc relationGetClass*(obj: pointer): PRelationClass = 
+  result = cast[PRelationClass](gTypeInstanceGetClass(obj, typeRelation()))
 
-proc TYPE_RELATION_SET*(): GType = 
-  result = relation_set_get_type()
+proc typeRelationSet*(): GType = 
+  result = relationSetGetType()
 
-proc RELATION_SET*(obj: pointer): PRelationSet = 
-  result = cast[PRelationSet](G_TYPE_CHECK_INSTANCE_CAST(obj, 
-      TYPE_RELATION_SET()))
+proc relationSet*(obj: pointer): PRelationSet = 
+  result = cast[PRelationSet](gTypeCheckInstanceCast(obj, 
+      typeRelationSet()))
 
-proc RELATION_SET_CLASS*(klass: pointer): PRelationSetClass = 
-  result = cast[PRelationSetClass](G_TYPE_CHECK_CLASS_CAST(klass, 
-      TYPE_RELATION_SET()))
+proc relationSetClass*(klass: pointer): PRelationSetClass = 
+  result = cast[PRelationSetClass](gTypeCheckClassCast(klass, 
+      typeRelationSet()))
 
-proc IS_RELATION_SET*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_RELATION_SET())
+proc isRelationSet*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeRelationSet())
 
-proc IS_RELATION_SET_CLASS*(klass: pointer): bool = 
-  result = G_TYPE_CHECK_CLASS_TYPE(klass, TYPE_RELATION_SET())
+proc isRelationSetClass*(klass: pointer): bool = 
+  result = gTypeCheckClassType(klass, typeRelationSet())
 
-proc RELATION_SET_GET_CLASS*(obj: pointer): PRelationSetClass = 
-  result = cast[PRelationSetClass](G_TYPE_INSTANCE_GET_CLASS(obj, 
-      TYPE_RELATION_SET()))
+proc relationSetGetClass*(obj: pointer): PRelationSetClass = 
+  result = cast[PRelationSetClass](gTypeInstanceGetClass(obj, 
+      typeRelationSet()))
 
-proc TYPE_SELECTION*(): GType = 
-  result = selection_get_type()
+proc typeSelection*(): GType = 
+  result = selectionGetType()
 
-proc IS_SELECTION*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_SELECTION())
+proc isSelection*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeSelection())
 
-proc SELECTION*(obj: pointer): PSelection = 
-  result = cast[PSelection](G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_SELECTION()))
+proc selection*(obj: pointer): PSelection = 
+  result = cast[PSelection](gTypeCheckInstanceCast(obj, typeSelection()))
 
-proc SELECTION_GET_IFACE*(obj: pointer): PSelectionIface = 
-  result = cast[PSelectionIface](G_TYPE_INSTANCE_GET_INTERFACE(obj, 
-      TYPE_SELECTION()))
+proc selectionGetIface*(obj: pointer): PSelectionIface = 
+  result = cast[PSelectionIface](gTypeInstanceGetInterface(obj, 
+      typeSelection()))
 
-proc TYPE_STATE_SET*(): GType = 
-  result = state_set_get_type()
+proc typeStateSet*(): GType = 
+  result = stateSetGetType()
 
-proc STATE_SET*(obj: pointer): PStateSet = 
-  result = cast[PStateSet](G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_STATE_SET()))
+proc stateSet*(obj: pointer): PStateSet = 
+  result = cast[PStateSet](gTypeCheckInstanceCast(obj, typeStateSet()))
 
-proc STATE_SET_CLASS*(klass: pointer): PStateSetClass = 
-  result = cast[PStateSetClass](G_TYPE_CHECK_CLASS_CAST(klass, TYPE_STATE_SET()))
+proc stateSetClass*(klass: pointer): PStateSetClass = 
+  result = cast[PStateSetClass](gTypeCheckClassCast(klass, typeStateSet()))
 
-proc IS_STATE_SET*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_STATE_SET())
+proc isStateSet*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeStateSet())
 
-proc IS_STATE_SET_CLASS*(klass: pointer): bool = 
-  result = G_TYPE_CHECK_CLASS_TYPE(klass, TYPE_STATE_SET())
+proc isStateSetClass*(klass: pointer): bool = 
+  result = gTypeCheckClassType(klass, typeStateSet())
 
-proc STATE_SET_GET_CLASS*(obj: pointer): PStateSetClass = 
-  result = cast[PStateSetClass](G_TYPE_INSTANCE_GET_CLASS(obj, TYPE_STATE_SET()))
+proc stateSetGetClass*(obj: pointer): PStateSetClass = 
+  result = cast[PStateSetClass](gTypeInstanceGetClass(obj, typeStateSet()))
 
-proc TYPE_STREAMABLE_CONTENT*(): GType = 
-  result = streamable_content_get_type()
+proc typeStreamableContent*(): GType = 
+  result = streamableContentGetType()
 
-proc IS_STREAMABLE_CONTENT*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_STREAMABLE_CONTENT())
+proc isStreamableContent*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeStreamableContent())
 
-proc STREAMABLE_CONTENT*(obj: pointer): PStreamableContent = 
-  result = cast[PStreamableContent](G_TYPE_CHECK_INSTANCE_CAST(obj, 
-      TYPE_STREAMABLE_CONTENT()))
+proc streamableContent*(obj: pointer): PStreamableContent = 
+  result = cast[PStreamableContent](gTypeCheckInstanceCast(obj, 
+      typeStreamableContent()))
 
-proc STREAMABLE_CONTENT_GET_IFACE*(obj: pointer): PStreamableContentIface = 
-  result = cast[PStreamableContentIface](G_TYPE_INSTANCE_GET_INTERFACE(obj, 
-      TYPE_STREAMABLE_CONTENT()))
+proc streamableContentGetIface*(obj: pointer): PStreamableContentIface = 
+  result = cast[PStreamableContentIface](gTypeInstanceGetInterface(obj, 
+      typeStreamableContent()))
 
-proc TYPE_TABLE*(): GType = 
-  result = table_get_type()
+proc typeTable*(): GType = 
+  result = tableGetType()
 
-proc IS_TABLE*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_TABLE())
+proc isTable*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeTable())
 
-proc TABLE*(obj: pointer): PTable = 
-  result = cast[PTable](G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_TABLE()))
+proc table*(obj: pointer): PTable = 
+  result = cast[PTable](gTypeCheckInstanceCast(obj, typeTable()))
 
-proc TABLE_GET_IFACE*(obj: pointer): PTableIface = 
-  result = cast[PTableIface](G_TYPE_INSTANCE_GET_INTERFACE(obj, TYPE_TABLE()))
+proc tableGetIface*(obj: pointer): PTableIface = 
+  result = cast[PTableIface](gTypeInstanceGetInterface(obj, typeTable()))
 
-proc TYPE_TEXT*(): GType = 
-  result = text_get_type()
+proc typeText*(): GType = 
+  result = textGetType()
 
-proc IS_TEXT*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_TEXT())
+proc isText*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeText())
 
-proc TEXT*(obj: pointer): PText = 
-  result = cast[PText](G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_TEXT()))
+proc text*(obj: pointer): PText = 
+  result = cast[PText](gTypeCheckInstanceCast(obj, typeText()))
 
-proc TEXT_GET_IFACE*(obj: pointer): PTextIface = 
-  result = cast[PTextIface](G_TYPE_INSTANCE_GET_INTERFACE(obj, TYPE_TEXT()))
+proc textGetIface*(obj: pointer): PTextIface = 
+  result = cast[PTextIface](gTypeInstanceGetInterface(obj, typeText()))
 
-proc TYPE_UTIL*(): GType = 
-  result = util_get_type()
+proc typeUtil*(): GType = 
+  result = utilGetType()
 
-proc IS_UTIL*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_UTIL())
+proc isUtil*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeUtil())
 
-proc UTIL*(obj: pointer): PUtil = 
-  result = cast[PUtil](G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_UTIL()))
+proc util*(obj: pointer): PUtil = 
+  result = cast[PUtil](gTypeCheckInstanceCast(obj, typeUtil()))
 
-proc UTIL_CLASS*(klass: pointer): PUtilClass = 
-  result = cast[PUtilClass](G_TYPE_CHECK_CLASS_CAST(klass, TYPE_UTIL()))
+proc utilClass*(klass: pointer): PUtilClass = 
+  result = cast[PUtilClass](gTypeCheckClassCast(klass, typeUtil()))
 
-proc IS_UTIL_CLASS*(klass: pointer): bool = 
-  result = G_TYPE_CHECK_CLASS_TYPE(klass, TYPE_UTIL())
+proc isUtilClass*(klass: pointer): bool = 
+  result = gTypeCheckClassType(klass, typeUtil())
 
-proc UTIL_GET_CLASS*(obj: pointer): PUtilClass = 
-  result = cast[PUtilClass](G_TYPE_INSTANCE_GET_CLASS(obj, TYPE_UTIL()))
+proc utilGetClass*(obj: pointer): PUtilClass = 
+  result = cast[PUtilClass](gTypeInstanceGetClass(obj, typeUtil()))
 
-proc TYPE_VALUE*(): GType = 
-  result = value_get_type()
+proc typeValue*(): GType = 
+  result = valueGetType()
 
-proc IS_VALUE*(obj: pointer): bool = 
-  result = G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_VALUE())
+proc isValue*(obj: pointer): bool = 
+  result = gTypeCheckInstanceType(obj, typeValue())
 
-proc VALUE*(obj: pointer): PValue = 
-  result = cast[PValue](G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_VALUE()))
+proc value*(obj: pointer): PValue = 
+  result = cast[PValue](gTypeCheckInstanceCast(obj, typeValue()))
 
-proc VALUE_GET_IFACE*(obj: pointer): PValueIface = 
-  result = cast[PValueIface](G_TYPE_INSTANCE_GET_INTERFACE(obj, TYPE_VALUE()))
+proc valueGetIface*(obj: pointer): PValueIface = 
+  result = cast[PValueIface](gTypeInstanceGetInterface(obj, typeValue()))

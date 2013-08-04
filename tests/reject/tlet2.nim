@@ -3,7 +3,7 @@ discard """
   errormsg: "for a 'var' type a variable needs to be passed"
 """
 
-proc divmod(a, b: int, res, remainder: var int) =
+proc divmod(a, b: Int, res, remainder: var Int) =
   res = a div b        # integer division
   remainder = a mod b  # integer modulo operation
 

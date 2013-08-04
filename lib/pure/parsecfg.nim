@@ -41,16 +41,16 @@ type
     case kind*: TCfgEventKind    ## the kind of the event
     of cfgEof: nil
     of cfgSectionStart: 
-      section*: string           ## `section` contains the name of the 
+      section*: String           ## `section` contains the name of the 
                                  ## parsed section start (syntax: ``[section]``)
     of cfgKeyValuePair, cfgOption: 
-      key*, value*: string       ## contains the (key, value) pair if an option
+      key*, value*: String       ## contains the (key, value) pair if an option
                                  ## of the form ``--key: value`` or an ordinary
                                  ## ``key= value`` pair has been parsed.
                                  ## ``value==""`` if it was not specified in the
                                  ## configuration file.
     of cfgError:                 ## the parser encountered an error: `msg`
-      msg*: string               ## contains the error message. No exceptions
+      msg*: String               ## contains the error message. No exceptions
                                  ## are thrown if a parse error occurs.
   
   TTokKind = enum 
@@ -58,11 +58,11 @@ type
     tkSymbol, tkEquals, tkColon, tkBracketLe, tkBracketRi, tkDashDash
   TToken {.final.} = object  # a token
     kind: TTokKind           # the type of the token
-    literal: string          # the parsed (string) literal
+    literal: String          # the parsed (string) literal
   
   TCfgParser* = object of TBaseLexer ## the parser object.
     tok: TToken
-    filename: string
+    filename: String
 
 # implementation
 
@@ -72,7 +72,7 @@ const
   
 proc rawGetTok(c: var TCfgParser, tok: var TToken)
 
-proc open*(c: var TCfgParser, input: PStream, filename: string, 
+proc open*(c: var TCfgParser, input: PStream, filename: String, 
            lineOffset = 0) {.
   rtl, extern: "npc$1".} =
   ## initializes the parser with an input stream. `Filename` is only used
@@ -89,19 +89,19 @@ proc close*(c: var TCfgParser) {.rtl, extern: "npc$1".} =
   ## closes the parser `c` and its associated input stream.
   lexbase.close(c)
 
-proc getColumn*(c: TCfgParser): int {.rtl, extern: "npc$1".} =
+proc getColumn*(c: TCfgParser): Int {.rtl, extern: "npc$1".} =
   ## get the current column the parser has arrived at.
   result = getColNumber(c, c.bufPos)
 
-proc getLine*(c: TCfgParser): int {.rtl, extern: "npc$1".} =
+proc getLine*(c: TCfgParser): Int {.rtl, extern: "npc$1".} =
   ## get the current line the parser has arrived at.
   result = c.linenumber
 
-proc getFilename*(c: TCfgParser): string {.rtl, extern: "npc$1".} =
+proc getFilename*(c: TCfgParser): String {.rtl, extern: "npc$1".} =
   ## get the filename of the file that the parser processes.
   result = c.filename
 
-proc handleHexChar(c: var TCfgParser, xi: var int) = 
+proc handleHexChar(c: var TCfgParser, xi: var Int) = 
   case c.buf[c.bufpos]
   of '0'..'9': 
     xi = (xi shl 4) or (ord(c.buf[c.bufpos]) - ord('0'))
@@ -115,7 +115,7 @@ proc handleHexChar(c: var TCfgParser, xi: var int) =
   else: 
     nil
 
-proc handleDecChars(c: var TCfgParser, xi: var int) = 
+proc handleDecChars(c: var TCfgParser, xi: var Int) = 
   while c.buf[c.bufpos] in {'0'..'9'}: 
     xi = (xi * 10) + (ord(c.buf[c.bufpos]) - ord('0'))
     inc(c.bufpos)
@@ -125,57 +125,57 @@ proc getEscapedChar(c: var TCfgParser, tok: var TToken) =
   case c.buf[c.bufpos]
   of 'n', 'N': 
     add(tok.literal, "\n")
-    Inc(c.bufpos)
+    inc(c.bufpos)
   of 'r', 'R', 'c', 'C': 
     add(tok.literal, '\c')
-    Inc(c.bufpos)
+    inc(c.bufpos)
   of 'l', 'L': 
     add(tok.literal, '\L')
-    Inc(c.bufpos)
+    inc(c.bufpos)
   of 'f', 'F': 
     add(tok.literal, '\f')
     inc(c.bufpos)
   of 'e', 'E': 
     add(tok.literal, '\e')
-    Inc(c.bufpos)
+    inc(c.bufpos)
   of 'a', 'A': 
     add(tok.literal, '\a')
-    Inc(c.bufpos)
+    inc(c.bufpos)
   of 'b', 'B': 
     add(tok.literal, '\b')
-    Inc(c.bufpos)
+    inc(c.bufpos)
   of 'v', 'V': 
     add(tok.literal, '\v')
-    Inc(c.bufpos)
+    inc(c.bufpos)
   of 't', 'T': 
     add(tok.literal, '\t')
-    Inc(c.bufpos)
+    inc(c.bufpos)
   of '\'', '"': 
     add(tok.literal, c.buf[c.bufpos])
-    Inc(c.bufpos)
+    inc(c.bufpos)
   of '\\': 
     add(tok.literal, '\\')
-    Inc(c.bufpos)
+    inc(c.bufpos)
   of 'x', 'X': 
     inc(c.bufpos)
     var xi = 0
     handleHexChar(c, xi)
     handleHexChar(c, xi)
-    add(tok.literal, Chr(xi))
+    add(tok.literal, chr(xi))
   of '0'..'9': 
     var xi = 0
     handleDecChars(c, xi)
-    if (xi <= 255): add(tok.literal, Chr(xi))
+    if (xi <= 255): add(tok.literal, chr(xi))
     else: tok.kind = tkInvalid
   else: tok.kind = tkInvalid
   
-proc HandleCRLF(c: var TCfgParser, pos: int): int = 
+proc handleCRLF(c: var TCfgParser, pos: Int): Int = 
   case c.buf[pos]
   of '\c': result = lexbase.HandleCR(c, pos)
   of '\L': result = lexbase.HandleLF(c, pos)
   else: result = pos
   
-proc getString(c: var TCfgParser, tok: var TToken, rawMode: bool) = 
+proc getString(c: var TCfgParser, tok: var TToken, rawMode: Bool) = 
   var pos = c.bufPos + 1          # skip "
   var buf = c.buf                 # put `buf` in a register
   tok.kind = tkSymbol
@@ -183,16 +183,16 @@ proc getString(c: var TCfgParser, tok: var TToken, rawMode: bool) =
     # long string literal:
     inc(pos, 2)               # skip ""
                               # skip leading newline:
-    pos = HandleCRLF(c, pos)
+    pos = handleCRLF(c, pos)
     buf = c.buf
     while true: 
       case buf[pos]
       of '"': 
         if (buf[pos + 1] == '"') and (buf[pos + 2] == '"'): break 
         add(tok.literal, '"')
-        Inc(pos)
+        inc(pos)
       of '\c', '\L': 
-        pos = HandleCRLF(c, pos)
+        pos = handleCRLF(c, pos)
         buf = c.buf
         add(tok.literal, "\n")
       of lexbase.EndOfFile: 
@@ -200,7 +200,7 @@ proc getString(c: var TCfgParser, tok: var TToken, rawMode: bool) =
         break 
       else: 
         add(tok.literal, buf[pos])
-        Inc(pos)
+        inc(pos)
     c.bufpos = pos + 3       # skip the three """
   else: 
     # ordinary string literal
@@ -218,7 +218,7 @@ proc getString(c: var TCfgParser, tok: var TToken, rawMode: bool) =
         pos = c.bufPos
       else: 
         add(tok.literal, ch)
-        Inc(pos)
+        inc(pos)
     c.bufpos = pos
 
 proc getSymbol(c: var TCfgParser, tok: var TToken) = 
@@ -226,7 +226,7 @@ proc getSymbol(c: var TCfgParser, tok: var TToken) =
   var buf = c.buf
   while true: 
     add(tok.literal, buf[pos])
-    Inc(pos)
+    inc(pos)
     if not (buf[pos] in SymChars): break 
   c.bufpos = pos
   tok.kind = tkSymbol
@@ -237,11 +237,11 @@ proc skip(c: var TCfgParser) =
   while true: 
     case buf[pos]
     of ' ', '\t': 
-      Inc(pos)
+      inc(pos)
     of '#', ';': 
       while not (buf[pos] in {'\c', '\L', lexbase.EndOfFile}): inc(pos)
     of '\c', '\L': 
-      pos = HandleCRLF(c, pos)
+      pos = handleCRLF(c, pos)
       buf = c.buf
     else: 
       break                   # EndOfFile also leaves the loop
@@ -249,7 +249,7 @@ proc skip(c: var TCfgParser) =
 
 proc rawGetTok(c: var TCfgParser, tok: var TToken) = 
   tok.kind = tkInvalid
-  setlen(tok.literal, 0)
+  setLen(tok.literal, 0)
   skip(c)
   case c.buf[c.bufpos]
   of '=': 
@@ -267,7 +267,7 @@ proc rawGetTok(c: var TCfgParser, tok: var TToken) =
     tok.literal = ":"
   of 'r', 'R': 
     if c.buf[c.bufPos + 1] == '\"': 
-      Inc(c.bufPos)
+      inc(c.bufPos)
       getString(c, tok, true)
     else: 
       getSymbol(c, tok)
@@ -277,7 +277,7 @@ proc rawGetTok(c: var TCfgParser, tok: var TToken) =
     tok.literal = "]"
   of ']': 
     tok.kind = tkBracketRi
-    Inc(c.bufpos)
+    inc(c.bufpos)
     tok.literal = "]"
   of '"': 
     getString(c, tok, false)
@@ -286,19 +286,19 @@ proc rawGetTok(c: var TCfgParser, tok: var TToken) =
     tok.literal = "[EOF]"
   else: getSymbol(c, tok)
   
-proc errorStr*(c: TCfgParser, msg: string): string {.rtl, extern: "npc$1".} =
+proc errorStr*(c: TCfgParser, msg: String): String {.rtl, extern: "npc$1".} =
   ## returns a properly formated error message containing current line and
   ## column information.
   result = `%`("$1($2, $3) Error: $4", 
                [c.filename, $getLine(c), $getColumn(c), msg])
   
-proc warningStr*(c: TCfgParser, msg: string): string {.rtl, extern: "npc$1".} =
+proc warningStr*(c: TCfgParser, msg: String): String {.rtl, extern: "npc$1".} =
   ## returns a properly formated warning message containing current line and
   ## column information.
   result = `%`("$1($2, $3) Warning: $4", 
                [c.filename, $getLine(c), $getColumn(c), msg])
 
-proc ignoreMsg*(c: TCfgParser, e: TCfgEvent): string {.rtl, extern: "npc$1".} =
+proc ignoreMsg*(c: TCfgParser, e: TCfgEvent): String {.rtl, extern: "npc$1".} =
   ## returns a properly formated warning message containing that
   ## an entry is ignored.
   case e.kind 

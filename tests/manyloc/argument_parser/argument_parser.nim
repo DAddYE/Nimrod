@@ -13,8 +13,8 @@ import os, strutils, tables, math, parseutils, sequtils, sets, algorithm,
   unicode
 
 const
-  VERSION_STR* = "0.1.2" ## Module version as a string.
-  VERSION_INT* = (major: 0, minor: 1, maintenance: 2) ## \
+  VersionStr* = "0.1.2" ## Module version as a string.
+  VersionInt* = (major: 0, minor: 1, maintenance: 2) ## \
   ## Module version as an integer tuple.
   ##
   ## Major versions changes mean a break in API backwards compatibility, either
@@ -29,12 +29,12 @@ const
 # - Types
 
 type
-  Tparam_kind* = enum ## Different types of results for parameter parsing.
+  TparamKind* = enum ## Different types of results for parameter parsing.
     PK_EMPTY, PK_INT, PK_FLOAT, PK_STRING, PK_BOOL,
     PK_BIGGEST_INT, PK_BIGGEST_FLOAT, PK_HELP
 
-  Tparameter_callback* =
-    proc (parameter: string; value: var Tparsed_parameter): string ## \
+  TparameterCallback* =
+    proc (parameter: String; value: var TparsedParameter): String ## \
     ## Prototype of parameter callbacks
     ##
     ## A parameter callback is just a custom proc you provide which is invoked
@@ -55,35 +55,35 @@ type
     ## explaining why the validation failed, and maybe offer a hint as to what
     ## can be done to pass validation.
 
-  Tparameter_specification* = object ## \
+  TparameterSpecification* = object ## \
     ## Holds the expectations of a parameter.
     ##
     ## You create these objects and feed them to the parse() proc, which then
     ## uses them to detect parameters and turn them into something uself.
-    names*: seq[string]  ## List of possible parameters to catch for this.
-    consumes*: Tparam_kind ## Expected type of the parameter (empty for none)
-    custom_validator*: Tparameter_callback  ## Optional custom callback
+    names*: Seq[String]  ## List of possible parameters to catch for this.
+    consumes*: TparamKind ## Expected type of the parameter (empty for none)
+    customValidator*: TparameterCallback  ## Optional custom callback
                                             ## to run after type conversion.
-    help_text*: string    ## Help for this group of parameters.
+    helpText*: String    ## Help for this group of parameters.
 
-  Tparsed_parameter* = object ## \
+  TparsedParameter* = object ## \
     ## Contains the parsed value from the user.
     ##
     ## This implements an object variant through the kind field. You can 'case'
     ## this field to write a generic proc to deal with parsed parameters, but
     ## nothing prevents you from accessing directly the type of field you want
     ## if you expect only one kind.
-    case kind*: Tparam_kind
+    case kind*: TparamKind
     of PK_EMPTY: nil
-    of PK_INT: int_val*: int
-    of PK_BIGGEST_INT: big_int_val*: biggestInt
-    of PK_FLOAT: float_val*: float
-    of PK_BIGGEST_FLOAT: big_float_val*: biggestFloat
-    of PK_STRING: str_val*: string
-    of PK_BOOL: bool_val*: bool
+    of PK_INT: intVal*: Int
+    of PK_BIGGEST_INT: bigIntVal*: BiggestInt
+    of PK_FLOAT: floatVal*: Float
+    of PK_BIGGEST_FLOAT: bigFloatVal*: BiggestFloat
+    of PK_STRING: strVal*: String
+    of PK_BOOL: boolVal*: Bool
     of PK_HELP: nil
 
-  Tcommandline_results* = object of TObject ## \
+  TcommandlineResults* = object of TObject ## \
     ## Contains the results of the parsing.
     ##
     ## Usually this is the result of the parse() call, but you can inherit from
@@ -96,13 +96,13 @@ type
     ## ``options.hasKey("-s")`` to test for it. This standarizes access through
     ## the first name variant for all options to avoid you repeating the test
     ## with different keys.
-    positional_parameters*: seq[Tparsed_parameter]
-    options*: TOrderedTable[string, Tparsed_parameter]
+    positionalParameters*: Seq[TparsedParameter]
+    options*: TOrderedTable[String, TparsedParameter]
 
 
 # - Tparam_kind procs
 
-proc `$`*(value: Tparam_kind): string {.procvar.} =
+proc `$`*(value: TparamKind): String {.procvar.} =
   ## Stringifies the type, used to generate help texts.
   case value:
   of PK_EMPTY: result = ""
@@ -116,9 +116,9 @@ proc `$`*(value: Tparam_kind): string {.procvar.} =
 
 # - Tparameter_specification procs
 
-proc init*(param: var Tparameter_specification, consumes = PK_EMPTY,
-    custom_validator: Tparameter_callback = nil, help_text = "",
-    names: varargs[string]) =
+proc init*(param: var TparameterSpecification, consumes = PK_EMPTY,
+    custom_validator: TparameterCallback = nil, help_text = "",
+    names: Varargs[String]) =
   ## Initialization helper with default parameters.
   ##
   ## You can decide to miss some if you like the defaults, reducing code. You
@@ -126,18 +126,18 @@ proc init*(param: var Tparameter_specification, consumes = PK_EMPTY,
   ## variables.
   param.names = @names
   param.consumes = consumes
-  param.custom_validator = custom_validator
-  param.help_text = help_text
+  param.custom_validator = customValidator
+  param.help_text = helpText
 
-proc new_parameter_specification*(consumes = PK_EMPTY,
-    custom_validator: Tparameter_callback = nil, help_text = "",
-    names: varargs[string]): Tparameter_specification =
+proc newParameterSpecification*(consumes = PK_EMPTY,
+    custom_validator: TparameterCallback = nil, help_text = "",
+    names: Varargs[String]): TparameterSpecification =
   ## Initialization helper for single assignment variables.
-  result.init(consumes, custom_validator, help_text, names)
+  result.init(consumes, customValidator, helpText, names)
 
 # - Tparsed_parameter procs
 
-proc `$`*(data: Tparsed_parameter): string {.procvar.} =
+proc `$`*(data: TparsedParameter): String {.procvar.} =
   ## Stringifies the value, mostly for debug purposes.
   ##
   ## The proc will display the value followed by non string type in brackets.
@@ -156,7 +156,7 @@ proc `$`*(data: Tparsed_parameter): string {.procvar.} =
   of PK_HELP: result = "help"
 
 
-template new_parsed_parameter*(tkind: Tparam_kind, expr): Tparsed_parameter =
+template newParsedParameter*(tkind: TparamKind, expr): TparsedParameter =
   ## Handy compile time template to build Tparsed_parameter object variants.
   ##
   ## The problem with object variants is that you first have to initialise them
@@ -191,17 +191,17 @@ template new_parsed_parameter*(tkind: Tparam_kind, expr): Tparsed_parameter =
 
 # - Tcommandline_results procs
 
-proc init*(param: var Tcommandline_results;
-    positional_parameters: seq[Tparsed_parameter] = @[];
-    options: TOrderedTable[string, Tparsed_parameter] =
+proc init*(param: var TcommandlineResults;
+    positional_parameters: Seq[TparsedParameter] = @[];
+    options: TOrderedTable[String, TparsedParameter] =
       initOrderedTable[string, Tparsed_parameter](4)) =
   ## Initialization helper with default parameters.
-  param.positional_parameters = positional_parameters
+  param.positional_parameters = positionalParameters
   param.options = options
 
-proc `$`*(data: Tcommandline_results): string =
+proc `$`*(data: TcommandlineResults): String =
   ## Stringifies a Tcommandline_results structure for debug output
-  var dict: seq[string] = @[]
+  var dict: Seq[String] = @[]
   for key, value in data.options:
     dict.add("$1: $2" % [escape(key), $value])
   result = "Tcommandline_result{positional_parameters:[$1], options:{$2}}" % [
@@ -209,13 +209,13 @@ proc `$`*(data: Tcommandline_results): string =
 
 # - Parse code
 
-template raise_or_quit(exception, message: expr): stmt {.immediate.} =
+template raiseOrQuit(exception, message: Expr): Stmt {.immediate.} =
   ## Avoids repeating if check based on the default quit_on_failure variable.
   ##
   ## As a special case, if message has a zero length the call to quit won't
   ## generate any messages or errors (used by the mechanism to echo help to the
   ## user).
-  if quit_on_failure:
+  if quitOnFailure:
     if len(message) > 0:
       quit(message)
     else:
@@ -223,32 +223,32 @@ template raise_or_quit(exception, message: expr): stmt {.immediate.} =
   else:
     raise newException(exception, message)
 
-template run_custom_proc(parsed_parameter: Tparsed_parameter,
-    custom_validator: Tparameter_callback,
+template runCustomProc(parsed_parameter: TparsedParameter,
+    custom_validator: TparameterCallback,
     parameter: TaintedString) =
   ## Runs the custom validator if it is not nil.
   ##
   ## Pass in the string of the parameter triggering the call. If the
-  if not custom_validator.isNil:
+  if not customValidator.isNil:
     except:
       raise_or_quit(EInvalidValue, ("Couldn't run custom proc for " &
         "parameter $1:\n$2" % [escape(parameter),
         getCurrentExceptionMsg()]))
-    let message = custom_validator(parameter, parsed_parameter)
+    let message = customValidator(parameter, parsedParameter)
     if not message.isNil and message.len > 0:
       raise_or_quit(EInvalidValue, ("Failed to validate value for " &
         "parameter $1:\n$2" % [escape(parameter), message]))
 
 
-proc parse_parameter(quit_on_failure: bool, param, value: string,
-    param_kind: Tparam_kind): Tparsed_parameter =
+proc parseParameter(quit_on_failure: Bool, param, value: String,
+    param_kind: TparamKind): TparsedParameter =
   ## Tries to parse a text according to the specified type.
   ##
   ## Pass the parameter string which requires a value and the text the user
   ## passed in for it. It will be parsed according to the param_kind. This proc
   ## will raise (EInvalidValue, EOverflow) if something can't be parsed.
-  result.kind = param_kind
-  case param_kind:
+  result.kind = paramKind
+  case paramKind:
   of PK_INT:
     try: result.int_val = value.parseInt
     except EOverflow:
@@ -273,8 +273,8 @@ proc parse_parameter(quit_on_failure: bool, param, value: string,
         "y, yes, true, 1, on, n, no, false, 0, off") % [param, escape(value)])
   of PK_BIGGEST_INT:
     try:
-      let parsed_len = parseBiggestInt(value, result.big_int_val)
-      if value.len != parsed_len or parsed_len < 1:
+      let parsedLen = parseBiggestInt(value, result.big_int_val)
+      if value.len != parsedLen or parsedLen < 1:
         raise_or_quit(EInvalidValue, ("parameter $1 requires an " &
           "integer, but $2 can't be parsed completely into one") % [
           param, escape(value)])
@@ -283,8 +283,8 @@ proc parse_parameter(quit_on_failure: bool, param, value: string,
         "integer, but $2 can't be parsed into one") % [param, escape(value)])
   of PK_BIGGEST_FLOAT:
     try:
-      let parsed_len = parseBiggestFloat(value, result.big_float_val)
-      if value.len != parsed_len or parsed_len < 1:
+      let parsedLen = parseBiggestFloat(value, result.big_float_val)
+      if value.len != parsedLen or parsedLen < 1:
         raise_or_quit(EInvalidValue, ("parameter $1 requires a " &
           "float, but $2 can't be parsed completely into one") % [
           param, escape(value)])
@@ -297,31 +297,31 @@ proc parse_parameter(quit_on_failure: bool, param, value: string,
     nil
 
 
-template build_specification_lookup():
-    TOrderedTable[string, ptr Tparameter_specification] =
+template buildSpecificationLookup():
+    TOrderedTable[String, ptr TparameterSpecification] =
   ## Returns the table used to keep pointers to all of the specifications.
-  var result {.gensym.}: TOrderedTable[string, ptr Tparameter_specification]
+  var result {.gensym.}: TOrderedTable[String, ptr TparameterSpecification]
   result = initOrderedTable[string, ptr Tparameter_specification](
     nextPowerOfTwo(expected.len))
   for i in 0..expected.len-1:
-    for param_to_detect in expected[i].names:
-      if result.hasKey(param_to_detect):
+    for paramToDetect in expected[i].names:
+      if result.hasKey(paramToDetect):
         raise_or_quit(EInvalidKey,
-          "Parameter $1 repeated in input specification" % param_to_detect)
+          "Parameter $1 repeated in input specification" % paramToDetect)
       else:
-        result[param_to_detect] = addr(expected[i])
+        result[paramToDetect] = addr(expected[i])
   result
 
 
-proc echo_help*(expected: seq[Tparameter_specification] = @[],
-    type_of_positional_parameters = PK_STRING,
+proc echoHelp*(expected: Seq[TparameterSpecification] = @[],
+    type_of_positional_parameters = PkString,
     bad_prefixes = @["-", "--"], end_of_options = "--")
 
 
-proc parse*(expected: seq[Tparameter_specification] = @[],
-    type_of_positional_parameters = PK_STRING, args: seq[TaintedString] = nil,
+proc parse*(expected: Seq[TparameterSpecification] = @[],
+    type_of_positional_parameters = PkString, args: Seq[TaintedString] = nil,
     bad_prefixes = @["-", "--"], end_of_options = "--",
-    quit_on_failure = true): Tcommandline_results =
+    quit_on_failure = true): TcommandlineResults =
   ## Parses parameters and returns results.
   ##
   ## The expected array should contain a list of the parameters you want to
@@ -349,20 +349,20 @@ proc parse*(expected: seq[Tparameter_specification] = @[],
 
   assert type_of_positional_parameters != PK_EMPTY and
     type_of_positional_parameters != PK_HELP
-  for bad_prefix in bad_prefixes:
+  for badPrefix in badPrefixes:
     assert bad_prefix.len > 0, "Can't pass in a bad prefix of zero length"
   var
     expected = expected
-    adding_options = true
+    addingOptions = true
   result.init()
 
   # Prepare the input parameter list, maybe get it from the OS if not available.
   var args = args
   if args == nil:
-    let total_params = ParamCount()
+    let totalParams = paramCount()
     #echo "Got no explicit args, retrieving from OS. Count: ", total_params
-    newSeq(args, total_params)
-    for i in 0..total_params - 1:
+    newSeq(args, totalParams)
+    for i in 0..totalParams - 1:
       #echo ($i)
       args[i] = paramStr(i + 1)
 
@@ -373,25 +373,25 @@ proc parse*(expected: seq[Tparameter_specification] = @[],
   var i = 0
   while i < args.len:
     let arg = args[i]
-    block adding_positional_parameter:
-      if arg.len > 0 and adding_options:
-        if arg == end_of_options:
+    block addingPositionalParameter:
+      if arg.len > 0 and addingOptions:
+        if arg == endOfOptions:
           # Looks like we found the end_of_options marker, disable options.
-          adding_options = false
+          addingOptions = false
           break adding_positional_parameter
         elif lookup.hasKey(arg):
-          var parsed: Tparsed_parameter
+          var parsed: TparsedParameter
           let param = lookup[arg]
 
           # Insert check here for help, which aborts parsing.
-          if param.consumes == PK_HELP:
-            echo_help(expected, type_of_positional_parameters,
-              bad_prefixes, end_of_options)
+          if param.consumes == PkHelp:
+            echoHelp(expected, typeOfPositionalParameters,
+              badPrefixes, endOfOptions)
             raise_or_quit(EInvalidKey, "")
 
-          if param.consumes != PK_EMPTY:
+          if param.consumes != PkEmpty:
             if i + 1 < args.len:
-              parsed = parse_parameter(quit_on_failure,
+              parsed = parseParameter(quitOnFailure,
                 arg, args[i + 1], param.consumes)
               run_custom_proc(parsed, param.custom_validator, arg)
               i += 1
@@ -401,36 +401,36 @@ proc parse*(expected: seq[Tparameter_specification] = @[],
           result.options[param.names[0]] = parsed
           break adding_positional_parameter
         else:
-          for bad_prefix in bad_prefixes:
-            if arg.startsWith(bad_prefix):
+          for badPrefix in badPrefixes:
+            if arg.startsWith(badPrefix):
               raise_or_quit(EInvalidValue, ("Found ambiguos parameter '$1' " &
                 "starting with '$2', put '$3' as the previous parameter " &
                 "if you want to force it as positional parameter.") % [arg,
-                bad_prefix, end_of_options])
+                badPrefix, endOfOptions])
 
       # Unprocessed, add the parameter to the list of positional parameters.
-      result.positional_parameters.add(parse_parameter(quit_on_failure,
-        $(1 + i), arg, type_of_positional_parameters))
+      result.positional_parameters.add(parseParameter(quitOnFailure,
+        $(1 + i), arg, typeOfPositionalParameters))
 
     i += 1
 
 
-proc toString(runes: seq[TRune]): string =
+proc toString(runes: Seq[TRune]): String =
   result = ""
   for rune in runes: result.add(rune.toUTF8)
 
 
-proc ascii_cmp(a, b: string): int =
+proc asciiCmp(a, b: String): Int =
   ## Comparison ignoring non ascii characters, for better switch sorting.
   let a = filterIt(toSeq(runes(a)), it.isAlpha())
   # Can't use filterIt twice, github bug #351.
-  let b = filter(toSeq(runes(b)), proc(x: TRune): bool = x.isAlpha())
+  let b = filter(toSeq(runes(b)), proc(x: TRune): Bool = x.isAlpha())
   return system.cmp(toString(a), toString(b))
 
 
-proc build_help*(expected: seq[Tparameter_specification] = @[],
+proc buildHelp*(expected: Seq[TparameterSpecification] = @[],
     type_of_positional_parameters = PK_STRING,
-    bad_prefixes = @["-", "--"], end_of_options = "--"): seq[string] =
+    bad_prefixes = @["-", "--"], end_of_options = "--"): Seq[String] =
   ## Builds basic help text and returns it as a sequence of strings.
   ##
   ## Note that this proc doesn't do as much sanity checks as the normal parse()
@@ -439,7 +439,7 @@ proc build_help*(expected: seq[Tparameter_specification] = @[],
   result = @["Usage parameters: "]
 
   # Generate lookup table for each type of parameter based on strings.
-  let quit_on_failure = false
+  let quitOnFailure = false
   var
     expected = expected
     lookup = build_specification_lookup()
@@ -448,19 +448,19 @@ proc build_help*(expected: seq[Tparameter_specification] = @[],
   # First generate the joined version of input parameters in a list.
   var
     seen = initSet[string]()
-    prefixes: seq[string] = @[]
-    helps: seq[string] = @[]
+    prefixes: Seq[String] = @[]
+    helps: Seq[String] = @[]
   for key in keys:
     if seen.contains(key):
       continue
 
     # Add the joined string to the list.
     let param = lookup[key][]
-    var param_names = param.names
-    sort(param_names, ascii_cmp)
-    var prefix = join(param_names, ", ")
+    var paramNames = param.names
+    sort(paramNames, asciiCmp)
+    var prefix = join(paramNames, ", ")
     # Don't forget about the type, if the parameter consumes values
-    if param.consumes != PK_EMPTY and param.consumes != PK_HELP:
+    if param.consumes != PkEmpty and param.consumes != PkHelp:
       prefix &= " " & $param.consumes
     prefixes.add(prefix)
     helps.add(param.help_text)
@@ -468,21 +468,21 @@ proc build_help*(expected: seq[Tparameter_specification] = @[],
     for name in param.names: seen.incl(name)
 
   # Calculate the biggest width and try to use that
-  let width = prefixes.map(proc (x: string): int = 3 + len(x)).max
+  let width = prefixes.map(proc (x: String): Int = 3 + len(x)).max
 
   for line in zip(prefixes, helps):
     result.add(line.a & repeatChar(width - line.a.len) & line.b)
 
 
-proc echo_help*(expected: seq[Tparameter_specification] = @[],
+proc echoHelp*(expected: seq[Tparameter_specification] = @[],
     type_of_positional_parameters = PK_STRING,
     bad_prefixes = @["-", "--"], end_of_options = "--") =
   ## Prints out help on the terminal.
   ##
   ## This is just a wrapper around build_help. Note that calling this proc
   ## won't exit your program, you should call quit() yourself.
-  for line in build_help(expected,
-      type_of_positional_parameters, bad_prefixes, end_of_options):
+  for line in buildHelp(expected,
+      typeOfPositionalParameters, badPrefixes, endOfOptions):
     echo line
 
 

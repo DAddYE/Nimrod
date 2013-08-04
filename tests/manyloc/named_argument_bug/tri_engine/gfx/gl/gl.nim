@@ -6,10 +6,10 @@ export
   opengl
 
 type
-  EGL* = object of E_Base
-  EGL_code* = object of EGL
-    code*: EGL_err
-  EGL_err {.pure.} = enum
+  Egl* = object of E_Base
+  EGLCode* = object of Egl
+    code*: EGLErr
+  EGLErr {.pure.} = enum
     none                 = GL_NO_ERROR
     invalidEnum          = GL_INVALID_ENUM
     invalidVal           = GL_INVALID_VALUE
@@ -20,12 +20,12 @@ type
     invalidFramebufferOp = GL_INVALID_FRAMEBUFFER_OPERATION
     unknown
 
-proc newGL_codeException*(msg: string, code: EGL_err): ref EGL_code =
-  result      = newException(EGL_code, $code)
+proc newGLCodeException*(msg: String, code: EGLErr): ref EGLCode =
+  result      = newException(EGLCode, $code)
   result.code = code
 
-proc getErr*(): EGL_err =
-  result = glGetError().EGL_err
+proc getErr*(): EGLErr =
+  result = glGetError().EGLErr
   if result notin {EGL_err.none,
                    EGL_err.invalidEnum,
                    EGL_err.invalidVal,
@@ -39,9 +39,9 @@ proc getErr*(): EGL_err =
 proc errCheck*() =
   let err = getErr()
   if err != EGL_err.none:
-    raise newGL_codeException($err, err)
+    raise newGLCodeException($err, err)
 
-macro `?`*(call: expr{nkCall}): expr =
+macro `?`*(call: Expr{nkCall}): Expr =
   result = call
   # Can't yet reference foreign symbols in macros.
   #errCheck()
@@ -53,7 +53,7 @@ else:
   const
     glRealType* = cGLfloat
 
-proc setUniformV4*[T](loc: GLint, vecs: var openarray[TV4[T]]) =
+proc setUniformV4*[T](loc: GLint, vecs: var Openarray[TV4[T]]) =
   glUniform4fv(loc, vecs.len.GLsizei, cast[PGLfloat](vecs[0].addr))
 
 proc setUniformV4*[T](loc: GLint, vec: TV4[T]) =

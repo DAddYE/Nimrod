@@ -23,17 +23,17 @@ const
 
 type 
   PXcmsColorFormat* = ptr TXcmsColorFormat
-  TXcmsColorFormat* = int32
+  TXcmsColorFormat* = Int32
 
-proc XcmsUndefinedFormat*(): TXcmsColorFormat
-proc XcmsCIEXYZFormat*(): TXcmsColorFormat
-proc XcmsCIEuvYFormat*(): TXcmsColorFormat
-proc XcmsCIExyYFormat*(): TXcmsColorFormat
-proc XcmsCIELabFormat*(): TXcmsColorFormat
-proc XcmsCIELuvFormat*(): TXcmsColorFormat
-proc XcmsTekHVCFormat*(): TXcmsColorFormat
-proc XcmsRGBFormat*(): TXcmsColorFormat
-proc XcmsRGBiFormat*(): TXcmsColorFormat
+proc xcmsUndefinedFormat*(): TXcmsColorFormat
+proc xcmsCIEXYZFormat*(): TXcmsColorFormat
+proc xcmsCIEuvYFormat*(): TXcmsColorFormat
+proc xcmsCIExyYFormat*(): TXcmsColorFormat
+proc xcmsCIELabFormat*(): TXcmsColorFormat
+proc xcmsCIELuvFormat*(): TXcmsColorFormat
+proc xcmsTekHVCFormat*(): TXcmsColorFormat
+proc xcmsRGBFormat*(): TXcmsColorFormat
+proc xcmsRGBiFormat*(): TXcmsColorFormat
 const 
   XcmsInitNone* = 0x00000000
   XcmsInitSuccess* = 0x00000001
@@ -48,12 +48,12 @@ when defined(MACROS):
   proc FunctionSetOfCCC*(ccc: int32): int32
 type 
   PXcmsFloat* = ptr TXcmsFloat
-  TXcmsFloat* = float64
+  TXcmsFloat* = Float64
   PXcmsRGB* = ptr TXcmsRGB
   TXcmsRGB*{.final.} = object 
-    red*: int16
-    green*: int16
-    blue*: int16
+    red*: Int16
+    green*: Int16
+    blue*: Int16
 
   PXcmsRGBi* = ptr TXcmsRGBi
   TXcmsRGBi*{.final.} = object 
@@ -118,7 +118,7 @@ type
                                  #               8 : ( Pad : TXcmsPad ); 
                                  #            end; 
     pad*: TXcmsPad
-    pixel*: int32
+    pixel*: Int32
     format*: TXcmsColorFormat
 
   PXcmsPerScrnInfo* = ptr TXcmsPerScrnInfo
@@ -126,20 +126,20 @@ type
     screenWhitePt*: TXcmsColor
     functionSet*: TXPointer
     screenData*: TXPointer
-    state*: int8
-    pad*: array[0..2, char]
+    state*: Int8
+    pad*: Array[0..2, Char]
 
   PXcmsCCC* = ptr TXcmsCCC
   TXcmsCompressionProc* = proc (para1: PXcmsCCC, para2: PXcmsColor, 
-                                para3: int32, para4: int32, para5: PBool): TStatus{.
+                                para3: Int32, para4: Int32, para5: PBool): TStatus{.
       cdecl.}
   TXcmsWhiteAdjustProc* = proc (para1: PXcmsCCC, para2: PXcmsColor, 
                                 para3: PXcmsColor, para4: TXcmsColorFormat, 
-                                para5: PXcmsColor, para6: int32, para7: PBool): TStatus{.
+                                para5: PXcmsColor, para6: Int32, para7: PBool): TStatus{.
       cdecl.}
   TXcmsCCC*{.final.} = object 
     dpy*: PDisplay
-    screenNumber*: int32
+    screenNumber*: Int32
     visual*: PVisual
     clientWhitePt*: TXcmsColor
     gamutCompProc*: TXcmsCompressionProc
@@ -150,21 +150,21 @@ type
 
   TXcmsCCCRec* = TXcmsCCC
   PXcmsCCCRec* = ptr TXcmsCCCRec
-  TXcmsScreenInitProc* = proc (para1: PDisplay, para2: int32, 
+  TXcmsScreenInitProc* = proc (para1: PDisplay, para2: Int32, 
                                para3: PXcmsPerScrnInfo): TStatus{.cdecl.}
   TXcmsScreenFreeProc* = proc (para1: TXPointer){.cdecl.}
   TXcmsConversionProc* = proc (){.cdecl.}
   PXcmsFuncListPtr* = ptr TXcmsFuncListPtr
   TXcmsFuncListPtr* = TXcmsConversionProc
-  TXcmsParseStringProc* = proc (para1: cstring, para2: PXcmsColor): int32{.cdecl.}
+  TXcmsParseStringProc* = proc (para1: Cstring, para2: PXcmsColor): Int32{.cdecl.}
   PXcmsColorSpace* = ptr TXcmsColorSpace
   TXcmsColorSpace*{.final.} = object 
-    prefix*: cstring
+    prefix*: Cstring
     id*: TXcmsColorFormat
     parseString*: TXcmsParseStringProc
     to_CIEXYZ*: TXcmsFuncListPtr
     from_CIEXYZ*: TXcmsFuncListPtr
-    inverse_flag*: int32
+    inverse_flag*: Int32
 
   PXcmsFunctionSet* = ptr TXcmsFunctionSet
   TXcmsFunctionSet*{.final.} = object  # error
@@ -180,20 +180,20 @@ proc XcmsAddFunctionSet*(para1: PXcmsFunctionSet): TStatus{.cdecl,
 proc XcmsAllocColor*(para1: PDisplay, para2: TColormap, para3: PXcmsColor, 
                      para4: TXcmsColorFormat): TStatus{.cdecl, dynlib: libX11, 
     importc.}
-proc XcmsAllocNamedColor*(para1: PDisplay, para2: TColormap, para3: cstring, 
+proc XcmsAllocNamedColor*(para1: PDisplay, para2: TColormap, para3: Cstring, 
                           para4: PXcmsColor, para5: PXcmsColor, 
                           para6: TXcmsColorFormat): TStatus{.cdecl, 
     dynlib: libX11, importc.}
 proc XcmsCCCOfColormap*(para1: PDisplay, para2: TColormap): TXcmsCCC{.cdecl, 
     dynlib: libX11, importc.}
-proc XcmsCIELabClipab*(para1: TXcmsCCC, para2: PXcmsColor, para3: int32, 
-                       para4: int32, para5: PBool): TStatus{.cdecl, 
+proc XcmsCIELabClipab*(para1: TXcmsCCC, para2: PXcmsColor, para3: Int32, 
+                       para4: Int32, para5: PBool): TStatus{.cdecl, 
     dynlib: libX11, importc.}
-proc XcmsCIELabClipL*(para1: TXcmsCCC, para2: PXcmsColor, para3: int32, 
-                      para4: int32, para5: PBool): TStatus{.cdecl, 
+proc XcmsCIELabClipL*(para1: TXcmsCCC, para2: PXcmsColor, para3: Int32, 
+                      para4: Int32, para5: PBool): TStatus{.cdecl, 
     dynlib: libX11, importc.}
-proc XcmsCIELabClipLab*(para1: TXcmsCCC, para2: PXcmsColor, para3: int32, 
-                        para4: int32, para5: PBool): TStatus{.cdecl, 
+proc XcmsCIELabClipLab*(para1: TXcmsCCC, para2: PXcmsColor, para3: Int32, 
+                        para4: Int32, para5: PBool): TStatus{.cdecl, 
     dynlib: libX11, importc.}
 proc XcmsCIELabQueryMaxC*(para1: TXcmsCCC, para2: TXcmsFloat, para3: TXcmsFloat, 
                           para4: PXcmsColor): TStatus{.cdecl, dynlib: libX11, 
@@ -207,19 +207,19 @@ proc XcmsCIELabQueryMinL*(para1: TXcmsCCC, para2: TXcmsFloat, para3: TXcmsFloat,
                           para4: PXcmsColor): TStatus{.cdecl, dynlib: libX11, 
     importc.}
 proc XcmsCIELabToCIEXYZ*(para1: TXcmsCCC, para2: PXcmsColor, para3: PXcmsColor, 
-                         para4: int32): TStatus{.cdecl, dynlib: libX11, importc.}
+                         para4: Int32): TStatus{.cdecl, dynlib: libX11, importc.}
 proc XcmsCIELabWhiteShiftColors*(para1: TXcmsCCC, para2: PXcmsColor, 
                                  para3: PXcmsColor, para4: TXcmsColorFormat, 
-                                 para5: PXcmsColor, para6: int32, para7: PBool): TStatus{.
+                                 para5: PXcmsColor, para6: Int32, para7: PBool): TStatus{.
     cdecl, dynlib: libX11, importc.}
-proc XcmsCIELuvClipL*(para1: TXcmsCCC, para2: PXcmsColor, para3: int32, 
-                      para4: int32, para5: PBool): TStatus{.cdecl, 
+proc XcmsCIELuvClipL*(para1: TXcmsCCC, para2: PXcmsColor, para3: Int32, 
+                      para4: Int32, para5: PBool): TStatus{.cdecl, 
     dynlib: libX11, importc.}
-proc XcmsCIELuvClipLuv*(para1: TXcmsCCC, para2: PXcmsColor, para3: int32, 
-                        para4: int32, para5: PBool): TStatus{.cdecl, 
+proc XcmsCIELuvClipLuv*(para1: TXcmsCCC, para2: PXcmsColor, para3: Int32, 
+                        para4: Int32, para5: PBool): TStatus{.cdecl, 
     dynlib: libX11, importc.}
-proc XcmsCIELuvClipuv*(para1: TXcmsCCC, para2: PXcmsColor, para3: int32, 
-                       para4: int32, para5: PBool): TStatus{.cdecl, 
+proc XcmsCIELuvClipuv*(para1: TXcmsCCC, para2: PXcmsColor, para3: Int32, 
+                       para4: Int32, para5: PBool): TStatus{.cdecl, 
     dynlib: libX11, importc.}
 proc XcmsCIELuvQueryMaxC*(para1: TXcmsCCC, para2: TXcmsFloat, para3: TXcmsFloat, 
                           para4: PXcmsColor): TStatus{.cdecl, dynlib: libX11, 
@@ -233,48 +233,48 @@ proc XcmsCIELuvQueryMinL*(para1: TXcmsCCC, para2: TXcmsFloat, para3: TXcmsFloat,
                           para4: PXcmsColor): TStatus{.cdecl, dynlib: libX11, 
     importc.}
 proc XcmsCIELuvToCIEuvY*(para1: TXcmsCCC, para2: PXcmsColor, para3: PXcmsColor, 
-                         para4: int32): TStatus{.cdecl, dynlib: libX11, importc.}
+                         para4: Int32): TStatus{.cdecl, dynlib: libX11, importc.}
 proc XcmsCIELuvWhiteShiftColors*(para1: TXcmsCCC, para2: PXcmsColor, 
                                  para3: PXcmsColor, para4: TXcmsColorFormat, 
-                                 para5: PXcmsColor, para6: int32, para7: PBool): TStatus{.
+                                 para5: PXcmsColor, para6: Int32, para7: PBool): TStatus{.
     cdecl, dynlib: libX11, importc.}
 proc XcmsCIEXYZToCIELab*(para1: TXcmsCCC, para2: PXcmsColor, para3: PXcmsColor, 
-                         para4: int32): TStatus{.cdecl, dynlib: libX11, importc.}
+                         para4: Int32): TStatus{.cdecl, dynlib: libX11, importc.}
 proc XcmsCIEXYZToCIEuvY*(para1: TXcmsCCC, para2: PXcmsColor, para3: PXcmsColor, 
-                         para4: int32): TStatus{.cdecl, dynlib: libX11, importc.}
+                         para4: Int32): TStatus{.cdecl, dynlib: libX11, importc.}
 proc XcmsCIEXYZToCIExyY*(para1: TXcmsCCC, para2: PXcmsColor, para3: PXcmsColor, 
-                         para4: int32): TStatus{.cdecl, dynlib: libX11, importc.}
-proc XcmsCIEXYZToRGBi*(para1: TXcmsCCC, para2: PXcmsColor, para3: int32, 
+                         para4: Int32): TStatus{.cdecl, dynlib: libX11, importc.}
+proc XcmsCIEXYZToRGBi*(para1: TXcmsCCC, para2: PXcmsColor, para3: Int32, 
                        para4: PBool): TStatus{.cdecl, dynlib: libX11, importc.}
 proc XcmsCIEuvYToCIELuv*(para1: TXcmsCCC, para2: PXcmsColor, para3: PXcmsColor, 
-                         para4: int32): TStatus{.cdecl, dynlib: libX11, importc.}
+                         para4: Int32): TStatus{.cdecl, dynlib: libX11, importc.}
 proc XcmsCIEuvYToCIEXYZ*(para1: TXcmsCCC, para2: PXcmsColor, para3: PXcmsColor, 
-                         para4: int32): TStatus{.cdecl, dynlib: libX11, importc.}
+                         para4: Int32): TStatus{.cdecl, dynlib: libX11, importc.}
 proc XcmsCIEuvYToTekHVC*(para1: TXcmsCCC, para2: PXcmsColor, para3: PXcmsColor, 
-                         para4: int32): TStatus{.cdecl, dynlib: libX11, importc.}
+                         para4: Int32): TStatus{.cdecl, dynlib: libX11, importc.}
 proc XcmsCIExyYToCIEXYZ*(para1: TXcmsCCC, para2: PXcmsColor, para3: PXcmsColor, 
-                         para4: int32): TStatus{.cdecl, dynlib: libX11, importc.}
+                         para4: Int32): TStatus{.cdecl, dynlib: libX11, importc.}
 proc XcmsClientWhitePointOfCCC*(para1: TXcmsCCC): PXcmsColor{.cdecl, 
     dynlib: libX11, importc.}
-proc XcmsConvertColors*(para1: TXcmsCCC, para2: PXcmsColor, para3: int32, 
+proc XcmsConvertColors*(para1: TXcmsCCC, para2: PXcmsColor, para3: Int32, 
                         para4: TXcmsColorFormat, para5: PBool): TStatus{.cdecl, 
     dynlib: libX11, importc.}
-proc XcmsCreateCCC*(para1: PDisplay, para2: int32, para3: PVisual, 
+proc XcmsCreateCCC*(para1: PDisplay, para2: Int32, para3: PVisual, 
                     para4: PXcmsColor, para5: TXcmsCompressionProc, 
                     para6: TXPointer, para7: TXcmsWhiteAdjustProc, 
                     para8: TXPointer): TXcmsCCC{.cdecl, dynlib: libX11, importc.}
-proc XcmsDefaultCCC*(para1: PDisplay, para2: int32): TXcmsCCC{.cdecl, 
+proc XcmsDefaultCCC*(para1: PDisplay, para2: Int32): TXcmsCCC{.cdecl, 
     dynlib: libX11, importc.}
 proc XcmsDisplayOfCCC*(para1: TXcmsCCC): PDisplay{.cdecl, dynlib: libX11, 
     importc.}
-proc XcmsFormatOfPrefix*(para1: cstring): TXcmsColorFormat{.cdecl, 
+proc XcmsFormatOfPrefix*(para1: Cstring): TXcmsColorFormat{.cdecl, 
     dynlib: libX11, importc.}
 proc XcmsFreeCCC*(para1: TXcmsCCC){.cdecl, dynlib: libX11, importc.}
-proc XcmsLookupColor*(para1: PDisplay, para2: TColormap, para3: cstring, 
+proc XcmsLookupColor*(para1: PDisplay, para2: TColormap, para3: Cstring, 
                       para4: PXcmsColor, para5: PXcmsColor, 
                       para6: TXcmsColorFormat): TStatus{.cdecl, dynlib: libX11, 
     importc.}
-proc XcmsPrefixOfFormat*(para1: TXcmsColorFormat): cstring{.cdecl, 
+proc XcmsPrefixOfFormat*(para1: TXcmsColorFormat): Cstring{.cdecl, 
     dynlib: libX11, importc.}
 proc XcmsQueryBlack*(para1: TXcmsCCC, para2: TXcmsColorFormat, para3: PXcmsColor): TStatus{.
     cdecl, dynlib: libX11, importc.}
@@ -284,7 +284,7 @@ proc XcmsQueryColor*(para1: PDisplay, para2: TColormap, para3: PXcmsColor,
                      para4: TXcmsColorFormat): TStatus{.cdecl, dynlib: libX11, 
     importc.}
 proc XcmsQueryColors*(para1: PDisplay, para2: TColormap, para3: PXcmsColor, 
-                      para4: int32, para5: TXcmsColorFormat): TStatus{.cdecl, 
+                      para4: Int32, para5: TXcmsColorFormat): TStatus{.cdecl, 
     dynlib: libX11, importc.}
 proc XcmsQueryGreen*(para1: TXcmsCCC, para2: TXcmsColorFormat, para3: PXcmsColor): TStatus{.
     cdecl, dynlib: libX11, importc.}
@@ -292,13 +292,13 @@ proc XcmsQueryRed*(para1: TXcmsCCC, para2: TXcmsColorFormat, para3: PXcmsColor):
     cdecl, dynlib: libX11, importc.}
 proc XcmsQueryWhite*(para1: TXcmsCCC, para2: TXcmsColorFormat, para3: PXcmsColor): TStatus{.
     cdecl, dynlib: libX11, importc.}
-proc XcmsRGBiToCIEXYZ*(para1: TXcmsCCC, para2: PXcmsColor, para3: int32, 
+proc XcmsRGBiToCIEXYZ*(para1: TXcmsCCC, para2: PXcmsColor, para3: Int32, 
                        para4: PBool): TStatus{.cdecl, dynlib: libX11, importc.}
-proc XcmsRGBiToRGB*(para1: TXcmsCCC, para2: PXcmsColor, para3: int32, 
+proc XcmsRGBiToRGB*(para1: TXcmsCCC, para2: PXcmsColor, para3: Int32, 
                     para4: PBool): TStatus{.cdecl, dynlib: libX11, importc.}
-proc XcmsRGBToRGBi*(para1: TXcmsCCC, para2: PXcmsColor, para3: int32, 
+proc XcmsRGBToRGBi*(para1: TXcmsCCC, para2: PXcmsColor, para3: Int32, 
                     para4: PBool): TStatus{.cdecl, dynlib: libX11, importc.}
-proc XcmsScreenNumberOfCCC*(para1: TXcmsCCC): int32{.cdecl, dynlib: libX11, 
+proc XcmsScreenNumberOfCCC*(para1: TXcmsCCC): Int32{.cdecl, dynlib: libX11, 
     importc.}
 proc XcmsScreenWhitePointOfCCC*(para1: TXcmsCCC): PXcmsColor{.cdecl, 
     dynlib: libX11, importc.}
@@ -315,16 +315,16 @@ proc XcmsSetWhitePoint*(para1: TXcmsCCC, para2: PXcmsColor): TStatus{.cdecl,
 proc XcmsStoreColor*(para1: PDisplay, para2: TColormap, para3: PXcmsColor): TStatus{.
     cdecl, dynlib: libX11, importc.}
 proc XcmsStoreColors*(para1: PDisplay, para2: TColormap, para3: PXcmsColor, 
-                      para4: int32, para5: PBool): TStatus{.cdecl, 
+                      para4: Int32, para5: PBool): TStatus{.cdecl, 
     dynlib: libX11, importc.}
-proc XcmsTekHVCClipC*(para1: TXcmsCCC, para2: PXcmsColor, para3: int32, 
-                      para4: int32, para5: PBool): TStatus{.cdecl, 
+proc XcmsTekHVCClipC*(para1: TXcmsCCC, para2: PXcmsColor, para3: Int32, 
+                      para4: Int32, para5: PBool): TStatus{.cdecl, 
     dynlib: libX11, importc.}
-proc XcmsTekHVCClipV*(para1: TXcmsCCC, para2: PXcmsColor, para3: int32, 
-                      para4: int32, para5: PBool): TStatus{.cdecl, 
+proc XcmsTekHVCClipV*(para1: TXcmsCCC, para2: PXcmsColor, para3: Int32, 
+                      para4: Int32, para5: PBool): TStatus{.cdecl, 
     dynlib: libX11, importc.}
-proc XcmsTekHVCClipVC*(para1: TXcmsCCC, para2: PXcmsColor, para3: int32, 
-                       para4: int32, para5: PBool): TStatus{.cdecl, 
+proc XcmsTekHVCClipVC*(para1: TXcmsCCC, para2: PXcmsColor, para3: Int32, 
+                       para4: Int32, para5: PBool): TStatus{.cdecl, 
     dynlib: libX11, importc.}
 proc XcmsTekHVCQueryMaxC*(para1: TXcmsCCC, para2: TXcmsFloat, para3: TXcmsFloat, 
                           para4: PXcmsColor): TStatus{.cdecl, dynlib: libX11, 
@@ -335,45 +335,45 @@ proc XcmsTekHVCQueryMaxV*(para1: TXcmsCCC, para2: TXcmsFloat, para3: TXcmsFloat,
 proc XcmsTekHVCQueryMaxVC*(para1: TXcmsCCC, para2: TXcmsFloat, para3: PXcmsColor): TStatus{.
     cdecl, dynlib: libX11, importc.}
 proc XcmsTekHVCQueryMaxVSamples*(para1: TXcmsCCC, para2: TXcmsFloat, 
-                                 para3: PXcmsColor, para4: int32): TStatus{.
+                                 para3: PXcmsColor, para4: Int32): TStatus{.
     cdecl, dynlib: libX11, importc.}
 proc XcmsTekHVCQueryMinV*(para1: TXcmsCCC, para2: TXcmsFloat, para3: TXcmsFloat, 
                           para4: PXcmsColor): TStatus{.cdecl, dynlib: libX11, 
     importc.}
 proc XcmsTekHVCToCIEuvY*(para1: TXcmsCCC, para2: PXcmsColor, para3: PXcmsColor, 
-                         para4: int32): TStatus{.cdecl, dynlib: libX11, importc.}
+                         para4: Int32): TStatus{.cdecl, dynlib: libX11, importc.}
 proc XcmsTekHVCWhiteShiftColors*(para1: TXcmsCCC, para2: PXcmsColor, 
                                  para3: PXcmsColor, para4: TXcmsColorFormat, 
-                                 para5: PXcmsColor, para6: int32, para7: PBool): TStatus{.
+                                 para5: PXcmsColor, para6: Int32, para7: PBool): TStatus{.
     cdecl, dynlib: libX11, importc.}
 proc XcmsVisualOfCCC*(para1: TXcmsCCC): PVisual{.cdecl, dynlib: libX11, importc.}
 # implementation
 
-proc XcmsUndefinedFormat(): TXcmsColorFormat = 
+proc xcmsUndefinedFormat(): TXcmsColorFormat = 
   result = 0x00000000'i32
 
-proc XcmsCIEXYZFormat(): TXcmsColorFormat = 
+proc xcmsCIEXYZFormat(): TXcmsColorFormat = 
   result = 0x00000001'i32
 
-proc XcmsCIEuvYFormat(): TXcmsColorFormat = 
+proc xcmsCIEuvYFormat(): TXcmsColorFormat = 
   result = 0x00000002'i32
 
-proc XcmsCIExyYFormat(): TXcmsColorFormat = 
+proc xcmsCIExyYFormat(): TXcmsColorFormat = 
   result = 0x00000003'i32
 
-proc XcmsCIELabFormat(): TXcmsColorFormat = 
+proc xcmsCIELabFormat(): TXcmsColorFormat = 
   result = 0x00000004'i32
 
-proc XcmsCIELuvFormat(): TXcmsColorFormat = 
+proc xcmsCIELuvFormat(): TXcmsColorFormat = 
   result = 0x00000005'i32
 
-proc XcmsTekHVCFormat(): TXcmsColorFormat = 
+proc xcmsTekHVCFormat(): TXcmsColorFormat = 
   result = 0x00000006'i32
 
-proc XcmsRGBFormat(): TXcmsColorFormat = 
+proc xcmsRGBFormat(): TXcmsColorFormat = 
   result = 0x80000000'i32
 
-proc XcmsRGBiFormat(): TXcmsColorFormat = 
+proc xcmsRGBiFormat(): TXcmsColorFormat = 
   result = 0x80000001'i32
 
 when defined(MACROS): 

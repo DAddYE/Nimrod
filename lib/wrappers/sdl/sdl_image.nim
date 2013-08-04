@@ -141,19 +141,19 @@ else:
   const
     ImageLibName = "libSDL_image(.so|-1.2.so.0)"
 const
-  IMAGE_MAJOR_VERSION* = 1
-  IMAGE_MINOR_VERSION* = 2
-  IMAGE_PATCHLEVEL* = 5
+  ImageMajorVersion* = 1
+  ImageMinorVersion* = 2
+  ImagePatchlevel* = 5
 
 # This macro can be used to fill a version structure with the compile-time
 #  version of the SDL_image library. 
 
-proc IMAGE_VERSION*(X: var TVersion)
+proc imageVersion*(X: var Tversion)
   # This function gets the version of the dynamically linked SDL_image library.
   #   it should NOT be used to fill a version structure, instead you should
   #   use the SDL_IMAGE_VERSION() macro.
   # 
-proc IMG_Linked_Version*(): Pversion{.importc: "IMG_Linked_Version", 
+proc iMGLinkedVersion*(): Pversion{.importc: "IMG_Linked_Version", 
                                       dynlib: ImageLibName.}
   # Load an image from an SDL data source.
   #   The 'type' may be one of: "BMP", "GIF", "PNG", etc.
@@ -165,79 +165,79 @@ proc IMG_Linked_Version*(): Pversion{.importc: "IMG_Linked_Version",
   #
 
 const
-  IMG_INIT_JPG* = 0x00000001
-  IMG_INIT_PNG* = 0x00000002
-  IMG_INIT_TIF* = 0x00000004
-  IMG_INIT_WEBP* = 0x00000008
+  ImgInitJpg* = 0x00000001
+  ImgInitPng* = 0x00000002
+  ImgInitTif* = 0x00000004
+  ImgInitWebp* = 0x00000008
 
-proc IMG_Init*(flags: cint): int {.cdecl, importc: "IMG_Init",
+proc iMGInit*(flags: Cint): Int {.cdecl, importc: "IMG_Init",
                                   dynlib: ImageLibName.}
-proc IMG_Quit*() {.cdecl, importc: "IMG_Quit",
+proc iMGQuit*() {.cdecl, importc: "IMG_Quit",
                                   dynlib: ImageLibName.}
-proc IMG_LoadTyped_RW*(src: PRWops, freesrc: cint, theType: cstring): PSurface{.
+proc iMGLoadTypedRW*(src: PRWops, freesrc: Cint, theType: Cstring): PSurface{.
     cdecl, importc: "IMG_LoadTyped_RW", dynlib: ImageLibName.}
   # Convenience functions 
-proc IMG_Load*(theFile: cstring): PSurface{.cdecl, importc: "IMG_Load", 
+proc iMGLoad*(theFile: Cstring): PSurface{.cdecl, importc: "IMG_Load", 
     dynlib: ImageLibName.}
-proc IMG_Load_RW*(src: PRWops, freesrc: cint): PSurface{.cdecl, 
+proc iMGLoadRW*(src: PRWops, freesrc: Cint): PSurface{.cdecl, 
     importc: "IMG_Load_RW", dynlib: ImageLibName.}
   # Invert the alpha of a surface for use with OpenGL
   #  This function is now a no-op, and only provided for backwards compatibility. 
-proc IMG_InvertAlpha*(theOn: cint): cint{.cdecl, importc: "IMG_InvertAlpha", 
+proc iMGInvertAlpha*(theOn: Cint): Cint{.cdecl, importc: "IMG_InvertAlpha", 
                                         dynlib: ImageLibName.}
   # Functions to detect a file type, given a seekable source 
-proc IMG_isBMP*(src: PRWops): cint{.cdecl, importc: "IMG_isBMP", 
+proc iMGIsBMP*(src: PRWops): Cint{.cdecl, importc: "IMG_isBMP", 
                                    dynlib: ImageLibName.}
-proc IMG_isGIF*(src: PRWops): cint{.cdecl, importc: "IMG_isGIF", 
+proc iMGIsGIF*(src: PRWops): Cint{.cdecl, importc: "IMG_isGIF", 
                                    dynlib: ImageLibName.}
-proc IMG_isJPG*(src: PRWops): cint{.cdecl, importc: "IMG_isJPG", 
+proc iMGIsJPG*(src: PRWops): Cint{.cdecl, importc: "IMG_isJPG", 
                                    dynlib: ImageLibName.}
-proc IMG_isLBM*(src: PRWops): cint{.cdecl, importc: "IMG_isLBM", 
+proc iMGIsLBM*(src: PRWops): Cint{.cdecl, importc: "IMG_isLBM", 
                                    dynlib: ImageLibName.}
-proc IMG_isPCX*(src: PRWops): cint{.cdecl, importc: "IMG_isPCX", 
+proc iMGIsPCX*(src: PRWops): Cint{.cdecl, importc: "IMG_isPCX", 
                                    dynlib: ImageLibName.}
-proc IMG_isPNG*(src: PRWops): cint{.cdecl, importc: "IMG_isPNG", 
+proc iMGIsPNG*(src: PRWops): Cint{.cdecl, importc: "IMG_isPNG", 
                                    dynlib: ImageLibName.}
-proc IMG_isPNM*(src: PRWops): cint{.cdecl, importc: "IMG_isPNM", 
+proc iMGIsPNM*(src: PRWops): Cint{.cdecl, importc: "IMG_isPNM", 
                                    dynlib: ImageLibName.}
-proc IMG_isTIF*(src: PRWops): cint{.cdecl, importc: "IMG_isTIF", 
+proc iMGIsTIF*(src: PRWops): Cint{.cdecl, importc: "IMG_isTIF", 
                                    dynlib: ImageLibName.}
-proc IMG_isXCF*(src: PRWops): cint{.cdecl, importc: "IMG_isXCF", 
+proc iMGIsXCF*(src: PRWops): Cint{.cdecl, importc: "IMG_isXCF", 
                                    dynlib: ImageLibName.}
-proc IMG_isXPM*(src: PRWops): cint{.cdecl, importc: "IMG_isXPM", 
+proc iMGIsXPM*(src: PRWops): Cint{.cdecl, importc: "IMG_isXPM", 
                                    dynlib: ImageLibName.}
-proc IMG_isXV*(src: PRWops): cint{.cdecl, importc: "IMG_isXV", 
+proc iMGIsXV*(src: PRWops): Cint{.cdecl, importc: "IMG_isXV", 
                                   dynlib: ImageLibName.}
   # Individual loading functions 
-proc IMG_LoadBMP_RW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadBMP_RW", 
+proc iMGLoadBMPRW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadBMP_RW", 
     dynlib: ImageLibName.}
-proc IMG_LoadGIF_RW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadGIF_RW", 
+proc iMGLoadGIFRW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadGIF_RW", 
     dynlib: ImageLibName.}
-proc IMG_LoadJPG_RW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadJPG_RW", 
+proc iMGLoadJPGRW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadJPG_RW", 
     dynlib: ImageLibName.}
-proc IMG_LoadLBM_RW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadLBM_RW", 
+proc iMGLoadLBMRW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadLBM_RW", 
     dynlib: ImageLibName.}
-proc IMG_LoadPCX_RW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadPCX_RW", 
+proc iMGLoadPCXRW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadPCX_RW", 
     dynlib: ImageLibName.}
-proc IMG_LoadPNM_RW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadPNM_RW", 
+proc iMGLoadPNMRW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadPNM_RW", 
     dynlib: ImageLibName.}
-proc IMG_LoadPNG_RW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadPNG_RW", 
+proc iMGLoadPNGRW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadPNG_RW", 
     dynlib: ImageLibName.}
-proc IMG_LoadTGA_RW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadTGA_RW", 
+proc iMGLoadTGARW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadTGA_RW", 
     dynlib: ImageLibName.}
-proc IMG_LoadTIF_RW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadTIF_RW", 
+proc iMGLoadTIFRW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadTIF_RW", 
     dynlib: ImageLibName.}
-proc IMG_LoadXCF_RW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadXCF_RW", 
+proc iMGLoadXCFRW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadXCF_RW", 
     dynlib: ImageLibName.}
-proc IMG_LoadXPM_RW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadXPM_RW", 
+proc iMGLoadXPMRW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadXPM_RW", 
     dynlib: ImageLibName.}
-proc IMG_LoadXV_RW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadXV_RW", 
+proc iMGLoadXVRW*(src: PRWops): PSurface{.cdecl, importc: "IMG_LoadXV_RW", 
     dynlib: ImageLibName.}
-proc IMG_ReadXPMFromArray*(xpm: cstringArray): PSurface{.cdecl, 
+proc iMGReadXPMFromArray*(xpm: CstringArray): PSurface{.cdecl, 
     importc: "IMG_ReadXPMFromArray", dynlib: ImageLibName.}
 
-proc IMAGE_VERSION(X: var TVersion) = 
-  X.major = IMAGE_MAJOR_VERSION
-  X.minor = IMAGE_MINOR_VERSION
-  X.patch = IMAGE_PATCHLEVEL
+proc imageVersion(X: var TVersion) = 
+  x.major = IMAGE_MAJOR_VERSION
+  x.minor = IMAGE_MINOR_VERSION
+  x.patch = IMAGE_PATCHLEVEL
 

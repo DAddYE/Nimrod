@@ -61,214 +61,214 @@ type
   SslStruct {.final, pure.} = object
   SslPtr* = ptr SslStruct
   PSslPtr* = ptr SslPtr
-  PSSL_CTX* = SslPtr
-  PSSL* = SslPtr
-  PSSL_METHOD* = SslPtr
-  PX509* = SslPtr
-  PX509_NAME* = SslPtr
-  PEVP_MD* = SslPtr
-  PBIO_METHOD* = SslPtr
-  PBIO* = SslPtr
-  EVP_PKEY* = SslPtr
-  PRSA* = SslPtr
-  PASN1_UTCTIME* = SslPtr
-  PASN1_cInt* = SslPtr
+  PsslCtx* = SslPtr
+  Pssl* = SslPtr
+  PsslMethod* = SslPtr
+  Px509* = SslPtr
+  Px509Name* = SslPtr
+  PevpMd* = SslPtr
+  PbioMethod* = SslPtr
+  Pbio* = SslPtr
+  EvpPkey* = SslPtr
+  Prsa* = SslPtr
+  Pasn1Utctime* = SslPtr
+  PASN1CInt* = SslPtr
   PPasswdCb* = SslPtr
   PFunction* = proc () {.cdecl.}
-  DES_cblock* = array[0..7, int8]
-  PDES_cblock* = ptr DES_cblock
-  des_ks_struct*{.final.} = object 
-    ks*: DES_cblock
-    weak_key*: cInt
+  DESCblock* = Array[0..7, Int8]
+  PDESCblock* = ptr DESCblock
+  DesKsStruct*{.final.} = object 
+    ks*: DESCblock
+    weak_key*: Cint
 
-  des_key_schedule* = array[1..16, des_ks_struct]
+  DesKeySchedule* = Array[1..16, DesKsStruct]
 
 const 
-  EVP_MAX_MD_SIZE* = 16 + 20
-  SSL_ERROR_NONE* = 0
-  SSL_ERROR_SSL* = 1
-  SSL_ERROR_WANT_READ* = 2
-  SSL_ERROR_WANT_WRITE* = 3
-  SSL_ERROR_WANT_X509_LOOKUP* = 4
-  SSL_ERROR_SYSCALL* = 5      #look at error stack/return value/errno
-  SSL_ERROR_ZERO_RETURN* = 6
-  SSL_ERROR_WANT_CONNECT* = 7
-  SSL_ERROR_WANT_ACCEPT* = 8
-  SSL_CTRL_NEED_TMP_RSA* = 1
-  SSL_CTRL_SET_TMP_RSA* = 2
-  SSL_CTRL_SET_TMP_DH* = 3
-  SSL_CTRL_SET_TMP_ECDH* = 4
-  SSL_CTRL_SET_TMP_RSA_CB* = 5
-  SSL_CTRL_SET_TMP_DH_CB* = 6
-  SSL_CTRL_SET_TMP_ECDH_CB* = 7
-  SSL_CTRL_GET_SESSION_REUSED* = 8
-  SSL_CTRL_GET_CLIENT_CERT_REQUEST* = 9
-  SSL_CTRL_GET_NUM_RENEGOTIATIONS* = 10
-  SSL_CTRL_CLEAR_NUM_RENEGOTIATIONS* = 11
-  SSL_CTRL_GET_TOTAL_RENEGOTIATIONS* = 12
-  SSL_CTRL_GET_FLAGS* = 13
-  SSL_CTRL_EXTRA_CHAIN_CERT* = 14
-  SSL_CTRL_SET_MSG_CALLBACK* = 15
-  SSL_CTRL_SET_MSG_CALLBACK_ARG* = 16 # only applies to datagram connections  
-  SSL_CTRL_SET_MTU* = 17      # Stats  
-  SSL_CTRL_SESS_NUMBER* = 20
-  SSL_CTRL_SESS_CONNECT* = 21
-  SSL_CTRL_SESS_CONNECT_GOOD* = 22
-  SSL_CTRL_SESS_CONNECT_RENEGOTIATE* = 23
-  SSL_CTRL_SESS_ACCEPT* = 24
-  SSL_CTRL_SESS_ACCEPT_GOOD* = 25
-  SSL_CTRL_SESS_ACCEPT_RENEGOTIATE* = 26
-  SSL_CTRL_SESS_HIT* = 27
-  SSL_CTRL_SESS_CB_HIT* = 28
-  SSL_CTRL_SESS_MISSES* = 29
-  SSL_CTRL_SESS_TIMEOUTS* = 30
-  SSL_CTRL_SESS_CACHE_FULL* = 31
-  SSL_CTRL_OPTIONS* = 32
-  SSL_CTRL_MODE* = 33
-  SSL_CTRL_GET_READ_AHEAD* = 40
-  SSL_CTRL_SET_READ_AHEAD* = 41
-  SSL_CTRL_SET_SESS_CACHE_SIZE* = 42
-  SSL_CTRL_GET_SESS_CACHE_SIZE* = 43
-  SSL_CTRL_SET_SESS_CACHE_MODE* = 44
-  SSL_CTRL_GET_SESS_CACHE_MODE* = 45
-  SSL_CTRL_GET_MAX_CERT_LIST* = 50
-  SSL_CTRL_SET_MAX_CERT_LIST* = 51 #* Allow SSL_write(..., n) to return r with 0 < r < n (i.e. report success
+  EvpMaxMdSize* = 16 + 20
+  SslErrorNone* = 0
+  SslErrorSsl* = 1
+  SslErrorWantRead* = 2
+  SslErrorWantWrite* = 3
+  SslErrorWantX509Lookup* = 4
+  SslErrorSyscall* = 5      #look at error stack/return value/errno
+  SslErrorZeroReturn* = 6
+  SslErrorWantConnect* = 7
+  SslErrorWantAccept* = 8
+  SslCtrlNeedTmpRsa* = 1
+  SslCtrlSetTmpRsa* = 2
+  SslCtrlSetTmpDh* = 3
+  SslCtrlSetTmpEcdh* = 4
+  SslCtrlSetTmpRsaCb* = 5
+  SslCtrlSetTmpDhCb* = 6
+  SslCtrlSetTmpEcdhCb* = 7
+  SslCtrlGetSessionReused* = 8
+  SslCtrlGetClientCertRequest* = 9
+  SslCtrlGetNumRenegotiations* = 10
+  SslCtrlClearNumRenegotiations* = 11
+  SslCtrlGetTotalRenegotiations* = 12
+  SslCtrlGetFlags* = 13
+  SslCtrlExtraChainCert* = 14
+  SslCtrlSetMsgCallback* = 15
+  SslCtrlSetMsgCallbackArg* = 16 # only applies to datagram connections  
+  SslCtrlSetMtu* = 17      # Stats  
+  SslCtrlSessNumber* = 20
+  SslCtrlSessConnect* = 21
+  SslCtrlSessConnectGood* = 22
+  SslCtrlSessConnectRenegotiate* = 23
+  SslCtrlSessAccept* = 24
+  SslCtrlSessAcceptGood* = 25
+  SslCtrlSessAcceptRenegotiate* = 26
+  SslCtrlSessHit* = 27
+  SslCtrlSessCbHit* = 28
+  SslCtrlSessMisses* = 29
+  SslCtrlSessTimeouts* = 30
+  SslCtrlSessCacheFull* = 31
+  SslCtrlOptions* = 32
+  SslCtrlMode* = 33
+  SslCtrlGetReadAhead* = 40
+  SslCtrlSetReadAhead* = 41
+  SslCtrlSetSessCacheSize* = 42
+  SslCtrlGetSessCacheSize* = 43
+  SslCtrlSetSessCacheMode* = 44
+  SslCtrlGetSessCacheMode* = 45
+  SslCtrlGetMaxCertList* = 50
+  SslCtrlSetMaxCertList* = 51 #* Allow SSL_write(..., n) to return r with 0 < r < n (i.e. report success
                                    # * when just a single record has been written): *
-  SSL_MODE_ENABLE_PARTIAL_WRITE* = 1 #* Make it possible to retry SSL_write() with changed buffer location
+  SslModeEnablePartialWrite* = 1 #* Make it possible to retry SSL_write() with changed buffer location
                                      # * (buffer contents must stay the same!); this is not the default to avoid
                                      # * the misconception that non-blocking SSL_write() behaves like
                                      # * non-blocking write(): *
-  SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER* = 2 #* Never bother the application with retries if the transport
+  SslModeAcceptMovingWriteBuffer* = 2 #* Never bother the application with retries if the transport
                                            # * is blocking: *
-  SSL_MODE_AUTO_RETRY* = 4    #* Don't attempt to automatically build certificate chain *
-  SSL_MODE_NO_AUTO_CHAIN* = 8
-  SSL_OP_NO_SSLv2* = 0x01000000
-  SSL_OP_NO_SSLv3* = 0x02000000
-  SSL_OP_NO_TLSv1* = 0x04000000
-  SSL_OP_ALL* = 0x000FFFFF
-  SSL_VERIFY_NONE* = 0x00000000
-  SSL_VERIFY_PEER* = 0x00000001
-  OPENSSL_DES_DECRYPT* = 0
-  OPENSSL_DES_ENCRYPT* = 1
-  X509_V_OK* = 0
-  X509_V_ILLEGAL* = 1
-  X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT* = 2
-  X509_V_ERR_UNABLE_TO_GET_CRL* = 3
-  X509_V_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE* = 4
-  X509_V_ERR_UNABLE_TO_DECRYPT_CRL_SIGNATURE* = 5
-  X509_V_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY* = 6
-  X509_V_ERR_CERT_SIGNATURE_FAILURE* = 7
-  X509_V_ERR_CRL_SIGNATURE_FAILURE* = 8
-  X509_V_ERR_CERT_NOT_YET_VALID* = 9
-  X509_V_ERR_CERT_HAS_EXPIRED* = 10
-  X509_V_ERR_CRL_NOT_YET_VALID* = 11
-  X509_V_ERR_CRL_HAS_EXPIRED* = 12
-  X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD* = 13
-  X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD* = 14
-  X509_V_ERR_ERROR_IN_CRL_LAST_UPDATE_FIELD* = 15
-  X509_V_ERR_ERROR_IN_CRL_NEXT_UPDATE_FIELD* = 16
-  X509_V_ERR_OUT_OF_MEM* = 17
-  X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT* = 18
-  X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN* = 19
-  X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY* = 20
-  X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE* = 21
-  X509_V_ERR_CERT_CHAIN_TOO_LONG* = 22
-  X509_V_ERR_CERT_REVOKED* = 23
-  X509_V_ERR_INVALID_CA* = 24
-  X509_V_ERR_PATH_LENGTH_EXCEEDED* = 25
-  X509_V_ERR_INVALID_PURPOSE* = 26
-  X509_V_ERR_CERT_UNTRUSTED* = 27
-  X509_V_ERR_CERT_REJECTED* = 28 #These are 'informational' when looking for issuer cert
-  X509_V_ERR_SUBJECT_ISSUER_MISMATCH* = 29
-  X509_V_ERR_AKID_SKID_MISMATCH* = 30
-  X509_V_ERR_AKID_ISSUER_SERIAL_MISMATCH* = 31
-  X509_V_ERR_KEYUSAGE_NO_CERTSIGN* = 32
-  X509_V_ERR_UNABLE_TO_GET_CRL_ISSUER* = 33
-  X509_V_ERR_UNHANDLED_CRITICAL_EXTENSION* = 34 #The application is not happy
-  X509_V_ERR_APPLICATION_VERIFICATION* = 50
-  SSL_FILETYPE_ASN1* = 2
-  SSL_FILETYPE_PEM* = 1
-  EVP_PKEY_RSA* = 6           # libssl.dll
+  SslModeAutoRetry* = 4    #* Don't attempt to automatically build certificate chain *
+  SslModeNoAutoChain* = 8
+  SSLOPNOSSLv2* = 0x01000000
+  SSLOPNOSSLv3* = 0x02000000
+  SSLOPNOTLSv1* = 0x04000000
+  SslOpAll* = 0x000FFFFF
+  SslVerifyNone* = 0x00000000
+  SslVerifyPeer* = 0x00000001
+  OpensslDesDecrypt* = 0
+  OpensslDesEncrypt* = 1
+  X509VOk* = 0
+  X509VIllegal* = 1
+  X509VErrUnableToGetIssuerCert* = 2
+  X509VErrUnableToGetCrl* = 3
+  X509VErrUnableToDecryptCertSignature* = 4
+  X509VErrUnableToDecryptCrlSignature* = 5
+  X509VErrUnableToDecodeIssuerPublicKey* = 6
+  X509VErrCertSignatureFailure* = 7
+  X509VErrCrlSignatureFailure* = 8
+  X509VErrCertNotYetValid* = 9
+  X509VErrCertHasExpired* = 10
+  X509VErrCrlNotYetValid* = 11
+  X509VErrCrlHasExpired* = 12
+  X509VErrErrorInCertNotBeforeField* = 13
+  X509VErrErrorInCertNotAfterField* = 14
+  X509VErrErrorInCrlLastUpdateField* = 15
+  X509VErrErrorInCrlNextUpdateField* = 16
+  X509VErrOutOfMem* = 17
+  X509VErrDepthZeroSelfSignedCert* = 18
+  X509VErrSelfSignedCertInChain* = 19
+  X509VErrUnableToGetIssuerCertLocally* = 20
+  X509VErrUnableToVerifyLeafSignature* = 21
+  X509VErrCertChainTooLong* = 22
+  X509VErrCertRevoked* = 23
+  X509VErrInvalidCa* = 24
+  X509VErrPathLengthExceeded* = 25
+  X509VErrInvalidPurpose* = 26
+  X509VErrCertUntrusted* = 27
+  X509VErrCertRejected* = 28 #These are 'informational' when looking for issuer cert
+  X509VErrSubjectIssuerMismatch* = 29
+  X509VErrAkidSkidMismatch* = 30
+  X509VErrAkidIssuerSerialMismatch* = 31
+  X509VErrKeyusageNoCertsign* = 32
+  X509VErrUnableToGetCrlIssuer* = 33
+  X509VErrUnhandledCriticalExtension* = 34 #The application is not happy
+  X509VErrApplicationVerification* = 50
+  SslFiletypeAsn1* = 2
+  SslFiletypePem* = 1
+  EvpPkeyRsa* = 6           # libssl.dll
   
-  BIO_C_SET_CONNECT = 100
-  BIO_C_DO_STATE_MACHINE = 101
-  BIO_C_GET_SSL = 110
+  BioCSetConnect = 100
+  BioCDoStateMachine = 101
+  BioCGetSsl = 110
 
-proc SSL_library_init*(): cInt{.cdecl, dynlib: DLLSSLName, importc, discardable.}
+proc SSL_library_init*(): Cint{.cdecl, dynlib: DLLSSLName, importc, discardable.}
 proc SSL_load_error_strings*(){.cdecl, dynlib: DLLSSLName, importc.}
 proc ERR_load_BIO_strings*(){.cdecl, dynlib: DLLUtilName, importc.}
 
-proc SSLv23_client_method*(): PSSL_METHOD{.cdecl, dynlib: DLLSSLName, importc.}
-proc SSLv23_method*(): PSSL_METHOD{.cdecl, dynlib: DLLSSLName, importc.}
-proc SSLv2_method*(): PSSL_METHOD{.cdecl, dynlib: DLLSSLName, importc.}
-proc SSLv3_method*(): PSSL_METHOD{.cdecl, dynlib: DLLSSLName, importc.}
-proc TLSv1_method*(): PSSL_METHOD{.cdecl, dynlib: DLLSSLName, importc.}
+proc SSLv23_client_method*(): PsslMethod{.cdecl, dynlib: DLLSSLName, importc.}
+proc SSLv23_method*(): PsslMethod{.cdecl, dynlib: DLLSSLName, importc.}
+proc SSLv2_method*(): PsslMethod{.cdecl, dynlib: DLLSSLName, importc.}
+proc SSLv3_method*(): PsslMethod{.cdecl, dynlib: DLLSSLName, importc.}
+proc TLSv1_method*(): PsslMethod{.cdecl, dynlib: DLLSSLName, importc.}
 
-proc SSL_new*(context: PSSL_CTX): PSSL{.cdecl, dynlib: DLLSSLName, importc.}
-proc SSL_free*(ssl: PSSL){.cdecl, dynlib: DLLSSLName, importc.}
-proc SSL_CTX_new*(meth: PSSL_METHOD): PSSL_CTX{.cdecl,
+proc SSL_new*(context: PsslCtx): Pssl{.cdecl, dynlib: DLLSSLName, importc.}
+proc SSL_free*(ssl: Pssl){.cdecl, dynlib: DLLSSLName, importc.}
+proc SSL_CTX_new*(meth: PsslMethod): PsslCtx{.cdecl,
     dynlib: DLLSSLName, importc.}
-proc SSL_CTX_load_verify_locations*(ctx: PSSL_CTX, CAfile: cstring,
-    CApath: cstring): cInt{.cdecl, dynlib: DLLSSLName, importc.}
-proc SSL_CTX_free*(arg0: PSSL_CTX){.cdecl, dynlib: DLLSSLName, importc.}
-proc SSL_CTX_set_verify*(s: PSSL_CTX, mode: int, cb: proc (a: int, b: pointer): int {.cdecl.}){.cdecl, dynlib: DLLSSLName, importc.}
-proc SSL_get_verify_result*(ssl: PSSL): int{.cdecl,
+proc SSL_CTX_load_verify_locations*(ctx: PsslCtx, CAfile: Cstring,
+    CApath: Cstring): Cint{.cdecl, dynlib: DLLSSLName, importc.}
+proc SSL_CTX_free*(arg0: PsslCtx){.cdecl, dynlib: DLLSSLName, importc.}
+proc SSL_CTX_set_verify*(s: PsslCtx, mode: Int, cb: proc (a: Int, b: Pointer): Int {.cdecl.}){.cdecl, dynlib: DLLSSLName, importc.}
+proc SSL_get_verify_result*(ssl: Pssl): Int{.cdecl,
     dynlib: DLLSSLName, importc.}
 
-proc SSL_CTX_set_cipher_list*(s: PSSLCTX, ciphers: cstring): cint{.cdecl, dynlib: DLLSSLName, importc.}
-proc SSL_CTX_use_certificate_file*(ctx: PSSL_CTX, filename: cstring, typ: cInt): cInt{.
+proc SSL_CTX_set_cipher_list*(s: PsslCtx, ciphers: Cstring): Cint{.cdecl, dynlib: DLLSSLName, importc.}
+proc SSL_CTX_use_certificate_file*(ctx: PsslCtx, filename: Cstring, typ: Cint): Cint{.
     stdcall, dynlib: DLLSSLName, importc.}
-proc SSL_CTX_use_certificate_chain_file*(ctx: PSSL_CTX, filename: cstring): cInt{.
+proc SSL_CTX_use_certificate_chain_file*(ctx: PsslCtx, filename: Cstring): Cint{.
     stdcall, dynlib: DLLSSLName, importc.}
-proc SSL_CTX_use_PrivateKey_file*(ctx: PSSL_CTX,
-    filename: cstring, typ: cInt): cInt{.cdecl, dynlib: DLLSSLName, importc.}
-proc SSL_CTX_check_private_key*(ctx: PSSL_CTX): cInt{.cdecl, dynlib: DLLSSLName, 
+proc SSL_CTX_use_PrivateKey_file*(ctx: PsslCtx,
+    filename: Cstring, typ: Cint): Cint{.cdecl, dynlib: DLLSSLName, importc.}
+proc SSL_CTX_check_private_key*(ctx: PsslCtx): Cint{.cdecl, dynlib: DLLSSLName, 
     importc.}
 
-proc SSL_set_fd*(ssl: PSSL, fd: cint): cint{.cdecl, dynlib: DLLSSLName, importc.}
+proc SSL_set_fd*(ssl: Pssl, fd: Cint): Cint{.cdecl, dynlib: DLLSSLName, importc.}
 
-proc SSL_shutdown*(ssl: PSSL): cInt{.cdecl, dynlib: DLLSSLName, importc.}
-proc SSL_connect*(ssl: PSSL): cint{.cdecl, dynlib: DLLSSLName, importc.}
-proc SSL_read*(ssl: PSSL, buf: pointer, num: int): cint{.cdecl, dynlib: DLLSSLName, importc.}
-proc SSL_write*(ssl: PSSL, buf: cstring, num: int): cint{.cdecl, dynlib: DLLSSLName, importc.}
-proc SSL_get_error*(s: PSSL, ret_code: cInt): cInt{.cdecl, dynlib: DLLSSLName, importc.}
-proc SSL_accept*(ssl: PSSL): cInt{.cdecl, dynlib: DLLSSLName, importc.}
-proc SSL_pending*(ssl: PSSL): cInt{.cdecl, dynlib: DLLSSLName, importc.}
+proc SSL_shutdown*(ssl: Pssl): Cint{.cdecl, dynlib: DLLSSLName, importc.}
+proc SSL_connect*(ssl: Pssl): Cint{.cdecl, dynlib: DLLSSLName, importc.}
+proc SSL_read*(ssl: Pssl, buf: Pointer, num: Int): Cint{.cdecl, dynlib: DLLSSLName, importc.}
+proc SSL_write*(ssl: Pssl, buf: Cstring, num: Int): Cint{.cdecl, dynlib: DLLSSLName, importc.}
+proc SSL_get_error*(s: Pssl, ret_code: Cint): Cint{.cdecl, dynlib: DLLSSLName, importc.}
+proc SSL_accept*(ssl: Pssl): Cint{.cdecl, dynlib: DLLSSLName, importc.}
+proc SSL_pending*(ssl: Pssl): Cint{.cdecl, dynlib: DLLSSLName, importc.}
 
-proc BIO_new_ssl_connect*(ctx: PSSL_CTX): PBIO{.cdecl,
+proc BIO_new_ssl_connect*(ctx: PsslCtx): Pbio{.cdecl,
     dynlib: DLLSSLName, importc.}
-proc BIO_ctrl*(bio: PBIO, cmd: cint, larg: int, arg: cstring): int{.cdecl,
+proc BIO_ctrl*(bio: Pbio, cmd: Cint, larg: Int, arg: Cstring): Int{.cdecl,
     dynlib: DLLSSLName, importc.}
-proc BIO_get_ssl*(bio: PBIO, ssl: ptr PSSL): int = 
-  return BIO_ctrl(bio, BIO_C_GET_SSL, 0, cast[cstring](ssl))
-proc BIO_set_conn_hostname*(bio: PBIO, name: cstring): int =
+proc bIOGetSsl*(bio: Pbio, ssl: ptr Pssl): Int = 
+  return BIO_ctrl(bio, BIO_C_GET_SSL, 0, cast[Cstring](ssl))
+proc bIOSetConnHostname*(bio: Pbio, name: Cstring): Int =
   return BIO_ctrl(bio, BIO_C_SET_CONNECT, 0, name)
-proc BIO_do_handshake*(bio: PBIO): int =
+proc bIODoHandshake*(bio: Pbio): Int =
   return BIO_ctrl(bio, BIO_C_DO_STATE_MACHINE, 0, NIL)
-proc BIO_do_connect*(bio: PBIO): int =
-  return BIO_do_handshake(bio)
+proc bIODoConnect*(bio: Pbio): Int =
+  return bIODoHandshake(bio)
 
-proc BIO_read*(b: PBIO, data: cstring, length: cInt): cInt{.cdecl, 
+proc BIO_read*(b: Pbio, data: Cstring, length: Cint): Cint{.cdecl, 
     dynlib: DLLUtilName, importc.}
-proc BIO_write*(b: PBIO, data: cstring, length: cInt): cInt{.cdecl, 
+proc BIO_write*(b: Pbio, data: Cstring, length: Cint): Cint{.cdecl, 
     dynlib: DLLUtilName, importc.}
 
-proc BIO_free*(b: PBIO): cInt{.cdecl, dynlib: DLLUtilName, importc.}
+proc BIO_free*(b: Pbio): Cint{.cdecl, dynlib: DLLUtilName, importc.}
 
 proc ERR_print_errors_fp*(fp: TFile){.cdecl, dynlib: DLLSSLName, importc.}
 
-proc ERR_error_string*(e: cInt, buf: cstring): cstring{.cdecl, 
+proc ERR_error_string*(e: Cint, buf: Cstring): Cstring{.cdecl, 
     dynlib: DLLUtilName, importc.}
-proc ERR_get_error*(): cInt{.cdecl, dynlib: DLLUtilName, importc.}
-proc ERR_peek_last_error*(): cInt{.cdecl, dynlib: DLLUtilName, importc.}
+proc ERR_get_error*(): Cint{.cdecl, dynlib: DLLUtilName, importc.}
+proc ERR_peek_last_error*(): Cint{.cdecl, dynlib: DLLUtilName, importc.}
 
-proc OpenSSL_add_all_algorithms*(){.cdecl, dynlib: DLLUtilName, importc: "OPENSSL_add_all_algorithms_conf".}
+proc openSSLAddAllAlgorithms*(){.cdecl, dynlib: DLLUtilName, importc: "OPENSSL_add_all_algorithms_conf".}
 
-proc OPENSSL_config*(configName: cstring){.cdecl, dynlib: DLLSSLName, importc.}
+proc OPENSSL_config*(configName: Cstring){.cdecl, dynlib: DLLSSLName, importc.}
 
-proc CRYPTO_set_mem_functions(a,b,c: pointer){.cdecl, dynlib: DLLSSLName, importc.}
+proc CRYPTO_set_mem_functions(a,b,c: Pointer){.cdecl, dynlib: DLLSSLName, importc.}
 
-proc CRYPTO_malloc_init*() =
+proc cRYPTOMallocInit*() =
   when not defined(windows):
     CRYPTO_set_mem_functions(alloc, realloc, dealloc)
 

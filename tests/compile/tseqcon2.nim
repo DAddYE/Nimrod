@@ -1,9 +1,9 @@
 import os
 
-proc rec_dir(dir: string): seq[string] =
+proc recDir(dir: String): Seq[String] =
   result = @[]
-  for kind, path in walk_dir(dir):
+  for kind, path in walkDir(dir):
     if kind == pcDir:
-      add(result, rec_dir(path))
+      add(result, recDir(path))
     else:
       add(result, path)

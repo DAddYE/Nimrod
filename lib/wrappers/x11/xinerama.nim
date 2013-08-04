@@ -8,11 +8,11 @@ const
 type 
   PXineramaScreenInfo* = ptr TXineramaScreenInfo
   TXineramaScreenInfo*{.final.} = object 
-    screen_number*: cint
-    x_org*: int16
-    y_org*: int16
-    width*: int16
-    height*: int16
+    screen_number*: Cint
+    x_org*: Int16
+    y_org*: Int16
+    width*: Int16
+    height*: Int16
 
 
 proc XineramaQueryExtension*(dpy: PDisplay, event_base: Pcint, error_base: Pcint): TBool{.

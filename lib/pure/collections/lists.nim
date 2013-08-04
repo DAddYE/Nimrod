@@ -142,19 +142,19 @@ template dollarImpl() {.dirty.} =
     result.add($x.value)
   result.add("]")
 
-proc `$`*[T](L: TSinglyLinkedList[T]): string = 
+proc `$`*[T](L: TSinglyLinkedList[T]): String = 
   ## turns a list into its string representation.
   dollarImpl()
 
-proc `$`*[T](L: TDoublyLinkedList[T]): string = 
+proc `$`*[T](L: TDoublyLinkedList[T]): String = 
   ## turns a list into its string representation.
   dollarImpl()
 
-proc `$`*[T](L: TSinglyLinkedRing[T]): string = 
+proc `$`*[T](L: TSinglyLinkedRing[T]): String = 
   ## turns a list into its string representation.
   dollarImpl()
 
-proc `$`*[T](L: TDoublyLinkedRing[T]): string = 
+proc `$`*[T](L: TDoublyLinkedRing[T]): String = 
   ## turns a list into its string representation.
   dollarImpl()
 
@@ -178,22 +178,22 @@ proc find*[T](L: TDoublyLinkedRing[T], value: T): PDoublyLinkedNode[T] =
   ## exist.
   findImpl()
 
-proc contains*[T](L: TSinglyLinkedList[T], value: T): bool {.inline.} = 
+proc contains*[T](L: TSinglyLinkedList[T], value: T): Bool {.inline.} = 
   ## searches in the list for a value. Returns false if the value does not
   ## exist, true otherwise.
   result = find(L, value) != nil
 
-proc contains*[T](L: TDoublyLinkedList[T], value: T): bool {.inline.} = 
+proc contains*[T](L: TDoublyLinkedList[T], value: T): Bool {.inline.} = 
   ## searches in the list for a value. Returns false if the value does not
   ## exist, true otherwise.
   result = find(L, value) != nil
 
-proc contains*[T](L: TSinglyLinkedRing[T], value: T): bool {.inline.} = 
+proc contains*[T](L: TSinglyLinkedRing[T], value: T): Bool {.inline.} = 
   ## searches in the list for a value. Returns false if the value does not
   ## exist, true otherwise.
   result = find(L, value) != nil
 
-proc contains*[T](L: TDoublyLinkedRing[T], value: T): bool {.inline.} = 
+proc contains*[T](L: TDoublyLinkedRing[T], value: T): Bool {.inline.} = 
   ## searches in the list for a value. Returns false if the value does not
   ## exist, true otherwise.
   result = find(L, value) != nil

@@ -20,34 +20,34 @@ type
   TVertMode* = enum
     vmTriStrip = GLtriangleStrip,
     vmTriFan   = GLtriangleFan
-  TZ_range* = range[-100_000..100_000]
+  TZ_range* = Range[-100_000..100_000]
   PPrimitive* = ref object
-    verts*        : seq[TVert]
-    indices*      : seq[GLushort]
+    verts*        : Seq[TVert]
+    indices*      : Seq[GLushort]
     arrBufId*     : GLuint
     elemArrBufId* : GLuint
     tex*          : TTex
     color*        : TColor
     vertMode*     : TVertMode
-    z*            : int
+    z*            : Int
 
 proc newVert*(pos, texCoord: TV2): TVert =
   (pos, texCoord)
 
-proc newVertQuad*(min, minRight, maxLeft, max: TV2[TR]): seq[TVert] =
+proc newVertQuad*(min, minRight, maxLeft, max: TV2[TR]): Seq[TVert] =
   @[newVert(min,      newV2()),
     newVert(minRight, newV2(x=1.0)),
     newVert(maxLeft,  newV2(y=1.0)),
     newVert(max,      newV2xy(1.0))
   ]
 
-proc newVert*(rect: rect.TRect): seq[TVert] =
+proc newVert*(rect: Rect.TRect): Seq[TVert] =
   newVertQuad(rect.min, newV2(rect.max.x, rect.min.y), newV2(rect.min.x, rect.max.y), rect.max)
 
 proc newVertAttrib(i: GLuint, size: GLint, stride: GLsizei, offset: PGLvoid): TVertAttrib =
   TVertAttrib(i: i, size: size, stride: stride, offset: offset)
 
-proc genBuf*[T](vboTarget, objUsage: GLenum, data: var openarray[T]): GLuint =
+proc genBuf*[T](vboTarget, objUsage: GLenum, data: var Openarray[T]): GLuint =
   result = 0.GLuint
   ?glGenBuffers(1, result.addr)
   ?glBindBuffer(vboTarget, result)
@@ -55,7 +55,7 @@ proc genBuf*[T](vboTarget, objUsage: GLenum, data: var openarray[T]): GLuint =
   let size = (data.len * T.sizeof).GLsizeiptr
   ?glBufferData(vboTarget, size, data[0].addr, objUsage)
 
-proc newPrimitive*(verts: var seq[TVert],
+proc newPrimitive*(verts: var Seq[TVert],
                    vertMode=vmTriStrip,
                    tex=whiteTex(),
                    color=white(),
@@ -92,7 +92,7 @@ proc setVertAttribPointers*() =
   ?glVertexAttribPointer(0, 2, glRealType, false, vertSize, nil)
   ?glVertexAttribPointer(1, 2, glRealType, false, vertSize, cast[PGLvoid](TR.sizeof * 2))
 
-proc updVerts*(o: PPrimitive, start, `end`: int, f: proc(i: int, vert: var TVert)) =
+proc updVerts*(o: PPrimitive, start, `end`: Int, f: proc(i: Int, vert: var TVert)) =
   assert start <= `end`
   assert `end` < o.verts.len
   for i in start..`end`:
@@ -105,9 +105,9 @@ proc updVerts*(o: PPrimitive, start, `end`: int, f: proc(i: int, vert: var TVert
   ?glBufferSubData(GLarrayBuffer,
                    byteOffset.GLintptr, # Offset. Is this right?
                    byteLen.GLsizeiptr, # Size.
-                   cast[PGLvoid](cast[int](o.verts[0].addr) + byteOffset))
+                   cast[PGLvoid](cast[Int](o.verts[0].addr) + byteOffset))
 
-proc updAllVerts(o: PPrimitive, f: proc(i: int, vert: var TVert)) =
+proc updAllVerts(o: PPrimitive, f: proc(i: Int, vert: var TVert)) =
   for i in 0 .. <o.verts.len:
     f(i, o.verts[i])
 
@@ -118,9 +118,9 @@ proc updAllVerts(o: PPrimitive, f: proc(i: int, vert: var TVert)) =
   ?glBufferData(GLarrayBuffer, byteLen, nil, GLstaticDraw)
   ?glBufferData(GLarrayBuffer, byteLen, o.verts[0].addr, GLstaticDraw)
 
-proc newVertCircle*(circle: TCircle, nSegs: Natural=0): seq[TVert] =
+proc newVertCircle*(circle: TCircle, nSegs: Natural=0): Seq[TVert] =
   let nSegs = if nSegs == 0:
-      (circle.r.sqrt() * 400.0).int # TODO: Base this on the window resolution?
+      (circle.r.sqrt() * 400.0).Int # TODO: Base this on the window resolution?
     else:
       max(nSegs, 3)
 

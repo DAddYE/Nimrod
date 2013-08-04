@@ -19,7 +19,7 @@ elif defined(vcc) and hasThreadSupport:
   proc sync_add_and_fetch(p: var int, val: int): int {.
     importc: "NimXadd", nodecl.}
 else:
-  proc sync_add_and_fetch(p: var int, val: int): int {.inline.} =
+  proc syncAddAndFetch(p: var Int, val: Int): Int {.inline.} =
     inc(p, val)
     result = p
 
@@ -64,7 +64,7 @@ elif defined(windows) and hasThreadSupport:
     
 elif not hasThreadSupport:
   proc compareAndSwap*[T: ptr|ref|pointer](mem: var T, 
-    expected: T, newValue: T): bool {.inline.} =
+    expected: T, newValue: T): Bool {.inline.} =
       ## Returns true if successfully set value at mem to newValue when value
       ## at mem == expected
       var oldval = mem

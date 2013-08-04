@@ -1,3 +1,3 @@
-proc `+++`*(a,b: string): string =
+proc `+++`*(a,b: String): String =
   return a & "  " & b
 

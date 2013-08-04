@@ -1,7 +1,7 @@
 type
   TLexer* {.final.} = object
-    line*: int
-    filename*: string
-    buffer: cstring
+    line*: Int
+    filename*: String
+    buffer: Cstring
 
-proc noProcVar*(): int = 18
+proc noProcVar*(): Int = 18

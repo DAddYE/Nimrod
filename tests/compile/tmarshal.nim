@@ -4,14 +4,14 @@ discard """
 
 import marshal
 
-template testit(x: expr) = echo($$to[type(x)]($$x))
+template testit(x: Expr) = echo($$to[type(x)]($$x))
 
-var x: array[0..4, array[0..4, string]] = [
+var x: Array[0..4, Array[0..4, String]] = [
   ["test", "1", "2", "3", "4"], ["test", "1", "2", "3", "4"], 
   ["test", "1", "2", "3", "4"], ["test", "1", "2", "3", "4"], 
   ["test", "1", "2", "3", "4"]]
 testit(x)
-var test2: tuple[name: string, s: int] = ("tuple test", 56)
+var test2: tuple[name: String, s: Int] = ("tuple test", 56)
 testit(test2)
 
 type
@@ -19,17 +19,17 @@ type
     blah, blah2
 
   TestObj = object
-    test, asd: int
+    test, asd: Int
     case test2: TE
     of blah:
-      help: string
+      help: String
     else:
       nil
       
   PNode = ref TNode
   TNode = object
     next, prev: PNode
-    data: string
+    data: String
 
 proc buildList(): PNode =
   new(result)
@@ -48,7 +48,7 @@ test3.test = 42
 test3.test2 = blah
 testit(test3)
 
-var test4: ref tuple[a, b: string]
+var test4: ref tuple[a, b: String]
 new(test4)
 test4.a = "ref string test: A"
 test4.b = "ref string test: B"
@@ -60,6 +60,6 @@ testit(test5)
 var test7 = buildList()
 testit(test7)
 
-var test6: set[char] = {'A'..'Z', '_'}
+var test6: Set[Char] = {'A'..'Z', '_'}
 testit(test6)
 

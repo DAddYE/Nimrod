@@ -9,12 +9,12 @@ abcdefghijklmnopqrstuvwxyz
 import strutils
 
 when true:
-  proc test(foo: proc (x, y: int): bool) =
+  proc test(foo: proc (x, y: Int): Bool) =
     echo foo(5, 5)
 
 
   type Foo = object
-    bar: string
+    bar: String
 
   proc newfoo(): Foo =
     result.bar = "bar"
@@ -22,7 +22,7 @@ when true:
   echo($newfoo())
    
 
-  proc retInt(x, y: int): int = 
+  proc retInt(x, y: Int): Int = 
     if (var yy = 0; yy != 0):
       echo yy
     else:
@@ -39,7 +39,7 @@ when true:
 
   echo retInt(64, 3)
 
-  proc buildString(): string =
+  proc buildString(): String =
     result = ""
     for x in 'a'..'z':
       result.add(x)
@@ -53,11 +53,11 @@ when true:
 #  if y == 78: return true
 #)
 
-proc q(): int {.discardable.} = 145
-proc p(): int =
+proc q(): Int {.discardable.} = 145
+proc p(): Int =
   q()
 
-proc p2(a: int): int =
+proc p2(a: Int): Int =
   # result enforces a void context:
   if a == 2:
     result = 23

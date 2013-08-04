@@ -4,7 +4,7 @@ discard """
 """
 # Test the new tuple unpacking
 
-proc divmod(a, b: int): tuple[di, mo: int] =
+proc divmod(a, b: Int): tuple[di, mo: Int] =
   return (a div b, a mod b)
   
 var (x, y) = divmod(15, 6)

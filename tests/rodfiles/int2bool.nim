@@ -1,7 +1,7 @@
 
 {.overflowchecks: on.}
 
-converter uglyToBool*(x: int): bool =
+converter uglyToBool*(x: Int): Bool =
   {.Breakpoint.}
   result = x != 0
 

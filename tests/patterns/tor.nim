@@ -3,13 +3,13 @@ discard """
 true'''
 """
 
-template arithOps: expr = (`+` | `-` | `*`)
-template testOr{ (arithOps{f})(a, b) }(a, b, f: expr): expr = f(a+1, b)
+template arithOps: Expr = (`+` | `-` | `*`)
+template testOr{ (arithOps{f})(a, b) }(a, b, f: Expr): Expr = f(a+1, b)
 
 let xx = 10
 echo 10*xx
 
-template t{x = (~x){y} and (~x){z}}(x, y, z: bool): stmt =
+template t{x = (~x){y} and (~x){z}}(x, y, z: Bool): Stmt =
   x = y
   if x: x = z
 

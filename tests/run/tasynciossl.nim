@@ -43,10 +43,10 @@ proc serverAccept(s: PAsyncSocket) =
   client.handleRead = serverRead
   disp.register(client)
 
-proc launchSwarm(disp: var PDispatcher, port: TPort, count: int,
+proc launchSwarm(disp: var PDispatcher, port: TPort, count: Int,
                  buffered = true, useSSL = false) =
   for i in 1..count:
-    var client = AsyncSocket()
+    var client = asyncSocket()
     when defined(ssl):
       if useSSL:
         ctx1.wrapSocket(client)
@@ -55,7 +55,7 @@ proc launchSwarm(disp: var PDispatcher, port: TPort, count: int,
     client.connect("localhost", port)
 
 proc createSwarm(port: TPort, buffered = true, useSSL = false) =
-  var server = AsyncSocket()
+  var server = asyncSocket()
   when defined(ssl):
     if useSSL:
       ctx.wrapSocket(server)

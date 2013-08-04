@@ -14,10 +14,10 @@ type
   TNode = object
     case k: TNodeKind
     of nkBinary, nkTernary: a, b: PNode
-    of nkStr: s: string
+    of nkStr: s: String
     
   PList = ref object
-    data: string
+    data: String
     next: PList
 
 proc getData(x: PList not nil) =
@@ -31,20 +31,20 @@ proc processList() =
     getData(it)
     it = it.next
 
-proc toString2(x: PNode): string =
+proc toString2(x: PNode): String =
   if x.k < nkStr:
     toString2(x.a) & " " & toString2(x.b)
   else:
     x.s
 
-proc toString(x: PNode): string =
+proc toString(x: PNode): String =
   case x.k
   of nkTernary, nkBinary:
     toString(x.a) & " " & toString(x.b)
   of nkStr:
     x.s
 
-proc toString3(x: PNode): string =
+proc toString3(x: PNode): String =
   if x.k <= nkBinary:
     toString3(x.a) & " " & toString3(x.b)
   else:

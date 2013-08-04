@@ -90,60 +90,60 @@ else:
   type
     TSysThread {.importc: "pthread_t", header: "<sys/types.h>",
                  final, pure.} = object
-    Tpthread_attr {.importc: "pthread_attr_t",
+    TpthreadAttr {.importc: "pthread_attr_t",
                      header: "<sys/types.h>", final, pure.} = object
                  
     Ttimespec {.importc: "struct timespec",
                 header: "<time.h>", final, pure.} = object
-      tv_sec: int
-      tv_nsec: int
+      tv_sec: Int
+      tv_nsec: Int
 
-  proc pthread_attr_init(a1: var TPthread_attr) {.
+  proc pthread_attr_init(a1: var TpthreadAttr) {.
     importc, header: "<pthread.h>".}
-  proc pthread_attr_setstacksize(a1: var TPthread_attr, a2: int) {.
+  proc pthread_attr_setstacksize(a1: var TpthreadAttr, a2: Int) {.
     importc, header: "<pthread.h>".}
 
-  proc pthread_create(a1: var TSysThread, a2: var TPthread_attr,
-            a3: proc (x: pointer) {.noconv.}, 
-            a4: pointer): cint {.importc: "pthread_create", 
+  proc pthreadCreate(a1: var TSysThread, a2: var TpthreadAttr,
+            a3: proc (x: Pointer) {.noconv.}, 
+            a4: Pointer): Cint {.importc: "pthread_create", 
             header: "<pthread.h>".}
-  proc pthread_join(a1: TSysThread, a2: ptr pointer): cint {.
+  proc pthread_join(a1: TSysThread, a2: ptr Pointer): Cint {.
     importc, header: "<pthread.h>".}
 
-  proc pthread_cancel(a1: TSysThread): cint {.
+  proc pthreadCancel(a1: TSysThread): Cint {.
     importc: "pthread_cancel", header: "<pthread.h>".}
 
-  proc AcquireSysTimeoutAux(L: var TSysLock, timeout: var Ttimespec): cint {.
+  proc acquireSysTimeoutAux(L: var TSysLock, timeout: var Ttimespec): Cint {.
     importc: "pthread_mutex_timedlock", header: "<time.h>".}
 
-  proc AcquireSysTimeout(L: var TSysLock, msTimeout: int) {.inline.} =
+  proc acquireSysTimeout(L: var TSysLock, msTimeout: Int) {.inline.} =
     var a: Ttimespec
     a.tv_sec = msTimeout div 1000
     a.tv_nsec = (msTimeout mod 1000) * 1000
-    var res = AcquireSysTimeoutAux(L, a)
+    var res = acquireSysTimeoutAux(L, a)
     if res != 0'i32: raise newException(EResourceExhausted, $strerror(res))
 
   type
     TThreadVarSlot {.importc: "pthread_key_t", pure, final,
                    header: "<sys/types.h>".} = object
 
-  proc pthread_getspecific(a1: TThreadVarSlot): pointer {.
+  proc pthreadGetspecific(a1: TThreadVarSlot): Pointer {.
     importc: "pthread_getspecific", header: "<pthread.h>".}
-  proc pthread_key_create(a1: ptr TThreadVarSlot, 
-                          destruct: proc (x: pointer) {.noconv.}): int32 {.
+  proc pthreadKeyCreate(a1: ptr TThreadVarSlot, 
+                          destruct: proc (x: Pointer) {.noconv.}): Int32 {.
     importc: "pthread_key_create", header: "<pthread.h>".}
-  proc pthread_key_delete(a1: TThreadVarSlot): int32 {.
+  proc pthreadKeyDelete(a1: TThreadVarSlot): Int32 {.
     importc: "pthread_key_delete", header: "<pthread.h>".}
 
-  proc pthread_setspecific(a1: TThreadVarSlot, a2: pointer): int32 {.
+  proc pthreadSetspecific(a1: TThreadVarSlot, a2: Pointer): Int32 {.
     importc: "pthread_setspecific", header: "<pthread.h>".}
   
-  proc ThreadVarAlloc(): TThreadVarSlot {.inline.} =
-    discard pthread_key_create(addr(result), nil)
-  proc ThreadVarSetValue(s: TThreadVarSlot, value: pointer) {.inline.} =
-    discard pthread_setspecific(s, value)
-  proc ThreadVarGetValue(s: TThreadVarSlot): pointer {.inline.} =
-    result = pthread_getspecific(s)
+  proc threadVarAlloc(): TThreadVarSlot {.inline.} =
+    discard pthreadKeyCreate(addr(result), nil)
+  proc threadVarSetValue(s: TThreadVarSlot, value: Pointer) {.inline.} =
+    discard pthreadSetspecific(s, value)
+  proc threadVarGetValue(s: TThreadVarSlot): Pointer {.inline.} =
+    result = pthreadGetspecific(s)
 
   when useStackMaskHack:
     proc pthread_attr_setstack(attr: var TPthread_attr, stackaddr: pointer,
@@ -156,13 +156,13 @@ const
 when emulatedThreadVars:
   # the compiler generates this proc for us, so that we can get the size of
   # the thread local var block; we use this only for sanity checking though
-  proc NimThreadVarsSize(): int {.noconv, importc: "NimThreadVarsSize".}
+  proc nimThreadVarsSize(): Int {.noconv, importc: "NimThreadVarsSize".}
 
 # we preallocate a fixed size for thread local storage, so that no heap
 # allocations are needed. Currently less than 7K are used on a 64bit machine.
 # We use ``float`` for proper alignment:
 type
-  TThreadLocalStorage = array [0..1_000, float]
+  TThreadLocalStorage = Array [0..1_000, Float]
 
   PGcThread = ptr TGcThread
   TGcThread {.pure, inheritable.} = object
@@ -181,13 +181,13 @@ type
 # XXX it'd be more efficient to not use a global variable for the 
 # thread storage slot, but to rely on the implementation to assign slot X
 # for us... ;-)
-var globalsSlot = ThreadVarAlloc()
+var globalsSlot = threadVarAlloc()
 #const globalsSlot = TThreadVarSlot(0)
 #sysAssert checkSlot.int == globalsSlot.int
 
 when emulatedThreadVars:
-  proc GetThreadLocalVars(): pointer {.compilerRtl, inl.} =
-    result = addr(cast[PGcThread](ThreadVarGetValue(globalsSlot)).tls)
+  proc GetThreadLocalVars(): Pointer {.compilerRtl, inl.} =
+    result = addr(cast[PGcThread](threadVarGetValue(globalsSlot)).tls)
 
 when useStackMaskHack:
   proc MaskStackPointer(offset: int): pointer {.compilerRtl, inl.} =
@@ -202,12 +202,12 @@ when not defined(useNimRtl):
   
   when not useStackMaskHack:
     var mainThread: TGcThread
-    ThreadVarSetValue(globalsSlot, addr(mainThread))
+    threadVarSetValue(globalsSlot, addr(mainThread))
     when not defined(createNimRtl): initStackBottom()
     initGC()
     
   when emulatedThreadVars:
-    if NimThreadVarsSize() > sizeof(TThreadLocalStorage):
+    if nimThreadVarsSize() > sizeof(TThreadLocalStorage):
       echo "too large thread local storage size requested"
       quit 1
   
@@ -263,8 +263,8 @@ type
 when not defined(boehmgc) and not hasSharedHeap:
   proc deallocOsPages()
 
-template ThreadProcWrapperBody(closure: expr) {.immediate.} =
-  when defined(globalsSlot): ThreadVarSetValue(globalsSlot, closure)
+template threadProcWrapperBody(closure: Expr) {.immediate.} =
+  when defined(globalsSlot): threadVarSetValue(globalsSlot, closure)
   var t = cast[ptr TThread[TArg]](closure)
   when useStackMaskHack:
     var tls: TThreadLocalStorage
@@ -275,7 +275,7 @@ template ThreadProcWrapperBody(closure: expr) {.immediate.} =
   when defined(registerThread):
     t.stackBottom = addr(t)
     registerThread(t)
-  when TArg is void: t.dataFn()
+  when TArg is Void: t.dataFn()
   else: t.dataFn(t.data)
   when defined(registerThread): unregisterThread(t)
   when defined(deallocOsPages): deallocOsPages()
@@ -294,11 +294,11 @@ when defined(windows):
     ThreadProcWrapperBody(closure)
     # implicitely return 0
 else:
-  proc threadProcWrapper[TArg](closure: pointer) {.noconv.} = 
+  proc threadProcWrapper[TArg](closure: Pointer) {.noconv.} = 
     ThreadProcWrapperBody(closure)
 {.pop.}
 
-proc running*[TArg](t: TThread[TArg]): bool {.inline.} = 
+proc running*[TArg](t: TThread[TArg]): Bool {.inline.} = 
   ## returns true if `t` is running.
   result = t.dataFn != nil
 
@@ -309,10 +309,10 @@ proc joinThread*[TArg](t: TThread[TArg]) {.inline.} =
   else:
     discard pthread_join(t.sys, nil)
 
-proc joinThreads*[TArg](t: varargs[TThread[TArg]]) = 
+proc joinThreads*[TArg](t: Varargs[TThread[TArg]]) = 
   ## waits for every thread in `t` to finish.
   when hostOS == "windows":
-    var a: array[0..255, TSysThread]
+    var a: Array[0..255, TSysThread]
     sysAssert a.len >= t.len, "a.len >= t.len"
     for i in 0..t.high: a[i] = t[i].sys
     discard WaitForMultipleObjects(t.len.int32, 
@@ -338,20 +338,20 @@ proc createThread*[TArg](t: var TThread[TArg],
   ## creates a new thread `t` and starts its execution. Entry point is the
   ## proc `tp`. `param` is passed to `tp`. `TArg` can be ``void`` if you
   ## don't need to pass any data to the thread.
-  when TArg isnot void: t.data = param
+  when TArg isnot Void: t.data = param
   t.dataFn = tp
   when hasSharedHeap: t.stackSize = ThreadStackSize
   when hostOS == "windows":
-    var dummyThreadId: int32
-    t.sys = CreateThread(nil, ThreadStackSize, threadProcWrapper[TArg],
+    var dummyThreadId: Int32
+    t.sys = createThread(nil, ThreadStackSize, threadProcWrapper[TArg],
                          addr(t), 0'i32, dummyThreadId)
     if t.sys <= 0:
       raise newException(EResourceExhausted, "cannot create thread")
   else:
-    var a {.noinit.}: Tpthread_attr
+    var a {.noinit.}: TpthreadAttr
     pthread_attr_init(a)
     pthread_attr_setstacksize(a, ThreadStackSize)
-    if pthread_create(t.sys, a, threadProcWrapper[TArg], addr(t)) != 0:
+    if pthreadCreate(t.sys, a, threadProcWrapper[TArg], addr(t)) != 0:
       raise newException(EResourceExhausted, "cannot create thread")
 
 proc threadId*[TArg](t: var TThread[TArg]): TThreadId[TArg] {.inline.} =
@@ -361,7 +361,7 @@ proc threadId*[TArg](t: var TThread[TArg]): TThreadId[TArg] {.inline.} =
 proc myThreadId*[TArg](): TThreadId[TArg] =
   ## returns the thread ID of the thread that calls this proc. This is unsafe
   ## because the type ``TArg`` is not checked for consistency!
-  result = cast[TThreadId[TArg]](ThreadVarGetValue(globalsSlot))
+  result = cast[TThreadId[TArg]](threadVarGetValue(globalsSlot))
 
 when false:
   proc mainThreadId*[TArg](): TThreadId[TArg] =

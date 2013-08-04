@@ -4,7 +4,7 @@ import
   os, strutils
 
 var
-  i: int
+  i: Int
   params = paramCount()
 i = 0
 writeln(stdout, "This exe: " & getAppFilename())

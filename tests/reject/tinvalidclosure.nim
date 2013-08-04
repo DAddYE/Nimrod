@@ -7,6 +7,6 @@ proc ugh[T](x: T) {.closure.} =
   echo "ugha"
 
 
-proc takeCdecl(p: proc (x: int) {.cdecl.}) = nil
+proc takeCdecl(p: proc (x: Int) {.cdecl.}) = nil
 
 takeCDecl(ugh[int])

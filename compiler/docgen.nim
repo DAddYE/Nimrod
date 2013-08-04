@@ -17,17 +17,17 @@ import
   importer, sempass2
 
 type
-  TSections = array[TSymKind, PRope]
+  TSections = Array[TSymKind, PRope]
   TDocumentor = object of rstgen.TRstGenerator
     modDesc: PRope           # module description
-    id: int                  # for generating IDs
+    id: Int                  # for generating IDs
     toc, section: TSections
-    indexValFilename: string
+    indexValFilename: String
 
   PDoc* = ref TDocumentor
   
-proc compilerMsgHandler(filename: string, line, col: int,
-                        msgKind: rst.TMsgKind, arg: string) {.procvar.} =
+proc compilerMsgHandler(filename: String, line, col: Int,
+                        msgKind: rst.TMsgKind, arg: String) {.procvar.} =
   # translate msg kind:
   var k: msgs.TMsgKind
   case msgKind
@@ -40,33 +40,33 @@ proc compilerMsgHandler(filename: string, line, col: int,
   of mwRedefinitionOfLabel: k = warnRedefinitionOfLabel
   of mwUnknownSubstitution: k = warnUnknownSubstitutionX
   of mwUnsupportedLanguage: k = warnLanguageXNotSupported
-  GlobalError(newLineInfo(filename, line, col), k, arg)
+  globalError(newLineInfo(filename, line, col), k, arg)
   
-proc parseRst(text, filename: string,
-              line, column: int, hasToc: var bool,
-              rstOptions: TRstParseOptions): PRstNode =
+proc parseRst(text, filename: String,
+              line, column: Int, hasToc: var Bool,
+              rstOptions: TRstParseOptions): PRSTNode =
   result = rstParse(text, filename, line, column, hasToc, rstOptions,
                     options.FindFile, compilerMsgHandler)
 
-proc newDocumentor*(filename: string, config: PStringTable): PDoc = 
+proc newDocumentor*(filename: String, config: PStringTable): PDoc = 
   new(result)
-  initRstGenerator(result[], (if gCmd != cmdRst2Tex: outHtml else: outLatex),
+  initRstGenerator(result[], (if gCmd != cmdRst2tex: outHtml else: outLatex),
                    options.gConfigVars, filename, {roSupportRawDirective},
                    options.FindFile, compilerMsgHandler)
   result.id = 100
 
-proc dispA(dest: var PRope, xml, tex: string, args: openarray[PRope]) = 
-  if gCmd != cmdRst2Tex: appf(dest, xml, args)
+proc dispA(dest: var PRope, xml, tex: String, args: Openarray[PRope]) = 
+  if gCmd != cmdRst2tex: appf(dest, xml, args)
   else: appf(dest, tex, args)
   
-proc getVarIdx(varnames: openarray[string], id: string): int = 
+proc getVarIdx(varnames: Openarray[String], id: String): Int = 
   for i in countup(0, high(varnames)): 
     if cmpIgnoreStyle(varnames[i], id) == 0: 
       return i
   result = -1
 
-proc ropeFormatNamedVars(frmt: TFormatStr, varnames: openarray[string], 
-                         varvalues: openarray[PRope]): PRope = 
+proc ropeFormatNamedVars(frmt: TFormatStr, varnames: Openarray[String], 
+                         varvalues: Openarray[PRope]): PRope = 
   var i = 0
   var L = len(frmt)
   result = nil
@@ -85,7 +85,7 @@ proc ropeFormatNamedVars(frmt: TFormatStr, varnames: openarray[string],
       of '0'..'9': 
         var j = 0
         while true: 
-          j = (j * 10) + Ord(frmt[i]) - ord('0')
+          j = (j * 10) + ord(frmt[i]) - ord('0')
           inc(i)
           if (i > L + 0 - 1) or not (frmt[i] in {'0'..'9'}): break 
         if j > high(varvalues) + 1: internalError("ropeFormatNamedVars")
@@ -112,19 +112,19 @@ proc ropeFormatNamedVars(frmt: TFormatStr, varnames: openarray[string],
         var idx = getVarIdx(varnames, id)
         if idx >= 0: app(result, varvalues[idx])
         else: rawMessage(errUnkownSubstitionVar, id)
-      else: InternalError("ropeFormatNamedVars")
+      else: internalError("ropeFormatNamedVars")
     var start = i
     while i < L:
       if frmt[i] != '$': inc(i)
       else: break
     if i - 1 >= start: app(result, substr(frmt, start, i - 1))
 
-proc genComment(d: PDoc, n: PNode): string =
+proc genComment(d: PDoc, n: PNode): String =
   result = ""
-  var dummyHasToc: bool
+  var dummyHasToc: Bool
   if n.comment != nil and startsWith(n.comment, "##"):
     renderRstToOut(d[], parseRst(n.comment, toFilename(n.info),
-                               toLineNumber(n.info), toColumn(n.info), 
+                               toLinenumber(n.info), toColumn(n.info), 
                                dummyHasToc, d.options + {roSkipPounds}), result)
 
 proc genRecComment(d: PDoc, n: PNode): PRope = 
@@ -145,20 +145,20 @@ proc findDocComment(n: PNode): PNode =
     result = findDocComment(n.sons[i])
     if result != nil: return
 
-proc extractDocComment*(s: PSym, d: PDoc = nil): string =
+proc extractDocComment*(s: PSym, d: PDoc = nil): String =
   let n = findDocComment(s.ast)
   result = ""
   if not n.isNil:
     if not d.isNil:
-      var dummyHasToc: bool
+      var dummyHasToc: Bool
       renderRstToOut(d[], parseRst(n.comment, toFilename(n.info),
-                                   toLineNumber(n.info), toColumn(n.info),
+                                   toLinenumber(n.info), toColumn(n.info),
                                    dummyHasToc, d.options + {roSkipPounds}),
                      result)
     else:
       result = n.comment.substr(2).replace("\n##", "\n").strip
 
-proc isVisible(n: PNode): bool = 
+proc isVisible(n: PNode): Bool = 
   result = false
   if n.kind == nkPostfix: 
     if n.len == 2 and n.sons[0].kind == nkIdent: 
@@ -172,7 +172,7 @@ proc isVisible(n: PNode): bool =
   elif n.kind == nkPragmaExpr:
     result = isVisible(n.sons[0])
     
-proc getName(d: PDoc, n: PNode, splitAfter = -1): string = 
+proc getName(d: PDoc, n: PNode, splitAfter = -1): String = 
   case n.kind
   of nkPostfix: result = getName(d, n.sons[1], splitAfter)
   of nkPragmaExpr: result = getName(d, n.sons[0], splitAfter)
@@ -186,7 +186,7 @@ proc getName(d: PDoc, n: PNode, splitAfter = -1): string =
     internalError(n.info, "getName()")
     result = ""
 
-proc getRstName(n: PNode): PRstNode = 
+proc getRstName(n: PNode): PRSTNode = 
   case n.kind
   of nkPostfix: result = getRstName(n.sons[1])
   of nkPragmaExpr: result = getRstName(n.sons[0])
@@ -255,8 +255,8 @@ proc genItem(d: PDoc, n, nameNode: PNode, k: TSymKind) =
       toRope(getName(d, nameNode, d.splitAfter)), result, comm, toRope(d.id)]))
   setIndexTerm(d[], $d.id, getName(d, nameNode))
 
-proc checkForFalse(n: PNode): bool = 
-  result = n.kind == nkIdent and IdentEq(n.ident, "false")
+proc checkForFalse(n: PNode): Bool = 
+  result = n.kind == nkIdent and identEq(n.ident, "false")
   
 proc traceDeps(d: PDoc, n: PNode) = 
   const k = skModule
@@ -300,7 +300,7 @@ proc generateDoc*(d: PDoc, n: PNode) =
   else: nil
 
 proc genSection(d: PDoc, kind: TSymKind) = 
-  const sectionNames: array[skModule..skTemplate, string] = [
+  const sectionNames: Array[skModule..skTemplate, String] = [
     "Imports", "Types", "Vars", "Lets", "Consts", "Vars", "Procs", "Methods", 
     "Iterators", "Converters", "Macros", "Templates"
   ]
@@ -350,16 +350,16 @@ proc genOutFile(d: PDoc): PRope =
 proc generateIndex*(d: PDoc) =
   if optGenIndex in gGlobalOptions:
     writeIndexFile(d[], splitFile(options.outFile).dir / 
-                        splitFile(d.filename).name & indexExt)
+                        splitFile(d.filename).name & IndexExt)
 
-proc writeOutput*(d: PDoc, filename, outExt: string, useWarning = false) = 
+proc writeOutput*(d: PDoc, filename, outExt: String, useWarning = false) = 
   var content = genOutFile(d)
   if optStdout in gGlobalOptions:
     writeRope(stdout, content)
   else:
     writeRope(content, getOutFile(filename, outExt), useWarning)
 
-proc CommandDoc*() =
+proc commandDoc*() =
   var ast = parseFile(gProjectMainIdx)
   if ast == nil: return 
   var d = newDocumentor(gProjectFull, options.gConfigVars)
@@ -368,7 +368,7 @@ proc CommandDoc*() =
   writeOutput(d, gProjectFull, HtmlExt)
   generateIndex(d)
 
-proc CommandRstAux(filename, outExt: string) =
+proc commandRstAux(filename, outExt: String) =
   var filen = addFileExt(filename, "txt")
   var d = newDocumentor(filen, options.gConfigVars)
   var rst = parseRst(readFile(filen), filen, 0, 1, d.hasToc,
@@ -381,14 +381,14 @@ proc CommandRstAux(filename, outExt: string) =
   writeOutput(d, filename, outExt)
   generateIndex(d)
 
-proc CommandRst2Html*() =
-  CommandRstAux(gProjectFull, HtmlExt)
+proc commandRst2Html*() =
+  commandRstAux(gProjectFull, HtmlExt)
 
-proc CommandRst2TeX*() =
+proc commandRst2TeX*() =
   splitter = "\\-"
-  CommandRstAux(gProjectFull, TexExt)
+  commandRstAux(gProjectFull, TexExt)
 
-proc CommandBuildIndex*() =
+proc commandBuildIndex*() =
   var content = mergeIndexes(gProjectFull).toRope
   
   let code = ropeFormatNamedVars(getConfigVar("doc.file"), ["title", 

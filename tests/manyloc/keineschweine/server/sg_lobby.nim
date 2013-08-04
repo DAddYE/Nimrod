@@ -6,14 +6,14 @@ import
 type
   TClientSettings = object
     resolution*: TVideoMode
-    offlineFile: string
-    dirserver: tuple[host: string, port: TPort]
-    website*: string
+    offlineFile: String
+    dirserver: tuple[host: String, port: TPort]
+    website*: String
 var
   clientSettings: TClientSettings
   gui = newGuiContainer()
   zonelist = newGuiContainer()
-  u_alias, u_passwd: PTextEntry
+  uAlias, uPasswd: PTextEntry
   activeInput = 0
   aliasText, passwdText: PText
   fpsTimer: PButton
@@ -31,18 +31,18 @@ var
   bConnected = false
   outgoing = newStringStream("")
   downloadProgress: PButton
-  connectionButtons: seq[PButton] #buttons that depend on connection to function
+  connectionButtons: Seq[PButton] #buttons that depend on connection to function
 
-template dispmessage(m: expr): stmt = 
+template dispmessage(m: Expr): Stmt = 
   messageArea.add(m)
-proc connectZone(host: string; port: TPort)
+proc connectZone(host: String; port: TPort)
 proc connectToDirserv()
 
 proc writePkt[T](pid: PacketID; p: var T) =
   if activeServer.isNil: return
   activeServer.writePkt pid, p
 
-proc setConnected(state: bool) =
+proc setConnected(state: Bool) =
   if state:
     bConnected = true
     for b in connectionButtons: enable(b)
@@ -50,7 +50,7 @@ proc setConnected(state: bool) =
     bConnected = false
     for b in connectionButtons: disable(b)
 
-proc setActiveZone(ind: int; zone: ScZoneRecord) =
+proc setActiveZone(ind: Int; zone: ScZoneRecord) =
   #hilight it or something
   dispmessage("Selected " & zone.name)
   connectZone(zone.ip, zone.port)
@@ -63,14 +63,14 @@ proc handleChat(serv: PServer; s: PStream) =
 proc connectToDirserv() =
   if dirServer.isNil:
     dirServer = newServerConnection(clientSettings.dirserver.host, clientSettings.dirserver.port)
-    dirServer.handlers[HHello] = proc(serv: PServer; s: PStream) = 
+    dirServer.handlers[hHello] = proc(serv: PServer; s: PStream) = 
       let msg = readScHello(s)
       dispMessage(msg.resp)
       setConnected(true)
-    dirServer.handlers[HLogin] = proc(serv: PServer; s: PStream) =
+    dirServer.handlers[hLogin] = proc(serv: PServer; s: PStream) =
       mySession = readScLogin(s)
       ##do something here
-    dirServer.handlers[HZonelist] = proc(serv: PServer; s: PStream) =
+    dirServer.handlers[hZonelist] = proc(serv: PServer; s: PStream) =
       var 
         info = readScZonelist(s)
         zones = info.zones
@@ -91,13 +91,13 @@ proc connectToDirserv() =
               setActiveZone(i, z))
           pos.y += 20
         showZonelist = true
-    dirServer.handlers[HPoing] = proc(serv: PServer; s: PStream) = 
+    dirServer.handlers[hPoing] = proc(serv: PServer; s: PStream) = 
       var ping = readPoing(s)
       dispmessage("Ping: "& $ping.time)
       ping.time = epochTime().float32
       serv.writePkt HPoing, ping
-    dirServer.handlers[HChat] = handleChat
-    dirServer.handlers[HFileChallenge] = handleFileChallenge
+    dirServer.handlers[hChat] = handleChat
+    dirServer.handlers[hFileChallenge] = handleFileChallenge
   var hello = newCsHello()
   dirServer.writePkt HHello, hello
   activeServer = dirServer
@@ -105,7 +105,7 @@ proc connectToDirserv() =
 
 proc zoneListReq() =
   var pkt = newCsZonelist("sup")
-  writePkt HZonelist, pkt
+  writePkt hZonelist, pkt
 
 ##key handlers
 keyClient.registerHandler(MouseMiddle, down, proc() = 
@@ -130,10 +130,10 @@ proc connectZone(host: string, port: TPort) =
   echo "Connecting to zone at ", host, ':', port
   if zone.isNil:
     zone = newServerConnection(host, port)
-    zone.handlers[HFileChallenge] = handleFileChallenge
-    zone.handlers[HChallengeResult] = handleFileChallengeResult
-    zone.handlers[HFileTransfer] = handleFileTransfer
-    zone.handlers[HChat] = handleChat 
+    zone.handlers[hFileChallenge] = handleFileChallenge
+    zone.handlers[hChallengeResult] = handleFileChallengeResult
+    zone.handlers[hFileTransfer] = handleFileTransfer
+    zone.handlers[hChat] = handleChat 
   else:
     zone.sock.connect(host, port)
   var hello = newCsHello()
@@ -151,7 +151,7 @@ proc tryLogin*(b: PButton) =
   var login = newCsLogin(
     alias = u_alias.getText(),
     passwd = u_passwd.getText())
-  writePkt HLogin, login
+  writePkt hLogin, login
 proc tryTransition*(b: PButton) =
   ##check if we're logged in
   #<implementation censored by the church>
@@ -163,7 +163,7 @@ proc tryTransition*(b: PButton) =
   #else:
   #  for e in errors: dispmessage(e)
 proc playOffline*(b: PButton) =
-  var errors: seq[string] = @[]
+  var errors: Seq[String] = @[]
   if loadSettingsFromFile(clientSettings.offlineFile, errors):
     transition()
   else:
@@ -193,11 +193,11 @@ proc lobbyInit*() =
   downloadProgress.bg.setSize(vec2f(0, 0))
   
   var pos = vec2f(10, 10)
-  u_alias = gui.newTextEntry(
+  uAlias = gui.newTextEntry(
     if s.existsKey("alias"): s["alias"].str else: "alias", 
     pos)
   pos.y += 20
-  u_passwd = gui.newTextEntry("buzz", pos)
+  uPasswd = gui.newTextEntry("buzz", pos)
   pos.y += 20
   connectionButtons.add(gui.newButton(
     text = "Login", 
@@ -247,7 +247,7 @@ proc lobbyInit*() =
       dispMessage($i))
 
 var i = 0
-proc lobbyUpdate*(dt: float) = 
+proc lobbyUpdate*(dt: Float) = 
   #let res = disp.poll()
   gui.update(dt)
   i = (i + 1) mod 60

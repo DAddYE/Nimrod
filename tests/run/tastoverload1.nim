@@ -4,10 +4,10 @@ no string literal
 no string literal'''
 """
 
-proc optLit(a: string{lit}) =
+proc optLit(a: String{lit}) =
   echo "string literal"
 
-proc optLit(a: string) =
+proc optLit(a: String) =
   echo "no string literal"
 
 const

@@ -55,7 +55,7 @@ type
   PNode = ref TNode
   TNode {.final.} = object
     left, right: PNode
-    i, j: int
+    i, j: Int
 
 proc newNode(L, r: PNode): PNode =
   new(result)
@@ -70,75 +70,75 @@ const
   kMaxTreeDepth = 16
 
 # Nodes used by a tree of a given size
-proc TreeSize(i: int): int = return ((1 shl (i + 1)) - 1)
+proc treeSize(i: Int): Int = return ((1 shl (i + 1)) - 1)
 
 # Number of iterations to use for a given tree depth
-proc NumIters(i: int): int =
-  return 2 * TreeSize(kStretchTreeDepth) div TreeSize(i)
+proc numIters(i: Int): Int =
+  return 2 * treeSize(kStretchTreeDepth) div treeSize(i)
 
 # Build tree top down, assigning to older objects.
-proc Populate(iDepth: int, thisNode: PNode) =
+proc populate(iDepth: Int, thisNode: PNode) =
   if iDepth <= 0:
     return
   else:
     new(thisNode.left)
     new(thisNode.right)
-    Populate(iDepth-1, thisNode.left)
-    Populate(iDepth-1, thisNode.right)
+    populate(iDepth-1, thisNode.left)
+    populate(iDepth-1, thisNode.right)
 
 # Build tree bottom-up
-proc MakeTree(iDepth: int): PNode =
+proc makeTree(iDepth: Int): PNode =
   if iDepth <= 0:
     new(result)
   else:
-    return newNode(MakeTree(iDepth-1), MakeTree(iDepth-1))
+    return newNode(makeTree(iDepth-1), makeTree(iDepth-1))
 
-proc PrintDiagnostics() =
+proc printDiagnostics() =
   echo("Total memory available: " & $getTotalMem() & " bytes")
   echo("Free memory: " & $getFreeMem() & " bytes")
 
-proc TimeConstruction(depth: int) =
+proc timeConstruction(depth: Int) =
   var
     root, tempTree: PNode
-    iNumIters: int
+    iNumIters: Int
 
-  iNumIters = NumIters(depth)
+  iNumIters = numIters(depth)
 
   echo("Creating " & $iNumIters & " trees of depth " & $depth)
   var t = epochTime()
   for i in 0..iNumIters-1:
     new(tempTree)
-    Populate(depth, tempTree)
+    populate(depth, tempTree)
     tempTree = nil
   echo("\tTop down construction took " & $(epochTime() - t) & "msecs")
   t = epochTime()
   for i in 0..iNumIters-1:
-    tempTree = MakeTree(depth)
+    tempTree = makeTree(depth)
     tempTree = nil
   echo("\tBottom up construction took " & $(epochTime() - t) & "msecs")
 
 type
-  tMyArray = seq[float]
+  TMyArray = Seq[Float]
 
 proc main() =
   var
     root, longLivedTree, tempTree: PNode
-    myarray: tMyArray
+    myarray: TMyArray
 
   echo("Garbage Collector Test")
   echo(" Stretching memory with a binary tree of depth " & $kStretchTreeDepth)
-  PrintDiagnostics()
+  printDiagnostics()
   var t = epochTime()
 
   # Stretch the memory space quickly
-  tempTree = MakeTree(kStretchTreeDepth)
+  tempTree = makeTree(kStretchTreeDepth)
   tempTree = nil
 
   # Create a long lived object
   echo(" Creating a long-lived binary tree of depth " &
         $kLongLivedTreeDepth)
   new(longLivedTree)
-  Populate(kLongLivedTreeDepth, longLivedTree)
+  populate(kLongLivedTreeDepth, longLivedTree)
 
   # Create long-lived array, filling half of it
   echo(" Creating a long-lived array of " & $kArraySize & " doubles")
@@ -146,11 +146,11 @@ proc main() =
   for i in 0..kArraySize div 2 -1:
     myarray[i] = 1.0 / toFloat(i)
 
-  PrintDiagnostics()
+  printDiagnostics()
 
   var d = kMinTreeDepth
   while d <= kMaxTreeDepth:
-    TimeConstruction(d)
+    timeConstruction(d)
     inc(d, 2)
 
   if longLivedTree == nil or myarray[1000] != 1.0/1000.0:
@@ -159,7 +159,7 @@ proc main() =
     # and array to keep them from being optimized away
 
   var elapsed = epochTime() - t
-  PrintDiagnostics()
+  printDiagnostics()
   echo("Completed in " & $elapsed & "ms. Success!")
 
 when defined(GC_setMaxPause):

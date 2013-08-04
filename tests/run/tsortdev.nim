@@ -4,7 +4,7 @@ discard """
 
 import algorithm, strutils
 
-proc cmpPlatforms(a, b: string): int =
+proc cmpPlatforms(a, b: String): Int =
   if a == b: return 0
   var dashes = a.split('-')
   var dashes2 = b.split('-')
@@ -37,7 +37,7 @@ proc cmpPlatforms(a, b: string): int =
       else:
         return system.cmp(a, b)
 
-proc sorted[T](a: openArray[T]): bool = 
+proc sorted[T](a: Openarray[T]): Bool = 
   result = true
   for i in 0 .. < a.high:
     if cmpPlatforms(a[i], a[i+1]) > 0: 

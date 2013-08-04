@@ -6,12 +6,12 @@ type
   TNodeKind = enum nkLit, nkSub, nkAdd, nkDiv, nkMul
   TNode = object
     case k: TNodeKind
-    of nkLit: x: int
+    of nkLit: x: Int
     else: a, b: ref TNode
 
   PNode = ref TNode
     
-proc newLit(x: int): PNode {.exportc: "newLit", dynlib.} =
+proc newLit(x: Int): PNode {.exportc: "newLit", dynlib.} =
   new(result)
   result.x = x
   
@@ -23,7 +23,7 @@ proc newOp(k: TNodeKind, a, b: PNode): PNode {.exportc: "newOp", dynlib.} =
   result.a = a
   result.b = b
   
-proc buildTree(x: int): PNode {.exportc: "buildTree", dynlib.} = 
+proc buildTree(x: Int): PNode {.exportc: "buildTree", dynlib.} = 
   result = newOp(nkMul, newOp(nkAdd, newLit(x), newLit(x)), newLit(x))
 
 when false:

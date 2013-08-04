@@ -4,9 +4,9 @@ discard """
 """
 # Tests a special bug
 
-proc choose(b: openArray[string]): string = return b[0]
+proc choose(b: Openarray[String]): String = return b[0]
 
-proc p(a, b: openarray[string]): int =
+proc p(a, b: Openarray[String]): Int =
   result = a.len + b.len - 1
   for j in 0 .. a.len: inc(result)
   discard choose(a)

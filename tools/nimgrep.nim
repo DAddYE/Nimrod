@@ -42,23 +42,23 @@ type
   TOption = enum 
     optFind, optReplace, optPeg, optRegex, optRecursive, optConfirm, optStdin,
     optWord, optIgnoreCase, optIgnoreStyle, optVerbose
-  TOptions = set[TOption]
+  TOptions = Set[TOption]
   TConfirmEnum = enum 
     ceAbort, ceYes, ceAll, ceNo, ceNone
     
 var
-  filenames: seq[string] = @[]
+  filenames: Seq[String] = @[]
   pattern = ""
   replacement = ""
-  extensions: seq[string] = @[]
+  extensions: Seq[String] = @[]
   options: TOptions = {optRegex}
   useWriteStyled = true
 
-proc ask(msg: string): string =
+proc ask(msg: String): String =
   stdout.write(msg)
-  result = stdin.readline()
+  result = stdin.readLine()
 
-proc Confirm: TConfirmEnum = 
+proc confirm: TConfirmEnum = 
   while true:
     case normalize(ask("     [a]bort; [y]es, a[l]l, [n]o, non[e]: "))
     of "a", "abort": return ceAbort 
@@ -68,7 +68,7 @@ proc Confirm: TConfirmEnum =
     of "e", "none": return ceNone
     else: nil
 
-proc countLines(s: string, first, last: int): int = 
+proc countLines(s: String, first, last: Int): Int = 
   var i = first
   while i <= last:
     if s[i] == '\13': 
@@ -78,28 +78,28 @@ proc countLines(s: string, first, last: int): int =
       inc result
     inc i
 
-proc beforePattern(s: string, first: int): int = 
+proc beforePattern(s: String, first: Int): Int = 
   result = first-1
   while result >= 0:
     if s[result] in newlines: break
     dec(result)
   inc(result)
 
-proc afterPattern(s: string, last: int): int = 
+proc afterPattern(s: String, last: Int): Int = 
   result = last+1
   while result < s.len:
     if s[result] in newlines: break
     inc(result)
   dec(result)
 
-proc writeColored(s: string) =
+proc writeColored(s: String) =
   if useWriteStyled:
     terminal.WriteStyled(s, {styleUnderscore, styleBright})
   else:
     stdout.write(s)
 
-proc highlight(s, match, repl: string, t: tuple[first, last: int],
-               line: int, showRepl: bool) = 
+proc highlight(s, match, repl: String, t: tuple[first, last: Int],
+               line: Int, showRepl: Bool) = 
   const alignment = 6
   stdout.write(line.`$`.align(alignment), ": ")
   var x = beforePattern(s, t.first)
@@ -115,14 +115,14 @@ proc highlight(s, match, repl: string, t: tuple[first, last: int],
     for i in t.last+1 .. y: stdout.write(s[i])
     stdout.write("\n")
 
-proc processFile(filename: string) =
+proc processFile(filename: String) =
   var filenameShown = false
   template beforeHighlight =
     if not filenameShown and optVerbose notin options: 
       stdout.writeln(filename)
       filenameShown = true
   
-  var buffer: string
+  var buffer: String
   try:
     buffer = system.readFile(filename)
   except EIO: 
@@ -131,7 +131,7 @@ proc processFile(filename: string) =
   if optVerbose in options: stdout.writeln(filename)
   var pegp: TPeg
   var rep: TRegex
-  var result: string
+  var result: String
 
   if optRegex in options:
     if {optIgnoreCase, optIgnoreStyle} * options != {}:
@@ -146,11 +146,11 @@ proc processFile(filename: string) =
     
   var line = 1
   var i = 0
-  var matches: array[0..re.MaxSubpatterns-1, string]
+  var matches: Array[0..re.MaxSubpatterns-1, String]
   for j in 0..high(matches): matches[j] = ""
   var reallyReplace = true
   while i < buffer.len:
-    var t: tuple[first, last: int]
+    var t: tuple[first, last: Int]
     if optRegex notin options:
       t = findBounds(buffer, pegp, matches, i)
     else:
@@ -164,14 +164,14 @@ proc processFile(filename: string) =
     if optReplace notin options: 
       highlight(buffer, wholeMatch, "", t, line, showRepl=false)
     else:
-      var r: string
+      var r: String
       if optRegex notin options:
         r = replace(wholeMatch, pegp, replacement % matches)
       else: 
         r = replace(wholeMatch, rep, replacement % matches)
       if optConfirm in options: 
         highlight(buffer, wholeMatch, r, t, line, showRepl=true)
-        case Confirm()
+        case confirm()
         of ceAbort: quit(0)
         of ceYes: reallyReplace = true 
         of ceAll: 
@@ -201,13 +201,13 @@ proc processFile(filename: string) =
     else:
       quit "cannot open file for overwriting: " & filename
 
-proc hasRightExt(filename: string, exts: seq[string]): bool =
+proc hasRightExt(filename: String, exts: Seq[String]): Bool =
   var y = splitFile(filename).ext.substr(1) # skip leading '.'
   for x in items(exts): 
     if os.cmpPaths(x, y) == 0: return true
 
-proc styleInsensitive(s: string): string = 
-  template addx: stmt = 
+proc styleInsensitive(s: String): String = 
+  template addx: Stmt = 
     result.add(s[i])
     inc(i)
   result = ""
@@ -240,7 +240,7 @@ proc styleInsensitive(s: string): string =
         addx()
     else: addx()
 
-proc walker(dir: string) = 
+proc walker(dir: String) = 
   for kind, path in walkDir(dir):
     case kind
     of pcFile: 
@@ -260,14 +260,14 @@ proc writeVersion() =
   stdout.write(Version & "\n")
   quit(0)
 
-proc checkOptions(subset: TOptions, a, b: string) =
+proc checkOptions(subset: TOptions, a, b: String) =
   if subset <= options:
     quit("cannot specify both '$#' and '$#'" % [a, b])
 
 for kind, key, val in getopt():
   case kind
   of cmdArgument:
-    if options.contains(optStdIn): 
+    if options.contains(optStdin): 
       filenames.add(key)
     elif pattern.len == 0: 
       pattern = key
@@ -308,7 +308,7 @@ checkOptions({optIgnoreCase, optIgnoreStyle}, "ignore_case", "ignore_style")
 
 if optStdin in options: 
   pattern = ask("pattern [ENTER to exit]: ")
-  if IsNil(pattern) or pattern.len == 0: quit(0)
+  if isNil(pattern) or pattern.len == 0: quit(0)
   if optReplace in options:
     replacement = ask("replacement [supports $1, $# notations]: ")
 

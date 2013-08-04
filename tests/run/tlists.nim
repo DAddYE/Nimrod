@@ -7,23 +7,23 @@ import lists
 const
   data = [1, 2, 3, 4, 5, 6]
 
-block SinglyLinkedListTest1:
-  var L: TSinglyLinkedList[int]
+block singlyLinkedListTest1:
+  var L: TSinglyLinkedList[Int]
   for d in items(data): L.prepend(d)
   assert($L == "[6, 5, 4, 3, 2, 1]")
   
   assert(4 in L)
 
-block SinglyLinkedListTest2:
-  var L: TSinglyLinkedList[string]
+block singlyLinkedListTest2:
+  var L: TSinglyLinkedList[String]
   for d in items(data): L.prepend($d)
   assert($L == "[6, 5, 4, 3, 2, 1]")
   
   assert("4" in L)
 
 
-block DoublyLinkedListTest1:
-  var L: TDoublyLinkedList[int]
+block doublyLinkedListTest1:
+  var L: TDoublyLinkedList[Int]
   for d in items(data): L.prepend(d)
   for d in items(data): L.append(d)
   L.remove(L.find(1))
@@ -31,8 +31,8 @@ block DoublyLinkedListTest1:
   
   assert(4 in L)
 
-block SinglyLinkedRingTest1:
-  var L: TSinglyLinkedRing[int]
+block singlyLinkedRingTest1:
+  var L: TSinglyLinkedRing[Int]
   L.prepend(4)
   assert($L == "[4]")
   L.prepend(4)
@@ -41,8 +41,8 @@ block SinglyLinkedRingTest1:
   assert(4 in L)
   
 
-block DoublyLinkedRingTest1:
-  var L: TDoublyLinkedRing[int]
+block doublyLinkedRingTest1:
+  var L: TDoublyLinkedRing[Int]
   L.prepend(4)
   assert($L == "[4]")
   L.prepend(4)

@@ -85,7 +85,7 @@ block orderedTableTest1:
 block countTableTest1:
   var s = data.toTable
   var t = initCountTable[string]()
-  for k in s.Keys: t.inc(k)
+  for k in s.keys: t.inc(k)
   for k in t.keys: assert t[k] == 1
   t.inc("90", 3)
   t.inc("12", 2)
@@ -102,14 +102,14 @@ block countTableTest1:
     else: break
     inc i
 
-block SyntaxTest:
+block syntaxTest:
   var x = toTable[int, string]({:})
 
 proc orderedTableSortTest() =
   var t = initOrderedTable[string, int](2)
   for key, val in items(data): t[key] = val
   for key, val in items(data): assert t[key] == val
-  t.sort(proc (x, y: tuple[key: string, val: int]): int = cmp(x.key, y.key))
+  t.sort(proc (x, y: tuple[key: String, val: Int]): Int = cmp(x.key, y.key))
   var i = 0
   # `pairs` needs to yield in sorted order:
   for key, val in pairs(t):

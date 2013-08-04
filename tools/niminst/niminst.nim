@@ -49,21 +49,21 @@ type
     fcDocStart    # links to documentation for Windows installer
 
   TConfigData = object of TObject
-    actions: set[TAction]
-    cat: array[TFileCategory, seq[string]]
-    binPaths, authors, oses, cpus: seq[string]
-    cfiles: array[1..maxOS, array[1..maxCPU, seq[string]]]
-    ccompiler, linker, innosetup: tuple[path, flags: string]
-    name, displayName, version, description, license, infile, outdir: string
-    libpath: string
-    innoSetupFlag, installScript, uninstallScript: bool
+    actions: Set[TAction]
+    cat: Array[TFileCategory, Seq[String]]
+    binPaths, authors, oses, cpus: Seq[String]
+    cfiles: Array[1..maxOS, Array[1..maxCPU, Seq[String]]]
+    ccompiler, linker, innosetup: tuple[path, flags: String]
+    name, displayName, version, description, license, infile, outdir: String
+    libpath: String
+    innoSetupFlag, installScript, uninstallScript: Bool
     vars: PStringTable
     app: TAppType
-    nimrodArgs: string
+    nimrodArgs: String
     debOpts: TDebOptions
 
 const
-  unixDirVars: array[fcConfig..fcLib, string] = [
+  unixDirVars: Array[fcConfig..fcLib, String] = [
     "$configdir", "$datadir", "$docdir", "$libdir"
   ]
 
@@ -96,14 +96,14 @@ proc initConfigData(c: var TConfigData) =
   c.debOpts.shortDesc = ""
   c.debOpts.licenses = @[]
 
-proc firstBinPath(c: TConfigData): string =
+proc firstBinPath(c: TConfigData): String =
   if c.binPaths.len > 0: result = c.binPaths[0]
   else: result = ""
 
-proc `\`(a, b: string): string =
+proc `\`(a, b: String): String =
   result = if a.len == 0: b else: a & '\\' & b
 
-proc skipRoot(f: string): string =
+proc skipRoot(f: String): String =
   # "abc/def/xyz" --> "def/xyz"
   var i = 0
   result = ""
@@ -148,11 +148,11 @@ proc parseCmdLine(c: var TConfigData) =
     next(p)
     var kind = p.kind
     var key = p.key
-    var val = p.val.string
+    var val = p.val.String
     case kind
     of cmdArgument:
       if c.actions == {}:
-        for a in split(normalize(key.string), {';', ','}):
+        for a in split(normalize(key.String), {';', ','}):
           case a
           of "csource": incl(c.actions, actionCSource)
           of "scripts": incl(c.actions, actionScripts)
@@ -161,11 +161,11 @@ proc parseCmdLine(c: var TConfigData) =
           of "deb": incl(c.actions, actionDeb)
           else: quit(Usage)
       else:
-        c.infile = addFileExt(key.string, "ini")
-        c.nimrodArgs = cmdLineRest(p).string
+        c.infile = addFileExt(key.String, "ini")
+        c.nimrodArgs = cmdLineRest(p).String
         break
     of cmdLongOption, cmdShortOption:
-      case normalize(key.string)
+      case normalize(key.String)
       of "help", "h": 
         stdout.write(Usage)
         quit(0)
@@ -181,37 +181,37 @@ proc parseCmdLine(c: var TConfigData) =
     of cmdEnd: break
   if c.infile.len == 0: quit(Usage)
 
-proc walkDirRecursively(s: var seq[string], root: string) =
+proc walkDirRecursively(s: var Seq[String], root: String) =
   for k, f in walkDir(root):
     case k
-    of pcFile, pcLinkToFile: add(s, UnixToNativePath(f))
+    of pcFile, pcLinkToFile: add(s, unixToNativePath(f))
     of pcDir: walkDirRecursively(s, f)
     of pcLinkToDir: nil
 
-proc addFiles(s: var seq[string], patterns: seq[string]) =
+proc addFiles(s: var Seq[String], patterns: Seq[String]) =
   for p in items(patterns):
     if existsDir(p):
       walkDirRecursively(s, p)
     else:
       var i = 0
       for f in walkFiles(p):
-        add(s, UnixToNativePath(f))
+        add(s, unixToNativePath(f))
         inc(i)
       if i == 0: echo("[Warning] No file found that matches: " & p)
 
-proc pathFlags(p: var TCfgParser, k, v: string,
-               t: var tuple[path, flags: string]) =
+proc pathFlags(p: var TCfgParser, k, v: String,
+               t: var tuple[path, flags: String]) =
   case normalize(k)
   of "path": t.path = v
   of "flags": t.flags = v
   else: quit(errorStr(p, "unknown variable: " & k))
 
-proc filesOnly(p: var TCfgParser, k, v: string, dest: var seq[string]) =
+proc filesOnly(p: var TCfgParser, k, v: String, dest: var Seq[String]) =
   case normalize(k)
   of "files": addFiles(dest, split(v, {';'}))
   else: quit(errorStr(p, "unknown variable: " & k))
 
-proc yesno(p: var TCfgParser, v: string): bool =
+proc yesno(p: var TCfgParser, v: String): Bool =
   case normalize(v)
   of "yes", "y", "on", "true":
     result = true
@@ -251,7 +251,7 @@ proc parseIniFile(c: var TConfigData) =
             of "console": c.app = appConsole
             of "gui": c.app = appGUI
             else: quit(errorStr(p, "expected: console or gui"))
-          of "license": c.license = UnixToNativePath(k.value)
+          of "license": c.license = unixToNativePath(k.value)
           else: quit(errorStr(p, "unknown variable: " & k.key))
         of "var": nil
         of "winbin": filesOnly(p, k.key, v, c.cat[fcWinBin])
@@ -322,7 +322,7 @@ proc parseIniFile(c: var TConfigData) =
 
 # ------------------------- generate source based installation ---------------
 
-proc readCFiles(c: var TConfigData, osA, cpuA: int) =
+proc readCFiles(c: var TConfigData, osA, cpuA: Int) =
   var p: TCfgParser
   var f = splitFile(c.infile).dir / "mapping.txt"
   c.cfiles[osA][cpuA] = @[]
@@ -356,10 +356,10 @@ proc readCFiles(c: var TConfigData, osA, cpuA: int) =
   else:
     quit("Cannot open: " & f)
 
-proc buildDir(os, cpu: int): string =
+proc buildDir(os, cpu: Int): String =
   return "build" / ($os & "_" & $cpu)
 
-proc writeFile(filename, content, newline: string) =
+proc writeFile(filename, content, newline: String) =
   var f: TFile
   if open(f, filename, fmWrite):
     for x in splitLines(content):
@@ -379,21 +379,21 @@ proc removeDuplicateFiles(c: var TConfigData) =
           for cpuB in 1..c.cpus.len:
             if osB != osA or cpuB != cpuA:
               var orig = buildDir(osB, cpuB) / f
-              if ExistsFile(orig) and ExistsFile(dup) and
+              if existsFile(orig) and existsFile(dup) and
                   sameFileContent(orig, dup):
                 # file is identical, so delete duplicate:
-                RemoveFile(dup)
+                removeFile(dup)
                 c.cfiles[osA][cpuA][i] = orig
 
 proc writeInstallScripts(c: var TConfigData) =
   if c.installScript:
-    writeFile(installShFile, GenerateInstallScript(c), "\10")
+    writeFile(installShFile, generateInstallScript(c), "\10")
   if c.uninstallScript:
-    writeFile(deinstallShFile, GenerateDeinstallScript(c), "\10")
+    writeFile(deinstallShFile, generateDeinstallScript(c), "\10")
 
 proc srcdist(c: var TConfigData) =
   for x in walkFiles(c.libpath / "lib/*.h"):
-    CopyFile(dest="build" / extractFilename(x), source=x)
+    copyFile(dest="build" / extractFilename(x), source=x)
   for osA in 1..c.oses.len:
     for cpuA in 1..c.cpus.len:
       var dir = buildDir(osA, cpuA)
@@ -410,18 +410,18 @@ proc srcdist(c: var TConfigData) =
       readCFiles(c, osA, cpuA)
       for i in 0 .. c.cfiles[osA][cpuA].len-1:
         var dest = dir / extractFilename(c.cfiles[osA][cpuA][i])
-        CopyFile(dest=dest, source=c.cfiles[osA][cpuA][i])
+        copyFile(dest=dest, source=c.cfiles[osA][cpuA][i])
         c.cfiles[osA][cpuA][i] = dest
   # second pass: remove duplicate files
   removeDuplicateFiles(c)
-  writeFile(buildShFile, GenerateBuildShellScript(c), "\10")
-  writeFile(buildBatFile32, GenerateBuildBatchScript(c, tWin32), "\13\10")
-  writeFile(buildBatFile64, GenerateBuildBatchScript(c, tWin64), "\13\10")
+  writeFile(buildShFile, generateBuildShellScript(c), "\10")
+  writeFile(buildBatFile32, generateBuildBatchScript(c, tWin32), "\13\10")
+  writeFile(buildBatFile64, generateBuildBatchScript(c, tWin64), "\13\10")
   writeInstallScripts(c)
 
 # --------------------- generate inno setup -----------------------------------
 proc setupDist(c: var TConfigData) =
-  var scrpt = GenerateInnoSetup(c)
+  var scrpt = generateInnoSetup(c)
   var n = "build" / "install_$#_$#.iss" % [toLower(c.name), c.version]
   writeFile(n, scrpt, "\13\10")
   when defined(windows):
@@ -482,7 +482,7 @@ proc debDist(c: var TConfigData) =
   
   createDir(workingDir / upstreamSource)
   
-  template copyNimDist(f, dest: string): stmt =
+  template copyNimDist(f, dest: String): Stmt =
     createDir((workingDir / upstreamSource / dest).splitFile.dir)
     copyFile(currentSource / f, workingDir / upstreamSource / dest)
   
@@ -524,7 +524,7 @@ if actionScripts in c.actions:
   writeInstallScripts(c)
 if actionZip in c.actions:
   when haveZipLib:
-    zipdist(c)
+    zipDist(c)
   else:
     quit("libzip is not installed")
 if actionDeb in c.actions:

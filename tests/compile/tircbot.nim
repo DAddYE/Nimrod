@@ -3,7 +3,7 @@ import irc, sockets, asyncio, json, os, strutils, times, redis
 type
   TDb* = object
     r*: TRedis
-    lastPing: float
+    lastPing: Float
 
   TBuildResult* = enum
     bUnknown, bFail, bSuccess
@@ -11,18 +11,18 @@ type
   TTestResult* = enum
     tUnknown, tFail, tSuccess
 
-  TEntry* = tuple[c: TCommit, p: seq[TPlatform]]
+  TEntry* = tuple[c: TCommit, p: Seq[TPlatform]]
   
   TCommit* = object
-    commitMsg*, username*, hash*: string
+    commitMsg*, username*, hash*: String
     date*: TTime
 
   TPlatform* = object
     buildResult*: TBuildResult
     testResult*: TTestResult
-    failReason*, platform*: string
-    total*, passed*, skipped*, failed*: biggestInt
-    csources*: bool
+    failReason*, platform*: String
+    total*, passed*, skipped*, failed*: BiggestInt
+    csources*: Bool
 
 const
   listName = "commits"
@@ -40,25 +40,25 @@ discard """proc customHSet(database: TDb, name, field, value: string) =
       echo("[Warning:REDIS] ", field, " already exists in ", name)"""
 
 proc updateProperty*(database: TDb, commitHash, platform, property,
-                    value: string) =
+                    value: String) =
   var name = platform & ":" & commitHash
-  if database.r.hSet(name, property, value).int == 0:
+  if database.r.hSet(name, property, value).Int == 0:
     echo("[INFO:REDIS] '$1' field updated in hash" % [property])
   else:
     echo("[INFO:REDIS] '$1' new field added to hash" % [property])
 
-proc globalProperty*(database: TDb, commitHash, property, value: string) =
-  if database.r.hSet(commitHash, property, value).int == 0:
+proc globalProperty*(database: TDb, commitHash, property, value: String) =
+  if database.r.hSet(commitHash, property, value).Int == 0:
     echo("[INFO:REDIS] '$1' field updated in hash" % [property])
   else:
     echo("[INFO:REDIS] '$1' new field added to hash" % [property])
 
-proc addCommit*(database: TDb, commitHash, commitMsg, user: string) =
+proc addCommit*(database: TDb, commitHash, commitMsg, user: String) =
   # Add the commit hash to the `commits` list.
   discard database.r.lPush(listName, commitHash)
   # Add the commit message, current date and username as a property
   globalProperty(database, commitHash, "commitMsg", commitMsg)
-  globalProperty(database, commitHash, "date", $int(getTime()))
+  globalProperty(database, commitHash, "date", $Int(getTime()))
   globalProperty(database, commitHash, "username", user)
 
 proc keepAlive*(database: var TDb) =
@@ -71,9 +71,9 @@ proc keepAlive*(database: var TDb) =
     database.lastPing = t
     
 proc getCommits*(database: TDb,
-                 plStr: var seq[string]): seq[TEntry] =
+                 plStr: var Seq[String]): Seq[TEntry] =
   result = @[]
-  var commitsRaw = database.r.lrange("commits", 0, -1)
+  var commitsRaw = database.r.lRange("commits", 0, -1)
   for c in items(commitsRaw):
     var commit: TCommit
     commit.hash = c
@@ -86,8 +86,8 @@ proc getCommits*(database: TDb,
         echo(key)
         assert(false)
 
-    var platformsRaw = database.r.lrange(c & ":platforms", 0, -1)
-    var platforms: seq[TPlatform] = @[]
+    var platformsRaw = database.r.lRange(c & ":platforms", 0, -1)
+    var platforms: Seq[TPlatform] = @[]
     for p in items(platformsRaw):
       var platform: TPlatform
       for key, value in database.r.hPairs(p & ":" & c):
@@ -119,31 +119,31 @@ proc getCommits*(database: TDb,
         plStr.add(p)
     result.add((commit, platforms))
 
-proc commitExists*(database: TDb, commit: string, starts = false): bool =
+proc commitExists*(database: TDb, commit: String, starts = false): Bool =
   # TODO: Consider making the 'commits' list a set.
-  for c in items(database.r.lrange("commits", 0, -1)):
+  for c in items(database.r.lRange("commits", 0, -1)):
     if starts:
       if c.startsWith(commit): return true
     else:
       if c == commit: return true
   return false
 
-proc platformExists*(database: TDb, commit: string, platform: string): bool =
-  for p in items(database.r.lrange(commit & ":" & "platforms", 0, -1)):
+proc platformExists*(database: TDb, commit: String, platform: String): Bool =
+  for p in items(database.r.lRange(commit & ":" & "platforms", 0, -1)):
     if p == platform: return true
 
-proc expandHash*(database: TDb, commit: string): string =
-  for c in items(database.r.lrange("commits", 0, -1)):
+proc expandHash*(database: TDb, commit: String): String =
+  for c in items(database.r.lRange("commits", 0, -1)):
     if c.startsWith(commit): return c
   assert false
 
-proc isNewest*(database: TDb, commit: string): bool =
+proc isNewest*(database: TDb, commit: String): Bool =
   return database.r.lIndex("commits", 0) == commit
 
-proc getNewest*(database: TDb): string =
+proc getNewest*(database: TDb): String =
   return database.r.lIndex("commits", 0)
 
-proc addPlatform*(database: TDb, commit: string, platform: string) =
+proc addPlatform*(database: TDb, commit: String, platform: String) =
   assert database.commitExists(commit)
   assert (not database.platformExists(commit, platform))
   var name = platform & ":" & commit
@@ -153,16 +153,16 @@ proc addPlatform*(database: TDb, commit: string, platform: string) =
 
   discard database.r.lPush(commit & ":" & "platforms", platform)
 
-proc `[]`*(p: seq[TPlatform], name: string): TPlatform =
+proc `[]`*(p: Seq[TPlatform], name: String): TPlatform =
   for platform in items(p):
     if platform.platform == name:
       return platform
   raise newException(EInvalidValue, name & " platforms not found in commits.")
   
-proc contains*(p: seq[TPlatform], s: string): bool =
+proc contains*(p: Seq[TPlatform], s: String): Bool =
   for i in items(p):
     if i.platform == s:
-      return True
+      return true
     
 
 type
@@ -173,21 +173,21 @@ type
     ircClient: PAsyncIRC
     hubPort: TPort
     database: TDb
-    dbConnected: bool
+    dbConnected: Bool
 
   TSeenType = enum
     PSeenJoin, PSeenPart, PSeenMsg, PSeenNick, PSeenQuit
   
   TSeen = object
-    nick: string
-    channel: string
+    nick: String
+    channel: String
     timestamp: TTime
     case kind*: TSeenType
     of PSeenJoin: nil
     of PSeenPart, PSeenQuit, PSeenMsg:
-      msg: string
+      msg: String
     of PSeenNick:
-      newNick: string
+      newNick: String
 
 const
   ircServer = "irc.freenode.net"
@@ -197,8 +197,8 @@ const
 proc setSeen(d: TDb, s: TSeen) =
   discard d.r.del("seen:" & s.nick)
 
-  var hashToSet = @[("type", $s.kind.int), ("channel", s.channel),
-                    ("timestamp", $s.timestamp.int)]
+  var hashToSet = @[("type", $s.kind.Int), ("channel", s.channel),
+                    ("timestamp", $s.timestamp.Int)]
   case s.kind
   of PSeenJoin: nil
   of PSeenPart, PSeenMsg, PSeenQuit:
@@ -208,7 +208,7 @@ proc setSeen(d: TDb, s: TSeen) =
   
   d.r.hMSet("seen:" & s.nick, hashToSet)
 
-proc getSeen(d: TDb, nick: string, s: var TSeen): bool =
+proc getSeen(d: TDb, nick: String, s: var TSeen): Bool =
   if d.r.exists("seen:" & nick):
     result = true
     s.nick = nick
@@ -228,18 +228,18 @@ proc getSeen(d: TDb, nick: string, s: var TSeen): bool =
       of "newnick":
         s.newNick = value
 
-template createSeen(typ: TSeenType, n, c: string): stmt {.immediate, dirty.} =
+template createSeen(typ: TSeenType, n, c: String): Stmt {.immediate, dirty.} =
   var seenNick: TSeen
   seenNick.kind = typ
   seenNick.nick = n
   seenNick.channel = c
   seenNick.timestamp = getTime()
 
-proc parseReply(line: string, expect: string): Bool =
+proc parseReply(line: String, expect: String): Bool =
   var jsonDoc = parseJson(line)
   return jsonDoc["reply"].str == expect
 
-proc limitCommitMsg(m: string): string =
+proc limitCommitMsg(m: String): String =
   ## Limits the message to 300 chars and adds ellipsis.
   var m1 = m
   if NewLines in m1:
@@ -254,7 +254,7 @@ proc limitCommitMsg(m: string): string =
 
   return m1
 
-proc handleWebMessage(state: PState, line: string) =
+proc handleWebMessage(state: PState, line: String) =
   echo("Got message from hub: " & line)
   var json = parseJson(line)
   if json.existsKey("payload"):
@@ -317,15 +317,15 @@ proc handleRead(s: PAsyncSocket, state: PState) =
       # Handle the message
       state.handleWebMessage(line)
     else:
-      echo("Disconnected from hub: ", OSErrorMsg())
+      echo("Disconnected from hub: ", oSErrorMsg())
       s.close()
       echo("Reconnecting...")
       state.hubConnect()
   else:
-    echo(OSErrorMsg())
+    echo(oSErrorMsg())
 
 proc hubConnect(state: PState) =
-  state.sock = AsyncSocket()
+  state.sock = asyncSocket()
   state.sock.connect("127.0.0.1", state.hubPort)
   state.sock.handleConnect =
     proc (s: PAsyncSocket) =
@@ -355,7 +355,7 @@ proc handleIrc(irc: PAsyncIRC, event: TIRCEvent, state: PState) =
     of MPrivMsg:
       let msg = event.params[event.params.len-1]
       let words = msg.split(' ')
-      template pm(msg: string): stmt =
+      template pm(msg: String): Stmt =
         state.ircClient.privmsg(event.origin, msg)
       case words[0]
       of "!ping": pm("pong")
@@ -363,7 +363,7 @@ proc handleIrc(irc: PAsyncIRC, event: TIRCEvent, state: PState) =
         if state.ircClient.getLag != -1.0:
           var lag = state.ircClient.getLag
           lag = lag * 1000.0
-          pm($int(lag) & "ms between me and the server.")
+          pm($Int(lag) & "ms between me and the server.")
         else:
           pm("Unknown.")
       of "!seen":
@@ -437,7 +437,7 @@ proc open(port: TPort = TPort(5123)): PState =
     proc (a: PAsyncIRC, ev: TIRCEvent) =
       handleIrc(a, ev, res)
   # Connect to the irc server.
-  res.ircClient = AsyncIrc(ircServer, nick = botNickname, user = botNickname,
+  res.ircClient = asyncIRC(ircServer, nick = botNickname, user = botNickname,
                  joinChans = joinChans, ircEvent = hirc)
   res.ircClient.connect()
   res.dispatcher.register(res.ircClient)

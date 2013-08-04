@@ -12,7 +12,7 @@
 import 
   os, options, ast, astalgo, msgs, ropes, idents, passes, importer
 
-proc generateDot*(project: string)
+proc generateDot*(project: String)
 
 type 
   TGen = object of TPassContext
@@ -21,7 +21,7 @@ type
 
 var gDotGraph: PRope # the generated DOT file; we need a global variable
 
-proc addDependencyAux(importing, imported: string) = 
+proc addDependencyAux(importing, imported: String) = 
   appf(gDotGraph, "$1 -> $2;$n", [toRope(importing), toRope(imported)]) 
   # s1 -> s2_4[label="[0-9]"];
   
@@ -43,7 +43,7 @@ proc addDotDependency(c: PPassContext, n: PNode): PNode =
 
 proc generateDot(project: string) = 
   writeRope(ropef("digraph $1 {$n$2}$n", [
-      toRope(changeFileExt(extractFileName(project), "")), gDotGraph]), 
+      toRope(changeFileExt(extractFilename(project), "")), gDotGraph]), 
             changeFileExt(project, "dot"))
 
 proc myOpen(module: PSym): PPassContext =

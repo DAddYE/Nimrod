@@ -7,8 +7,8 @@ discard """
 var
   g = 5
 
-proc p(): var int = 
-  var bla: int
+proc p(): var Int = 
+  var bla: Int
   result = bla
   
 p() = 45

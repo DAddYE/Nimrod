@@ -26,7 +26,7 @@ type
   PGLenum* = ptr TGLenum
   PGLboolean* = ptr TGLboolean
   PGLbitfield* = ptr TGLbitfield
-  TGLbyte* = int8
+  TGLbyte* = Int8
   PGLbyte* = ptr TGlbyte
   PGLshort* = ptr TGLshort
   PGLint* = ptr TGLint
@@ -40,85 +40,85 @@ type
   PGLclampd* = ptr TGLclampd
   PGLvoid* = Pointer
   PPGLvoid* = ptr PGLvoid
-  TGLenum* = cint
-  TGLboolean* = bool
-  TGLbitfield* = cint
-  TGLshort* = int16
-  TGLint* = cint
-  TGLsizei* = int
-  TGLubyte* = int8
-  TGLushort* = int16
-  TGLuint* = cint
-  TGLfloat* = float32
-  TGLclampf* = float32
-  TGLdouble* = float
-  TGLclampd* = float
+  TGLenum* = Cint
+  TGLboolean* = Bool
+  TGLbitfield* = Cint
+  TGLshort* = Int16
+  TGLint* = Cint
+  TGLsizei* = Int
+  TGLubyte* = Int8
+  TGLushort* = Int16
+  TGLuint* = Cint
+  TGLfloat* = Float32
+  TGLclampf* = Float32
+  TGLdouble* = Float
+  TGLclampd* = Float
 
 const                         # Version
-  GL_VERSION_1_1* = 1         # AccumOp
-  constGL_ACCUM* = 0x00000100
-  GL_LOAD* = 0x00000101
-  GL_RETURN* = 0x00000102
-  GL_MULT* = 0x00000103
-  GL_ADD* = 0x00000104        # AlphaFunction
-  GL_NEVER* = 0x00000200
-  GL_LESS* = 0x00000201
-  GL_EQUAL* = 0x00000202
-  GL_LEQUAL* = 0x00000203
-  GL_GREATER* = 0x00000204
-  GL_NOTEQUAL* = 0x00000205
-  GL_GEQUAL* = 0x00000206
-  GL_ALWAYS* = 0x00000207     # AttribMask
-  GL_CURRENT_BIT* = 0x00000001
-  GL_POINT_BIT* = 0x00000002
-  GL_LINE_BIT* = 0x00000004
-  GL_POLYGON_BIT* = 0x00000008
-  GL_POLYGON_STIPPLE_BIT* = 0x00000010
-  GL_PIXEL_MODE_BIT* = 0x00000020
-  GL_LIGHTING_BIT* = 0x00000040
-  GL_FOG_BIT* = 0x00000080
-  GL_DEPTH_BUFFER_BIT* = 0x00000100
-  GL_ACCUM_BUFFER_BIT* = 0x00000200
-  GL_STENCIL_BUFFER_BIT* = 0x00000400
-  GL_VIEWPORT_BIT* = 0x00000800
-  GL_TRANSFORM_BIT* = 0x00001000
-  GL_ENABLE_BIT* = 0x00002000
-  GL_COLOR_BUFFER_BIT* = 0x00004000
-  GL_HINT_BIT* = 0x00008000
-  GL_EVAL_BIT* = 0x00010000
-  GL_LIST_BIT* = 0x00020000
-  GL_TEXTURE_BIT* = 0x00040000
-  GL_SCISSOR_BIT* = 0x00080000
-  GL_ALL_ATTRIB_BITS* = 0x000FFFFF # BeginMode
-  GL_POINTS* = 0x00000000
-  GL_LINES* = 0x00000001
-  GL_LINE_LOOP* = 0x00000002
-  GL_LINE_STRIP* = 0x00000003
-  GL_TRIANGLES* = 0x00000004
-  GL_TRIANGLE_STRIP* = 0x00000005
-  GL_TRIANGLE_FAN* = 0x00000006
-  GL_QUADS* = 0x00000007
-  GL_QUAD_STRIP* = 0x00000008
-  GL_POLYGON* = 0x00000009    # BlendingFactorDest
-  GL_ZERO* = 0
-  GL_ONE* = 1
-  GL_SRC_COLOR* = 0x00000300
-  GL_ONE_MINUS_SRC_COLOR* = 0x00000301
-  GL_SRC_ALPHA* = 0x00000302
-  GL_ONE_MINUS_SRC_ALPHA* = 0x00000303
-  GL_DST_ALPHA* = 0x00000304
-  GL_ONE_MINUS_DST_ALPHA* = 0x00000305 # BlendingFactorSrc
+  GlVersion11* = 1         # AccumOp
+  constGLACCUM* = 0x00000100
+  GlLoad* = 0x00000101
+  GlReturn* = 0x00000102
+  GlMult* = 0x00000103
+  GlAdd* = 0x00000104        # AlphaFunction
+  GlNever* = 0x00000200
+  GlLess* = 0x00000201
+  GlEqual* = 0x00000202
+  GlLequal* = 0x00000203
+  GlGreater* = 0x00000204
+  GlNotequal* = 0x00000205
+  GlGequal* = 0x00000206
+  GlAlways* = 0x00000207     # AttribMask
+  GlCurrentBit* = 0x00000001
+  GlPointBit* = 0x00000002
+  GlLineBit* = 0x00000004
+  GlPolygonBit* = 0x00000008
+  GlPolygonStippleBit* = 0x00000010
+  GlPixelModeBit* = 0x00000020
+  GlLightingBit* = 0x00000040
+  GlFogBit* = 0x00000080
+  GlDepthBufferBit* = 0x00000100
+  GlAccumBufferBit* = 0x00000200
+  GlStencilBufferBit* = 0x00000400
+  GlViewportBit* = 0x00000800
+  GlTransformBit* = 0x00001000
+  GlEnableBit* = 0x00002000
+  GlColorBufferBit* = 0x00004000
+  GlHintBit* = 0x00008000
+  GlEvalBit* = 0x00010000
+  GlListBit* = 0x00020000
+  GlTextureBit* = 0x00040000
+  GlScissorBit* = 0x00080000
+  GlAllAttribBits* = 0x000FFFFF # BeginMode
+  GlPoints* = 0x00000000
+  GlLines* = 0x00000001
+  GlLineLoop* = 0x00000002
+  GlLineStrip* = 0x00000003
+  GlTriangles* = 0x00000004
+  GlTriangleStrip* = 0x00000005
+  GlTriangleFan* = 0x00000006
+  GlQuads* = 0x00000007
+  GlQuadStrip* = 0x00000008
+  GlPolygon* = 0x00000009    # BlendingFactorDest
+  GlZero* = 0
+  GlOne* = 1
+  GlSrcColor* = 0x00000300
+  GlOneMinusSrcColor* = 0x00000301
+  GlSrcAlpha* = 0x00000302
+  GlOneMinusSrcAlpha* = 0x00000303
+  GlDstAlpha* = 0x00000304
+  GlOneMinusDstAlpha* = 0x00000305 # BlendingFactorSrc
                                        #      GL_ZERO
                                        #      GL_ONE
-  GL_DST_COLOR* = 0x00000306
-  GL_ONE_MINUS_DST_COLOR* = 0x00000307
-  GL_SRC_ALPHA_SATURATE* = 0x00000308 #      GL_SRC_ALPHA
+  GlDstColor* = 0x00000306
+  GlOneMinusDstColor* = 0x00000307
+  GlSrcAlphaSaturate* = 0x00000308 #      GL_SRC_ALPHA
                                       #      GL_ONE_MINUS_SRC_ALPHA
                                       #      GL_DST_ALPHA
                                       #      GL_ONE_MINUS_DST_ALPHA
                                       # Boolean
-  GL_TRUE* = 1
-  GL_FALSE* = 0               # ClearBufferMask
+  GlTrue* = 1
+  GlFalse* = 0               # ClearBufferMask
                               #      GL_COLOR_BUFFER_BIT
                               #      GL_ACCUM_BUFFER_BIT
                               #      GL_STENCIL_BUFFER_BIT
@@ -131,12 +131,12 @@ const                         # Version
                               #      GL_TEXTURE_COORD_ARRAY
                               #      GL_EDGE_FLAG_ARRAY
                               # ClipPlaneName
-  GL_CLIP_PLANE0* = 0x00003000
-  GL_CLIP_PLANE1* = 0x00003001
-  GL_CLIP_PLANE2* = 0x00003002
-  GL_CLIP_PLANE3* = 0x00003003
-  GL_CLIP_PLANE4* = 0x00003004
-  GL_CLIP_PLANE5* = 0x00003005 # ColorMaterialFace
+  GlClipPlane0* = 0x00003000
+  GlClipPlane1* = 0x00003001
+  GlClipPlane2* = 0x00003002
+  GlClipPlane3* = 0x00003003
+  GlClipPlane4* = 0x00003004
+  GlClipPlane5* = 0x00003005 # ColorMaterialFace
                                #      GL_FRONT
                                #      GL_BACK
                                #      GL_FRONT_AND_BACK
@@ -160,17 +160,17 @@ const                         # Version
                                #      GL_BACK
                                #      GL_FRONT_AND_BACK
                                # DataType
-  GL_BYTE* = 0x00001400
-  GL_UNSIGNED_BYTE* = 0x00001401
-  GL_SHORT* = 0x00001402
-  GL_UNSIGNED_SHORT* = 0x00001403
-  GL_INT* = 0x00001404
-  GL_UNSIGNED_INT* = 0x00001405
-  GL_FLOAT* = 0x00001406
-  GL_2_BYTES* = 0x00001407
-  GL_3_BYTES* = 0x00001408
-  GL_4_BYTES* = 0x00001409
-  GL_DOUBLE* = 0x0000140A     # DepthFunction
+  GlByte* = 0x00001400
+  GlUnsignedByte* = 0x00001401
+  GlShort* = 0x00001402
+  GlUnsignedShort* = 0x00001403
+  GlInt* = 0x00001404
+  GlUnsignedInt* = 0x00001405
+  GlFloat* = 0x00001406
+  Gl2Bytes* = 0x00001407
+  Gl3Bytes* = 0x00001408
+  Gl4Bytes* = 0x00001409
+  GlDouble* = 0x0000140A     # DepthFunction
                               #      GL_NEVER
                               #      GL_LESS
                               #      GL_EQUAL
@@ -180,20 +180,20 @@ const                         # Version
                               #      GL_GEQUAL
                               #      GL_ALWAYS
                               # DrawBufferMode
-  GL_NONE* = 0
-  GL_FRONT_LEFT* = 0x00000400
-  GL_FRONT_RIGHT* = 0x00000401
-  GL_BACK_LEFT* = 0x00000402
-  GL_BACK_RIGHT* = 0x00000403
-  GL_FRONT* = 0x00000404
-  GL_BACK* = 0x00000405
-  GL_LEFT* = 0x00000406
-  GL_RIGHT* = 0x00000407
-  GL_FRONT_AND_BACK* = 0x00000408
-  GL_AUX0* = 0x00000409
-  GL_AUX1* = 0x0000040A
-  GL_AUX2* = 0x0000040B
-  GL_AUX3* = 0x0000040C       # Enable
+  GlNone* = 0
+  GlFrontLeft* = 0x00000400
+  GlFrontRight* = 0x00000401
+  GlBackLeft* = 0x00000402
+  GlBackRight* = 0x00000403
+  GlFront* = 0x00000404
+  GlBack* = 0x00000405
+  GlLeft* = 0x00000406
+  GlRight* = 0x00000407
+  GlFrontAndBack* = 0x00000408
+  GlAux0* = 0x00000409
+  GlAux1* = 0x0000040A
+  GlAux2* = 0x0000040B
+  GlAux3* = 0x0000040C       # Enable
                               #      GL_FOG
                               #      GL_LIGHTING
                               #      GL_TEXTURE_1D
@@ -261,29 +261,29 @@ const                         # Version
                               #      GL_POLYGON_OFFSET_LINE
                               #      GL_POLYGON_OFFSET_FILL
                               # ErrorCode
-  GL_NO_ERROR* = 0
-  GL_INVALID_ENUM* = 0x00000500
-  GL_INVALID_VALUE* = 0x00000501
-  GL_INVALID_OPERATION* = 0x00000502
-  GL_STACK_OVERFLOW* = 0x00000503
-  GL_STACK_UNDERFLOW* = 0x00000504
-  GL_OUT_OF_MEMORY* = 0x00000505 # FeedBackMode
-  GL_2D* = 0x00000600
-  GL_3D* = 0x00000601
-  GL_3D_COLOR* = 0x00000602
-  GL_3D_COLOR_TEXTURE* = 0x00000603
-  GL_4D_COLOR_TEXTURE* = 0x00000604 # FeedBackToken
-  GL_PASS_THROUGH_TOKEN* = 0x00000700
-  GL_POINT_TOKEN* = 0x00000701
-  GL_LINE_TOKEN* = 0x00000702
-  GL_POLYGON_TOKEN* = 0x00000703
-  GL_BITMAP_TOKEN* = 0x00000704
-  GL_DRAW_PIXEL_TOKEN* = 0x00000705
-  GL_COPY_PIXEL_TOKEN* = 0x00000706
-  GL_LINE_RESET_TOKEN* = 0x00000707 # FogMode
+  GlNoError* = 0
+  GlInvalidEnum* = 0x00000500
+  GlInvalidValue* = 0x00000501
+  GlInvalidOperation* = 0x00000502
+  GlStackOverflow* = 0x00000503
+  GlStackUnderflow* = 0x00000504
+  GlOutOfMemory* = 0x00000505 # FeedBackMode
+  Gl2d* = 0x00000600
+  Gl3d* = 0x00000601
+  Gl3dColor* = 0x00000602
+  Gl3dColorTexture* = 0x00000603
+  Gl4dColorTexture* = 0x00000604 # FeedBackToken
+  GlPassThroughToken* = 0x00000700
+  GlPointToken* = 0x00000701
+  GlLineToken* = 0x00000702
+  GlPolygonToken* = 0x00000703
+  GlBitmapToken* = 0x00000704
+  GlDrawPixelToken* = 0x00000705
+  GlCopyPixelToken* = 0x00000706
+  GlLineResetToken* = 0x00000707 # FogMode
                                     #      GL_LINEAR
-  GL_EXP* = 0x00000800
-  GL_EXP2* = 0x00000801       # FogParameter
+  GlExp* = 0x00000800
+  GlExp2* = 0x00000801       # FogParameter
                               #      GL_FOG_COLOR
                               #      GL_FOG_DENSITY
                               #      GL_FOG_END
@@ -291,11 +291,11 @@ const                         # Version
                               #      GL_FOG_MODE
                               #      GL_FOG_START
                               # FrontFaceDirection
-  GL_CW* = 0x00000900
-  GL_CCW* = 0x00000901        # GetMapTarget
-  GL_COEFF* = 0x00000A00
-  GL_ORDER* = 0x00000A01
-  GL_DOMAIN* = 0x00000A02     # GetPixelMap
+  GlCw* = 0x00000900
+  GlCcw* = 0x00000901        # GetMapTarget
+  GlCoeff* = 0x00000A00
+  GlOrder* = 0x00000A01
+  GlDomain* = 0x00000A02     # GetPixelMap
                               #      GL_PIXEL_MAP_I_TO_I
                               #      GL_PIXEL_MAP_S_TO_S
                               #      GL_PIXEL_MAP_I_TO_R
@@ -314,215 +314,215 @@ const                         # Version
                               #      GL_TEXTURE_COORD_ARRAY_POINTER
                               #      GL_EDGE_FLAG_ARRAY_POINTER
                               # GetTarget
-  GL_CURRENT_COLOR* = 0x00000B00
-  GL_CURRENT_INDEX* = 0x00000B01
-  GL_CURRENT_NORMAL* = 0x00000B02
-  GL_CURRENT_TEXTURE_COORDS* = 0x00000B03
-  GL_CURRENT_RASTER_COLOR* = 0x00000B04
-  GL_CURRENT_RASTER_INDEX* = 0x00000B05
-  GL_CURRENT_RASTER_TEXTURE_COORDS* = 0x00000B06
-  GL_CURRENT_RASTER_POSITION* = 0x00000B07
-  GL_CURRENT_RASTER_POSITION_VALID* = 0x00000B08
-  GL_CURRENT_RASTER_DISTANCE* = 0x00000B09
-  GL_POINT_SMOOTH* = 0x00000B10
-  constGL_POINT_SIZE* = 0x00000B11
-  GL_POINT_SIZE_RANGE* = 0x00000B12
-  GL_POINT_SIZE_GRANULARITY* = 0x00000B13
-  GL_LINE_SMOOTH* = 0x00000B20
-  constGL_LINE_WIDTH* = 0x00000B21
-  GL_LINE_WIDTH_RANGE* = 0x00000B22
-  GL_LINE_WIDTH_GRANULARITY* = 0x00000B23
-  constGL_LINE_STIPPLE* = 0x00000B24
-  GL_LINE_STIPPLE_PATTERN* = 0x00000B25
-  GL_LINE_STIPPLE_REPEAT* = 0x00000B26
-  GL_LIST_MODE* = 0x00000B30
-  GL_MAX_LIST_NESTING* = 0x00000B31
-  constGL_LIST_BASE* = 0x00000B32
-  GL_LIST_INDEX* = 0x00000B33
-  constGL_POLYGON_MODE* = 0x00000B40
-  GL_POLYGON_SMOOTH* = 0x00000B41
-  constGL_POLYGON_STIPPLE* = 0x00000B42
-  constGL_EDGE_FLAG* = 0x00000B43
-  constGL_CULL_FACE* = 0x00000B44
-  GL_CULL_FACE_MODE* = 0x00000B45
-  constGL_FRONT_FACE* = 0x00000B46
-  GL_LIGHTING* = 0x00000B50
-  GL_LIGHT_MODEL_LOCAL_VIEWER* = 0x00000B51
-  GL_LIGHT_MODEL_TWO_SIDE* = 0x00000B52
-  GL_LIGHT_MODEL_AMBIENT* = 0x00000B53
-  constGL_SHADE_MODEL* = 0x00000B54
-  GL_COLOR_MATERIAL_FACE* = 0x00000B55
-  GL_COLOR_MATERIAL_PARAMETER* = 0x00000B56
-  constGL_COLOR_MATERIAL* = 0x00000B57
-  GL_FOG* = 0x00000B60
-  GL_FOG_INDEX* = 0x00000B61
-  GL_FOG_DENSITY* = 0x00000B62
-  GL_FOG_START* = 0x00000B63
-  GL_FOG_END* = 0x00000B64
-  GL_FOG_MODE* = 0x00000B65
-  GL_FOG_COLOR* = 0x00000B66
-  constGL_DEPTH_RANGE* = 0x00000B70
-  GL_DEPTH_TEST* = 0x00000B71
-  GL_DEPTH_WRITEMASK* = 0x00000B72
-  GL_DEPTH_CLEAR_VALUE* = 0x00000B73
-  constGL_DEPTH_FUNC* = 0x00000B74
-  GL_ACCUM_CLEAR_VALUE* = 0x00000B80
-  GL_STENCIL_TEST* = 0x00000B90
-  GL_STENCIL_CLEAR_VALUE* = 0x00000B91
-  constGL_STENCIL_FUNC* = 0x00000B92
-  GL_STENCIL_VALUE_MASK* = 0x00000B93
-  GL_STENCIL_FAIL* = 0x00000B94
-  GL_STENCIL_PASS_DEPTH_FAIL* = 0x00000B95
-  GL_STENCIL_PASS_DEPTH_PASS* = 0x00000B96
-  GL_STENCIL_REF* = 0x00000B97
-  GL_STENCIL_WRITEMASK* = 0x00000B98
-  constGL_MATRIX_MODE* = 0x00000BA0
-  GL_NORMALIZE* = 0x00000BA1
-  constGL_VIEWPORT* = 0x00000BA2
-  GL_MODELVIEW_STACK_DEPTH* = 0x00000BA3
-  GL_PROJECTION_STACK_DEPTH* = 0x00000BA4
-  GL_TEXTURE_STACK_DEPTH* = 0x00000BA5
-  GL_MODELVIEW_MATRIX* = 0x00000BA6
-  GL_PROJECTION_MATRIX* = 0x00000BA7
-  GL_TEXTURE_MATRIX* = 0x00000BA8
-  GL_ATTRIB_STACK_DEPTH* = 0x00000BB0
-  GL_CLIENT_ATTRIB_STACK_DEPTH* = 0x00000BB1
-  GL_ALPHA_TEST* = 0x00000BC0
-  GL_ALPHA_TEST_FUNC* = 0x00000BC1
-  GL_ALPHA_TEST_REF* = 0x00000BC2
-  GL_DITHER* = 0x00000BD0
-  GL_BLEND_DST* = 0x00000BE0
-  GL_BLEND_SRC* = 0x00000BE1
-  GL_BLEND* = 0x00000BE2
-  GL_LOGIC_OP_MODE* = 0x00000BF0
-  GL_INDEX_LOGIC_OP* = 0x00000BF1
-  GL_COLOR_LOGIC_OP* = 0x00000BF2
-  GL_AUX_BUFFERS* = 0x00000C00
-  constGL_DRAW_BUFFER* = 0x00000C01
-  constGL_READ_BUFFER* = 0x00000C02
-  GL_SCISSOR_BOX* = 0x00000C10
-  GL_SCISSOR_TEST* = 0x00000C11
-  GL_INDEX_CLEAR_VALUE* = 0x00000C20
-  GL_INDEX_WRITEMASK* = 0x00000C21
-  GL_COLOR_CLEAR_VALUE* = 0x00000C22
-  GL_COLOR_WRITEMASK* = 0x00000C23
-  GL_INDEX_MODE* = 0x00000C30
-  GL_RGBA_MODE* = 0x00000C31
-  GL_DOUBLEBUFFER* = 0x00000C32
-  GL_STEREO* = 0x00000C33
-  constGL_RENDER_MODE* = 0x00000C40
-  GL_PERSPECTIVE_CORRECTION_HINT* = 0x00000C50
-  GL_POINT_SMOOTH_HINT* = 0x00000C51
-  GL_LINE_SMOOTH_HINT* = 0x00000C52
-  GL_POLYGON_SMOOTH_HINT* = 0x00000C53
-  GL_FOG_HINT* = 0x00000C54
-  GL_TEXTURE_GEN_S* = 0x00000C60
-  GL_TEXTURE_GEN_T* = 0x00000C61
-  GL_TEXTURE_GEN_R* = 0x00000C62
-  GL_TEXTURE_GEN_Q* = 0x00000C63
-  GL_PIXEL_MAP_I_TO_I* = 0x00000C70
-  GL_PIXEL_MAP_S_TO_S* = 0x00000C71
-  GL_PIXEL_MAP_I_TO_R* = 0x00000C72
-  GL_PIXEL_MAP_I_TO_G* = 0x00000C73
-  GL_PIXEL_MAP_I_TO_B* = 0x00000C74
-  GL_PIXEL_MAP_I_TO_A* = 0x00000C75
-  GL_PIXEL_MAP_R_TO_R* = 0x00000C76
-  GL_PIXEL_MAP_G_TO_G* = 0x00000C77
-  GL_PIXEL_MAP_B_TO_B* = 0x00000C78
-  GL_PIXEL_MAP_A_TO_A* = 0x00000C79
-  GL_PIXEL_MAP_I_TO_I_SIZE* = 0x00000CB0
-  GL_PIXEL_MAP_S_TO_S_SIZE* = 0x00000CB1
-  GL_PIXEL_MAP_I_TO_R_SIZE* = 0x00000CB2
-  GL_PIXEL_MAP_I_TO_G_SIZE* = 0x00000CB3
-  GL_PIXEL_MAP_I_TO_B_SIZE* = 0x00000CB4
-  GL_PIXEL_MAP_I_TO_A_SIZE* = 0x00000CB5
-  GL_PIXEL_MAP_R_TO_R_SIZE* = 0x00000CB6
-  GL_PIXEL_MAP_G_TO_G_SIZE* = 0x00000CB7
-  GL_PIXEL_MAP_B_TO_B_SIZE* = 0x00000CB8
-  GL_PIXEL_MAP_A_TO_A_SIZE* = 0x00000CB9
-  GL_UNPACK_SWAP_BYTES* = 0x00000CF0
-  GL_UNPACK_LSB_FIRST* = 0x00000CF1
-  GL_UNPACK_ROW_LENGTH* = 0x00000CF2
-  GL_UNPACK_SKIP_ROWS* = 0x00000CF3
-  GL_UNPACK_SKIP_PIXELS* = 0x00000CF4
-  GL_UNPACK_ALIGNMENT* = 0x00000CF5
-  GL_PACK_SWAP_BYTES* = 0x00000D00
-  GL_PACK_LSB_FIRST* = 0x00000D01
-  GL_PACK_ROW_LENGTH* = 0x00000D02
-  GL_PACK_SKIP_ROWS* = 0x00000D03
-  GL_PACK_SKIP_PIXELS* = 0x00000D04
-  GL_PACK_ALIGNMENT* = 0x00000D05
-  GL_MAP_COLOR* = 0x00000D10
-  GL_MAP_STENCIL* = 0x00000D11
-  GL_INDEX_SHIFT* = 0x00000D12
-  GL_INDEX_OFFSET* = 0x00000D13
-  GL_RED_SCALE* = 0x00000D14
-  GL_RED_BIAS* = 0x00000D15
-  GL_ZOOM_X* = 0x00000D16
-  GL_ZOOM_Y* = 0x00000D17
-  GL_GREEN_SCALE* = 0x00000D18
-  GL_GREEN_BIAS* = 0x00000D19
-  GL_BLUE_SCALE* = 0x00000D1A
-  GL_BLUE_BIAS* = 0x00000D1B
-  GL_ALPHA_SCALE* = 0x00000D1C
-  GL_ALPHA_BIAS* = 0x00000D1D
-  GL_DEPTH_SCALE* = 0x00000D1E
-  GL_DEPTH_BIAS* = 0x00000D1F
-  GL_MAX_EVAL_ORDER* = 0x00000D30
-  GL_MAX_LIGHTS* = 0x00000D31
-  GL_MAX_CLIP_PLANES* = 0x00000D32
-  GL_MAX_TEXTURE_SIZE* = 0x00000D33
-  GL_MAX_PIXEL_MAP_TABLE* = 0x00000D34
-  GL_MAX_ATTRIB_STACK_DEPTH* = 0x00000D35
-  GL_MAX_MODELVIEW_STACK_DEPTH* = 0x00000D36
-  GL_MAX_NAME_STACK_DEPTH* = 0x00000D37
-  GL_MAX_PROJECTION_STACK_DEPTH* = 0x00000D38
-  GL_MAX_TEXTURE_STACK_DEPTH* = 0x00000D39
-  GL_MAX_VIEWPORT_DIMS* = 0x00000D3A
-  GL_MAX_CLIENT_ATTRIB_STACK_DEPTH* = 0x00000D3B
-  GL_SUBPIXEL_BITS* = 0x00000D50
-  GL_INDEX_BITS* = 0x00000D51
-  GL_RED_BITS* = 0x00000D52
-  GL_GREEN_BITS* = 0x00000D53
-  GL_BLUE_BITS* = 0x00000D54
-  GL_ALPHA_BITS* = 0x00000D55
-  GL_DEPTH_BITS* = 0x00000D56
-  GL_STENCIL_BITS* = 0x00000D57
-  GL_ACCUM_RED_BITS* = 0x00000D58
-  GL_ACCUM_GREEN_BITS* = 0x00000D59
-  GL_ACCUM_BLUE_BITS* = 0x00000D5A
-  GL_ACCUM_ALPHA_BITS* = 0x00000D5B
-  GL_NAME_STACK_DEPTH* = 0x00000D70
-  GL_AUTO_NORMAL* = 0x00000D80
-  GL_MAP1_COLOR_4* = 0x00000D90
-  GL_MAP1_INDEX* = 0x00000D91
-  GL_MAP1_NORMAL* = 0x00000D92
-  GL_MAP1_TEXTURE_COORD_1* = 0x00000D93
-  GL_MAP1_TEXTURE_COORD_2* = 0x00000D94
-  GL_MAP1_TEXTURE_COORD_3* = 0x00000D95
-  GL_MAP1_TEXTURE_COORD_4* = 0x00000D96
-  GL_MAP1_VERTEX_3* = 0x00000D97
-  GL_MAP1_VERTEX_4* = 0x00000D98
-  GL_MAP2_COLOR_4* = 0x00000DB0
-  GL_MAP2_INDEX* = 0x00000DB1
-  GL_MAP2_NORMAL* = 0x00000DB2
-  GL_MAP2_TEXTURE_COORD_1* = 0x00000DB3
-  GL_MAP2_TEXTURE_COORD_2* = 0x00000DB4
-  GL_MAP2_TEXTURE_COORD_3* = 0x00000DB5
-  GL_MAP2_TEXTURE_COORD_4* = 0x00000DB6
-  GL_MAP2_VERTEX_3* = 0x00000DB7
-  GL_MAP2_VERTEX_4* = 0x00000DB8
-  GL_MAP1_GRID_DOMAIN* = 0x00000DD0
-  GL_MAP1_GRID_SEGMENTS* = 0x00000DD1
-  GL_MAP2_GRID_DOMAIN* = 0x00000DD2
-  GL_MAP2_GRID_SEGMENTS* = 0x00000DD3
-  GL_TEXTURE_1D* = 0x00000DE0
-  GL_TEXTURE_2D* = 0x00000DE1
-  GL_FEEDBACK_BUFFER_POINTER* = 0x00000DF0
-  GL_FEEDBACK_BUFFER_SIZE* = 0x00000DF1
-  GL_FEEDBACK_BUFFER_TYPE* = 0x00000DF2
-  GL_SELECTION_BUFFER_POINTER* = 0x00000DF3
-  GL_SELECTION_BUFFER_SIZE* = 0x00000DF4 #      GL_TEXTURE_BINDING_1D
+  GlCurrentColor* = 0x00000B00
+  GlCurrentIndex* = 0x00000B01
+  GlCurrentNormal* = 0x00000B02
+  GlCurrentTextureCoords* = 0x00000B03
+  GlCurrentRasterColor* = 0x00000B04
+  GlCurrentRasterIndex* = 0x00000B05
+  GlCurrentRasterTextureCoords* = 0x00000B06
+  GlCurrentRasterPosition* = 0x00000B07
+  GlCurrentRasterPositionValid* = 0x00000B08
+  GlCurrentRasterDistance* = 0x00000B09
+  GlPointSmooth* = 0x00000B10
+  constGLPOINTSIZE* = 0x00000B11
+  GlPointSizeRange* = 0x00000B12
+  GlPointSizeGranularity* = 0x00000B13
+  GlLineSmooth* = 0x00000B20
+  constGLLINEWIDTH* = 0x00000B21
+  GlLineWidthRange* = 0x00000B22
+  GlLineWidthGranularity* = 0x00000B23
+  constGLLINESTIPPLE* = 0x00000B24
+  GlLineStipplePattern* = 0x00000B25
+  GlLineStippleRepeat* = 0x00000B26
+  GlListMode* = 0x00000B30
+  GlMaxListNesting* = 0x00000B31
+  constGLLISTBASE* = 0x00000B32
+  GlListIndex* = 0x00000B33
+  constGLPOLYGONMODE* = 0x00000B40
+  GlPolygonSmooth* = 0x00000B41
+  constGLPOLYGONSTIPPLE* = 0x00000B42
+  constGLEDGEFLAG* = 0x00000B43
+  constGLCULLFACE* = 0x00000B44
+  GlCullFaceMode* = 0x00000B45
+  constGLFRONTFACE* = 0x00000B46
+  GlLighting* = 0x00000B50
+  GlLightModelLocalViewer* = 0x00000B51
+  GlLightModelTwoSide* = 0x00000B52
+  GlLightModelAmbient* = 0x00000B53
+  constGLSHADEMODEL* = 0x00000B54
+  GlColorMaterialFace* = 0x00000B55
+  GlColorMaterialParameter* = 0x00000B56
+  constGLCOLORMATERIAL* = 0x00000B57
+  GlFog* = 0x00000B60
+  GlFogIndex* = 0x00000B61
+  GlFogDensity* = 0x00000B62
+  GlFogStart* = 0x00000B63
+  GlFogEnd* = 0x00000B64
+  GlFogMode* = 0x00000B65
+  GlFogColor* = 0x00000B66
+  constGLDEPTHRANGE* = 0x00000B70
+  GlDepthTest* = 0x00000B71
+  GlDepthWritemask* = 0x00000B72
+  GlDepthClearValue* = 0x00000B73
+  constGLDEPTHFUNC* = 0x00000B74
+  GlAccumClearValue* = 0x00000B80
+  GlStencilTest* = 0x00000B90
+  GlStencilClearValue* = 0x00000B91
+  constGLSTENCILFUNC* = 0x00000B92
+  GlStencilValueMask* = 0x00000B93
+  GlStencilFail* = 0x00000B94
+  GlStencilPassDepthFail* = 0x00000B95
+  GlStencilPassDepthPass* = 0x00000B96
+  GlStencilRef* = 0x00000B97
+  GlStencilWritemask* = 0x00000B98
+  constGLMATRIXMODE* = 0x00000BA0
+  GlNormalize* = 0x00000BA1
+  constGLVIEWPORT* = 0x00000BA2
+  GlModelviewStackDepth* = 0x00000BA3
+  GlProjectionStackDepth* = 0x00000BA4
+  GlTextureStackDepth* = 0x00000BA5
+  GlModelviewMatrix* = 0x00000BA6
+  GlProjectionMatrix* = 0x00000BA7
+  GlTextureMatrix* = 0x00000BA8
+  GlAttribStackDepth* = 0x00000BB0
+  GlClientAttribStackDepth* = 0x00000BB1
+  GlAlphaTest* = 0x00000BC0
+  GlAlphaTestFunc* = 0x00000BC1
+  GlAlphaTestRef* = 0x00000BC2
+  GlDither* = 0x00000BD0
+  GlBlendDst* = 0x00000BE0
+  GlBlendSrc* = 0x00000BE1
+  GlBlend* = 0x00000BE2
+  GlLogicOpMode* = 0x00000BF0
+  GlIndexLogicOp* = 0x00000BF1
+  GlColorLogicOp* = 0x00000BF2
+  GlAuxBuffers* = 0x00000C00
+  constGLDRAWBUFFER* = 0x00000C01
+  constGLREADBUFFER* = 0x00000C02
+  GlScissorBox* = 0x00000C10
+  GlScissorTest* = 0x00000C11
+  GlIndexClearValue* = 0x00000C20
+  GlIndexWritemask* = 0x00000C21
+  GlColorClearValue* = 0x00000C22
+  GlColorWritemask* = 0x00000C23
+  GlIndexMode* = 0x00000C30
+  GlRgbaMode* = 0x00000C31
+  GlDoublebuffer* = 0x00000C32
+  GlStereo* = 0x00000C33
+  constGLRENDERMODE* = 0x00000C40
+  GlPerspectiveCorrectionHint* = 0x00000C50
+  GlPointSmoothHint* = 0x00000C51
+  GlLineSmoothHint* = 0x00000C52
+  GlPolygonSmoothHint* = 0x00000C53
+  GlFogHint* = 0x00000C54
+  GlTextureGenS* = 0x00000C60
+  GlTextureGenT* = 0x00000C61
+  GlTextureGenR* = 0x00000C62
+  GlTextureGenQ* = 0x00000C63
+  GlPixelMapIToI* = 0x00000C70
+  GlPixelMapSToS* = 0x00000C71
+  GlPixelMapIToR* = 0x00000C72
+  GlPixelMapIToG* = 0x00000C73
+  GlPixelMapIToB* = 0x00000C74
+  GlPixelMapIToA* = 0x00000C75
+  GlPixelMapRToR* = 0x00000C76
+  GlPixelMapGToG* = 0x00000C77
+  GlPixelMapBToB* = 0x00000C78
+  GlPixelMapAToA* = 0x00000C79
+  GlPixelMapIToISize* = 0x00000CB0
+  GlPixelMapSToSSize* = 0x00000CB1
+  GlPixelMapIToRSize* = 0x00000CB2
+  GlPixelMapIToGSize* = 0x00000CB3
+  GlPixelMapIToBSize* = 0x00000CB4
+  GlPixelMapIToASize* = 0x00000CB5
+  GlPixelMapRToRSize* = 0x00000CB6
+  GlPixelMapGToGSize* = 0x00000CB7
+  GlPixelMapBToBSize* = 0x00000CB8
+  GlPixelMapAToASize* = 0x00000CB9
+  GlUnpackSwapBytes* = 0x00000CF0
+  GlUnpackLsbFirst* = 0x00000CF1
+  GlUnpackRowLength* = 0x00000CF2
+  GlUnpackSkipRows* = 0x00000CF3
+  GlUnpackSkipPixels* = 0x00000CF4
+  GlUnpackAlignment* = 0x00000CF5
+  GlPackSwapBytes* = 0x00000D00
+  GlPackLsbFirst* = 0x00000D01
+  GlPackRowLength* = 0x00000D02
+  GlPackSkipRows* = 0x00000D03
+  GlPackSkipPixels* = 0x00000D04
+  GlPackAlignment* = 0x00000D05
+  GlMapColor* = 0x00000D10
+  GlMapStencil* = 0x00000D11
+  GlIndexShift* = 0x00000D12
+  GlIndexOffset* = 0x00000D13
+  GlRedScale* = 0x00000D14
+  GlRedBias* = 0x00000D15
+  GlZoomX* = 0x00000D16
+  GlZoomY* = 0x00000D17
+  GlGreenScale* = 0x00000D18
+  GlGreenBias* = 0x00000D19
+  GlBlueScale* = 0x00000D1A
+  GlBlueBias* = 0x00000D1B
+  GlAlphaScale* = 0x00000D1C
+  GlAlphaBias* = 0x00000D1D
+  GlDepthScale* = 0x00000D1E
+  GlDepthBias* = 0x00000D1F
+  GlMaxEvalOrder* = 0x00000D30
+  GlMaxLights* = 0x00000D31
+  GlMaxClipPlanes* = 0x00000D32
+  GlMaxTextureSize* = 0x00000D33
+  GlMaxPixelMapTable* = 0x00000D34
+  GlMaxAttribStackDepth* = 0x00000D35
+  GlMaxModelviewStackDepth* = 0x00000D36
+  GlMaxNameStackDepth* = 0x00000D37
+  GlMaxProjectionStackDepth* = 0x00000D38
+  GlMaxTextureStackDepth* = 0x00000D39
+  GlMaxViewportDims* = 0x00000D3A
+  GlMaxClientAttribStackDepth* = 0x00000D3B
+  GlSubpixelBits* = 0x00000D50
+  GlIndexBits* = 0x00000D51
+  GlRedBits* = 0x00000D52
+  GlGreenBits* = 0x00000D53
+  GlBlueBits* = 0x00000D54
+  GlAlphaBits* = 0x00000D55
+  GlDepthBits* = 0x00000D56
+  GlStencilBits* = 0x00000D57
+  GlAccumRedBits* = 0x00000D58
+  GlAccumGreenBits* = 0x00000D59
+  GlAccumBlueBits* = 0x00000D5A
+  GlAccumAlphaBits* = 0x00000D5B
+  GlNameStackDepth* = 0x00000D70
+  GlAutoNormal* = 0x00000D80
+  GlMap1Color4* = 0x00000D90
+  GlMap1Index* = 0x00000D91
+  GlMap1Normal* = 0x00000D92
+  GlMap1TextureCoord1* = 0x00000D93
+  GlMap1TextureCoord2* = 0x00000D94
+  GlMap1TextureCoord3* = 0x00000D95
+  GlMap1TextureCoord4* = 0x00000D96
+  GlMap1Vertex3* = 0x00000D97
+  GlMap1Vertex4* = 0x00000D98
+  GlMap2Color4* = 0x00000DB0
+  GlMap2Index* = 0x00000DB1
+  GlMap2Normal* = 0x00000DB2
+  GlMap2TextureCoord1* = 0x00000DB3
+  GlMap2TextureCoord2* = 0x00000DB4
+  GlMap2TextureCoord3* = 0x00000DB5
+  GlMap2TextureCoord4* = 0x00000DB6
+  GlMap2Vertex3* = 0x00000DB7
+  GlMap2Vertex4* = 0x00000DB8
+  GlMap1GridDomain* = 0x00000DD0
+  GlMap1GridSegments* = 0x00000DD1
+  GlMap2GridDomain* = 0x00000DD2
+  GlMap2GridSegments* = 0x00000DD3
+  GlTexture1d* = 0x00000DE0
+  GlTexture2d* = 0x00000DE1
+  GlFeedbackBufferPointer* = 0x00000DF0
+  GlFeedbackBufferSize* = 0x00000DF1
+  GlFeedbackBufferType* = 0x00000DF2
+  GlSelectionBufferPointer* = 0x00000DF3
+  GlSelectionBufferSize* = 0x00000DF4 #      GL_TEXTURE_BINDING_1D
                                          #      GL_TEXTURE_BINDING_2D
                                          #      GL_VERTEX_ARRAY
                                          #      GL_NORMAL_ARRAY
@@ -551,11 +551,11 @@ const                         # Version
                                          #      GL_TEXTURE_MIN_FILTER
                                          #      GL_TEXTURE_WRAP_S
                                          #      GL_TEXTURE_WRAP_T
-  GL_TEXTURE_WIDTH* = 0x00001000
-  GL_TEXTURE_HEIGHT* = 0x00001001
-  GL_TEXTURE_INTERNAL_FORMAT* = 0x00001003
-  GL_TEXTURE_BORDER_COLOR* = 0x00001004
-  GL_TEXTURE_BORDER* = 0x00001005 #      GL_TEXTURE_RED_SIZE
+  GlTextureWidth* = 0x00001000
+  GlTextureHeight* = 0x00001001
+  GlTextureInternalFormat* = 0x00001003
+  GlTextureBorderColor* = 0x00001004
+  GlTextureBorder* = 0x00001005 #      GL_TEXTURE_RED_SIZE
                                   #      GL_TEXTURE_GREEN_SIZE
                                   #      GL_TEXTURE_BLUE_SIZE
                                   #      GL_TEXTURE_ALPHA_SIZE
@@ -564,9 +564,9 @@ const                         # Version
                                   #      GL_TEXTURE_PRIORITY
                                   #      GL_TEXTURE_RESIDENT
                                   # HintMode
-  GL_DONT_CARE* = 0x00001100
-  GL_FASTEST* = 0x00001101
-  GL_NICEST* = 0x00001102     # HintTarget
+  GlDontCare* = 0x00001100
+  GlFastest* = 0x00001101
+  GlNicest* = 0x00001102     # HintTarget
                               #      GL_PERSPECTIVE_CORRECTION_HINT
                               #      GL_POINT_SMOOTH_HINT
                               #      GL_LINE_SMOOTH_HINT
@@ -582,24 +582,24 @@ const                         # Version
                               #      GL_LIGHT_MODEL_LOCAL_VIEWER
                               #      GL_LIGHT_MODEL_TWO_SIDE
                               # LightName
-  GL_LIGHT0* = 0x00004000
-  GL_LIGHT1* = 0x00004001
-  GL_LIGHT2* = 0x00004002
-  GL_LIGHT3* = 0x00004003
-  GL_LIGHT4* = 0x00004004
-  GL_LIGHT5* = 0x00004005
-  GL_LIGHT6* = 0x00004006
-  GL_LIGHT7* = 0x00004007     # LightParameter
-  GL_AMBIENT* = 0x00001200
-  GL_DIFFUSE* = 0x00001201
-  GL_SPECULAR* = 0x00001202
-  GL_POSITION* = 0x00001203
-  GL_SPOT_DIRECTION* = 0x00001204
-  GL_SPOT_EXPONENT* = 0x00001205
-  GL_SPOT_CUTOFF* = 0x00001206
-  GL_CONSTANT_ATTENUATION* = 0x00001207
-  GL_LINEAR_ATTENUATION* = 0x00001208
-  GL_QUADRATIC_ATTENUATION* = 0x00001209 # InterleavedArrays
+  GlLight0* = 0x00004000
+  GlLight1* = 0x00004001
+  GlLight2* = 0x00004002
+  GlLight3* = 0x00004003
+  GlLight4* = 0x00004004
+  GlLight5* = 0x00004005
+  GlLight6* = 0x00004006
+  GlLight7* = 0x00004007     # LightParameter
+  GlAmbient* = 0x00001200
+  GlDiffuse* = 0x00001201
+  GlSpecular* = 0x00001202
+  GlPosition* = 0x00001203
+  GlSpotDirection* = 0x00001204
+  GlSpotExponent* = 0x00001205
+  GlSpotCutoff* = 0x00001206
+  GlConstantAttenuation* = 0x00001207
+  GlLinearAttenuation* = 0x00001208
+  GlQuadraticAttenuation* = 0x00001209 # InterleavedArrays
                                          #      GL_V2F
                                          #      GL_V3F
                                          #      GL_C4UB_V2F
@@ -615,8 +615,8 @@ const                         # Version
                                          #      GL_T2F_C4F_N3F_V3F
                                          #      GL_T4F_C4F_N3F_V4F
                                          # ListMode
-  GL_COMPILE* = 0x00001300
-  GL_COMPILE_AND_EXECUTE* = 0x00001301 # ListNameType
+  GlCompile* = 0x00001300
+  GlCompileAndExecute* = 0x00001301 # ListNameType
                                        #      GL_BYTE
                                        #      GL_UNSIGNED_BYTE
                                        #      GL_SHORT
@@ -628,22 +628,22 @@ const                         # Version
                                        #      GL_3_BYTES
                                        #      GL_4_BYTES
                                        # LogicOp
-  constGL_CLEAR* = 0x00001500
-  GL_AND* = 0x00001501
-  GL_AND_REVERSE* = 0x00001502
-  GL_COPY* = 0x00001503
-  GL_AND_INVERTED* = 0x00001504
-  GL_NOOP* = 0x00001505
-  GL_XOR* = 0x00001506
-  GL_OR* = 0x00001507
-  GL_NOR* = 0x00001508
-  GL_EQUIV* = 0x00001509
-  GL_INVERT* = 0x0000150A
-  GL_OR_REVERSE* = 0x0000150B
-  GL_COPY_INVERTED* = 0x0000150C
-  GL_OR_INVERTED* = 0x0000150D
-  GL_NAND* = 0x0000150E
-  GL_SET* = 0x0000150F        # MapTarget
+  constGLCLEAR* = 0x00001500
+  GlAnd* = 0x00001501
+  GlAndReverse* = 0x00001502
+  GlCopy* = 0x00001503
+  GlAndInverted* = 0x00001504
+  GlNoop* = 0x00001505
+  GlXor* = 0x00001506
+  GlOr* = 0x00001507
+  GlNor* = 0x00001508
+  GlEquiv* = 0x00001509
+  GlInvert* = 0x0000150A
+  GlOrReverse* = 0x0000150B
+  GlCopyInverted* = 0x0000150C
+  GlOrInverted* = 0x0000150D
+  GlNand* = 0x0000150E
+  GlSet* = 0x0000150F        # MapTarget
                               #      GL_MAP1_COLOR_4
                               #      GL_MAP1_INDEX
                               #      GL_MAP1_NORMAL
@@ -667,16 +667,16 @@ const                         # Version
                               #      GL_BACK
                               #      GL_FRONT_AND_BACK
                               # MaterialParameter
-  GL_EMISSION* = 0x00001600
-  GL_SHININESS* = 0x00001601
-  GL_AMBIENT_AND_DIFFUSE* = 0x00001602
-  GL_COLOR_INDEXES* = 0x00001603 #      GL_AMBIENT
+  GlEmission* = 0x00001600
+  GlShininess* = 0x00001601
+  GlAmbientAndDiffuse* = 0x00001602
+  GlColorIndexes* = 0x00001603 #      GL_AMBIENT
                                  #      GL_DIFFUSE
                                  #      GL_SPECULAR
                                  # MatrixMode
-  GL_MODELVIEW* = 0x00001700
-  GL_PROJECTION* = 0x00001701
-  GL_TEXTURE* = 0x00001702    # MeshMode1
+  GlModelview* = 0x00001700
+  GlProjection* = 0x00001701
+  GlTexture* = 0x00001702    # MeshMode1
                               #      GL_POINT
                               #      GL_LINE
                               # MeshMode2
@@ -690,20 +690,20 @@ const                         # Version
                               #      GL_FLOAT
                               #      GL_DOUBLE
                               # PixelCopyType
-  GL_COLOR* = 0x00001800
-  GL_DEPTH* = 0x00001801
-  GL_STENCIL* = 0x00001802    # PixelFormat
-  GL_COLOR_INDEX* = 0x00001900
-  GL_STENCIL_INDEX* = 0x00001901
-  GL_DEPTH_COMPONENT* = 0x00001902
-  GL_RED* = 0x00001903
-  GL_GREEN* = 0x00001904
-  GL_BLUE* = 0x00001905
-  GL_ALPHA* = 0x00001906
-  GL_RGB* = 0x00001907
-  GL_RGBA* = 0x00001908
-  GL_LUMINANCE* = 0x00001909
-  GL_LUMINANCE_ALPHA* = 0x0000190A # PixelMap
+  GlColor* = 0x00001800
+  GlDepth* = 0x00001801
+  GlStencil* = 0x00001802    # PixelFormat
+  GlColorIndex* = 0x00001900
+  GlStencilIndex* = 0x00001901
+  GlDepthComponent* = 0x00001902
+  GlRed* = 0x00001903
+  GlGreen* = 0x00001904
+  GlBlue* = 0x00001905
+  GlAlpha* = 0x00001906
+  GlRgb* = 0x00001907
+  GlRgba* = 0x00001908
+  GlLuminance* = 0x00001909
+  GlLuminanceAlpha* = 0x0000190A # PixelMap
                                    #      GL_PIXEL_MAP_I_TO_I
                                    #      GL_PIXEL_MAP_S_TO_S
                                    #      GL_PIXEL_MAP_I_TO_R
@@ -743,10 +743,10 @@ const                         # Version
                                    #      GL_DEPTH_SCALE
                                    #      GL_DEPTH_BIAS
                                    # PixelType
-  constGL_BITMAP* = 0x00001A00
-  GL_POINT* = 0x00001B00
-  GL_LINE* = 0x00001B01
-  GL_FILL* = 0x00001B02       # ReadBufferMode
+  constGLBITMAP* = 0x00001A00
+  GlPoint* = 0x00001B00
+  GlLine* = 0x00001B01
+  GlFill* = 0x00001B02       # ReadBufferMode
                               #      GL_FRONT_LEFT
                               #      GL_FRONT_RIGHT
                               #      GL_BACK_LEFT
@@ -760,11 +760,11 @@ const                         # Version
                               #      GL_AUX2
                               #      GL_AUX3
                               # RenderingMode
-  GL_RENDER* = 0x00001C00
-  GL_FEEDBACK* = 0x00001C01
-  GL_SELECT* = 0x00001C02     # ShadingModel
-  GL_FLAT* = 0x00001D00
-  GL_SMOOTH* = 0x00001D01     # StencilFunction
+  GlRender* = 0x00001C00
+  GlFeedback* = 0x00001C01
+  GlSelect* = 0x00001C02     # ShadingModel
+  GlFlat* = 0x00001D00
+  GlSmooth* = 0x00001D01     # StencilFunction
                               #      GL_NEVER
                               #      GL_LESS
                               #      GL_EQUAL
@@ -775,49 +775,49 @@ const                         # Version
                               #      GL_ALWAYS
                               # StencilOp
                               #      GL_ZERO
-  GL_KEEP* = 0x00001E00
-  GL_REPLACE* = 0x00001E01
-  GL_INCR* = 0x00001E02
-  GL_DECR* = 0x00001E03       #      GL_INVERT
+  GlKeep* = 0x00001E00
+  GlReplace* = 0x00001E01
+  GlIncr* = 0x00001E02
+  GlDecr* = 0x00001E03       #      GL_INVERT
                               # StringName
-  GL_VENDOR* = 0x00001F00
-  GL_RENDERER* = 0x00001F01
-  GL_VERSION* = 0x00001F02
-  GL_EXTENSIONS* = 0x00001F03 # TextureCoordName
-  GL_S* = 0x00002000
-  GL_T* = 0x00002001
-  GL_R* = 0x00002002
-  GL_Q* = 0x00002003          # TexCoordPointerType
+  GlVendor* = 0x00001F00
+  GlRenderer* = 0x00001F01
+  GlVersion* = 0x00001F02
+  GlExtensions* = 0x00001F03 # TextureCoordName
+  GlS* = 0x00002000
+  GlT* = 0x00002001
+  GlR* = 0x00002002
+  GlQ* = 0x00002003          # TexCoordPointerType
                               #      GL_SHORT
                               #      GL_INT
                               #      GL_FLOAT
                               #      GL_DOUBLE
                               # TextureEnvMode
-  GL_MODULATE* = 0x00002100
-  GL_DECAL* = 0x00002101      #      GL_BLEND
+  GlModulate* = 0x00002100
+  GlDecal* = 0x00002101      #      GL_BLEND
                               #      GL_REPLACE
                               # TextureEnvParameter
-  GL_TEXTURE_ENV_MODE* = 0x00002200
-  GL_TEXTURE_ENV_COLOR* = 0x00002201 # TextureEnvTarget
-  GL_TEXTURE_ENV* = 0x00002300 # TextureGenMode
-  GL_EYE_LINEAR* = 0x00002400
-  GL_OBJECT_LINEAR* = 0x00002401
-  GL_SPHERE_MAP* = 0x00002402 # TextureGenParameter
-  GL_TEXTURE_GEN_MODE* = 0x00002500
-  GL_OBJECT_PLANE* = 0x00002501
-  GL_EYE_PLANE* = 0x00002502  # TextureMagFilter
-  GL_NEAREST* = 0x00002600
-  GL_LINEAR* = 0x00002601     # TextureMinFilter
+  GlTextureEnvMode* = 0x00002200
+  GlTextureEnvColor* = 0x00002201 # TextureEnvTarget
+  GlTextureEnv* = 0x00002300 # TextureGenMode
+  GlEyeLinear* = 0x00002400
+  GlObjectLinear* = 0x00002401
+  GlSphereMap* = 0x00002402 # TextureGenParameter
+  GlTextureGenMode* = 0x00002500
+  GlObjectPlane* = 0x00002501
+  GlEyePlane* = 0x00002502  # TextureMagFilter
+  GlNearest* = 0x00002600
+  GlLinear* = 0x00002601     # TextureMinFilter
                               #      GL_NEAREST
                               #      GL_LINEAR
-  GL_NEAREST_MIPMAP_NEAREST* = 0x00002700
-  GL_LINEAR_MIPMAP_NEAREST* = 0x00002701
-  GL_NEAREST_MIPMAP_LINEAR* = 0x00002702
-  GL_LINEAR_MIPMAP_LINEAR* = 0x00002703 # TextureParameterName
-  GL_TEXTURE_MAG_FILTER* = 0x00002800
-  GL_TEXTURE_MIN_FILTER* = 0x00002801
-  GL_TEXTURE_WRAP_S* = 0x00002802
-  GL_TEXTURE_WRAP_T* = 0x00002803 #      GL_TEXTURE_BORDER_COLOR
+  GlNearestMipmapNearest* = 0x00002700
+  GlLinearMipmapNearest* = 0x00002701
+  GlNearestMipmapLinear* = 0x00002702
+  GlLinearMipmapLinear* = 0x00002703 # TextureParameterName
+  GlTextureMagFilter* = 0x00002800
+  GlTextureMinFilter* = 0x00002801
+  GlTextureWrapS* = 0x00002802
+  GlTextureWrapT* = 0x00002803 #      GL_TEXTURE_BORDER_COLOR
                                   #      GL_TEXTURE_PRIORITY
                                   # TextureTarget
                                   #      GL_TEXTURE_1D
@@ -825,162 +825,162 @@ const                         # Version
                                   #      GL_PROXY_TEXTURE_1D
                                   #      GL_PROXY_TEXTURE_2D
                                   # TextureWrapMode
-  GL_CLAMP* = 0x00002900
-  GL_REPEAT* = 0x00002901     # VertexPointerType
+  GlClamp* = 0x00002900
+  GlRepeat* = 0x00002901     # VertexPointerType
                               #      GL_SHORT
                               #      GL_INT
                               #      GL_FLOAT
                               #      GL_DOUBLE
                               # ClientAttribMask
-  GL_CLIENT_PIXEL_STORE_BIT* = 0x00000001
-  GL_CLIENT_VERTEX_ARRAY_BIT* = 0x00000002
-  GL_CLIENT_ALL_ATTRIB_BITS* = 0xFFFFFFFF # polygon_offset
-  GL_POLYGON_OFFSET_FACTOR* = 0x00008038
-  GL_POLYGON_OFFSET_UNITS* = 0x00002A00
-  GL_POLYGON_OFFSET_POINT* = 0x00002A01
-  GL_POLYGON_OFFSET_LINE* = 0x00002A02
-  GL_POLYGON_OFFSET_FILL* = 0x00008037 # texture
-  GL_ALPHA4* = 0x0000803B
-  GL_ALPHA8* = 0x0000803C
-  GL_ALPHA12* = 0x0000803D
-  GL_ALPHA16* = 0x0000803E
-  GL_LUMINANCE4* = 0x0000803F
-  GL_LUMINANCE8* = 0x00008040
-  GL_LUMINANCE12* = 0x00008041
-  GL_LUMINANCE16* = 0x00008042
-  GL_LUMINANCE4_ALPHA4* = 0x00008043
-  GL_LUMINANCE6_ALPHA2* = 0x00008044
-  GL_LUMINANCE8_ALPHA8* = 0x00008045
-  GL_LUMINANCE12_ALPHA4* = 0x00008046
-  GL_LUMINANCE12_ALPHA12* = 0x00008047
-  GL_LUMINANCE16_ALPHA16* = 0x00008048
-  GL_INTENSITY* = 0x00008049
-  GL_INTENSITY4* = 0x0000804A
-  GL_INTENSITY8* = 0x0000804B
-  GL_INTENSITY12* = 0x0000804C
-  GL_INTENSITY16* = 0x0000804D
-  GL_R3_G3_B2* = 0x00002A10
-  GL_RGB4* = 0x0000804F
-  GL_RGB5* = 0x00008050
-  GL_RGB8* = 0x00008051
-  GL_RGB10* = 0x00008052
-  GL_RGB12* = 0x00008053
-  GL_RGB16* = 0x00008054
-  GL_RGBA2* = 0x00008055
-  GL_RGBA4* = 0x00008056
-  GL_RGB5_A1* = 0x00008057
-  GL_RGBA8* = 0x00008058
-  GL_RGB10_A2* = 0x00008059
-  GL_RGBA12* = 0x0000805A
-  GL_RGBA16* = 0x0000805B
-  GL_TEXTURE_RED_SIZE* = 0x0000805C
-  GL_TEXTURE_GREEN_SIZE* = 0x0000805D
-  GL_TEXTURE_BLUE_SIZE* = 0x0000805E
-  GL_TEXTURE_ALPHA_SIZE* = 0x0000805F
-  GL_TEXTURE_LUMINANCE_SIZE* = 0x00008060
-  GL_TEXTURE_INTENSITY_SIZE* = 0x00008061
-  GL_PROXY_TEXTURE_1D* = 0x00008063
-  GL_PROXY_TEXTURE_2D* = 0x00008064 # texture_object
-  GL_TEXTURE_PRIORITY* = 0x00008066
-  GL_TEXTURE_RESIDENT* = 0x00008067
-  GL_TEXTURE_BINDING_1D* = 0x00008068
-  GL_TEXTURE_BINDING_2D* = 0x00008069 # vertex_array
-  GL_VERTEX_ARRAY* = 0x00008074
-  GL_NORMAL_ARRAY* = 0x00008075
-  GL_COLOR_ARRAY* = 0x00008076
-  GL_INDEX_ARRAY* = 0x00008077
-  GL_TEXTURE_COORD_ARRAY* = 0x00008078
-  GL_EDGE_FLAG_ARRAY* = 0x00008079
-  GL_VERTEX_ARRAY_SIZE* = 0x0000807A
-  GL_VERTEX_ARRAY_TYPE* = 0x0000807B
-  GL_VERTEX_ARRAY_STRIDE* = 0x0000807C
-  GL_NORMAL_ARRAY_TYPE* = 0x0000807E
-  GL_NORMAL_ARRAY_STRIDE* = 0x0000807F
-  GL_COLOR_ARRAY_SIZE* = 0x00008081
-  GL_COLOR_ARRAY_TYPE* = 0x00008082
-  GL_COLOR_ARRAY_STRIDE* = 0x00008083
-  GL_INDEX_ARRAY_TYPE* = 0x00008085
-  GL_INDEX_ARRAY_STRIDE* = 0x00008086
-  GL_TEXTURE_COORD_ARRAY_SIZE* = 0x00008088
-  GL_TEXTURE_COORD_ARRAY_TYPE* = 0x00008089
-  GL_TEXTURE_COORD_ARRAY_STRIDE* = 0x0000808A
-  GL_EDGE_FLAG_ARRAY_STRIDE* = 0x0000808C
-  GL_VERTEX_ARRAY_POINTER* = 0x0000808E
-  GL_NORMAL_ARRAY_POINTER* = 0x0000808F
-  GL_COLOR_ARRAY_POINTER* = 0x00008090
-  GL_INDEX_ARRAY_POINTER* = 0x00008091
-  GL_TEXTURE_COORD_ARRAY_POINTER* = 0x00008092
-  GL_EDGE_FLAG_ARRAY_POINTER* = 0x00008093
-  GL_V2F* = 0x00002A20
-  GL_V3F* = 0x00002A21
-  GL_C4UB_V2F* = 0x00002A22
-  GL_C4UB_V3F* = 0x00002A23
-  GL_C3F_V3F* = 0x00002A24
-  GL_N3F_V3F* = 0x00002A25
-  GL_C4F_N3F_V3F* = 0x00002A26
-  GL_T2F_V3F* = 0x00002A27
-  GL_T4F_V4F* = 0x00002A28
-  GL_T2F_C4UB_V3F* = 0x00002A29
-  GL_T2F_C3F_V3F* = 0x00002A2A
-  GL_T2F_N3F_V3F* = 0x00002A2B
-  GL_T2F_C4F_N3F_V3F* = 0x00002A2C
-  GL_T4F_C4F_N3F_V4F* = 0x00002A2D # Extensions
-  GL_EXT_vertex_array* = 1
-  GL_WIN_swap_hint* = 1
-  GL_EXT_bgra* = 1
-  GL_EXT_paletted_texture* = 1 # EXT_vertex_array
-  GL_VERTEX_ARRAY_EXT* = 0x00008074
-  GL_NORMAL_ARRAY_EXT* = 0x00008075
-  GL_COLOR_ARRAY_EXT* = 0x00008076
-  GL_INDEX_ARRAY_EXT* = 0x00008077
-  GL_TEXTURE_COORD_ARRAY_EXT* = 0x00008078
-  GL_EDGE_FLAG_ARRAY_EXT* = 0x00008079
-  GL_VERTEX_ARRAY_SIZE_EXT* = 0x0000807A
-  GL_VERTEX_ARRAY_TYPE_EXT* = 0x0000807B
-  GL_VERTEX_ARRAY_STRIDE_EXT* = 0x0000807C
-  GL_VERTEX_ARRAY_COUNT_EXT* = 0x0000807D
-  GL_NORMAL_ARRAY_TYPE_EXT* = 0x0000807E
-  GL_NORMAL_ARRAY_STRIDE_EXT* = 0x0000807F
-  GL_NORMAL_ARRAY_COUNT_EXT* = 0x00008080
-  GL_COLOR_ARRAY_SIZE_EXT* = 0x00008081
-  GL_COLOR_ARRAY_TYPE_EXT* = 0x00008082
-  GL_COLOR_ARRAY_STRIDE_EXT* = 0x00008083
-  GL_COLOR_ARRAY_COUNT_EXT* = 0x00008084
-  GL_INDEX_ARRAY_TYPE_EXT* = 0x00008085
-  GL_INDEX_ARRAY_STRIDE_EXT* = 0x00008086
-  GL_INDEX_ARRAY_COUNT_EXT* = 0x00008087
-  GL_TEXTURE_COORD_ARRAY_SIZE_EXT* = 0x00008088
-  GL_TEXTURE_COORD_ARRAY_TYPE_EXT* = 0x00008089
-  GL_TEXTURE_COORD_ARRAY_STRIDE_EXT* = 0x0000808A
-  GL_TEXTURE_COORD_ARRAY_COUNT_EXT* = 0x0000808B
-  GL_EDGE_FLAG_ARRAY_STRIDE_EXT* = 0x0000808C
-  GL_EDGE_FLAG_ARRAY_COUNT_EXT* = 0x0000808D
-  GL_VERTEX_ARRAY_POINTER_EXT* = 0x0000808E
-  GL_NORMAL_ARRAY_POINTER_EXT* = 0x0000808F
-  GL_COLOR_ARRAY_POINTER_EXT* = 0x00008090
-  GL_INDEX_ARRAY_POINTER_EXT* = 0x00008091
-  GL_TEXTURE_COORD_ARRAY_POINTER_EXT* = 0x00008092
-  GL_EDGE_FLAG_ARRAY_POINTER_EXT* = 0x00008093
-  GL_DOUBLE_EXT* = GL_DOUBLE  # EXT_bgra
-  GL_BGR_EXT* = 0x000080E0
-  GL_BGRA_EXT* = 0x000080E1   # EXT_paletted_texture
+  GlClientPixelStoreBit* = 0x00000001
+  GlClientVertexArrayBit* = 0x00000002
+  GlClientAllAttribBits* = 0xFFFFFFFF # polygon_offset
+  GlPolygonOffsetFactor* = 0x00008038
+  GlPolygonOffsetUnits* = 0x00002A00
+  GlPolygonOffsetPoint* = 0x00002A01
+  GlPolygonOffsetLine* = 0x00002A02
+  GlPolygonOffsetFill* = 0x00008037 # texture
+  GlAlpha4* = 0x0000803B
+  GlAlpha8* = 0x0000803C
+  GlAlpha12* = 0x0000803D
+  GlAlpha16* = 0x0000803E
+  GlLuminance4* = 0x0000803F
+  GlLuminance8* = 0x00008040
+  GlLuminance12* = 0x00008041
+  GlLuminance16* = 0x00008042
+  GlLuminance4Alpha4* = 0x00008043
+  GlLuminance6Alpha2* = 0x00008044
+  GlLuminance8Alpha8* = 0x00008045
+  GlLuminance12Alpha4* = 0x00008046
+  GlLuminance12Alpha12* = 0x00008047
+  GlLuminance16Alpha16* = 0x00008048
+  GlIntensity* = 0x00008049
+  GlIntensity4* = 0x0000804A
+  GlIntensity8* = 0x0000804B
+  GlIntensity12* = 0x0000804C
+  GlIntensity16* = 0x0000804D
+  GlR3G3B2* = 0x00002A10
+  GlRgb4* = 0x0000804F
+  GlRgb5* = 0x00008050
+  GlRgb8* = 0x00008051
+  GlRgb10* = 0x00008052
+  GlRgb12* = 0x00008053
+  GlRgb16* = 0x00008054
+  GlRgba2* = 0x00008055
+  GlRgba4* = 0x00008056
+  GlRgb5A1* = 0x00008057
+  GlRgba8* = 0x00008058
+  GlRgb10A2* = 0x00008059
+  GlRgba12* = 0x0000805A
+  GlRgba16* = 0x0000805B
+  GlTextureRedSize* = 0x0000805C
+  GlTextureGreenSize* = 0x0000805D
+  GlTextureBlueSize* = 0x0000805E
+  GlTextureAlphaSize* = 0x0000805F
+  GlTextureLuminanceSize* = 0x00008060
+  GlTextureIntensitySize* = 0x00008061
+  GlProxyTexture1d* = 0x00008063
+  GlProxyTexture2d* = 0x00008064 # texture_object
+  GlTexturePriority* = 0x00008066
+  GlTextureResident* = 0x00008067
+  GlTextureBinding1d* = 0x00008068
+  GlTextureBinding2d* = 0x00008069 # vertex_array
+  GlVertexArray* = 0x00008074
+  GlNormalArray* = 0x00008075
+  GlColorArray* = 0x00008076
+  GlIndexArray* = 0x00008077
+  GlTextureCoordArray* = 0x00008078
+  GlEdgeFlagArray* = 0x00008079
+  GlVertexArraySize* = 0x0000807A
+  GlVertexArrayType* = 0x0000807B
+  GlVertexArrayStride* = 0x0000807C
+  GlNormalArrayType* = 0x0000807E
+  GlNormalArrayStride* = 0x0000807F
+  GlColorArraySize* = 0x00008081
+  GlColorArrayType* = 0x00008082
+  GlColorArrayStride* = 0x00008083
+  GlIndexArrayType* = 0x00008085
+  GlIndexArrayStride* = 0x00008086
+  GlTextureCoordArraySize* = 0x00008088
+  GlTextureCoordArrayType* = 0x00008089
+  GlTextureCoordArrayStride* = 0x0000808A
+  GlEdgeFlagArrayStride* = 0x0000808C
+  GlVertexArrayPointer* = 0x0000808E
+  GlNormalArrayPointer* = 0x0000808F
+  GlColorArrayPointer* = 0x00008090
+  GlIndexArrayPointer* = 0x00008091
+  GlTextureCoordArrayPointer* = 0x00008092
+  GlEdgeFlagArrayPointer* = 0x00008093
+  GlV2f* = 0x00002A20
+  GlV3f* = 0x00002A21
+  GlC4ubV2f* = 0x00002A22
+  GlC4ubV3f* = 0x00002A23
+  GlC3fV3f* = 0x00002A24
+  GlN3fV3f* = 0x00002A25
+  GlC4fN3fV3f* = 0x00002A26
+  GlT2fV3f* = 0x00002A27
+  GlT4fV4f* = 0x00002A28
+  GlT2fC4ubV3f* = 0x00002A29
+  GlT2fC3fV3f* = 0x00002A2A
+  GlT2fN3fV3f* = 0x00002A2B
+  GlT2fC4fN3fV3f* = 0x00002A2C
+  GlT4fC4fN3fV4f* = 0x00002A2D # Extensions
+  GLEXTVertexArray* = 1
+  GLWINSwapHint* = 1
+  GLEXTBgra* = 1
+  GLEXTPalettedTexture* = 1 # EXT_vertex_array
+  GlVertexArrayExt* = 0x00008074
+  GlNormalArrayExt* = 0x00008075
+  GlColorArrayExt* = 0x00008076
+  GlIndexArrayExt* = 0x00008077
+  GlTextureCoordArrayExt* = 0x00008078
+  GlEdgeFlagArrayExt* = 0x00008079
+  GlVertexArraySizeExt* = 0x0000807A
+  GlVertexArrayTypeExt* = 0x0000807B
+  GlVertexArrayStrideExt* = 0x0000807C
+  GlVertexArrayCountExt* = 0x0000807D
+  GlNormalArrayTypeExt* = 0x0000807E
+  GlNormalArrayStrideExt* = 0x0000807F
+  GlNormalArrayCountExt* = 0x00008080
+  GlColorArraySizeExt* = 0x00008081
+  GlColorArrayTypeExt* = 0x00008082
+  GlColorArrayStrideExt* = 0x00008083
+  GlColorArrayCountExt* = 0x00008084
+  GlIndexArrayTypeExt* = 0x00008085
+  GlIndexArrayStrideExt* = 0x00008086
+  GlIndexArrayCountExt* = 0x00008087
+  GlTextureCoordArraySizeExt* = 0x00008088
+  GlTextureCoordArrayTypeExt* = 0x00008089
+  GlTextureCoordArrayStrideExt* = 0x0000808A
+  GlTextureCoordArrayCountExt* = 0x0000808B
+  GlEdgeFlagArrayStrideExt* = 0x0000808C
+  GlEdgeFlagArrayCountExt* = 0x0000808D
+  GlVertexArrayPointerExt* = 0x0000808E
+  GlNormalArrayPointerExt* = 0x0000808F
+  GlColorArrayPointerExt* = 0x00008090
+  GlIndexArrayPointerExt* = 0x00008091
+  GlTextureCoordArrayPointerExt* = 0x00008092
+  GlEdgeFlagArrayPointerExt* = 0x00008093
+  GlDoubleExt* = GL_DOUBLE  # EXT_bgra
+  GlBgrExt* = 0x000080E0
+  GlBgraExt* = 0x000080E1   # EXT_paletted_texture
                               # These must match the GL_COLOR_TABLE_*_SGI enumerants
-  GL_COLOR_TABLE_FORMAT_EXT* = 0x000080D8
-  GL_COLOR_TABLE_WIDTH_EXT* = 0x000080D9
-  GL_COLOR_TABLE_RED_SIZE_EXT* = 0x000080DA
-  GL_COLOR_TABLE_GREEN_SIZE_EXT* = 0x000080DB
-  GL_COLOR_TABLE_BLUE_SIZE_EXT* = 0x000080DC
-  GL_COLOR_TABLE_ALPHA_SIZE_EXT* = 0x000080DD
-  GL_COLOR_TABLE_LUMINANCE_SIZE_EXT* = 0x000080DE
-  GL_COLOR_TABLE_INTENSITY_SIZE_EXT* = 0x000080DF
-  GL_COLOR_INDEX1_EXT* = 0x000080E2
-  GL_COLOR_INDEX2_EXT* = 0x000080E3
-  GL_COLOR_INDEX4_EXT* = 0x000080E4
-  GL_COLOR_INDEX8_EXT* = 0x000080E5
-  GL_COLOR_INDEX12_EXT* = 0x000080E6
-  GL_COLOR_INDEX16_EXT* = 0x000080E7 # For compatibility with OpenGL v1.0
-  constGL_LOGIC_OP* = GL_INDEX_LOGIC_OP
-  GL_TEXTURE_COMPONENTS* = GL_TEXTURE_INTERNAL_FORMAT
+  GlColorTableFormatExt* = 0x000080D8
+  GlColorTableWidthExt* = 0x000080D9
+  GlColorTableRedSizeExt* = 0x000080DA
+  GlColorTableGreenSizeExt* = 0x000080DB
+  GlColorTableBlueSizeExt* = 0x000080DC
+  GlColorTableAlphaSizeExt* = 0x000080DD
+  GlColorTableLuminanceSizeExt* = 0x000080DE
+  GlColorTableIntensitySizeExt* = 0x000080DF
+  GlColorIndex1Ext* = 0x000080E2
+  GlColorIndex2Ext* = 0x000080E3
+  GlColorIndex4Ext* = 0x000080E4
+  GlColorIndex8Ext* = 0x000080E5
+  GlColorIndex12Ext* = 0x000080E6
+  GlColorIndex16Ext* = 0x000080E7 # For compatibility with OpenGL v1.0
+  constGLLOGICOP* = GL_INDEX_LOGIC_OP
+  GlTextureComponents* = GL_TEXTURE_INTERNAL_FORMAT
 
 proc glAccum*(op: TGLenum, value: TGLfloat){.dynlib: dllname, importc: "glAccum".}
 proc glAlphaFunc*(func: TGLenum, theref: TGLclampf){.dynlib: dllname, 
@@ -1175,7 +1175,7 @@ proc glGetPointerv*(pname: TGLenum, params: Pointer){.dynlib: dllname,
     importc: "glGetPointerv".}
 proc glGetPolygonStipple*(mask: PGLubyte){.dynlib: dllname, 
     importc: "glGetPolygonStipple".}
-proc glGetString*(name: TGLenum): cstring{.dynlib: dllname, 
+proc glGetString*(name: TGLenum): Cstring{.dynlib: dllname, 
     importc: "glGetString".}
 proc glGetTexEnvfv*(target, pname: TGLenum, params: PGLfloat){.dynlib: dllname, 
     importc: "glGetTexEnvfv".}
@@ -1500,36 +1500,36 @@ proc glVertexPointer*(size: TGLint, atype: TGLenum, stride: TGLsizei,
 proc glViewport*(x, y: TGLint, width, height: TGLsizei){.dynlib: dllname, 
     importc: "glViewport".}
 type 
-  PFN_GLARRAY_ELEMENT_EXTPROC* = proc (i: TGLint)
-  PFN_GLDRAW_ARRAYS_EXTPROC* = proc (mode: TGLenum, first: TGLint, 
+  PfnGlarrayElementExtproc* = proc (i: TGLint)
+  PfnGldrawArraysExtproc* = proc (mode: TGLenum, first: TGLint, 
                                      count: TGLsizei)
-  PFN_GLVERTEX_POINTER_EXTPROC* = proc (size: TGLint, atype: TGLenum, 
+  PfnGlvertexPointerExtproc* = proc (size: TGLint, atype: TGLenum, 
                                         stride, count: TGLsizei, 
                                         pointer: Pointer)
-  PFN_GLNORMAL_POINTER_EXTPROC* = proc (atype: TGLenum, stride, count: TGLsizei, 
+  PfnGlnormalPointerExtproc* = proc (atype: TGLenum, stride, count: TGLsizei, 
                                         pointer: Pointer)
-  PFN_GLCOLOR_POINTER_EXTPROC* = proc (size: TGLint, atype: TGLenum, 
+  PfnGlcolorPointerExtproc* = proc (size: TGLint, atype: TGLenum, 
                                        stride, count: TGLsizei, pointer: Pointer)
-  PFN_GLINDEX_POINTER_EXTPROC* = proc (atype: TGLenum, stride, count: TGLsizei, 
+  PfnGlindexPointerExtproc* = proc (atype: TGLenum, stride, count: TGLsizei, 
                                        pointer: Pointer)
-  PFN_GLTEXCOORD_POINTER_EXTPROC* = proc (size: TGLint, atype: TGLenum, 
+  PfnGltexcoordPointerExtproc* = proc (size: TGLint, atype: TGLenum, 
       stride, count: TGLsizei, pointer: Pointer)
-  PFN_GLEDGEFLAG_POINTER_EXTPROC* = proc (stride, count: TGLsizei, 
+  PfnGledgeflagPointerExtproc* = proc (stride, count: TGLsizei, 
       pointer: PGLboolean)
-  PFN_GLGET_POINTER_VEXT_PROC* = proc (pname: TGLenum, params: Pointer)
-  PFN_GLARRAY_ELEMENT_ARRAY_EXTPROC* = proc (mode: TGLenum, count: TGLsizei, 
+  PfnGlgetPointerVextProc* = proc (pname: TGLenum, params: Pointer)
+  PfnGlarrayElementArrayExtproc* = proc (mode: TGLenum, count: TGLsizei, 
       pi: Pointer)            # WIN_swap_hint
-  PFN_GLADDSWAPHINT_RECT_WINPROC* = proc (x, y: TGLint, width, height: TGLsizei)
-  PFN_GLCOLOR_TABLE_EXTPROC* = proc (target, internalFormat: TGLenum, 
+  PfnGladdswaphintRectWinproc* = proc (x, y: TGLint, width, height: TGLsizei)
+  PfnGlcolorTableExtproc* = proc (target, internalFormat: TGLenum, 
                                      width: TGLsizei, format, atype: TGLenum, 
                                      data: Pointer)
-  PFN_GLCOLOR_SUBTABLE_EXTPROC* = proc (target: TGLenum, start, count: TGLsizei, 
+  PfnGlcolorSubtableExtproc* = proc (target: TGLenum, start, count: TGLsizei, 
                                         format, atype: TGLenum, data: Pointer)
-  PFN_GLGETCOLOR_TABLE_EXTPROC* = proc (target, format, atype: TGLenum, 
+  PfnGlgetcolorTableExtproc* = proc (target, format, atype: TGLenum, 
                                         data: Pointer)
-  PFN_GLGETCOLOR_TABLE_PARAMETER_IVEXTPROC* = proc (target, pname: TGLenum, 
+  PfnGlgetcolorTableParameterIvextproc* = proc (target, pname: TGLenum, 
       params: PGLint)
-  PFN_GLGETCOLOR_TABLE_PARAMETER_FVEXTPROC* = proc (target, pname: TGLenum, 
+  PfnGlgetcolorTableParameterFvextproc* = proc (target, pname: TGLenum, 
       params: PGLfloat)
 
 {.pop.}

@@ -4,5 +4,5 @@ discard """
   errormsg: "\'method\' needs a parameter that has an object type"
 """
 
-method m(i: int): int =
+method m(i: Int): Int =
   return 5

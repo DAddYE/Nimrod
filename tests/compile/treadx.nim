@@ -3,7 +3,7 @@ when not defined(windows):
   import posix
 
   var inp = ""
-  var buf: array[0..10, char]
+  var buf: Array[0..10, Char]
   while true:
     var r = read(0, addr(buf), sizeof(buf)-1)
     add inp, $buf

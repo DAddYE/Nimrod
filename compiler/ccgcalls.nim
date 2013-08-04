@@ -9,13 +9,13 @@
 #
 # included from cgen.nim
 
-proc leftAppearsOnRightSide(le, ri: PNode): bool =
+proc leftAppearsOnRightSide(le, ri: PNode): Bool =
   if le != nil:
     for i in 1 .. <ri.len:
       let r = ri[i]
       if isPartOf(le, r) != arNo: return true
 
-proc hasNoInit(call: PNode): bool {.inline.} =
+proc hasNoInit(call: PNode): Bool {.inline.} =
   result = call.sons[0].kind == nkSym and sfNoInit in call.sons[0].sym.flags
 
 proc fixupCall(p: BProc, le, ri: PNode, d: var TLoc,
@@ -55,7 +55,7 @@ proc fixupCall(p: BProc, le, ri: PNode, d: var TLoc,
     app(pl, ~");$n")
     line(p, cpsStmts, pl)
 
-proc isInCurrentFrame(p: BProc, n: PNode): bool =
+proc isInCurrentFrame(p: BProc, n: PNode): Bool =
   # checks if `n` is an expression that refers to the current frame;
   # this does not work reliably because of forwarding + inlining can break it
   case n.kind
@@ -88,7 +88,7 @@ proc openArrayLoc(p: BProc, n: PNode): PRope =
       result = ropef("$1->data, $1->$2", [a.rdLoc, lenField()])
   of tyArray, tyArrayConstr:
     result = ropef("$1, $2", [rdLoc(a), toRope(lengthOrd(a.t))])
-  else: InternalError("openArrayLoc: " & typeToString(a.t))
+  else: internalError("openArrayLoc: " & typeToString(a.t))
 
 proc genArgStringToCString(p: BProc, 
                            n: PNode): PRope {.inline.} =
@@ -243,7 +243,7 @@ proc genNamedParamCall(p: BProc, ri: PNode, d: var TLoc) =
   for i in countup(3, length-1):
     assert(sonsLen(typ) == sonsLen(typ.n))
     if i >= sonsLen(typ):
-      InternalError(ri.info, "varargs for objective C method?")
+      internalError(ri.info, "varargs for objective C method?")
     assert(typ.n.sons[i].kind == nkSym)
     var param = typ.n.sons[i].sym
     app(pl, ~" ")

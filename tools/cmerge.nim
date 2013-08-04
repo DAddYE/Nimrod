@@ -5,8 +5,8 @@ import os, sets, pegs
 type
   TProcessResult = enum prSkipIncludeDir, prAddIncludeDir
 
-proc process(dir, infile: string, outfile: TFile, 
-             processed: var TSet[string]): TProcessResult =
+proc process(dir, infile: String, outfile: TFile, 
+             processed: var TSet[String]): TProcessResult =
   if processed.containsOrIncl(infile): return prSkipIncludeDir
   let toProcess = dir / infile
   if not existsFile(toProcess):
@@ -23,18 +23,18 @@ proc process(dir, infile: string, outfile: TFile,
     else:
       writeln(outfile, line)
 
-proc main(dir, outfile: string) =
+proc main(dir, outfile: String) =
   var o: TFile
   if open(o, outfile, fmWrite):
     var processed = initSet[string]()
     processed.incl(outfile)
-    for infile in walkfiles(dir / "*.c"):
+    for infile in walkFiles(dir / "*.c"):
       discard process(dir, extractFilename(infile), o, processed)
     close(o)
   else:
     quit("Cannot open for writing: " & outfile)
 
-if ParamCount() != 2:
+if paramCount() != 2:
   quit "Usage: cmerge directory outfile"
 else:
-  main(ParamStr(1), addFileExt(ParamStr(2), "c"))
+  main(paramStr(1), addFileExt(paramStr(2), "c"))

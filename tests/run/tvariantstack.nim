@@ -11,25 +11,25 @@ type
   PAny = ref TAny
   TAny = object
     case kind: TAnyKind
-    of nkInt: intVal: int
-    of nkFloat: floatVal: float
-    of nkString: strVal: string
+    of nkInt: intVal: Int
+    of nkFloat: floatVal: Float
+    of nkString: strVal: String
 
   TStack* = object
-    list*: seq[TAny]
+    list*: Seq[TAny]
 
 proc newStack(): TStack =
   result.list = @[]
 
 proc push(Stack: var TStack, item: TAny) =
-  var nSeq: seq[TAny] = @[item]
-  for i in items(Stack.list):
+  var nSeq: Seq[TAny] = @[item]
+  for i in items(stack.list):
     nSeq.add(i)
-  Stack.list = nSeq
+  stack.list = nSeq
 
 proc pop(Stack: var TStack): TAny =
-  result = Stack.list[0]
-  Stack.list.delete(0)
+  result = stack.list[0]
+  stack.list.delete(0)
 
 var stack = newStack()
 
@@ -40,7 +40,7 @@ s.strVal = "test"
 stack.push(s)
 
 var nr: TAny
-nr.kind = nkint
+nr.kind = nkInt
 nr.intVal = 78
 
 stack.push(nr)

@@ -3,9 +3,9 @@ discard """
 """
 
 type
-  TMyTuple = tuple[a, b: int]
+  TMyTuple = tuple[a, b: Int]
 
-proc indexOf*(t: typedesc, name: string): int {.compiletime.} =
+proc indexOf*(t: TypeDesc, name: String): Int {.compiletime.} =
   ## takes a tuple and looks for the field by name.
   ## returs index of that field.
   var

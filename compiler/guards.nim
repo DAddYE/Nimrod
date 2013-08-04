@@ -25,10 +25,10 @@ const
 
   someIn = {mInRange, mInSet}
 
-proc isValue(n: PNode): bool = n.kind in {nkCharLit..nkNilLit}
-proc isLocation(n: PNode): bool = not n.isValue
+proc isValue(n: PNode): Bool = n.kind in {nkCharLit..nkNilLit}
+proc isLocation(n: PNode): Bool = not n.isValue
 
-proc isLet(n: PNode): bool =
+proc isLet(n: PNode): Bool =
   if n.kind == nkSym:
     if n.sym.kind in {skLet, skTemp, skForVar}:
       result = true
@@ -36,11 +36,11 @@ proc isLet(n: PNode): bool =
                                              abstractInst).kind != tyVar:
       result = true
 
-proc isVar(n: PNode): bool =
+proc isVar(n: PNode): Bool =
   n.kind == nkSym and n.sym.kind in {skResult, skVar} and
       {sfGlobal, sfAddrTaken} * n.sym.flags == {}
 
-proc isLetLocation(m: PNode, isApprox: bool): bool =
+proc isLetLocation(m: PNode, isApprox: Bool): Bool =
   # consider: 'n[].kind' --> we really need to support 1 deref op even if this
   # is technically wrong due to aliasing :-( We could introduce "soft" facts
   # for this; this would still be very useful for warnings and also nicely
@@ -67,9 +67,9 @@ proc isLetLocation(m: PNode, isApprox: bool): bool =
   if not result and isApprox:
     result = isVar(n)
 
-proc interestingCaseExpr*(m: PNode): bool = isLetLocation(m, true)
+proc interestingCaseExpr*(m: PNode): Bool = isLetLocation(m, true)
 
-proc swapArgs(fact: PNode, newOp: string, m: TMagic): PNode =
+proc swapArgs(fact: PNode, newOp: String, m: TMagic): PNode =
   result = newNodeI(nkCall, fact.info, 3)
   result.sons[0] = newSymNode(getSysMagic(newOp, m))
   result.sons[1] = fact.sons[2]
@@ -193,7 +193,7 @@ proc usefulFact(n: PNode): PNode =
     result = usefulFact(n.lastSon)
 
 type
-  TModel* = seq[PNode] # the "knowledge base"
+  TModel* = Seq[PNode] # the "knowledge base"
 
 proc addFact*(m: var TModel, n: PNode) =
   let n = usefulFact(n)
@@ -203,7 +203,7 @@ proc addFactNeg*(m: var TModel, n: PNode) =
   let n = n.neg
   if n != nil: addFact(m, n)
 
-proc sameTree(a, b: PNode): bool = 
+proc sameTree(a, b: PNode): Bool = 
   result = false
   if a == b:
     result = true
@@ -222,7 +222,7 @@ proc sameTree(a, b: PNode): bool =
           if not sameTree(a.sons[i], b.sons[i]): return
         result = true
 
-proc hasSubTree(n, x: PNode): bool =
+proc hasSubTree(n, x: PNode): Bool =
   if n.sameTree(x): result = true
   else:
     for i in 0..safeLen(n)-1:
@@ -249,12 +249,12 @@ proc invalidateFacts*(m: var TModel, n: PNode) =
   for i in 0..high(m):
     if m[i] != nil and m[i].hasSubTree(n): m[i] = nil
 
-proc valuesUnequal(a, b: PNode): bool =
+proc valuesUnequal(a, b: PNode): Bool =
   if a.isValue and b.isValue:
-    result = not SameValue(a, b)
+    result = not sameValue(a, b)
 
 proc pred(n: PNode): PNode =
-  if n.kind in {nkCharLit..nkUInt64Lit} and n.intVal != low(biggestInt):
+  if n.kind in {nkCharLit..nkUInt64Lit} and n.intVal != low(BiggestInt):
     result = copyNode(n)
     dec result.intVal
   else:
@@ -292,7 +292,7 @@ proc leImpliesIn(x, c, aSet: PNode): TImplication =
     var value = newIntNode(c.kind, firstOrd(x.typ))
     # don't iterate too often:
     if c.intVal - value.intVal < 1000:
-      var i, pos, neg: int
+      var i, pos, neg: Int
       while value.intVal <= c.intVal:
         if inSet(aSet, value): inc pos
         else: inc neg
@@ -309,7 +309,7 @@ proc geImpliesIn(x, c, aSet: PNode): TImplication =
     let max = lastOrd(x.typ)
     # don't iterate too often:
     if max - value.intVal < 1000:
-      var i, pos, neg: int
+      var i, pos, neg: Int
       while value.intVal <= max:
         if inSet(aSet, value): inc pos
         else: inc neg
@@ -484,7 +484,7 @@ proc factImplies(fact, prop: PNode): TImplication =
       if a == b: return ~a
       return impUnknown
     else:
-      InternalError(fact.info, "invalid fact")
+      internalError(fact.info, "invalid fact")
   of mAnd:
     result = factImplies(fact.sons[1], prop)
     if result != impUnknown: return result
@@ -550,7 +550,7 @@ proc addAsgnFact*(m: var TModel, key, value: PNode) =
   fact.sons[2] = value
   m.add fact
 
-proc addCaseBranchFacts*(m: var TModel, n: PNode, i: int) =
+proc addCaseBranchFacts*(m: var TModel, n: PNode, i: Int) =
   let branch = n.sons[i]
   if branch.kind == nkOfBranch:
     m.add buildOf(branch, n.sons[0])
@@ -575,4 +575,4 @@ proc checkFieldAccess*(m: TModel, n: PNode) =
   for i in 1..n.len-1:
     let check = buildProperFieldCheck(n.sons[0], n.sons[i])
     if m.doesImply(check) != impYes:
-      Message(n.info, warnProveField, renderTree(n.sons[0])); break
+      message(n.info, warnProveField, renderTree(n.sons[0])); break

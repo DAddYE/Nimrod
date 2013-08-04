@@ -7,11 +7,11 @@ discard """
 
 type
   TLegal {.final.} = object
-    x: int
-    kids: seq[TLegal]
+    x: Int
+    kids: Seq[TLegal]
 
   TIllegal {.final.} = object  #ERROR_MSG illegal recursion in type 'TIllegal'
     y: Int
-    x: array[0..3, TIllegal]
+    x: Array[0..3, TIllegal]
 
 

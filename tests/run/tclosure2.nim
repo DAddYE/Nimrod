@@ -46,7 +46,7 @@ when true:
   ax()
 
 when true:
-  proc accumulator(start: int): (proc(): int {.closure.}) =
+  proc accumulator(start: Int): (proc(): Int {.closure.}) =
     var x = start-1
     #let dummy = proc =
     #  discard start

@@ -3,15 +3,15 @@ discard """
 """
 
 type
-  TKachel = tuple[i: int, s: string]
+  TKachel = tuple[i: Int, s: String]
   TSpielwiese = object
-    k: seq[TKachel]
+    k: Seq[TKachel]
 
 var
   spielwiese: TSpielwiese
 newSeq(spielwiese.k, 64)
 
-proc at*(s: var TSpielwiese, x, y: int): var TKachel =
+proc at*(s: var TSpielwiese, x, y: Int): var TKachel =
   result = s.k[y * 8 + x]
 
 spielwiese.at(3, 4) = (45, "hallo")

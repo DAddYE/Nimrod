@@ -1,7 +1,7 @@
 
 type
   TMyObj = object 
-    x: int
+    x: Int
     
 proc gen*[T](): T = 
   var d: TMyObj

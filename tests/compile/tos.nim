@@ -2,7 +2,7 @@
 
 import os
 
-proc walkDirTree(root: string) = 
+proc walkDirTree(root: String) = 
   for k, f in walkDir(root):
     case k 
     of pcFile, pcLinkToFile: echo(f)

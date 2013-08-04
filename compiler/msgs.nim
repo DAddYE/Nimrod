@@ -117,7 +117,7 @@ type
     hintUser
 
 const 
-  MsgKindToStr*: array[TMsgKind, string] = [
+  MsgKindToStr*: Array[TMsgKind, String] = [
     errUnknown: "unknown error", 
     errIllFormedAstX: "illformed AST: $1",
     errInternal: "internal error: $1", 
@@ -380,7 +380,7 @@ const
     hintUser: "$1 [User]"]
 
 const
-  WarningsToStr*: array[0..23, string] = ["CannotOpenFile", "OctalEscape", 
+  WarningsToStr*: Array[0..23, String] = ["CannotOpenFile", "OctalEscape", 
     "XIsNeverRead", "XmightNotBeenInit",
     "Deprecated", "ConfigDeprecated",
     "SmallLshouldNotBeUsed", "UnknownMagic", 
@@ -390,7 +390,7 @@ const
     "ImplicitClosure", "EachIdentIsTuple", "ShadowIdent", 
     "ProveInit", "ProveField", "ProveIndex", "Uninit", "User"]
 
-  HintsToStr*: array[0..15, string] = ["Success", "SuccessX", "LineTooLong", 
+  HintsToStr*: Array[0..15, String] = ["Success", "SuccessX", "LineTooLong", 
     "XDeclaredButNotUsed", "ConvToBaseNotNeeded", "ConvFromXtoItselfNotNeeded", 
     "ExprAlwaysX", "QuitCalled", "Processing", "CodeBegin", "CodeEnd", "Conf", 
     "Path", "CondTrue", "Pattern",
@@ -407,17 +407,17 @@ const
   hintMax* = high(TMsgKind)
  
 type 
-  TNoteKind* = range[warnMin..hintMax] # "notes" are warnings or hints
-  TNoteKinds* = set[TNoteKind]
+  TNoteKind* = Range[warnMin..hintMax] # "notes" are warnings or hints
+  TNoteKinds* = Set[TNoteKind]
 
   TFileInfo*{.final.} = object 
-    fullPath*: string          # This is a canonical full filesystem path
-    projPath*: string          # This is relative to the project's root
+    fullPath*: String          # This is a canonical full filesystem path
+    projPath*: String          # This is relative to the project's root
     
     quotedName*: PRope         # cached quoted short name for codegen
                                # purpoes
     
-    lines*: seq[PRope]         # the source code of the module
+    lines*: Seq[PRope]         # the source code of the module
                                #   used for better error messages and
                                #   embedding the original source in the
                                #   generated code
@@ -428,8 +428,8 @@ type
                                # two int16 and an int32.
                                # On 64 bit and on 32 bit systems this is 
                                # only 8 bytes.
-    line*, col*: int16
-    fileIndex*: int32
+    line*, col*: Int16
+    fileIndex*: Int32
     
   ERecoverableError* = object of EInvalidValue
   ESuggestDone* = object of EBase
@@ -439,16 +439,16 @@ const
 
 var
   filenameToIndexTbl = initTable[string, int32]()
-  fileInfos*: seq[TFileInfo] = @[]
-  SystemFileIdx*: int32
+  fileInfos*: Seq[TFileInfo] = @[]
+  systemFileIdx*: Int32
 
-proc toCChar*(c: Char): string = 
+proc toCChar*(c: Char): String = 
   case c
   of '\0'..'\x1F', '\x80'..'\xFF': result = '\\' & toOctal(c)
   of '\'', '\"', '\\': result = '\\' & c
   else: result = $(c)
 
-proc makeCString*(s: string): PRope =
+proc makeCString*(s: String): PRope =
   # BUGFIX: We have to split long strings into many ropes. Otherwise
   # this could trigger an InternalError(). See the ropes module for
   # further information.
@@ -461,14 +461,14 @@ proc makeCString*(s: string): PRope =
       add(res, '\"')
       add(res, tnl)
       app(result, toRope(res)) # reset:
-      setlen(res, 1)
+      setLen(res, 1)
       res[0] = '\"'
     add(res, toCChar(s[i]))
   add(res, '\"')
   app(result, toRope(res))
 
 
-proc newFileInfo(fullPath, projPath: string): TFileInfo =
+proc newFileInfo(fullPath, projPath: String): TFileInfo =
   result.fullPath = fullPath
   #shallow(result.fullPath)
   result.projPath = projPath
@@ -477,9 +477,9 @@ proc newFileInfo(fullPath, projPath: string): TFileInfo =
   if optEmbedOrigSrc in gGlobalOptions or true:
     result.lines = @[]
 
-proc fileInfoIdx*(filename: string): int32 =
+proc fileInfoIdx*(filename: String): Int32 =
   var
-    canon: string
+    canon: String
     pseudoPath = false
 
   try:
@@ -494,26 +494,26 @@ proc fileInfoIdx*(filename: string): int32 =
   if filenameToIndexTbl.hasKey(canon):
     result = filenameToIndexTbl[canon]
   else:
-    result = fileInfos.len.int32
+    result = fileInfos.len.Int32
     fileInfos.add(newFileInfo(canon, if pseudoPath: filename
                                      else: canon.shortenDir))
     filenameToIndexTbl[canon] = result
 
-proc newLineInfo*(fileInfoIdx: int32, line, col: int): TLineInfo =
+proc newLineInfo*(fileInfoIdx: Int32, line, col: Int): TLineInfo =
   result.fileIndex = fileInfoIdx
-  result.line = int16(line)
-  result.col = int16(col)
+  result.line = Int16(line)
+  result.col = Int16(col)
 
-proc newLineInfo*(filename: string, line, col: int): TLineInfo {.inline.} =
+proc newLineInfo*(filename: String, line, col: Int): TLineInfo {.inline.} =
   result = newLineInfo(filename.fileInfoIdx, line, col)
 
 fileInfos.add(newFileInfo("", "command line"))
-var gCmdLineInfo* = newLineInfo(int32(0), 1, 1)
+var gCmdLineInfo* = newLineInfo(Int32(0), 1, 1)
 
 fileInfos.add(newFileInfo("", "compilation artifact"))
-var gCodegenLineInfo* = newLineInfo(int32(1), 1, 1)
+var gCodegenLineInfo* = newLineInfo(Int32(1), 1, 1)
 
-proc raiseRecoverableError*(msg: string) {.noinline, noreturn.} =
+proc raiseRecoverableError*(msg: String) {.noinline, noreturn.} =
   raise newException(ERecoverableError, msg)
 
 proc sourceLine*(i: TLineInfo): PRope
@@ -522,21 +522,21 @@ var
   gNotes*: TNoteKinds = {low(TNoteKind)..high(TNoteKind)} - 
                         {warnShadowIdent, warnUninit,
                          warnProveField, warnProveIndex}
-  gErrorCounter*: int = 0     # counts the number of errors
-  gHintCounter*: int = 0
-  gWarnCounter*: int = 0
-  gErrorMax*: int = 1         # stop after gErrorMax errors
-  gSilence*: int              # == 0 if we produce any output at all 
+  gErrorCounter*: Int = 0     # counts the number of errors
+  gHintCounter*: Int = 0
+  gWarnCounter*: Int = 0
+  gErrorMax*: Int = 1         # stop after gErrorMax errors
+  gSilence*: Int              # == 0 if we produce any output at all 
   stdoutSocket*: TSocket
 
-proc SuggestWriteln*(s: string) = 
+proc suggestWriteln*(s: String) = 
   if gSilence == 0: 
-    if isNil(stdoutSocket): Writeln(stdout, s)
+    if isNil(stdoutSocket): writeln(stdout, s)
     else: 
-      Writeln(stdout, s)
+      writeln(stdout, s)
       stdoutSocket.send(s & "\c\L")
 
-proc SuggestQuit*() =
+proc suggestQuit*() =
   if not isServing:
     quit(0)
   elif isWorkingWithDirtyBuffer:
@@ -557,44 +557,44 @@ const
   RawWarningFormat* = "Warning: $1"
   RawHintFormat* = "Hint: $1"
 
-proc UnknownLineInfo*(): TLineInfo = 
-  result.line = int16(-1)
-  result.col = int16(-1)
+proc unknownLineInfo*(): TLineInfo = 
+  result.line = Int16(-1)
+  result.col = Int16(-1)
   result.fileIndex = -1
 
 var 
-  msgContext: seq[TLineInfo] = @[]
+  msgContext: Seq[TLineInfo] = @[]
 
-proc getInfoContextLen*(): int = return msgContext.len
-proc setInfoContextLen*(L: int) = setLen(msgContext, L)
+proc getInfoContextLen*(): Int = return msgContext.len
+proc setInfoContextLen*(L: Int) = setLen(msgContext, L)
 
 proc pushInfoContext*(info: TLineInfo) = 
   msgContext.add(info)
   
 proc popInfoContext*() = 
-  setlen(msgContext, len(msgContext) - 1)
+  setLen(msgContext, len(msgContext) - 1)
 
-proc getInfoContext*(index: int): TLineInfo =
+proc getInfoContext*(index: Int): TLineInfo =
   let L = msgContext.len
   let i = if index < 0: L + index else: index
-  if i >=% L: result = UnknownLineInfo()
+  if i >=% L: result = unknownLineInfo()
   else: result = msgContext[i]
 
-proc toFilename*(fileIdx: int32): string =
+proc toFilename*(fileIdx: Int32): String =
   if fileIdx < 0: result = "???"
   else: result = fileInfos[fileIdx].projPath
 
-proc toFullPath*(fileIdx: int32): string =
+proc toFullPath*(fileIdx: Int32): String =
   if fileIdx < 0: result = "???"
   else: result = fileInfos[fileIdx].fullPath
 
-template toFilename*(info: TLineInfo): string =
+template toFilename*(info: TLineInfo): String =
   info.fileIndex.toFilename
 
-template toFullPath*(info: TLineInfo): string =
+template toFullPath*(info: TLineInfo): String =
   info.fileIndex.toFullPath
 
-proc toMsgFilename*(info: TLineInfo): string =
+proc toMsgFilename*(info: TLineInfo): String =
   if info.fileIndex < 0: result = "???"
   else:
     if gListFullPaths:
@@ -602,51 +602,51 @@ proc toMsgFilename*(info: TLineInfo): string =
     else:
       result = fileInfos[info.fileIndex].projPath
 
-proc toLinenumber*(info: TLineInfo): int {.inline.} = 
+proc toLinenumber*(info: TLineInfo): Int {.inline.} = 
   result = info.line
 
-proc toColumn*(info: TLineInfo): int {.inline.} = 
+proc toColumn*(info: TLineInfo): Int {.inline.} = 
   result = info.col
 
-proc toFileLine*(info: TLineInfo): string {.inline.} =
+proc toFileLine*(info: TLineInfo): String {.inline.} =
   result = info.toFilename & ":" & $info.line
 
-proc toFileLineCol*(info: TLineInfo): string {.inline.} =
+proc toFileLineCol*(info: TLineInfo): String {.inline.} =
   result = info.toFilename & "(" & $info.line & "," & $info.col & ")"
 
-proc `??`* (info: TLineInfo, filename: string): bool =
+proc `??`* (info: TLineInfo, filename: String): Bool =
   # only for debugging purposes
   result = filename in info.toFilename
 
-var checkPoints*: seq[TLineInfo] = @[]
+var checkPoints*: Seq[TLineInfo] = @[]
 var optTrackPos*: TLineInfo
 
 proc addCheckpoint*(info: TLineInfo) = 
   checkPoints.add(info)
 
-proc addCheckpoint*(filename: string, line: int) = 
+proc addCheckpoint*(filename: String, line: Int) = 
   addCheckpoint(newLineInfo(filename, line, - 1))
 
-proc OutWriteln*(s: string) = 
+proc outWriteln*(s: String) = 
   ## Writes to stdout. Always.
-  if gSilence == 0: Writeln(stdout, s)
+  if gSilence == 0: writeln(stdout, s)
  
-proc MsgWriteln*(s: string) = 
+proc msgWriteln*(s: String) = 
   ## Writes to stdout. If --stdout option is given, writes to stderr instead.
   if gSilence == 0:
     if gCmd == cmdIdeTools and optCDebug notin gGlobalOptions: return
-    if optStdout in gGlobalOptions: Writeln(stderr, s)
-    else: Writeln(stdout, s)
+    if optStdout in gGlobalOptions: writeln(stderr, s)
+    else: writeln(stdout, s)
 
-proc coordToStr(coord: int): string = 
+proc coordToStr(coord: Int): String = 
   if coord == -1: result = "???"
   else: result = $coord
   
-proc MsgKindToString*(kind: TMsgKind): string = 
+proc msgKindToString*(kind: TMsgKind): String = 
   # later versions may provide translated error messages
-  result = msgKindToStr[kind]
+  result = MsgKindToStr[kind]
 
-proc getMessageStr(msg: TMsgKind, arg: string): string = 
+proc getMessageStr(msg: TMsgKind, arg: String): String = 
   result = msgKindToString(msg) % [arg]
 
 type
@@ -665,7 +665,7 @@ proc inCheckpoint*(current: TLineInfo): TCheckPointResult =
 type
   TErrorHandling = enum doNothing, doAbort, doRaise
 
-proc handleError(msg: TMsgKind, eh: TErrorHandling, s: string) =
+proc handleError(msg: TMsgKind, eh: TErrorHandling, s: String) =
   template maybeTrace =
     if defined(debug) or gVerbosity >= 3:
       writeStackTrace()
@@ -686,59 +686,59 @@ proc handleError(msg: TMsgKind, eh: TErrorHandling, s: string) =
     elif eh == doRaise:
       raiseRecoverableError(s)
 
-proc `==`*(a, b: TLineInfo): bool = 
+proc `==`*(a, b: TLineInfo): Bool = 
   result = a.line == b.line and a.fileIndex == b.fileIndex
 
 proc writeContext(lastinfo: TLineInfo) = 
-  var info = lastInfo
+  var info = lastinfo
   for i in countup(0, len(msgContext) - 1): 
-    if msgContext[i] != lastInfo and msgContext[i] != info: 
-      MsgWriteln(posContextFormat % [toMsgFilename(msgContext[i]), 
+    if msgContext[i] != lastinfo and msgContext[i] != info: 
+      msgWriteln(PosContextFormat % [toMsgFilename(msgContext[i]), 
                                      coordToStr(msgContext[i].line), 
                                      coordToStr(msgContext[i].col), 
                                      getMessageStr(errInstantiationFrom, "")])
     info = msgContext[i]
 
-proc rawMessage*(msg: TMsgKind, args: openarray[string]) = 
-  var frmt: string
+proc rawMessage*(msg: TMsgKind, args: Openarray[String]) = 
+  var frmt: String
   case msg
   of errMin..errMax: 
     writeContext(unknownLineInfo())
-    frmt = rawErrorFormat
+    frmt = RawErrorFormat
   of warnMin..warnMax: 
     if optWarns notin gOptions: return 
     if msg notin gNotes: return 
     writeContext(unknownLineInfo())
-    frmt = rawWarningFormat
+    frmt = RawWarningFormat
     inc(gWarnCounter)
   of hintMin..hintMax: 
     if optHints notin gOptions: return 
     if msg notin gNotes: return 
-    frmt = rawHintFormat
+    frmt = RawHintFormat
     inc(gHintCounter)
   let s = `%`(frmt, `%`(msgKindToString(msg), args))
-  MsgWriteln(s)
+  msgWriteln(s)
   handleError(msg, doAbort, s)
 
-proc rawMessage*(msg: TMsgKind, arg: string) = 
+proc rawMessage*(msg: TMsgKind, arg: String) = 
   rawMessage(msg, [arg])
 
 var
-  lastError = UnknownLineInfo()
+  lastError = unknownLineInfo()
 
 proc writeSurroundingSrc(info: TLineInfo) =
   const indent = "  "
-  MsgWriteln(indent & info.sourceLine.ropeToStr)
-  MsgWriteln(indent & repeatChar(info.col, ' ') & '^')
+  msgWriteln(indent & info.sourceLine.ropeToStr)
+  msgWriteln(indent & repeatChar(info.col, ' ') & '^')
 
-proc liMessage(info: TLineInfo, msg: TMsgKind, arg: string, 
+proc liMessage(info: TLineInfo, msg: TMsgKind, arg: String, 
                eh: TErrorHandling) =
-  var frmt: string
+  var frmt: String
   var ignoreMsg = false
   case msg
   of errMin..errMax:
     writeContext(info)
-    frmt = posErrorFormat
+    frmt = PosErrorFormat
     # we try to filter error messages so that not two error message
     # in the same file and line are produced:
     #ignoreMsg = lastError == info and eh != doAbort
@@ -746,53 +746,53 @@ proc liMessage(info: TLineInfo, msg: TMsgKind, arg: string,
   of warnMin..warnMax:
     ignoreMsg = optWarns notin gOptions or msg notin gNotes
     if not ignoreMsg: writeContext(info)
-    frmt = posWarningFormat
+    frmt = PosWarningFormat
     inc(gWarnCounter)
   of hintMin..hintMax: 
     ignoreMsg = optHints notin gOptions or msg notin gNotes
-    frmt = posHintFormat
+    frmt = PosHintFormat
     inc(gHintCounter)
   let s = frmt % [toMsgFilename(info), coordToStr(info.line),
                   coordToStr(info.col), getMessageStr(msg, arg)]
   if not ignoreMsg:
-    MsgWriteln(s)
+    msgWriteln(s)
     if optPrintSurroundingSrc and msg in errMin..errMax:
       info.writeSurroundingSrc
   handleError(msg, eh, s)
   
-proc Fatal*(info: TLineInfo, msg: TMsgKind, arg = "") = 
+proc fatal*(info: TLineInfo, msg: TMsgKind, arg = "") = 
   liMessage(info, msg, arg, doAbort)
 
-proc GlobalError*(info: TLineInfo, msg: TMsgKind, arg = "") = 
+proc globalError*(info: TLineInfo, msg: TMsgKind, arg = "") = 
   liMessage(info, msg, arg, doRaise)
 
-proc GlobalError*(info: TLineInfo, arg: string) =
+proc globalError*(info: TLineInfo, arg: String) =
   liMessage(info, errGenerated, arg, doRaise)
 
-proc LocalError*(info: TLineInfo, msg: TMsgKind, arg = "") =
+proc localError*(info: TLineInfo, msg: TMsgKind, arg = "") =
   liMessage(info, msg, arg, doNothing)
 
-proc Message*(info: TLineInfo, msg: TMsgKind, arg = "") =
+proc message*(info: TLineInfo, msg: TMsgKind, arg = "") =
   liMessage(info, msg, arg, doNothing)
 
-proc InternalError*(info: TLineInfo, errMsg: string) = 
+proc internalError*(info: TLineInfo, errMsg: String) = 
   if gCmd == cmdIdeTools: return
   writeContext(info)
   liMessage(info, errInternal, errMsg, doAbort)
 
-proc InternalError*(errMsg: string) = 
+proc internalError*(errMsg: String) = 
   if gCmd == cmdIdeTools: return
-  writeContext(UnknownLineInfo())
+  writeContext(unknownLineInfo())
   rawMessage(errInternal, errMsg)
 
-template AssertNotNil*(e: expr): expr =
+template assertNotNil*(e: Expr): Expr =
   if e == nil: InternalError($InstantiationInfo())
   e
 
-template InternalAssert*(e: bool): stmt =
-  if not e: InternalError($InstantiationInfo())
+template internalAssert*(e: Bool): Stmt =
+  if not e: internalError($InstantiationInfo())
 
-proc addSourceLine*(fileIdx: int32, line: string) =
+proc addSourceLine*(fileIdx: Int32, line: String) =
   fileInfos[fileIdx].lines.add line.toRope
 
 proc sourceLine*(i: TLineInfo): PRope =
@@ -801,7 +801,7 @@ proc sourceLine*(i: TLineInfo): PRope =
   if not optPreserveOrigSource and fileInfos[i.fileIndex].lines.len == 0:
     try:
       for line in lines(i.toFullPath):
-        addSourceLine i.fileIndex, line.string
+        addSourceLine i.fileIndex, line.String
     except EIO:
       discard
   InternalAssert i.fileIndex < fileInfos.len
@@ -814,7 +814,7 @@ proc quotedFilename*(i: TLineInfo): PRope =
   InternalAssert i.fileIndex >= 0
   result = fileInfos[i.fileIndex].quotedName
 
-ropes.ErrorHandler = proc (err: TRopesError, msg: string, useWarning: bool) =
+ropes.ErrorHandler = proc (err: TRopesError, msg: String, useWarning: Bool) =
   case err
   of rInvalidFormatStr:
     internalError("ropes: invalid format string: " & msg)

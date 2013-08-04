@@ -27,8 +27,8 @@ a1: D'''
 
 import strutils
 
-iterator tokenize2(s: string, seps: set[char] = Whitespace): tuple[
-  token: string, isSep: bool] {.closure.} =
+iterator tokenize2(s: String, seps: Set[Char] = Whitespace): tuple[
+  token: String, isSep: Bool] {.closure.} =
   var i = 0
   while i < s.len:
     var j = i
@@ -42,7 +42,7 @@ iterator tokenize2(s: string, seps: set[char] = Whitespace): tuple[
         yield (substr(s, i, j-1), false)
     i = j
 
-iterator count3(): int {.closure.} =
+iterator count3(): Int {.closure.} =
   yield 1
   yield 2
   yield 3
@@ -66,11 +66,11 @@ proc inProc() =
 
 inProc()
 
-iterator count0(): int {.closure.} =
+iterator count0(): Int {.closure.} =
   # note: doesn't require anything in its closure (except 'state')
   yield 0
  
-iterator count2(): int {.closure.} =
+iterator count2(): Int {.closure.} =
   # note: requires 'x' in its closure
   var x = 1
   yield x
@@ -79,7 +79,7 @@ iterator count2(): int {.closure.} =
 
 # a first class iterator has the type 'proc {.closure.}', but maybe
 # it shouldn't:
-proc invoke(iter: iterator(): int {.closure.}) =
+proc invoke(iter: iterator(): Int {.closure.}) =
   for x in iter(): echo x
 
 invoke(count0)
@@ -88,9 +88,9 @@ invoke(count2)
 
 # simple tasking:
 type
-  TTask = iterator (ticker: int)
+  TTask = iterator (ticker: Int)
 
-iterator a1(ticker: int) {.closure.} =
+iterator a1(ticker: Int) {.closure.} =
   echo "a1: A"
   yield
   echo "a1: B"
@@ -99,14 +99,14 @@ iterator a1(ticker: int) {.closure.} =
   yield
   echo "a1: D"
 
-iterator a2(ticker: int) {.closure.} =
+iterator a2(ticker: Int) {.closure.} =
   echo "a2: A"
   yield
   echo "a2: B"
   yield
   echo "a2: C"
 
-proc runTasks(t: varargs[TTask]) =
+proc runTasks(t: Varargs[TTask]) =
   var ticker = 0
   while true:
     let x = t[ticker mod t.len]

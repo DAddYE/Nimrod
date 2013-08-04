@@ -5,14 +5,14 @@ discard """
 """
 
 var
-  global: int
+  global: Int
 
-proc dontcare(x: int): int = return x + global
+proc dontcare(x: Int): Int = return x + global
 
-proc SideEffectLyer(x, y: int): int {.noSideEffect.} = #ERROR_MSG 'SideEffectLyer' can have side effects
+proc sideEffectLyer(x, y: Int): Int {.noSideEffect.} = #ERROR_MSG 'SideEffectLyer' can have side effects
   return x + y + dontcare(x)
   
-echo SideEffectLyer(1, 3) 
+echo sideEffectLyer(1, 3) 
 
 
 

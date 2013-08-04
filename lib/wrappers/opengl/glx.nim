@@ -36,49 +36,49 @@ else:
   const 
     dllname = "libGL.so"
 const 
-  GLX_USE_GL* = 1
-  GLX_BUFFER_SIZE* = 2
-  GLX_LEVEL* = 3
-  GLX_RGBA* = 4
-  GLX_DOUBLEBUFFER* = 5
-  GLX_STEREO* = 6
-  GLX_AUX_BUFFERS* = 7
-  GLX_RED_SIZE* = 8
-  GLX_GREEN_SIZE* = 9
-  GLX_BLUE_SIZE* = 10
-  GLX_ALPHA_SIZE* = 11
-  GLX_DEPTH_SIZE* = 12
-  GLX_STENCIL_SIZE* = 13
-  GLX_ACCUM_RED_SIZE* = 14
-  GLX_ACCUM_GREEN_SIZE* = 15
-  GLX_ACCUM_BLUE_SIZE* = 16
-  GLX_ACCUM_ALPHA_SIZE* = 17  # GLX_EXT_visual_info extension
-  GLX_X_VISUAL_TYPE_EXT* = 0x00000022
-  GLX_TRANSPARENT_TYPE_EXT* = 0x00000023
-  GLX_TRANSPARENT_INDEX_VALUE_EXT* = 0x00000024
-  GLX_TRANSPARENT_RED_VALUE_EXT* = 0x00000025
-  GLX_TRANSPARENT_GREEN_VALUE_EXT* = 0x00000026
-  GLX_TRANSPARENT_BLUE_VALUE_EXT* = 0x00000027
-  GLX_TRANSPARENT_ALPHA_VALUE_EXT* = 0x00000028 # Error codes returned by glXGetConfig:
-  GLX_BAD_SCREEN* = 1
-  GLX_BAD_ATTRIBUTE* = 2
-  GLX_NO_EXTENSION* = 3
-  GLX_BAD_VISUAL* = 4
-  GLX_BAD_CONTEXT* = 5
-  GLX_BAD_VALUE* = 6
-  GLX_BAD_ENUM* = 7           # GLX 1.1 and later:
-  GLX_VENDOR* = 1
-  GLX_VERSION* = 2
-  GLX_EXTENSIONS* = 3         # GLX_visual_info extension
-  GLX_TRUE_COLOR_EXT* = 0x00008002
-  GLX_DIRECT_COLOR_EXT* = 0x00008003
-  GLX_PSEUDO_COLOR_EXT* = 0x00008004
-  GLX_STATIC_COLOR_EXT* = 0x00008005
-  GLX_GRAY_SCALE_EXT* = 0x00008006
-  GLX_STATIC_GRAY_EXT* = 0x00008007
-  GLX_NONE_EXT* = 0x00008000
-  GLX_TRANSPARENT_RGB_EXT* = 0x00008008
-  GLX_TRANSPARENT_INDEX_EXT* = 0x00008009
+  GlxUseGl* = 1
+  GlxBufferSize* = 2
+  GlxLevel* = 3
+  GlxRgba* = 4
+  GlxDoublebuffer* = 5
+  GlxStereo* = 6
+  GlxAuxBuffers* = 7
+  GlxRedSize* = 8
+  GlxGreenSize* = 9
+  GlxBlueSize* = 10
+  GlxAlphaSize* = 11
+  GlxDepthSize* = 12
+  GlxStencilSize* = 13
+  GlxAccumRedSize* = 14
+  GlxAccumGreenSize* = 15
+  GlxAccumBlueSize* = 16
+  GlxAccumAlphaSize* = 17  # GLX_EXT_visual_info extension
+  GlxXVisualTypeExt* = 0x00000022
+  GlxTransparentTypeExt* = 0x00000023
+  GlxTransparentIndexValueExt* = 0x00000024
+  GlxTransparentRedValueExt* = 0x00000025
+  GlxTransparentGreenValueExt* = 0x00000026
+  GlxTransparentBlueValueExt* = 0x00000027
+  GlxTransparentAlphaValueExt* = 0x00000028 # Error codes returned by glXGetConfig:
+  GlxBadScreen* = 1
+  GlxBadAttribute* = 2
+  GlxNoExtension* = 3
+  GlxBadVisual* = 4
+  GlxBadContext* = 5
+  GlxBadValue* = 6
+  GlxBadEnum* = 7           # GLX 1.1 and later:
+  GlxVendor* = 1
+  GlxVersion* = 2
+  GlxExtensions* = 3         # GLX_visual_info extension
+  GlxTrueColorExt* = 0x00008002
+  GlxDirectColorExt* = 0x00008003
+  GlxPseudoColorExt* = 0x00008004
+  GlxStaticColorExt* = 0x00008005
+  GlxGrayScaleExt* = 0x00008006
+  GlxStaticGrayExt* = 0x00008007
+  GlxNoneExt* = 0x00008000
+  GlxTransparentRgbExt* = 0x00008008
+  GlxTransparentIndexExt* = 0x00008009
 
 type                          # From XLib:
   XPixmap* = TXID
@@ -96,16 +96,16 @@ type                          # From XLib:
   TGLXDrawable* = GLXDrawable
   TGLXContextID* = GLXContextID
 
-proc glXChooseVisual*(dpy: PDisplay, screen: int, attribList: ptr int32): PXVisualInfo{.
+proc glXChooseVisual*(dpy: PDisplay, screen: Int, attribList: ptr Int32): PXVisualInfo{.
     cdecl, dynlib: dllname, importc: "glXChooseVisual".}
 proc glXCreateContext*(dpy: PDisplay, vis: PXVisualInfo, shareList: GLXContext, 
-                       direct: bool): GLXContext{.cdecl, dynlib: dllname, 
+                       direct: Bool): GLXContext{.cdecl, dynlib: dllname, 
     importc: "glXCreateContext".}
 proc glXDestroyContext*(dpy: PDisplay, ctx: GLXContext){.cdecl, dynlib: dllname, 
     importc: "glXDestroyContext".}
-proc glXMakeCurrent*(dpy: PDisplay, drawable: GLXDrawable, ctx: GLXContext): bool{.
+proc glXMakeCurrent*(dpy: PDisplay, drawable: GLXDrawable, ctx: GLXContext): Bool{.
     cdecl, dynlib: dllname, importc: "glXMakeCurrent".}
-proc glXCopyContext*(dpy: PDisplay, src, dst: GLXContext, mask: int32){.cdecl, 
+proc glXCopyContext*(dpy: PDisplay, src, dst: GLXContext, mask: Int32){.cdecl, 
     dynlib: dllname, importc: "glXCopyContext".}
 proc glXSwapBuffers*(dpy: PDisplay, drawable: GLXDrawable){.cdecl, 
     dynlib: dllname, importc: "glXSwapBuffers".}
@@ -113,14 +113,14 @@ proc glXCreateGLXPixmap*(dpy: PDisplay, visual: PXVisualInfo, pixmap: XPixmap): 
     cdecl, dynlib: dllname, importc: "glXCreateGLXPixmap".}
 proc glXDestroyGLXPixmap*(dpy: PDisplay, pixmap: GLXPixmap){.cdecl, 
     dynlib: dllname, importc: "glXDestroyGLXPixmap".}
-proc glXQueryExtension*(dpy: PDisplay, errorb, event: var int): bool{.cdecl, 
+proc glXQueryExtension*(dpy: PDisplay, errorb, event: var Int): Bool{.cdecl, 
     dynlib: dllname, importc: "glXQueryExtension".}
-proc glXQueryVersion*(dpy: PDisplay, maj, min: var int): bool{.cdecl, 
+proc glXQueryVersion*(dpy: PDisplay, maj, min: var Int): Bool{.cdecl, 
     dynlib: dllname, importc: "glXQueryVersion".}
-proc glXIsDirect*(dpy: PDisplay, ctx: GLXContext): bool{.cdecl, dynlib: dllname, 
+proc glXIsDirect*(dpy: PDisplay, ctx: GLXContext): Bool{.cdecl, dynlib: dllname, 
     importc: "glXIsDirect".}
-proc glXGetConfig*(dpy: PDisplay, visual: PXVisualInfo, attrib: int, 
-                   value: var int): int{.cdecl, dynlib: dllname, 
+proc glXGetConfig*(dpy: PDisplay, visual: PXVisualInfo, attrib: Int, 
+                   value: var Int): Int{.cdecl, dynlib: dllname, 
     importc: "glXGetConfig".}
 proc glXGetCurrentContext*(): GLXContext{.cdecl, dynlib: dllname, 
     importc: "glXGetCurrentContext".}
@@ -128,26 +128,26 @@ proc glXGetCurrentDrawable*(): GLXDrawable{.cdecl, dynlib: dllname,
     importc: "glXGetCurrentDrawable".}
 proc glXWaitGL*(){.cdecl, dynlib: dllname, importc: "glXWaitGL".}
 proc glXWaitX*(){.cdecl, dynlib: dllname, importc: "glXWaitX".}
-proc glXUseXFont*(font: XFont, first, count, list: int){.cdecl, dynlib: dllname, 
+proc glXUseXFont*(font: XFont, first, count, list: Int){.cdecl, dynlib: dllname, 
     importc: "glXUseXFont".}
   # GLX 1.1 and later
-proc glXQueryExtensionsString*(dpy: PDisplay, screen: int): cstring{.cdecl, 
+proc glXQueryExtensionsString*(dpy: PDisplay, screen: Int): Cstring{.cdecl, 
     dynlib: dllname, importc: "glXQueryExtensionsString".}
-proc glXQueryServerString*(dpy: PDisplay, screen, name: int): cstring{.cdecl, 
+proc glXQueryServerString*(dpy: PDisplay, screen, name: Int): Cstring{.cdecl, 
     dynlib: dllname, importc: "glXQueryServerString".}
-proc glXGetClientString*(dpy: PDisplay, name: int): cstring{.cdecl, 
+proc glXGetClientString*(dpy: PDisplay, name: Int): Cstring{.cdecl, 
     dynlib: dllname, importc: "glXGetClientString".}
   # Mesa GLX Extensions
 proc glXCreateGLXPixmapMESA*(dpy: PDisplay, visual: PXVisualInfo, 
                              pixmap: XPixmap, cmap: XColormap): GLXPixmap{.
     cdecl, dynlib: dllname, importc: "glXCreateGLXPixmapMESA".}
-proc glXReleaseBufferMESA*(dpy: PDisplay, d: GLXDrawable): bool{.cdecl, 
+proc glXReleaseBufferMESA*(dpy: PDisplay, d: GLXDrawable): Bool{.cdecl, 
     dynlib: dllname, importc: "glXReleaseBufferMESA".}
 proc glXCopySubBufferMESA*(dpy: PDisplay, drawbale: GLXDrawable, 
-                           x, y, width, height: int){.cdecl, dynlib: dllname, 
+                           x, y, width, height: Int){.cdecl, dynlib: dllname, 
     importc: "glXCopySubBufferMESA".}
-proc glXGetVideoSyncSGI*(counter: var int32): int{.cdecl, dynlib: dllname, 
+proc glXGetVideoSyncSGI*(counter: var Int32): Int{.cdecl, dynlib: dllname, 
     importc: "glXGetVideoSyncSGI".}
-proc glXWaitVideoSyncSGI*(divisor, remainder: int, count: var int32): int{.
+proc glXWaitVideoSyncSGI*(divisor, remainder: Int, count: var Int32): Int{.
     cdecl, dynlib: dllname, importc: "glXWaitVideoSyncSGI".}
 # implementation

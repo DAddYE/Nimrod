@@ -6,10 +6,10 @@
 
 type
   TGen[T] = tuple[a: T]
-  TSpef = tuple[a: string]
+  TSpef = tuple[a: String]
 
 var
-  a: TGen[string]
+  a: TGen[String]
   b: TSpef
 a = b
 

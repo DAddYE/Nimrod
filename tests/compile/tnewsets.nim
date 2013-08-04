@@ -2,5 +2,5 @@
 
 const elem = ' '
 
-var s: set[char] = {elem}
+var s: Set[Char] = {elem}
 assert(elem in s and 'a' not_in s and 'c' not_in s )

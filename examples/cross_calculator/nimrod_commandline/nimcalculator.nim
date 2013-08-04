@@ -3,7 +3,7 @@
 import backend, parseopt, strutils
 
 const
-  USAGE = """nimcalculator - Nimrod cross platform calculator
+  Usage = """nimcalculator - Nimrod cross platform calculator
   (beta version, only integer addition is supported!)
 
 Usage:
@@ -23,7 +23,7 @@ type
 
   TParamConfig = object of TObject
     action: TCommand      # store the type of operation
-    paramA, paramB: int   # possibly store the valid parameters
+    paramA, paramB: Int   # possibly store the valid parameters
 
 
 proc parseCmdLine(): TParamConfig =
@@ -46,12 +46,12 @@ proc parseCmdLine(): TParamConfig =
 
       case p.kind
       of cmdArgument:
-        stdout.write USAGE
+        stdout.write Usage
         quit "Erroneous argument detected: " & key, 1
       of cmdLongOption, cmdShortOption:
         case key.normalize
         of "help", "h":
-          stdout.write USAGE
+          stdout.write Usage
           quit 0
         of "a":
           result.paramA = val.parseInt
@@ -60,21 +60,21 @@ proc parseCmdLine(): TParamConfig =
           result.paramB = val.parseInt
           hasB = true
         else:
-          stdout.write USAGE
+          stdout.write Usage
           quit "Unexpected option: " & key, 2
       of cmdEnd: break
   except EInvalidValue:
-    stdout.write USAGE
+    stdout.write Usage
     quit "Invalid value " & val &  " for parameter " & key, 3
 
   if hasA and hasB:
     result.action = cmdParams
   elif hasA or hasB:
-    stdout.write USAGE
+    stdout.write Usage
     quit "Error: provide both A and B to operate in param mode", 4
 
 
-proc parseUserInput(question: string): int =
+proc parseUserInput(question: String): Int =
   ## Parses a line of user input, showing question to the user first.
   ##
   ## If the user input is an empty line quit() is called. Returns the value

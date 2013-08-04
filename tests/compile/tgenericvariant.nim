@@ -4,20 +4,20 @@ type
     of False: value: T
     else: nil
 
-proc Just*[T](val: T): TMaybe[T] =
-  result.empty = False
+proc just*[T](val: T): TMaybe[T] =
+  result.empty = false
   result.value = val
 
-proc Nothing[T](): TMaybe[T] =
-  result.empty = True
+proc nothing[T](): TMaybe[T] =
+  result.empty = true
 
-proc safeReadLine(): TMaybe[string] =
+proc safeReadLine(): TMaybe[String] =
   var r = stdin.readLine()
-  if r == "": return Nothing[string]()
-  else: return Just(r)
+  if r == "": return nothing[string]()
+  else: return just(r)
 
 when isMainModule:
-  var Test = Just("Test")
-  echo(Test.value)
+  var test = just("Test")
+  echo(test.value)
   var mSomething = safeReadLine()
   echo(mSomething.value)

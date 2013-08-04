@@ -8,13 +8,13 @@ type
   TGuiContainer* = object of TObject
     position: TVector2f
     activeEntry: PTextEntry
-    widgets: seq[PGuiObject]
-    buttons: seq[PButton]
+    widgets: Seq[PGuiObject]
+    buttons: Seq[PButton]
   PGuiObject* = ref TGuiObject
   TGuiObject* = object of TObject
   PButton* = ref TButton
   TButton* = object of TGuiObject
-    enabled: bool
+    enabled: Bool
     bg*: sfml.PRectangleShape
     text*: PText
     onClick*: TButtonClicked
@@ -27,15 +27,15 @@ type
   PMessageArea* = ref TMessageArea
   TMessageArea* = object of TGuiObject
     pos: TVector2f
-    messages: seq[TMessage]
-    texts: seq[PText]
-    scrollBack*: int
-    sizeVisible*: int
-    direction*: int
+    messages: Seq[TMessage]
+    texts: Seq[PText]
+    scrollBack*: Int
+    sizeVisible*: Int
+    direction*: Int
   TMessage = object
     color: TColor
-    text: string
-    lines: int
+    text: String
+    lines: Int
   TButtonClicked = proc(button: PButton)
 var
   guiFont* = newFont("data/fnt/LiberationMono-Regular.ttf")
@@ -52,7 +52,7 @@ proc click*(container: PGuiContainer; position: TVector2f)
 proc setActive*(container: PGuiContainer; entry: PTextEntry)
 proc setPosition*(container: PGuiContainer; position: TVector2f)
 
-proc update*(container: PGuiContainer; dt: float)
+proc update*(container: PGuiContainer; dt: Float)
 proc draw*(window: PRenderWindow; container: PGuiContainer) {.inline.}
 
 proc newMessageArea*(container: PGuiContainer; position: TVector2f): PMessageArea {.discardable.}
@@ -61,22 +61,22 @@ proc add*(m: PMessageArea; msg: ScChat)
 proc draw*(window: PRenderWindow; b: PButton) {.inline.}
 proc click*(b: PButton; p: TVector2f)
 proc setPosition*(b: PButton; p: TVector2f)
-proc setString*(b: PButton; s: string) {.inline.}
+proc setString*(b: PButton; s: String) {.inline.}
 
-proc newButton*(container: PGuiContainer; text: string; position: TVector2f; 
-  onClick: TButtonClicked; startEnabled: bool = true): PButton {.discardable.}
-proc init(b: PButton; text: string; position: TVector2f; onClick: TButtonClicked)
-proc setEnabled*(b: PButton; enabled: bool)
+proc newButton*(container: PGuiContainer; text: String; position: TVector2f; 
+  onClick: TButtonClicked; startEnabled: Bool = true): PButton {.discardable.}
+proc init(b: PButton; text: String; position: TVector2f; onClick: TButtonClicked)
+proc setEnabled*(b: PButton; enabled: Bool)
 proc disable*(b: PButton) {.inline.}
 proc enable*(b: PButton) {.inline.}
 
-proc newTextEntry*(container: PGuiContainer; text: string;
+proc newTextEntry*(container: PGuiContainer; text: String;
                     position: TVector2f; onEnter: TInputFinishedProc = nil): PTextEntry {.discardable.}
-proc init(t: PTextEntry; text: string; onEnter: TInputFinishedProc)
+proc init(t: PTextEntry; text: String; onEnter: TInputFinishedProc)
 proc draw*(window: PRenderWindow, t: PTextEntry) {.inline.}
 proc setActive*(t: PTextEntry) {.inline.}
 proc clearText*(t: PTextEntry) {.inline.}
-proc getText*(t: PTextEntry): string {.inline.}
+proc getText*(t: PTextEntry): String {.inline.}
 
 proc update*(m: PMessageArea)
 
@@ -124,9 +124,9 @@ proc free(c: PButton) =
   c.bg = nil
   c.text = nil
   c.onClick = nil
-proc newButton*(container: PGuiContainer; text: string;
+proc newButton*(container: PGuiContainer; text: String;
                  position: TVector2f; onClick: TButtonClicked;
-                 startEnabled: bool = true): PButton =
+                 startEnabled: Bool = true): PButton =
   new(result, free)
   init(result, 
        text, 
@@ -135,7 +135,7 @@ proc newButton*(container: PGuiContainer; text: string;
   container.add result
   if not startEnabled: disable(result)
 
-proc init(b: PButton; text: string; position: TVector2f; onClick: TButtonClicked) =
+proc init(b: PButton; text: String; position: TVector2f; onClick: TButtonClicked) =
   b.bg = newRectangleShape()
   b.bg.setSize(vec2f(80.0, 16.0))
   b.bg.setFillColor(color(20, 30, 15))
@@ -174,7 +174,7 @@ proc click*(b: PButton, p: TVector2f) =
 
 proc free(obj: PTextEntry) =
   free(PButton(obj))
-proc newTextEntry*(container: PGuiContainer; text: string; 
+proc newTextEntry*(container: PGuiContainer; text: String; 
                     position: TVector2F; onEnter: TInputFinishedProc = nil): PTextEntry =
   new(result, free)
   init(PButton(result), text, position + container.position, proc(b: PButton) =
@@ -236,15 +236,15 @@ proc add*(m: PMessageArea, msg: ScChat) =
   else:
     mmm.text = msg.text
   case msg.kind
-  of CPub:  mmm.color = RoyalBlue
-  of CPriv, CSystem: mmm.color = Green
-  of CError: mmm.color = Red
+  of CPub:  mmm.color = royalBlue
+  of CPriv, CSystem: mmm.color = green
+  of CError: mmm.color = red
   
   mmm.lines = countLines(mmm.text)+1
   
   m.messages.add mmm
   update m
-proc add*(m: PMessageArea, msg: string) {.inline.} =
+proc add*(m: PMessageArea, msg: String) {.inline.} =
   var chat = newScChat(kind = CSystem, text = msg)
   add(m, chat)
 
@@ -271,7 +271,7 @@ proc update*(m: PMessageArea) =
     ##echo nmsgs - i - 1 - m.scrollBack
     let msg = addr m.messages[nmsgs - i - 1 - m.scrollBack]
     proctor(m.texts[i], msg, addr pos)
-    pos.y += (16 * m.direction * msg.lines).cfloat  
+    pos.y += (16 * m.direction * msg.lines).Cfloat  
 
 proc draw*(window: PRenderWindow; m: PMessageArea) =
   let nmsgs = len(m.texts)

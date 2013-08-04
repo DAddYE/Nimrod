@@ -2,48 +2,48 @@
 import 
   gdk2, glib2, gtk2
 
-proc destroy(widget: pWidget, data: pgpointer){.cdecl.} = 
-  main_quit()
+proc destroy(widget: PWidget, data: Pgpointer){.cdecl.} = 
+  mainQuit()
 
 const 
-  Inside: cstring = "Mouse is over label"
-  OutSide: cstring = "Mouse is not over label"
+  Inside: Cstring = "Mouse is over label"
+  OutSide: Cstring = "Mouse is not over label"
 
 var 
-  OverButton: bool
+  overButton: Bool
 
-nimrod_init()
-var window = window_new(gtk2.WINDOW_TOPLEVEL)
-var stackbox = vbox_new(TRUE, 10)
-var button1 = button_new("Move mouse over button")
-var buttonstyle = copy(get_style(Button1))
-ButtonStyle.bg[STATE_PRELIGHT].pixel = 0
-ButtonStyle.bg[STATE_PRELIGHT].red = -1'i16
-ButtonStyle.bg[STATE_PRELIGHT].blue = 0'i16
-ButtonStyle.bg[STATE_PRELIGHT].green = 0'i16
-set_style(button1, buttonstyle)
-var button2 = button_new()
-var ALabel = label_new(Outside)
-
-
-proc ChangeLabel(P: PWidget, Event: gdk2.PEventCrossing, 
-                 Data: var bool){.cdecl.} = 
-  if Not Data: set_text(ALabel, Inside)
-  else: set_text(ALabel, Outside)
-  Data = Not Data
+nimrodInit()
+var window = windowNew(gtk2.WINDOW_TOPLEVEL)
+var stackbox = vboxNew(true, 10)
+var button1 = buttonNew("Move mouse over button")
+var buttonstyle = copy(getStyle(button1))
+buttonstyle.bg[STATE_PRELIGHT].pixel = 0
+buttonstyle.bg[STATE_PRELIGHT].red = -1'i16
+buttonstyle.bg[STATE_PRELIGHT].blue = 0'i16
+buttonstyle.bg[STATE_PRELIGHT].green = 0'i16
+setStyle(button1, buttonstyle)
+var button2 = buttonNew()
+var aLabel = labelNew(OutSide)
 
 
-add(button2, ALAbel)
-pack_start(stackbox, button1, TRUE, TRUE, 0)
-pack_start(stackbox, button2, TRUE, TRUE, 0)
-set_border_width(Window, 5)
+proc changeLabel(P: PWidget, Event: gdk2.PEventCrossing, 
+                 Data: var Bool){.cdecl.} = 
+  if not data: setText(aLabel, Inside)
+  else: setText(aLabel, OutSide)
+  data = not data
+
+
+add(button2, aLabel)
+packStart(stackbox, button1, true, true, 0)
+packStart(stackbox, button2, true, true, 0)
+setBorderWidth(window, 5)
 add(window, stackbox)
-discard signal_connect(window, "destroy", 
-                   SIGNAL_FUNC(ex9.destroy), nil)
-overbutton = False
-discard signal_connect(button1, "enter_notify_event", 
-                   SIGNAL_FUNC(ChangeLabel), addr(OverButton))
-discard signal_connect(button1, "leave_notify_event", 
-                   SIGNAL_FUNC(ChangeLabel), addr(OverButton))
-show_all(window)
+discard signalConnect(window, "destroy", 
+                   signalFunc(ex9.destroy), nil)
+overButton = false
+discard signalConnect(button1, "enter_notify_event", 
+                   signalFunc(changeLabel), addr(overButton))
+discard signalConnect(button1, "leave_notify_event", 
+                   signalFunc(changeLabel), addr(overButton))
+showAll(window)
 main()

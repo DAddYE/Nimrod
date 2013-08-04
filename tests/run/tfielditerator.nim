@@ -19,11 +19,11 @@ z: abc
 """
 
 type
-  TMyTuple = tuple[a, b: char, x, y: int, z: string]
+  TMyTuple = tuple[a, b: Char, x, y: Int, z: String]
 
-proc p(x: char) = echo "a char: ", x <= 'a'
-proc p(x: int) = echo "an int: ", x
-proc p(x: string) = echo "a string: ", x
+proc p(x: Char) = echo "a char: ", x <= 'a'
+proc p(x: Int) = echo "an int: ", x
+proc p(x: String) = echo "a string: ", x
 
 var x: TMyTuple = ('a', 'b', 5, 6, "abc")
 var y: TMyTuple = ('A', 'b', 5, 9, "abc")

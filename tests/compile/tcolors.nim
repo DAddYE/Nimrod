@@ -1,13 +1,13 @@
 import strutils
 
 type
-  TColor = distinct int32
+  TColor = distinct Int32
 
-proc rgb(r, g, b: range[0..255]): TColor = 
+proc rgb(r, g, b: Range[0..255]): TColor = 
   result = TColor(r or g shl 8 or b shl 16)
 
-proc `$`(c: TColor): string =
-  result = "#" & toHex(int32(c), 6)
+proc `$`(c: TColor): String =
+  result = "#" & toHex(Int32(c), 6)
 
 echo rgb(34, 55, 255)
 

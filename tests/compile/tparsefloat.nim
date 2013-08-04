@@ -1,3 +1,3 @@
 import strutils
 
-echo ParseFloat("5000") / ParseFloat("10")
+echo parseFloat("5000") / parseFloat("10")

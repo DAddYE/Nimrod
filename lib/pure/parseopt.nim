@@ -26,9 +26,9 @@ type
     cmdShortOption            ## a short option ``-c`` detected
   TOptParser* = 
       object of TObject ## this object implements the command line parser  
-    cmd: string
-    pos: int
-    inShortState: bool
+    cmd: String
+    pos: Int
+    inShortState: Bool
     kind*: TCmdLineKind       ## the dected command line token
     key*, val*: TaintedString ## key and value pair; ``key`` is the option
                               ## or the argument, ``value`` is not "" if
@@ -47,14 +47,14 @@ when defined(os.ParamCount):
       result.cmd = cmdline
     else: 
       result.cmd = ""
-      for i in countup(1, ParamCount()): 
-        result.cmd = result.cmd & quoteIfContainsWhite(paramStr(i).string) & ' '
+      for i in countup(1, paramCount()): 
+        result.cmd = result.cmd & quoteIfContainsWhite(paramStr(i).String) & ' '
     result.kind = cmdEnd
     result.key = TaintedString""
     result.val = TaintedString""
 
-proc parseWord(s: string, i: int, w: var string, 
-               delim: TCharSet = {'\x09', ' ', '\0'}): int = 
+proc parseWord(s: String, i: Int, w: var String, 
+               delim: TCharSet = {'\x09', ' ', '\0'}): Int = 
   result = i
   if s[result] == '\"': 
     inc(result)
@@ -70,7 +70,7 @@ proc parseWord(s: string, i: int, w: var string,
 proc handleShortOption(p: var TOptParser) = 
   var i = p.pos
   p.kind = cmdShortOption
-  add(p.key.string, p.cmd[i])
+  add(p.key.String, p.cmd[i])
   inc(i)
   p.inShortState = true
   while p.cmd[i] in {'\x09', ' '}: 
@@ -80,7 +80,7 @@ proc handleShortOption(p: var TOptParser) =
     inc(i)
     p.inShortState = false
     while p.cmd[i] in {'\x09', ' '}: inc(i)
-    i = parseWord(p.cmd, i, p.val.string)
+    i = parseWord(p.cmd, i, p.val.String)
   if p.cmd[i] == '\0': p.inShortState = false
   p.pos = i
 
@@ -91,8 +91,8 @@ proc next*(p: var TOptParser) {.
   var i = p.pos
   while p.cmd[i] in {'\x09', ' '}: inc(i)
   p.pos = i
-  setlen(p.key.string, 0)
-  setlen(p.val.string, 0)
+  setLen(p.key.String, 0)
+  setLen(p.val.String, 0)
   if p.inShortState: 
     handleShortOption(p)
     return 
@@ -102,14 +102,14 @@ proc next*(p: var TOptParser) {.
   of '-': 
     inc(i)
     if p.cmd[i] == '-': 
-      p.kind = cmdLongOption
+      p.kind = cmdLongoption
       inc(i)
-      i = parseWord(p.cmd, i, p.key.string, {'\0', ' ', '\x09', ':', '='})
+      i = parseWord(p.cmd, i, p.key.String, {'\0', ' ', '\x09', ':', '='})
       while p.cmd[i] in {'\x09', ' '}: inc(i)
       if p.cmd[i] in {':', '='}: 
         inc(i)
         while p.cmd[i] in {'\x09', ' '}: inc(i)
-        p.pos = parseWord(p.cmd, i, p.val.string)
+        p.pos = parseWord(p.cmd, i, p.val.String)
       else: 
         p.pos = i
     else: 
@@ -117,7 +117,7 @@ proc next*(p: var TOptParser) {.
       handleShortOption(p)
   else:
     p.kind = cmdArgument
-    p.pos = parseWord(p.cmd, i, p.key.string)
+    p.pos = parseWord(p.cmd, i, p.key.String)
 
 proc cmdLineRest*(p: TOptParser): TaintedString {.
   rtl, extern: "npo$1".} = 

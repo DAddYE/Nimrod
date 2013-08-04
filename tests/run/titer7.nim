@@ -21,29 +21,29 @@ discard """
 64'''
 """
 
-iterator `/`[T](sequence: seq[T],
-                filter: proc(e:T):bool {.closure.}) : T =
+iterator `/`[T](sequence: Seq[T],
+                filter: proc(e:T):Bool {.closure.}) : T =
     for element in sequence:
         if (filter(element)):
             yield element
 
-iterator `>>`[I,O](sequence: seq[I],
+iterator `>>`[I,O](sequence: Seq[I],
                    map: proc(e:I):O {.closure.}) : O =
     for element in sequence:
         yield map(element)
 
-iterator `/>>`[I,O](sequence: seq[I],
+iterator `/>>`[I,O](sequence: Seq[I],
                     filtermap:tuple[
-                        f:proc(e:I):bool {.closure.},
+                        f:proc(e:I):Bool {.closure.},
                         m:proc(e:I):O {.closure.}]) : O =
     for element in sequence:
         if (filtermap.f(element)):
             yield filtermap.m(element)
 
-proc isEven(x:int): bool {.closure.} = result =
+proc isEven(x:Int): Bool {.closure.} = result =
     (x and 1) == 0
 
-proc square(x:int): int {.closure.} = result =
+proc square(x:Int): Int {.closure.} = result =
     x * x
 
 let list = @[1,2,3,4,5,6,7,8,9]

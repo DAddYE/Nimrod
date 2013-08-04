@@ -2,7 +2,7 @@ discard """
   output: "02468101214161820\n15"
 """
 
-proc filter[T](list: seq[T], f: proc (item: T): bool {.closure.}): seq[T] =
+proc filter[T](list: Seq[T], f: proc (item: T): Bool {.closure.}): Seq[T] =
   result = @[]
   for i in items(list):
     if f(i):
@@ -12,7 +12,7 @@ let nums = @[0, 1, 2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
 
 when true:
   let nums2 = filter(nums,
-               (proc (item: int): bool =
+               (proc (item: Int): Bool =
                  result = (item mod 2) == 0)
                )
 
@@ -34,7 +34,7 @@ proc compose[T](f1, f2: proc (x: T): T {.closure.}): proc (x: T): T {.closure.} 
              result = f1(f2(x)))
 
 
-proc add5(x: int): int = result = x + 5
+proc add5(x: Int): Int = result = x + 5
 
 var test = compose(add5, add5)
 echo test(5)

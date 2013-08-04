@@ -1,13 +1,13 @@
 
-proc printf(frmt: cstring) {.varargs, importc, header: "<stdio.h>", cdecl.}
-proc exit(code: int) {.importc, header: "<stdlib.h>", cdecl.}
+proc printf(frmt: Cstring) {.varargs, importc, header: "<stdio.h>", cdecl.}
+proc exit(code: Int) {.importc, header: "<stdlib.h>", cdecl.}
 
 {.push stack_trace: off, profiler:off.}
 
-proc rawoutput(s: string) =
+proc rawoutput(s: String) =
   printf("%s\n", s)
 
-proc panic(s: string) =
+proc panic(s: String) =
   rawoutput(s)
   exit(1)
 

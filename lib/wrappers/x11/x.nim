@@ -13,21 +13,21 @@
 import unsigned
 
 const 
-  X_PROTOCOL* = 11
-  X_PROTOCOL_REVISION* = 0
+  XProtocol* = 11
+  XProtocolRevision* = 0
 
 type
-  PXID* = ptr TXID
-  TXID* = culong
+  Pxid* = ptr TXID
+  TXID* = Culong
   PMask* = ptr TMask
-  TMask* = culong
+  TMask* = Culong
   PPAtom* = ptr PAtom
   PAtom* = ptr TAtom
-  TAtom* = culong
+  TAtom* = Culong
   PVisualID* = ptr TVisualID
-  TVisualID* = culong
+  TVisualID* = Culong
   PTime* = ptr TTime
-  TTime* = culong
+  TTime* = Culong
   PPWindow* = ptr PWindow
   PWindow* = ptr TWindow
   TWindow* = TXID
@@ -46,9 +46,9 @@ type
   PKeySym* = ptr TKeySym
   TKeySym* = TXID
   PKeyCode* = ptr TKeyCode
-  TKeyCode* = cuchar
+  TKeyCode* = Cuchar
 
-proc `==`*(a, b: TAtom): bool =
+proc `==`*(a, b: TAtom): Bool =
     return unsigned.`==`(a,b)
 
 const 
@@ -233,8 +233,8 @@ const
   CWDontPropagate* = 1 shl 12
   CWColormap* = 1 shl 13
   CWCursor* = 1 shl 14
-  CWX* = 1 shl 0
-  CWY* = 1 shl 1
+  Cwx* = 1 shl 0
+  Cwy* = 1 shl 1
   CWWidth* = 1 shl 2
   CWHeight* = 1 shl 3
   CWBorderWidth* = 1 shl 4

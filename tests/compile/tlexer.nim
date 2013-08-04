@@ -12,17 +12,17 @@ import
 
 type
   TMyRec {.final.} = object
-    x, y: int     # coordinates
-    c: char       # a character
-    a: int32      # an integer
+    x, y: Int     # coordinates
+    c: Char       # a character
+    a: Int32      # an integer
 
   PMyRec = ref TMyRec # a reference to `TMyRec`
 
-proc splitText(txt: string): seq[string] # splits a text into several lines
+proc splitText(txt: String): Seq[String] # splits a text into several lines
                                          # the comment continues here
                                          # this is not easy to parse!
 
-proc anotherSplit(txt: string): seq[string] =
+proc anotherSplit(txt: String): Seq[String] =
   # the comment should belong to `anotherSplit`!
   # another problem: comments are statements!
 
@@ -42,11 +42,11 @@ const
 
 # small test program for lexbase
 
-proc main*(infile: string, a, b: int, someverylongnamewithtype = 0,
+proc main*(infile: String, a, b: Int, someverylongnamewithtype = 0,
            anotherlongthingie = 3) =
   var
-    myInt: int = 0
-    s: seq[string]
+    myInt: Int = 0
+    s: Seq[String]
   # this should be an error!
   if initBaseLexer(L, infile, 30): nil
   else:
@@ -57,4 +57,4 @@ proc main*(infile: string, a, b: int, someverylongnamewithtype = 0,
        43) # we use 43
        
 
-main(ParamStr(1), 9, 0)
+main(paramStr(1), 9, 0)

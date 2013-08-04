@@ -5,7 +5,7 @@ true'''
 
 import pegs
 
-template optPeg{peg(pattern)}(pattern: string{lit}): TPeg =
+template optPeg{peg(pattern)}(pattern: String{lit}): TPeg =
   var gl {.global, gensym.} = peg(pattern)
   gl
 

@@ -30,10 +30,10 @@ const
   coalescLeft = true
 
 type
-  PPointer = ptr pointer
-  TByteArray = array[0..1000_0000, byte]
+  PPointer = ptr Pointer
+  TByteArray = Array[0..1000_0000, Byte]
   PByte = ptr TByteArray
-  PString = ptr string
+  PString = ptr String
 
 # Page size of the system; in most cases 4096 bytes. For exotic OS or
 # CPU this needs to be changed:

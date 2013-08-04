@@ -3,17 +3,17 @@ discard """
   line: 18
   errormsg: "undeclared identifier: \'b\'"
 """
-template declareInScope(x: expr, t: typeDesc): stmt {.immediate.} =
+template declareInScope(x: Expr, t: TypeDesc): Stmt {.immediate.} =
   var x: t
   
-template declareInNewScope(x: expr, t: typeDesc): stmt {.immediate.} =
+template declareInNewScope(x: Expr, t: TypeDesc): Stmt {.immediate.} =
   # open a new scope:
   block: 
     var x: t
 
-declareInScope(a, int)
+declareInScope(a, Int)
 a = 42  # works, `a` is known here
 
-declareInNewScope(b, int)
+declareInNewScope(b, Int)
 b = 42  #ERROR_MSG undeclared identifier: 'b'
 

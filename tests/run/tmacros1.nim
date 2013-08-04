@@ -5,10 +5,10 @@ discard """
 import
   macros, strutils
 
-macro outterMacro*(n: stmt): stmt {.immediate.} =
+macro outterMacro*(n: Stmt): Stmt {.immediate.} =
   let n = callsite()
-  var j : string = "hi"
-  proc innerProc(i: int): string =
+  var j : String = "hi"
+  proc innerProc(i: Int): String =
     echo "Using arg ! " & n.repr
     result = "Got: '" & $n.kind & "' " & $j
   var callNode = n[0]
@@ -23,7 +23,7 @@ macro outterMacro*(n: stmt): stmt {.immediate.} =
   ass.add(newStrLitNode(innerProc(4)))
   result.add(ass)
 
-var str: string
+var str: String
 outterMacro(str):
   "hellow"
 echo str

@@ -1,26 +1,26 @@
 import macros
 
-template selectType(x: int): typeDesc =
+template selectType(x: Int): TypeDesc =
   when x < 10:
     int
   else:
     string
 
-template simpleTypeTempl: typeDesc =
+template simpleTypeTempl: TypeDesc =
   string
 
-macro typeFromMacro: typedesc = string
+macro typeFromMacro: TypeDesc = String
   
-proc t1*(x: int): simpleTypeTempl() =
+proc t1*(x: Int): simpleTypeTempl() =
   result = "test"
 
-proc t2*(x: int): selectType(100) =
+proc t2*(x: Int): selectType(100) =
   result = "test"
 
-proc t3*(x: int): selectType(1) =
+proc t3*(x: Int): selectType(1) =
   result = 10
 
-proc t4*(x: int): typeFromMacro() =
+proc t4*(x: Int): typeFromMacro() =
   result = "test"
 
 var x*: selectType(50) = "test"
@@ -34,6 +34,6 @@ var y*: type(t2(100)) = "test"
 proc t6*(x: type(t3(0))): type(t1(0)) =
   result = $x
 
-proc t7*(x: int): type($x) =
+proc t7*(x: Int): type($x) =
   result = "test"
 

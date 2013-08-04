@@ -83,15 +83,15 @@ type
     stateExpectObjectComma, stateExpectColon, stateExpectValue
 
   TJsonParser* = object of TBaseLexer ## the parser object.
-    a: string
+    a: String
     tok: TTokKind
     kind: TJsonEventKind
     err: TJsonError
-    state: seq[TParserState]
-    filename: string
+    state: Seq[TParserState]
+    filename: String
  
 const
-  errorMessages: array [TJsonError, string] = [
+  errorMessages: Array [TJsonError, String] = [
     "no error",
     "invalid token",
     "string expected",
@@ -104,7 +104,7 @@ const
     "EOF expected",
     "expression expected"
   ]
-  tokToStr: array [TTokKind, string] = [
+  tokToStr: Array [TTokKind, String] = [
     "invalid token",
     "EOF",
     "string literal",
@@ -116,7 +116,7 @@ const
     "{", "}", "[", "]", ":", ","
   ]
 
-proc open*(my: var TJsonParser, input: PStream, filename: string) =
+proc open*(my: var TJsonParser, input: PStream, filename: String) =
   ## initializes the parser with an input stream. `Filename` is only used
   ## for nice error messages.
   lexbase.open(my, input)
@@ -129,18 +129,18 @@ proc close*(my: var TJsonParser) {.inline.} =
   ## closes the parser `my` and its associated input stream.
   lexbase.close(my)
 
-proc str*(my: TJsonParser): string {.inline.} = 
+proc str*(my: TJsonParser): String {.inline.} = 
   ## returns the character data for the events: ``jsonInt``, ``jsonFloat``, 
   ## ``jsonString``
   assert(my.kind in {jsonInt, jsonFloat, jsonString})
   return my.a
 
-proc getInt*(my: TJsonParser): biggestInt {.inline.} = 
+proc getInt*(my: TJsonParser): BiggestInt {.inline.} = 
   ## returns the number for the event: ``jsonInt``
   assert(my.kind == jsonInt)
   return parseBiggestInt(my.a)
 
-proc getFloat*(my: TJsonParser): float {.inline.} = 
+proc getFloat*(my: TJsonParser): Float {.inline.} = 
   ## returns the number for the event: ``jsonFloat``
   assert(my.kind == jsonFloat)
   return parseFloat(my.a)
@@ -149,31 +149,31 @@ proc kind*(my: TJsonParser): TJsonEventKind {.inline.} =
   ## returns the current event type for the JSON parser
   return my.kind
   
-proc getColumn*(my: TJsonParser): int {.inline.} = 
+proc getColumn*(my: TJsonParser): Int {.inline.} = 
   ## get the current column the parser has arrived at.
   result = getColNumber(my, my.bufPos)
 
-proc getLine*(my: TJsonParser): int {.inline.} = 
+proc getLine*(my: TJsonParser): Int {.inline.} = 
   ## get the current line the parser has arrived at.
   result = my.linenumber
 
-proc getFilename*(my: TJsonParser): string {.inline.} = 
+proc getFilename*(my: TJsonParser): String {.inline.} = 
   ## get the filename of the file that the parser processes.
   result = my.filename
   
-proc errorMsg*(my: TJsonParser): string = 
+proc errorMsg*(my: TJsonParser): String = 
   ## returns a helpful error message for the event ``jsonError``
   assert(my.kind == jsonError)
   result = "$1($2, $3) Error: $4" % [
     my.filename, $getLine(my), $getColumn(my), errorMessages[my.err]]
 
-proc errorMsgExpected*(my: TJsonParser, e: string): string = 
+proc errorMsgExpected*(my: TJsonParser, e: String): String = 
   ## returns an error message "`e` expected" in the same format as the
   ## other error messages 
   result = "$1($2, $3) Error: $4" % [
     my.filename, $getLine(my), $getColumn(my), e & " expected"]
 
-proc handleHexChar(c: Char, x: var int): bool = 
+proc handleHexChar(c: Char, x: var Int): Bool = 
   result = true # Success
   case c
   of '0'..'9': x = (x shl 4) or (ord(c) - ord('0'))
@@ -216,7 +216,7 @@ proc parseString(my: var TJsonParser): TTokKind =
         inc(pos, 2)
       of 'u':
         inc(pos, 2)
-        var r: int
+        var r: Int
         if handleHexChar(buf[pos], r): inc(pos)
         if handleHexChar(buf[pos], r): inc(pos)
         if handleHexChar(buf[pos], r): inc(pos)
@@ -268,7 +268,7 @@ proc skip(my: var TJsonParser) =
         while true:
           case buf[pos] 
           of '\0': 
-            my.err = errEOC_Expected
+            my.err = errEOCExpected
             break
           of '\c': 
             pos = lexbase.HandleCR(my, pos)
@@ -286,7 +286,7 @@ proc skip(my: var TJsonParser) =
       else: 
         break
     of ' ', '\t': 
-      Inc(pos)
+      inc(pos)
     of '\c':  
       pos = lexbase.HandleCR(my, pos)
       buf = my.buf
@@ -515,23 +515,23 @@ type
   TJsonNode* {.final, pure, acyclic.} = object
     case kind*: TJsonNodeKind
     of JString:
-      str*: string
+      str*: String
     of JInt:
-      num*: biggestInt
+      num*: BiggestInt
     of JFloat:
-      fnum*: float
+      fnum*: Float
     of JBool:
-      bval*: bool
+      bval*: Bool
     of JNull:
       nil
     of JObject:
-      fields*: seq[tuple[key: string, val: PJsonNode]]
+      fields*: Seq[tuple[key: String, val: PJsonNode]]
     of JArray:
-      elems*: seq[PJsonNode]
+      elems*: Seq[PJsonNode]
 
   EJsonParsingError* = object of EInvalidValue ## is raised for a JSON error
 
-proc raiseParseErr*(p: TJsonParser, msg: string) {.noinline, noreturn.} =
+proc raiseParseErr*(p: TJsonParser, msg: String) {.noinline, noreturn.} =
   ## raises an `EJsonParsingError` exception.
   raise newException(EJsonParsingError, errorMsgExpected(p, msg))
 
@@ -546,7 +546,7 @@ proc newJStringMove(s: String): PJsonNode =
   result.kind = JString
   shallowCopy(result.str, s)
 
-proc newJInt*(n: biggestInt): PJsonNode =
+proc newJInt*(n: BiggestInt): PJsonNode =
   ## Creates a new `JInt PJsonNode`.
   new(result)
   result.kind = JInt
@@ -581,45 +581,45 @@ proc newJArray*(): PJsonNode =
   result.elems = @[]
 
 
-proc `%`*(s: string): PJsonNode =
+proc `%`*(s: String): PJsonNode =
   ## Generic constructor for JSON data. Creates a new `JString PJsonNode`.
   new(result)
   result.kind = JString
   result.str = s
 
-proc `%`*(n: biggestInt): PJsonNode =
+proc `%`*(n: BiggestInt): PJsonNode =
   ## Generic constructor for JSON data. Creates a new `JInt PJsonNode`.
   new(result)
   result.kind = JInt
   result.num  = n
 
-proc `%`*(n: float): PJsonNode =
+proc `%`*(n: Float): PJsonNode =
   ## Generic constructor for JSON data. Creates a new `JFloat PJsonNode`.
   new(result)
   result.kind = JFloat
   result.fnum  = n
 
-proc `%`*(b: bool): PJsonNode =
+proc `%`*(b: Bool): PJsonNode =
   ## Generic constructor for JSON data. Creates a new `JBool PJsonNode`.
   new(result)
   result.kind = JBool
   result.bval = b
 
-proc `%`*(keyVals: openArray[tuple[key: string, val: PJsonNode]]): PJsonNode =
+proc `%`*(keyVals: Openarray[tuple[key: String, val: PJsonNode]]): PJsonNode =
   ## Generic constructor for JSON data. Creates a new `JObject PJsonNode`
   new(result)
   result.kind = JObject
   newSeq(result.fields, keyVals.len)
   for i, p in pairs(keyVals): result.fields[i] = p
 
-proc `%`*(elements: openArray[PJSonNode]): PJsonNode =
+proc `%`*(elements: Openarray[PJsonNode]): PJsonNode =
   ## Generic constructor for JSON data. Creates a new `JArray PJsonNode`
   new(result)
   result.kind = JArray
   newSeq(result.elems, elements.len)
   for i, p in pairs(elements): result.elems[i] = p
 
-proc len*(n: PJsonNode): int = 
+proc len*(n: PJsonNode): Int = 
   ## If `n` is a `JArray`, it returns the number of elements.
   ## If `n` is a `JObject`, it returns the number of pairs.
   ## Else it returns 0.
@@ -645,7 +645,7 @@ proc hasKey*(node: PJsonNode, key: String): Bool =
   ## Checks if `key` exists in `node`.
   assert(node.kind == JObject)
   for k, item in items(node.fields):
-    if k == key: return True
+    if k == key: return true
 proc existsKey*(node: PJsonNode, key: String): Bool {.deprecated.} = node.hasKey(key)
   ## Deprecated for `hasKey`
 
@@ -654,7 +654,7 @@ proc add*(father, child: PJsonNode) =
   assert father.kind == JArray
   father.elems.add(child)
 
-proc add*(obj: PJsonNode, key: string, val: PJsonNode) = 
+proc add*(obj: PJsonNode, key: String, val: PJsonNode) = 
   ## Adds ``(key, val)`` pair to the JObject node `obj`. For speed
   ## reasons no check for duplicate keys is performed!
   ## But ``[]=`` performs the check.
@@ -670,7 +670,7 @@ proc `[]=`*(obj: PJsonNode, key: String, val: PJsonNode) =
       return
   obj.fields.add((key, val))
 
-proc delete*(obj: PJsonNode, key: string) =
+proc delete*(obj: PJsonNode, key: String) =
   ## Deletes ``obj[key]`` preserving the order of the other (key, value)-pairs.
   assert(obj.kind == JObject)
   for i in 0..obj.fields.len-1:
@@ -703,22 +703,22 @@ proc copy*(p: PJsonNode): PJsonNode =
 
 # ------------- pretty printing ----------------------------------------------
 
-proc indent(s: var string, i: int) = 
+proc indent(s: var String, i: Int) = 
   s.add(repeatChar(i))
 
-proc newIndent(curr, indent: int, ml: bool): Int =
+proc newIndent(curr, indent: Int, ml: Bool): Int =
   if ml: return curr + indent
   else: return indent
 
-proc nl(s: var string, ml: bool) = 
+proc nl(s: var String, ml: Bool) = 
   if ml: s.add("\n")
 
-proc escapeJson*(s: string): string = 
+proc escapeJson*(s: String): String = 
   ## Converts a string `s` to its JSON representation.
   result = newStringOfCap(s.len + s.len shr 3)
   result.add("\"")
   for x in runes(s):
-    var r = int(x)
+    var r = Int(x)
     if r >= 32 and r <= 127:
       var c = chr(r)
       case c
@@ -730,8 +730,8 @@ proc escapeJson*(s: string): string =
       result.add(toHex(r, 4))
   result.add("\"")
 
-proc toPretty(result: var string, node: PJsonNode, indent = 2, ml = True, 
-              lstArr = False, currIndent = 0) =
+proc toPretty(result: var String, node: PJsonNode, indent = 2, ml = true, 
+              lstArr = false, currIndent = 0) =
   case node.kind
   of JObject:
     if currIndent != 0 and not lstArr: result.nl(ml)
@@ -747,7 +747,7 @@ proc toPretty(result: var string, node: PJsonNode, indent = 2, ml = True,
         result.indent(newIndent(currIndent, indent, ml)) 
         result.add(escapeJson(node.fields[i].key))
         result.add(": ")
-        toPretty(result, node.fields[i].val, indent, ml, False, 
+        toPretty(result, node.fields[i].val, indent, ml, false, 
                  newIndent(currIndent, indent, ml))
       result.nl(ml)
       result.indent(currIndent) # indent the same as {
@@ -776,7 +776,7 @@ proc toPretty(result: var string, node: PJsonNode, indent = 2, ml = True,
           result.add(", ")
           result.nl(ml) # New Line
         toPretty(result, node.elems[i], indent, ml,
-            True, newIndent(currIndent, indent, ml))
+            true, newIndent(currIndent, indent, ml))
       result.nl(ml)
       result.indent(currIndent)
       result.add("]")
@@ -794,15 +794,15 @@ proc pretty*(node: PJsonNode, indent = 2): String =
 proc `$`*(node: PJsonNode): String =
   ## Converts `node` to its JSON Representation on one line.
   result = ""
-  toPretty(result, node, 1, False)
+  toPretty(result, node, 1, false)
 
-iterator items*(node: PJsonNode): PJSonNode =
+iterator items*(node: PJsonNode): PJsonNode =
   ## Iterator for the items of `node`. `node` has to be a JArray.
   assert node.kind == JArray
   for i in items(node.elems):
     yield i
 
-iterator pairs*(node: PJsonNode): tuple[key: string, val: PJsonNode] =
+iterator pairs*(node: PJsonNode): tuple[key: String, val: PJsonNode] =
   ## Iterator for the child elements of `node`. `node` has to be a JObject.
   assert node.kind == JObject
   for key, val in items(node.fields):
@@ -860,7 +860,7 @@ proc parseJson(p: var TJsonParser): PJsonNode =
   of tkError, tkCurlyRi, tkBracketRi, tkColon, tkComma, tkEof:
     raiseParseErr(p, "{")
 
-proc parseJson*(s: PStream, filename: string): PJsonNode =
+proc parseJson*(s: PStream, filename: String): PJsonNode =
   ## Parses from a stream `s` into a `PJsonNode`. `filename` is only needed
   ## for nice error messages.
   var p: TJsonParser
@@ -869,15 +869,15 @@ proc parseJson*(s: PStream, filename: string): PJsonNode =
   result = p.parseJson()
   p.close()
 
-proc parseJson*(buffer: string): PJsonNode = 
+proc parseJson*(buffer: String): PJsonNode = 
   ## Parses JSON from `buffer`.
   result = parseJson(newStringStream(buffer), "input")
 
-proc parseFile*(filename: string): PJsonNode =
+proc parseFile*(filename: String): PJsonNode =
   ## Parses `file` into a `PJsonNode`.
   var stream = newFileStream(filename, fmRead)
   if stream == nil: 
-    raise newException(EIO, "cannot read from file: " & filename)
+    raise newException(Eio, "cannot read from file: " & filename)
   result = parseJson(stream, filename)
   
 when false:

@@ -2,38 +2,38 @@
 
 import strutils
 
-proc parseInt(x: float): int {.noSideEffect.} = nil
-proc parseInt(x: bool): int {.noSideEffect.} = nil
-proc parseInt(x: float32): int {.noSideEffect.} = nil
-proc parseInt(x: int8): int {.noSideEffect.} = nil
-proc parseInt(x: TFile): int {.noSideEffect.} = nil
-proc parseInt(x: char): int {.noSideEffect.} = nil
-proc parseInt(x: int16): int {.noSideEffect.} = nil
+proc parseInt(x: Float): Int {.noSideEffect.} = nil
+proc parseInt(x: Bool): Int {.noSideEffect.} = nil
+proc parseInt(x: Float32): Int {.noSideEffect.} = nil
+proc parseInt(x: Int8): Int {.noSideEffect.} = nil
+proc parseInt(x: TFile): Int {.noSideEffect.} = nil
+proc parseInt(x: Char): Int {.noSideEffect.} = nil
+proc parseInt(x: Int16): Int {.noSideEffect.} = nil
 
-proc parseInt[T](x: T): int = echo x; 34
+proc parseInt[T](x: T): Int = echo x; 34
 
 type
-  TParseInt = proc (x: string): int {.noSideEffect.}
+  TParseInt = proc (x: String): Int {.noSideEffect.}
 
 var
   q = TParseInt(parseInt)
   p: TParseInt = parseInt
 
-proc takeParseInt(x: proc (y: string): int {.noSideEffect.}): int = 
+proc takeParseInt(x: proc (y: String): Int {.noSideEffect.}): Int = 
   result = x("123")
   
 echo "Give a list of numbers (separated by spaces): "
-var x = stdin.readline.split.map(parseInt).max
+var x = stdin.readLine.split.map(parseInt).max
 echo x, " is the maximum!"
 echo "another number: ", takeParseInt(parseInt)
 
 
 type
-  TFoo[a,b] = object
+  TFoo[A,B] = object
     lorem: a
     ipsum: b
 
-proc bar[a,b](f: TFoo[a,b], x: a) = echo(x, " ", f.lorem, f.ipsum)
-proc bar[a,b](f: TFoo[a,b], x: b) = echo(x, " ", f.lorem, f.ipsum)
+proc bar[A,B](f: TFoo[a,b], x: a) = echo(x, " ", f.lorem, f.ipsum)
+proc bar[A,B](f: TFoo[a,b], x: b) = echo(x, " ", f.lorem, f.ipsum)
 
 discard parseInt[string]("yay")

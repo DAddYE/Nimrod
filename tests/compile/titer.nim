@@ -1,6 +1,6 @@
 # Test the new iterators
 
-iterator xrange(fromm, to: int, step = 1): int =
+iterator xrange(fromm, to: Int, step = 1): Int =
   var a = fromm
   while a <= to:
     yield a

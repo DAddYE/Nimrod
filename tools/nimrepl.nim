@@ -17,7 +17,7 @@ else:
 var nimExe = findExe("nimrod")
 if nimExe.len == 0: nimExe = "../bin" / addFileExt("nimrod", os.exeExt)
 
-proc execCode(code: string): string =
+proc execCode(code: String): String =
   var f: TFile
   if open(f, "temp.nim", fmWrite):
     f.write(code)
@@ -28,145 +28,145 @@ proc execCode(code: string): string =
   else:
     result = "cannot open file 'temp.nim'"
 
-var shiftPressed = False
+var shiftPressed = false
 var w: gtk2.PWindow
-var InputTextBuffer: PTextBuffer
-var OutputTextBuffer: PTextBuffer
+var inputTextBuffer: PTextBuffer
+var outputTextBuffer: PTextBuffer
 
-proc destroy(widget: PWidget, data: pgpointer){.cdecl.} = 
-  main_quit()
+proc destroy(widget: PWidget, data: Pgpointer){.cdecl.} = 
+  mainQuit()
 
-proc FileOpenClicked(menuitem: PMenuItem, userdata: pgpointer) {.cdecl.} =
-  var path = ChooseFileToOpen(w)
+proc fileOpenClicked(menuitem: PMenuItem, userdata: Pgpointer) {.cdecl.} =
+  var path = chooseFileToOpen(w)
   if path != "":
     var file = readFile(path)
     if file != nil:
-      set_text(InputTextBuffer, file, len(file).gint)
+      setText(inputTextBuffer, file, len(file).Gint)
     else:
       error(w, "Unable to read from file")
 
-proc FileSaveClicked(menuitem: PMenuItem, userdata: pgpointer) {.cdecl.} =
-  var path = ChooseFileToSave(w)
+proc fileSaveClicked(menuitem: PMenuItem, userdata: Pgpointer) {.cdecl.} =
+  var path = chooseFileToSave(w)
   
   if path == "": return
   var startIter: TTextIter
   var endIter: TTextIter
-  get_start_iter(InputTextBuffer, addr(startIter))
-  get_end_iter(InputTextBuffer, addr(endIter))
-  var InputText = get_text(InputTextBuffer, addr(startIter), 
-                           addr(endIter), False)
+  getStartIter(inputTextBuffer, addr(startIter))
+  getEndIter(inputTextBuffer, addr(endIter))
+  var inputText = getText(inputTextBuffer, addr(startIter), 
+                           addr(endIter), false)
   var f: TFile
   if open(f, path, fmWrite):
-    f.write(InputText)
+    f.write(inputText)
     f.close()
   else:
     error(w, "Unable to write to file")
 
 proc inputKeyPressed(widget: PWidget, event: PEventKey, 
-                     userdata: pgpointer): bool {.cdecl.} =
-  if ($keyval_name(event.keyval)).tolower() == "shift_l":
+                     userdata: Pgpointer): Bool {.cdecl.} =
+  if ($keyvalName(event.keyval)).toLower() == "shift_l":
     # SHIFT is pressed
-    shiftPressed = True
+    shiftPressed = true
   
-proc setError(msg: string) = 
-  outputTextBuffer.setText(msg, msg.len.gint)
+proc setError(msg: String) = 
+  outputTextBuffer.setText(msg, msg.len.Gint)
   
 proc inputKeyReleased(widget: PWidget, event: PEventKey, 
-                      userdata: pgpointer): bool {.cdecl.} =
+                      userdata: Pgpointer): Bool {.cdecl.} =
   #echo(keyval_name(event.keyval))
-  if ($keyval_name(event.keyval)).tolower() == "shift_l":
+  if ($keyvalName(event.keyval)).toLower() == "shift_l":
     # SHIFT is released
-    shiftPressed = False
+    shiftPressed = false
     
-  if ($keyval_name(event.keyval)).tolower() == "return":
+  if ($keyvalName(event.keyval)).toLower() == "return":
     #echo($keyval_name(event.keyval), "Shift_L")
     # Enter pressed
-    if shiftPressed == False:
+    if shiftPressed == false:
       var startIter: TTextIter
       var endIter: TTextIter
-      get_start_iter(InputTextBuffer, addr(startIter))
-      get_end_iter(InputTextBuffer, addr(endIter))
-      var InputText = get_text(InputTextBuffer, addr(startIter), 
-                               addr(endIter), False)
+      getStartIter(inputTextBuffer, addr(startIter))
+      getEndIter(inputTextBuffer, addr(endIter))
+      var inputText = getText(inputTextBuffer, addr(startIter), 
+                               addr(endIter), false)
 
       try:
-        var r = execCode($InputText)
-        set_text(OutputTextBuffer, r, len(r).gint)
+        var r = execCode($inputText)
+        setText(outputTextBuffer, r, len(r).Gint)
       except EIO:
         setError("Error: Could not open file temp.nim")
 
 
 proc initControls() =
-  w = window_new(gtk2.WINDOW_TOPLEVEL)
-  set_default_size(w, 500, 600)
-  set_title(w, "Nimrod REPL")
-  discard signal_connect(w, "destroy", SIGNAL_FUNC(nimrepl.destroy), nil)
+  w = windowNew(gtk2.WINDOW_TOPLEVEL)
+  setDefaultSize(w, 500, 600)
+  setTitle(w, "Nimrod REPL")
+  discard signalConnect(w, "destroy", signalFunc(nimrepl.destroy), nil)
   
   # MainBox (vbox)
-  var MainBox = vbox_new(False, 0)
-  add(w, MainBox)
+  var mainBox = vboxNew(false, 0)
+  add(w, mainBox)
   
   # TopMenu (MenuBar)
-  var TopMenu = menu_bar_new()
-  show(TopMenu)
+  var topMenu = menuBarNew()
+  show(topMenu)
   
-  var FileMenu = menu_new()
-  var OpenMenuItem = menu_item_new("Open")
-  append(FileMenu, OpenMenuItem)
-  show(OpenMenuItem)
-  discard signal_connect(OpenMenuItem, "activate", 
-                          SIGNAL_FUNC(FileOpenClicked), nil)
-  var SaveMenuItem = menu_item_new("Save...")
-  append(FileMenu, SaveMenuItem)
-  show(SaveMenuItem)
-  discard signal_connect(SaveMenuItem, "activate", 
-                          SIGNAL_FUNC(FileSaveClicked), nil)
-  var FileMenuItem = menu_item_new("File")
+  var fileMenu = menuNew()
+  var openMenuItem = menuItemNew("Open")
+  append(fileMenu, openMenuItem)
+  show(openMenuItem)
+  discard signalConnect(openMenuItem, "activate", 
+                          signalFunc(fileOpenClicked), nil)
+  var saveMenuItem = menuItemNew("Save...")
+  append(fileMenu, saveMenuItem)
+  show(saveMenuItem)
+  discard signalConnect(saveMenuItem, "activate", 
+                          signalFunc(fileSaveClicked), nil)
+  var fileMenuItem = menuItemNew("File")
 
   
-  set_submenu(FileMenuItem, FileMenu)
-  show(FileMenuItem)
-  append(TopMenu, FileMenuItem)
+  setSubmenu(fileMenuItem, fileMenu)
+  show(fileMenuItem)
+  append(topMenu, fileMenuItem)
   
-  pack_start(MainBox, TopMenu, False, False, 0)
+  packStart(mainBox, topMenu, false, false, 0)
 
   # VPaned - Seperates the InputTextView and the OutputTextView
-  var paned = vpaned_new()
-  set_position(paned, 450)
-  pack_start(MainBox, paned, True, True, 0)
+  var paned = vpanedNew()
+  setPosition(paned, 450)
+  packStart(mainBox, paned, true, true, 0)
   show(paned)
 
   # Init the TextBuffers
-  InputTextBuffer = text_buffer_new(nil)
-  OutputTextBuffer = text_buffer_new(nil)
+  inputTextBuffer = textBufferNew(nil)
+  outputTextBuffer = textBufferNew(nil)
 
   # InputTextView (TextView)
-  var InputScrolledWindow = scrolled_window_new(nil, nil)
-  set_policy(InputScrolledWindow, POLICY_AUTOMATIC, POLICY_AUTOMATIC)
-  var InputTextView = text_view_new(InputTextBuffer)
-  add_with_viewport(InputScrolledWindow, InputTextView)
-  add1(paned, InputScrolledWindow)
-  show(InputScrolledWindow)
-  show(InputTextView)
+  var inputScrolledWindow = scrolledWindowNew(nil, nil)
+  setPolicy(inputScrolledWindow, POLICY_AUTOMATIC, POLICY_AUTOMATIC)
+  var inputTextView = textViewNew(inputTextBuffer)
+  addWithViewport(inputScrolledWindow, inputTextView)
+  add1(paned, inputScrolledWindow)
+  show(inputScrolledWindow)
+  show(inputTextView)
   
-  discard signal_connect(InputTextView, "key-release-event", 
-                          SIGNAL_FUNC(inputKeyReleased), nil)
-  discard signal_connect(InputTextView, "key-press-event", 
-                          SIGNAL_FUNC(inputKeyPressed), nil)
+  discard signalConnect(inputTextView, "key-release-event", 
+                          signalFunc(inputKeyReleased), nil)
+  discard signalConnect(inputTextView, "key-press-event", 
+                          signalFunc(inputKeyPressed), nil)
   
   # OutputTextView (TextView)
-  var OutputScrolledWindow = scrolled_window_new(nil, nil)
-  set_policy(OutputScrolledWindow, POLICY_AUTOMATIC, POLICY_AUTOMATIC)
-  var OutputTextView = text_view_new(OutputTextBuffer)
-  add_with_viewport(OutputScrolledWindow, OutputTextView)
-  add2(paned, OutputScrolledWindow)
-  show(OutputScrolledWindow)
-  show(OutputTextView)
+  var outputScrolledWindow = scrolledWindowNew(nil, nil)
+  setPolicy(outputScrolledWindow, POLICY_AUTOMATIC, POLICY_AUTOMATIC)
+  var outputTextView = textViewNew(outputTextBuffer)
+  addWithViewport(outputScrolledWindow, outputTextView)
+  add2(paned, outputScrolledWindow)
+  show(outputScrolledWindow)
+  show(outputTextView)
   
   show(w)
-  show(MainBox)
+  show(mainBox)
   
-nimrod_init()
+nimrodInit()
 initControls()
 main()
 

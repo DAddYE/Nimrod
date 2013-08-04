@@ -6,7 +6,7 @@ discard """
 # Tests the new check in the semantic pass
 
 var
-  a: int
+  a: Int
 
 a()  #ERROR_MSG expression 'a()' cannot be called
 

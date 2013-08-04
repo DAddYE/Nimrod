@@ -2,7 +2,7 @@
 type
   TMyObj = TYourObj
   TYourObj = object of TObject
-    x, y: int
+    x, y: Int
   
 proc init: TYourObj =
   result.x = 0

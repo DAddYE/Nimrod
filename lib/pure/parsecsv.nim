@@ -30,28 +30,28 @@ import
   lexbase, streams
 
 type
-  TCsvRow* = seq[string] ## a row in a CSV file
+  TCsvRow* = Seq[String] ## a row in a CSV file
   TCsvParser* = object of TBaseLexer ## the parser object.
     row*: TCsvRow                    ## the current row
-    filename: string
-    sep, quote, esc: char
-    skipWhite: bool
-    currRow: int
+    filename: String
+    sep, quote, esc: Char
+    skipWhite: Bool
+    currRow: Int
 
-  EInvalidCsv* = object of EIO ## exception that is raised if
+  EInvalidCsv* = object of Eio ## exception that is raised if
                                ## a parsing error occurs
 
-proc raiseEInvalidCsv(filename: string, line, col: int, 
-                      msg: string) {.noreturn.} =
+proc raiseEInvalidCsv(filename: String, line, col: Int, 
+                      msg: String) {.noreturn.} =
   var e: ref EInvalidCsv
   new(e)
   e.msg = filename & "(" & $line & ", " & $col & ") Error: " & msg
   raise e
 
-proc error(my: TCsvParser, pos: int, msg: string) = 
+proc error(my: TCsvParser, pos: Int, msg: String) = 
   raiseEInvalidCsv(my.filename, my.LineNumber, getColNumber(my, pos), msg)
 
-proc open*(my: var TCsvParser, input: PStream, filename: string,
+proc open*(my: var TCsvParser, input: PStream, filename: String,
            separator = ',', quote = '"', escape = '\0',
            skipInitialSpace = false) =
   ## initializes the parser with an input stream. `Filename` is only used
@@ -75,7 +75,7 @@ proc open*(my: var TCsvParser, input: PStream, filename: string,
   my.row = @[]
   my.currRow = 0
 
-proc parseField(my: var TCsvParser, a: var string) = 
+proc parseField(my: var TCsvParser, a: var String) = 
   var pos = my.bufpos
   var buf = my.buf
   if my.skipWhite:
@@ -121,11 +121,11 @@ proc parseField(my: var TCsvParser, a: var string) =
       inc(pos)
   my.bufpos = pos
 
-proc processedRows*(my: var TCsvParser): int = 
+proc processedRows*(my: var TCsvParser): Int = 
   ## returns number of the processed rows
   return my.currRow
 
-proc readRow*(my: var TCsvParser, columns = 0): bool = 
+proc readRow*(my: var TCsvParser, columns = 0): Bool = 
   ## reads the next row; if `columns` > 0, it expects the row to have
   ## exactly this many columns. Returns false if the end of the file
   ## has been encountered else true.
@@ -153,7 +153,7 @@ proc readRow*(my: var TCsvParser, columns = 0): bool =
       else: error(my, my.bufpos, my.sep & " expected")
       break
   
-  setlen(my.row, col)
+  setLen(my.row, col)
   result = col > 0
   if result and col != columns and columns > 0: 
     error(my, oldpos+1, $columns & " columns expected, but found " & 
@@ -166,13 +166,13 @@ proc close*(my: var TCsvParser) {.inline.} =
 
 when isMainModule:
   import os
-  var s = newFileStream(ParamStr(1), fmRead)
-  if s == nil: quit("cannot open the file" & ParamStr(1))
+  var s = newFileStream(paramStr(1), fmRead)
+  if s == nil: quit("cannot open the file" & paramStr(1))
   var x: TCsvParser
-  open(x, s, ParamStr(1))
+  open(x, s, paramStr(1))
   while readRow(x):
-    Echo "new row: "
+    echo "new row: "
     for val in items(x.row):
-      Echo "##", val, "##"
+      echo "##", val, "##"
   close(x)
 

@@ -31,49 +31,49 @@ type
 
 var 
   # XXX: These better be thread-local
-  AbortOnError*: bool
-  OutputLevel*: TOutputLevel
-  ColorOutput*: bool
+  abortOnError*: Bool
+  outputLevel*: TOutputLevel
+  colorOutput*: Bool
   
-  checkpoints: seq[string] = @[]
+  checkpoints: Seq[String] = @[]
 
-template TestSetupIMPL*: stmt {.immediate, dirty.} = nil
-template TestTeardownIMPL*: stmt {.immediate, dirty.} = nil
+template testSetupIMPL*: Stmt {.immediate, dirty.} = nil
+template testTeardownIMPL*: Stmt {.immediate, dirty.} = nil
 
-proc shouldRun(testName: string): bool =
+proc shouldRun(testName: String): Bool =
   result = true
 
-template suite*(name: expr, body: stmt): stmt {.immediate, dirty.} =
+template suite*(name: Expr, body: Stmt): Stmt {.immediate, dirty.} =
   block:
-    template setup*(setupBody: stmt): stmt {.immediate, dirty.} =
+    template setup*(setupBody: Stmt): Stmt {.immediate, dirty.} =
       template TestSetupIMPL: stmt {.immediate, dirty.} = setupBody
 
-    template teardown*(teardownBody: stmt): stmt {.immediate, dirty.} =
+    template teardown*(teardownBody: Stmt): Stmt {.immediate, dirty.} =
       template TestTeardownIMPL: stmt {.immediate, dirty.} = teardownBody
 
     body
 
-proc testDone(name: string, s: TTestStatus) =
-  if s == FAILED:
-    program_result += 1
+proc testDone(name: String, s: TTestStatus) =
+  if s == Failed:
+    programResult += 1
 
-  if OutputLevel != PRINT_NONE and (OutputLevel == PRINT_ALL or s == FAILED):
+  if outputLevel != PrintNone and (outputLevel == PrintAll or s == Failed):
     template rawPrint() = echo("[", $s, "] ", name, "\n")
     when not defined(ECMAScript):
-      if ColorOutput and not defined(ECMAScript):
-        var color = (if s == OK: fgGreen else: fgRed)
+      if colorOutput and not defined(ECMAScript):
+        var color = (if s == Ok: fgGreen else: fgRed)
         styledEcho styleBright, color, "[", $s, "] ", fgWhite, name, "\n"
       else:
         rawPrint()
     else:
       rawPrint()
   
-template test*(name: expr, body: stmt): stmt {.immediate, dirty.} =
+template test*(name: Expr, body: Stmt): Stmt {.immediate, dirty.} =
   bind shouldRun, checkpoints, testDone
 
   if shouldRun(name):
     checkpoints = @[]
-    var TestStatusIMPL {.inject.} = OK
+    var testStatusIMPL {.inject.} = Ok
     
     try:
       TestSetupIMPL()
@@ -85,9 +85,9 @@ template test*(name: expr, body: stmt): stmt {.immediate, dirty.} =
 
     finally:
       TestTeardownIMPL()
-      testDone name, TestStatusIMPL
+      testDone name, testStatusIMPL
 
-proc checkpoint*(msg: string) =
+proc checkpoint*(msg: String) =
   checkpoints.add(msg)
   # TODO: add support for something like SCOPED_TRACE from Google Test
 
@@ -97,12 +97,12 @@ template fail* =
     echo msg
 
   when not defined(ECMAScript):
-    if AbortOnError: quit(1)
+    if abortOnError: quit(1)
   
-  TestStatusIMPL = FAILED
+  testStatusIMPL = Failed
   checkpoints = @[]
 
-macro check*(conditions: stmt): stmt {.immediate.} =
+macro check*(conditions: Stmt): Stmt {.immediate.} =
   let checked = callsite()[1]
   
   var
@@ -110,10 +110,10 @@ macro check*(conditions: stmt): stmt {.immediate.} =
     argsPrintOuts = newNimNode(nnkStmtList)
     counter = 0
 
-  template asgn(a, value: expr): stmt =
+  template asgn(a, value: Expr): Stmt =
     let a = value
   
-  template print(name, value: expr): stmt =
+  template print(name, value: Expr): Stmt =
     when compiles(string($value)):
       checkpoint(name & " was " & $value)
 
@@ -130,8 +130,8 @@ macro check*(conditions: stmt): stmt {.immediate.} =
 
   case checked.kind
   of nnkCallKinds:
-    template rewrite(call, lineInfoLit: expr, callLit: string,
-                     argAssgs, argPrintOuts: stmt): stmt =
+    template rewrite(call, lineInfoLit: Expr, callLit: String,
+                     argAssgs, argPrintOuts: Stmt): Stmt =
       block:
         argAssgs
         if not call:
@@ -149,22 +149,22 @@ macro check*(conditions: stmt): stmt {.immediate.} =
       result.add(newCall(!"check", checked[i]))
 
   else:
-    template rewrite(Exp, lineInfoLit: expr, expLit: string): stmt =
-      if not Exp:
+    template rewrite(Exp, lineInfoLit: Expr, expLit: String): Stmt =
+      if not exp:
         checkpoint(lineInfoLit & ": Check failed: " & expLit)
         fail()
 
     result = getAst(rewrite(checked, checked.lineinfo, checked.toStrLit))
 
-template require*(conditions: stmt): stmt {.immediate, dirty.} =
+template require*(conditions: Stmt): Stmt {.immediate, dirty.} =
   block:
     const AbortOnError {.inject.} = true
     check conditions
 
-macro expect*(exceptions: varargs[expr], body: stmt): stmt {.immediate.} =
+macro expect*(exceptions: Varargs[Expr], body: Stmt): Stmt {.immediate.} =
   let exp = callsite()
-  template expectBody(errorTypes, lineInfoLit: expr,
-                      body: stmt): PNimrodNode {.dirty.} =
+  template expectBody(errorTypes, lineInfoLit: Expr,
+                      body: Stmt): PNimrodNode {.dirty.} =
     try:
       body
       checkpoint(lineInfoLit & ": Expect Failed, no exception was thrown.")
@@ -183,10 +183,10 @@ macro expect*(exceptions: varargs[expr], body: stmt): stmt {.immediate.} =
 
 when defined(stdout):
   ## Reading settings
-  var envOutLvl = os.getEnv("NIMTEST_OUTPUT_LVL").string
+  var envOutLvl = os.getEnv("NIMTEST_OUTPUT_LVL").String
 
-  AbortOnError = existsEnv("NIMTEST_ABORT_ON_ERROR")
-  ColorOutput  = not existsEnv("NIMTEST_NO_COLOR")
+  abortOnError = existsEnv("NIMTEST_ABORT_ON_ERROR")
+  colorOutput  = not existsEnv("NIMTEST_NO_COLOR")
 
 else:
   var envOutLvl = "" # TODO
@@ -195,5 +195,5 @@ else:
 if envOutLvl.len > 0:
   for opt in countup(low(TOutputLevel), high(TOutputLevel)):
     if $opt == envOutLvl:
-      OutputLevel = opt
+      outputLevel = opt
       break

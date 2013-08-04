@@ -2,9 +2,9 @@
 
 type
   TA = object of TObject
-    a: int
+    a: Int
   TB = object of TA
-    b: array[0..5000_000, int]
+    b: Array[0..5000_000, Int]
     
 proc ap(x: var TA) = x.a = -1
 proc bp(x: var TB) = x.b[high(x.b)] = -1

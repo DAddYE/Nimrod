@@ -9,7 +9,7 @@ no'''
 
 # test the new 'compiles' feature:
 
-template supports(opr, x: expr): bool {.immediate.} =
+template supports(opr, x: Expr): Bool {.immediate.} =
   compiles(opr(x)) or compiles(opr(x, x))
 
 type

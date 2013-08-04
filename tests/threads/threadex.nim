@@ -8,10 +8,10 @@ type
   TMsg = object {.pure, final.}
     case k: TMsgKind
     of mEof: nil
-    of mLine: data: string
+    of mLine: data: String
 
 var
-  producer, consumer: TThread[void]
+  producer, consumer: TThread[Void]
   chan: TChannel[TMsg]
   printedLines = 0
 

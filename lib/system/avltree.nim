@@ -9,28 +9,28 @@
 
 # not really an AVL tree anymore, but still balanced ...
 
-template IsBottom(n: PAvlNode): bool = n == bottom
+template isBottom(n: PAvlNode): Bool = n == bottom
 
-proc lowGauge(n: PAvlNode): int =
+proc lowGauge(n: PAvlNode): Int =
   var it = n
   while not IsBottom(it):
     result = it.key
     it = it.link[0]
   
-proc highGauge(n: PAvlNode): int =
+proc highGauge(n: PAvlNode): Int =
   result = -1
   var it = n
   while not IsBottom(it):
     result = it.upperBound
     it = it.link[1]
 
-proc find(root: PAvlNode, key: int): PAvlNode = 
+proc find(root: PAvlNode, key: Int): PAvlNode = 
   var it = root
   while not IsBottom(it):
     if it.key == key: return it
     it = it.link[ord(it.key <% key)]
 
-proc inRange(root: PAvlNode, key: int): PAvlNode =
+proc inRange(root: PAvlNode, key: Int): PAvlNode =
   var it = root
   while not IsBottom(it):
     if it.key <=% key and key <% it.upperBound: return it
@@ -51,7 +51,7 @@ proc split(t: var PAvlNode) =
     t.link[0] = temp
     inc t.level
 
-proc add(a: var TMemRegion, t: var PAvlNode, key, upperBound: int) =
+proc add(a: var TMemRegion, t: var PAvlNode, key, upperBound: Int) =
   if t == bottom:
     t = allocAvlNode(a, key, upperBound)
   else:
@@ -64,7 +64,7 @@ proc add(a: var TMemRegion, t: var PAvlNode, key, upperBound: int) =
     skew(t)
     split(t)
 
-proc del(a: var TMemRegion, t: var PAvlNode, x: int) =
+proc del(a: var TMemRegion, t: var PAvlNode, x: Int) =
   if t == bottom: return
   a.last = t
   if x <% t.key:

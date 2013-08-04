@@ -8,27 +8,27 @@ proc isPartOf*[S, T](a: S, b: T): TAnalysisResult {.
   magic: "IsPartOf", noSideEffect.}
   ## not yet exported properly. 
 
-template compileTimeAssert(cond: expr) =
+template compileTimeAssert(cond: Expr) =
   when not cond:
     {.compile: "is false: " & astToStr(cond).}
 
-template `<|` (a, b: expr) =
+template `<|` (a, b: Expr) =
   compileTimeAssert isPartOf(a, b) == arYes
 
-template `!<|` (a, b: expr) =
+template `!<|` (a, b: Expr) =
   compileTimeAssert isPartOf(a, b) == arNo
 
-template `?<|` (a, b: expr) =
+template `?<|` (a, b: Expr) =
   compileTimeAssert isPartOf(a, b) == arMaybe
 
 type
   TA {.inheritable.} = object
   TC = object of TA
-    arr: array[0..3, int]
+    arr: Array[0..3, Int]
     le, ri: ref TC
-    f: string
-    c: char
-    se: seq[TA]
+    f: String
+    c: Char
+    se: Seq[TA]
 
 proc p(param1, param2: TC): TC =
   var
@@ -56,7 +56,7 @@ proc p(param1, param2: TC): TC =
   result <| result
 
 var
-  a, b: int
+  a, b: Int
   x: TC
   
 a <| a

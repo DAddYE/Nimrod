@@ -1,20 +1,20 @@
 
 type
   TFoo = object
-    data: array[0..100, int]
+    data: Array[0..100, Int]
   TSecond = distinct TFoo
 
-proc `[]` (self: var TFoo, x: int): var int =
+proc `[]` (self: var TFoo, x: Int): var Int =
   return self.data[x]
 
-proc `[]=` (self: var TFoo, x, y: int) =
+proc `[]=` (self: var TFoo, x, y: Int) =
   # only `[]` returning a 'var T' seems to not work for now :-/
   self.data[x] = y
 
 proc second(self: var TFoo): var TSecond =
   return TSecond(self)
 
-proc `[]`(self: var TSecond, x: int): var int =  
+proc `[]`(self: var TSecond, x: Int): var Int =  
   return TFoo(self).data[2*x]
 
 var f: TFoo

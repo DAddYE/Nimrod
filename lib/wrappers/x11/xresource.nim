@@ -16,22 +16,22 @@ import
 #    xresource.h
 #
 
-proc Xpermalloc*(para1: int32): cstring{.cdecl, dynlib: libX11, importc.}
+proc Xpermalloc*(para1: Int32): Cstring{.cdecl, dynlib: libX11, importc.}
 type 
   PXrmQuark* = ptr TXrmQuark
-  TXrmQuark* = int32
+  TXrmQuark* = Int32
   TXrmQuarkList* = PXrmQuark
   PXrmQuarkList* = ptr TXrmQuarkList
 
-proc NULLQUARK*(): TXrmQuark
+proc nullquark*(): TXrmQuark
 type 
   PXrmString* = ptr TXrmString
-  TXrmString* = ptr char
+  TXrmString* = ptr Char
 
-proc NULLSTRING*(): TXrmString
-proc XrmStringToQuark*(para1: cstring): TXrmQuark{.cdecl, dynlib: libX11, 
+proc nullstring*(): TXrmString
+proc XrmStringToQuark*(para1: Cstring): TXrmQuark{.cdecl, dynlib: libX11, 
     importc.}
-proc XrmPermStringToQuark*(para1: cstring): TXrmQuark{.cdecl, dynlib: libX11, 
+proc XrmPermStringToQuark*(para1: Cstring): TXrmQuark{.cdecl, dynlib: libX11, 
     importc.}
 proc XrmQuarkToString*(para1: TXrmQuark): TXrmString{.cdecl, dynlib: libX11, 
     importc.}
@@ -45,9 +45,9 @@ type
   TXrmBindingList* = PXrmBinding
   PXrmBindingList* = ptr TXrmBindingList
 
-proc XrmStringToQuarkList*(para1: cstring, para2: TXrmQuarkList){.cdecl, 
+proc XrmStringToQuarkList*(para1: Cstring, para2: TXrmQuarkList){.cdecl, 
     dynlib: libX11, importc.}
-proc XrmStringToBindingQuarkList*(para1: cstring, para2: TXrmBindingList, 
+proc XrmStringToBindingQuarkList*(para1: Cstring, para2: TXrmBindingList, 
                                   para3: TXrmQuarkList){.cdecl, dynlib: libX11, 
     importc.}
 type 
@@ -80,7 +80,7 @@ when defined(MACROS):
 type 
   PXrmValue* = ptr TXrmValue
   TXrmValue*{.final.} = object 
-    size*: int32
+    size*: Int32
     address*: TXPointer
 
   TXrmValuePtr* = PXrmValue
@@ -98,20 +98,20 @@ proc XrmDestroyDatabase*(para1: TXrmDatabase){.cdecl, dynlib: libX11, importc.}
 proc XrmQPutResource*(para1: PXrmDatabase, para2: TXrmBindingList, 
                       para3: TXrmQuarkList, para4: TXrmRepresentation, 
                       para5: PXrmValue){.cdecl, dynlib: libX11, importc.}
-proc XrmPutResource*(para1: PXrmDatabase, para2: cstring, para3: cstring, 
+proc XrmPutResource*(para1: PXrmDatabase, para2: Cstring, para3: Cstring, 
                      para4: PXrmValue){.cdecl, dynlib: libX11, importc.}
 proc XrmQPutStringResource*(para1: PXrmDatabase, para2: TXrmBindingList, 
-                            para3: TXrmQuarkList, para4: cstring){.cdecl, 
+                            para3: TXrmQuarkList, para4: Cstring){.cdecl, 
     dynlib: libX11, importc.}
-proc XrmPutStringResource*(para1: PXrmDatabase, para2: cstring, para3: cstring){.
+proc XrmPutStringResource*(para1: PXrmDatabase, para2: Cstring, para3: Cstring){.
     cdecl, dynlib: libX11, importc.}
-proc XrmPutLineResource*(para1: PXrmDatabase, para2: cstring){.cdecl, 
+proc XrmPutLineResource*(para1: PXrmDatabase, para2: Cstring){.cdecl, 
     dynlib: libX11, importc.}
 proc XrmQGetResource*(para1: TXrmDatabase, para2: TXrmNameList, 
                       para3: TXrmClassList, para4: PXrmRepresentation, 
                       para5: PXrmValue): TBool{.cdecl, dynlib: libX11, importc.}
-proc XrmGetResource*(para1: TXrmDatabase, para2: cstring, para3: cstring, 
-                     para4: PPchar, para5: PXrmValue): TBool{.cdecl, 
+proc XrmGetResource*(para1: TXrmDatabase, para2: Cstring, para3: Cstring, 
+                     para4: PPChar, para5: PXrmValue): TBool{.cdecl, 
     dynlib: libX11, importc.}
   # There is no definition of TXrmSearchList 
   #function XrmQGetSearchList(para1:TXrmDatabase; para2:TXrmNameList; para3:TXrmClassList; para4:TXrmSearchList; para5:longint):TBool;cdecl;external libX11;
@@ -120,13 +120,13 @@ proc XrmSetDatabase*(para1: PDisplay, para2: TXrmDatabase){.cdecl,
     dynlib: libX11, importc.}
 proc XrmGetDatabase*(para1: PDisplay): TXrmDatabase{.cdecl, dynlib: libX11, 
     importc.}
-proc XrmGetFileDatabase*(para1: cstring): TXrmDatabase{.cdecl, dynlib: libX11, 
+proc XrmGetFileDatabase*(para1: Cstring): TXrmDatabase{.cdecl, dynlib: libX11, 
     importc.}
-proc XrmCombineFileDatabase*(para1: cstring, para2: PXrmDatabase, para3: TBool): TStatus{.
+proc XrmCombineFileDatabase*(para1: Cstring, para2: PXrmDatabase, para3: TBool): TStatus{.
     cdecl, dynlib: libX11, importc.}
-proc XrmGetStringDatabase*(para1: cstring): TXrmDatabase{.cdecl, dynlib: libX11, 
+proc XrmGetStringDatabase*(para1: Cstring): TXrmDatabase{.cdecl, dynlib: libX11, 
     importc.}
-proc XrmPutFileDatabase*(para1: TXrmDatabase, para2: cstring){.cdecl, 
+proc XrmPutFileDatabase*(para1: TXrmDatabase, para2: Cstring){.cdecl, 
     dynlib: libX11, importc.}
 proc XrmMergeDatabases*(para1: TXrmDatabase, para2: PXrmDatabase){.cdecl, 
     dynlib: libX11, importc.}
@@ -137,13 +137,13 @@ const
   XrmEnumOneLevel* = 1
 
 type 
-  funcbool* = proc (): TBool {.cdecl.}
+  Funcbool* = proc (): TBool {.cdecl.}
 
 proc XrmEnumerateDatabase*(para1: TXrmDatabase, para2: TXrmNameList, 
-                           para3: TXrmClassList, para4: int32, para5: funcbool, 
+                           para3: TXrmClassList, para4: Int32, para5: Funcbool, 
                            para6: TXPointer): TBool{.cdecl, dynlib: libX11, 
     importc.}
-proc XrmLocaleOfDatabase*(para1: TXrmDatabase): cstring{.cdecl, dynlib: libX11, 
+proc XrmLocaleOfDatabase*(para1: TXrmDatabase): Cstring{.cdecl, dynlib: libX11, 
     importc.}
 type 
   PXrmOptionKind* = ptr TXrmOptionKind
@@ -152,8 +152,8 @@ type
     XrmoptionResArg, XrmoptionSkipArg, XrmoptionSkipLine, XrmoptionSkipNArgs
   PXrmOptionDescRec* = ptr TXrmOptionDescRec
   TXrmOptionDescRec*{.final.} = object 
-    option*: cstring
-    specifier*: cstring
+    option*: Cstring
+    specifier*: Cstring
     argKind*: TXrmOptionKind
     value*: TXPointer
 
@@ -161,14 +161,14 @@ type
   PXrmOptionDescList* = ptr TXrmOptionDescList
 
 proc XrmParseCommand*(para1: PXrmDatabase, para2: TXrmOptionDescList, 
-                      para3: int32, para4: cstring, para5: ptr int32, 
-                      para6: PPchar){.cdecl, dynlib: libX11, importc.}
+                      para3: Int32, para4: Cstring, para5: ptr Int32, 
+                      para6: PPChar){.cdecl, dynlib: libX11, importc.}
 # implementation
 
-proc NULLQUARK(): TXrmQuark = 
+proc nullquark(): TXrmQuark = 
   result = TXrmQuark(0)
 
-proc NULLSTRING(): TXrmString = 
+proc nullstring(): TXrmString = 
   result = nil
 
 when defined(MACROS): 

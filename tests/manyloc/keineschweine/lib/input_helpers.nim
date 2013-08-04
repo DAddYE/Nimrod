@@ -5,15 +5,15 @@ type
   TInputFinishedProc* = proc() 
   TKeyCallback = proc()
   PKeyClient* = ref object
-    onKeyDown: TTable[int32, TKeyCallback]
-    onKeyUp: TTable[int32, TKeyCallback]
-    name: string
+    onKeyDown: TTable[Int32, TKeyCallback]
+    onKeyUp: TTable[Int32, TKeyCallback]
+    name: String
   PTextInput* = ref object
-    text*: string
-    cursor: int
+    text*: String
+    cursor: Int
     onEnter: TInputFinishedProc
 var
-  keyState:    array[-MouseButtonCount.int32 .. KeyCount.int32, bool]
+  keyState:    Array[-mouseButtonCount.Int32 .. keyCount.int32, Bool]
   mousePos: TVector2f
   activeClient: PKeyClient = nil
   activeInput: PTextInput  = nil
@@ -21,27 +21,27 @@ var
 proc setActive*(client: PKeyClient) = 
   activeClient = client
   echo("** set active client ", client.name)
-proc newKeyClient*(name: string = "unnamed", setactive = false): PKeyClient =
+proc newKeyClient*(name: String = "unnamed", setactive = false): PKeyClient =
   new(result)
   result.onKeyDown = initTable[int32, TKeyCallback](16)
   result.onKeyUp   = initTable[int32, TKeyCallback](16)
   result.name = name
-  if setActive:
+  if setactive:
     setActive(result)
 
-proc keyPressed*(key: TKeyCode): bool {.inline.} =
-  return keyState[key.int32]
-proc buttonPressed*(btn: TMouseButton): bool {.inline.} =
-  return keyState[-btn.int32]
+proc keyPressed*(key: TKeyCode): Bool {.inline.} =
+  return keyState[key.Int32]
+proc buttonPressed*(btn: TMouseButton): Bool {.inline.} =
+  return keyState[-btn.Int32]
 
 proc clearKey*(key: TKeyCode) {.inline.} =
-  keyState[key.int32]  = false
+  keyState[key.Int32]  = false
 proc clearButton*(btn: TMouseButton) {.inline.} =
-  keyState[-btn.int32] = false
+  keyState[-btn.Int32] = false
 
 proc addKeyEvent*(key: TKeyCode, ev: TKeyEventKind) {.inline.} =
   if activeClient.isNil: return
-  let k = key.int32
+  let k = key.Int32
   case ev
   of down: 
     keyState[k] = true
@@ -53,7 +53,7 @@ proc addKeyEvent*(key: TKeyCode, ev: TKeyEventKind) {.inline.} =
       activeClient.onKeyUp[k]()
 proc addButtonEvent*(btn: TMouseButton, ev: TKeyEventKind) {.inline.} =
   if activeClient.isNil: return 
-  let b = -btn.int32
+  let b = -btn.Int32
   case ev
   of down: 
     keyState[b] = true 
@@ -66,13 +66,13 @@ proc addButtonEvent*(btn: TMouseButton, ev: TKeyEventKind) {.inline.} =
 proc registerHandler*(client: PKeyClient; key: TKeyCode;
                        ev: TKeyEventKind; fn: TKeyCallback) = 
   case ev
-  of down: client.onKeyDown[key.int32] = fn
-  of up:   client.onKeyUp[key.int32]   = fn
+  of down: client.onKeyDown[key.Int32] = fn
+  of up:   client.onKeyUp[key.Int32]   = fn
 proc registerHandler*(client: PKeyClient; btn: TMouseButton;
                        ev: TKeyEventKind; fn: TKeyCallback) =
   case ev
-  of down: client.onKeyDown[-btn.int32] = fn
-  of up:   client.onKeyUp[-btn.int32]   = fn
+  of down: client.onKeyDown[-btn.Int32] = fn
+  of up:   client.onKeyUp[-btn.Int32]   = fn
 
 proc newTextInput*(text = "", pos = 0, onEnter: TInputFinishedProc = nil): PTextInput =
   new(result)
@@ -86,14 +86,14 @@ proc stopCapturingText*() =
 proc clear*(i: PTextInput) =
   i.text.setLen 0
   i.cursor = 0
-proc recordText*(i: PTextInput; c: cint) =
+proc recordText*(i: PTextInput; c: Cint) =
   if c > 127 or i.isNil: return
   if c in 32..126: ##printable
-    if i.cursor == i.text.len: i.text.add(c.int.chr)
+    if i.cursor == i.text.len: i.text.add(c.Int.chr)
     else: 
       let rem = i.text.substr(i.cursor)
       i.text.setLen(i.cursor)
-      i.text.add(chr(c.int))
+      i.text.add(chr(c.Int))
       i.text.add(rem)
     inc(i.cursor)
   elif c == 8: ## \b  backspace
@@ -107,7 +107,7 @@ proc recordText*(i: PTextInput; c: cint) =
 proc recordText*(i: PTextInput; e: TTextEvent) {.inline.} = 
   recordText(i, e.unicode)
 
-proc setMousePos*(x, y: cint) {.inline.} =
+proc setMousePos*(x, y: Cint) {.inline.} =
   mousePos.x = x.float
   mousePos.y = y.float
 proc getMousePos*(): TVector2f {.inline.} = result = mousePos
@@ -117,22 +117,22 @@ var event: TEvent
 iterator filterEvents*(window: PRenderWindow): PEvent =
   while window.pollEvent(addr event):
     case event.kind
-    of EvtKeyPressed: addKeyEvent(event.key.code, down)
-    of EvtKeyReleased: addKeyEvent(event.key.code, up)
-    of EvtMouseButtonPressed: addButtonEvent(event.mouseButton.button, down)
-    of EvtMouseButtonReleased: addButtonEvent(event.mouseButton.button, up)
-    of EvtTextEntered: recordText(activeInput, event.text)
-    of EvtMouseMoved: setMousePos(event.mouseMove.x, event.mouseMove.y)
+    of evtKeyPressed: addKeyEvent(event.key.code, down)
+    of evtKeyReleased: addKeyEvent(event.key.code, up)
+    of evtMouseButtonPressed: addButtonEvent(event.mouseButton.button, down)
+    of evtMouseButtonReleased: addButtonEvent(event.mouseButton.button, up)
+    of evtTextEntered: recordText(activeInput, event.text)
+    of evtMouseMoved: setMousePos(event.mouseMove.x, event.mouseMove.y)
     else: yield(addr event)
 # Handle and return input-related events
 iterator pollEvents*(window: PRenderWindow): PEvent =
   while window.pollEvent(addr event):
     case event.kind
-    of EvtKeyPressed: addKeyEvent(event.key.code, down)
-    of EvtKeyReleased: addKeyEvent(event.key.code, up)
-    of EvtMouseButtonPressed: addButtonEvent(event.mouseButton.button, down)
-    of EvtMouseButtonReleased: addButtonEvent(event.mouseButton.button, up)
-    of EvtTextEntered: recordText(activeInput, event.text)
-    of EvtMouseMoved: setMousePos(event.mouseMove.x, event.mouseMove.y)
+    of evtKeyPressed: addKeyEvent(event.key.code, down)
+    of evtKeyReleased: addKeyEvent(event.key.code, up)
+    of evtMouseButtonPressed: addButtonEvent(event.mouseButton.button, down)
+    of evtMouseButtonReleased: addButtonEvent(event.mouseButton.button, up)
+    of evtTextEntered: recordText(activeInput, event.text)
+    of evtMouseMoved: setMousePos(event.mouseMove.x, event.mouseMove.y)
     else: nil
     yield(addr event)

@@ -12,10 +12,10 @@
 
 # included from cgen.nim
 
-proc emulatedThreadVars(): bool {.inline.} =
+proc emulatedThreadVars(): Bool {.inline.} =
   result = {optThreads, optTlsEmulation} <= gGlobalOptions
 
-proc AccessThreadLocalVar(p: BProc, s: PSym) =
+proc accessThreadLocalVar(p: BProc, s: PSym) =
   if emulatedThreadVars() and not p.ThreadVarAccessed:
     p.ThreadVarAccessed = true
     p.module.usesThreadVars = true
@@ -25,7 +25,7 @@ proc AccessThreadLocalVar(p: BProc, s: PSym) =
     
 var
   nimtv: PRope                 # nimrod thread vars; the struct body
-  nimtvDeps: seq[PType] = @[]  # type deps: every module needs whole struct
+  nimtvDeps: Seq[PType] = @[]  # type deps: every module needs whole struct
   nimtvDeclared = initIntSet() # so that every var/field exists only once
                                # in the struct
 
@@ -36,7 +36,7 @@ var
 # nimtvDeps is VERY hard to cache because it's not a list of IDs nor can it be
 # made to be one.
 
-proc declareThreadVar(m: BModule, s: PSym, isExtern: bool) =
+proc declareThreadVar(m: BModule, s: PSym, isExtern: Bool) =
   if emulatedThreadVars():
     # we gather all thread locals var into a struct; we need to allocate
     # storage for that somehow, can't use the thread local storage
@@ -55,7 +55,7 @@ proc generateThreadLocalStorage(m: BModule) =
     for t in items(nimtvDeps): discard getTypeDesc(m, t)
     appf(m.s[cfsSeqTypes], "typedef struct {$1} NimThreadVars;$n", [nimtv])
 
-proc GenerateThreadVarsSize(m: BModule) =
+proc generateThreadVarsSize(m: BModule) =
   if nimtv != nil:
     app(m.s[cfsProcs], 
       "NI NimThreadVarsSize(){return (NI)sizeof(NimThreadVars);}" & tnl)

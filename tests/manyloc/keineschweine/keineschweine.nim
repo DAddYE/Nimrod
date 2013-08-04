@@ -9,12 +9,12 @@ when defined(profiler):
 type
   PPlayer* = ref TPlayer
   TPlayer* = object
-    id: uint16
+    id: Uint16
     vehicle: PVehicle
-    spectator: bool
-    alias: string
+    spectator: Bool
+    alias: String
     nameTag: PText
-    items: seq[PItem]
+    items: Seq[PItem]
   PVehicle* = ref TVehicle
   TVehicle* = object
     body*:      chipmunk.PBody
@@ -29,15 +29,15 @@ type
       angle*:    float
   PItem* = ref object
     record: PItemRecord
-    cooldown: float 
+    cooldown: Float 
   PLiveBullet* = ref TLiveBullet ##represents a live bullet in the arena
   TLiveBullet* = object
-    lifetime*: float
-    dead: bool
+    lifetime*: Float
+    dead: Bool
     anim*: PAnimation
     record*: PBulletRecord
     fromPlayer*: PPlayer
-    trailDelay*: float
+    trailDelay*: Float
     body: chipmunk.PBody
     shape: chipmunk.PShape
 import vehicles
@@ -51,17 +51,17 @@ const
   CTBullet = 1.TCollisionType
   CTVehicle= 2.TCollisionType
   ##temporary constants
-  W_LIMIT = 2.3
-  V_LIMIT = 35
+  WLimit = 2.3
+  VLimit = 35
   MaxLocalBots = 3
 var
   localPlayer: PPlayer
-  localBots: seq[PPlayer] = @[]
+  localBots: Seq[PPlayer] = @[]
   activeVehicle: PVehicle
-  myVehicles: seq[PVehicle] = @[]
-  objects: seq[PGameObject] = @[]
-  liveBullets: seq[PLiveBullet] = @[]
-  explosions: seq[PAnimation] = @[]
+  myVehicles: Seq[PVehicle] = @[]
+  objects: Seq[PGameObject] = @[]
+  liveBullets: Seq[PLiveBullet] = @[]
+  explosions: Seq[PAnimation] = @[]
   gameRunning = true
   frameRate = newClock()
   showStars = off
@@ -74,12 +74,12 @@ var
   ingameClient = newKeyClient("ingame")
   specInputClient = newKeyClient("spec")
   specGui = newGuiContainer()
-  stars: seq[PSpriteSheet] = @[]
+  stars: Seq[PSpriteSheet] = @[]
   playBtn: PButton
   shipSelect = newGuiContainer()
-  delObjects: seq[int] = @[]
+  delObjects: Seq[Int] = @[]
   showShipSelect = false
-  myPosition: array[0..1, TVector3f] ##for audio positioning
+  myPosition: Array[0..1, TVector3f] ##for audio positioning
 let 
   nameTagOffset = vec2f(0.0, 1.0)
 when defined(escapeMenuTest):
@@ -122,11 +122,11 @@ when defined(recordMode):
       nil, text = "Record", position = vec2f(680, 50),
       onClick = proc(b: PButton) = startRecording())
 
-proc newNameTag*(text: string): PText =
+proc newNameTag*(text: String): PText =
   result = newText()
   result.setFont(guiFont)
   result.setCharacterSize(14)
-  result.setColor(Red)
+  result.setColor(red)
   result.setString(text)
 
 var debugText = newNameTag("Loading...")
@@ -143,7 +143,7 @@ proc mouseToSpace*(): TVector =
 proc explode*(b: PLiveBullet)
 ## TCollisionBeginFunc
 proc collisionBulletPlayer(arb: PArbiter; space: PSpace; 
-                            data: pointer): Bool{.cdecl.} =
+                            data: Pointer): Bool{.cdecl.} =
   var 
     bullet = cast[PLiveBullet](arb.a.data)
     target = cast[PVehicle](arb.b.data)
@@ -166,8 +166,8 @@ proc initLevel() =
   levelArea.width = levelSettings.size.x
   levelArea.height= levelSettings.size.y
   let borderSeq = @[
-    vector(0, 0), vector(levelArea.width.float, 0.0),
-    vector(levelArea.width.float, levelArea.height.float), vector(0.0, levelArea.height.float)]
+    vector(0, 0), vector(levelArea.width.Float, 0.0),
+    vector(levelArea.width.Float, levelArea.height.Float), vector(0.0, levelArea.height.Float)]
   for i in 0..3:
     var seg = space.addShape(
       newSegmentShape(
@@ -197,12 +197,12 @@ proc initLevel() =
 proc newItem*(record: PItemRecord): PItem =
   new(result)
   result.record = record
-proc newItem*(name: string): PItem {.inline.} =
+proc newItem*(name: String): PItem {.inline.} =
   return newItem(fetchItm(name))
-proc canUse*(itm: PItem): bool = 
+proc canUse*(itm: PItem): Bool = 
   if itm.cooldown > 0.0: return
   return true
-proc update*(itm: PItem; dt: float) =
+proc update*(itm: PItem; dt: Float) =
   if itm.cooldown > 0:
     itm.cooldown -= dt
 
@@ -212,9 +212,9 @@ proc free(obj: PLiveBullet) =
   obj.record = nil
 
 
-template newExplosion(obj, animation): stmt =
+template newExplosion(obj, animation): Stmt =
   explosions.add(newAnimation(animation, AnimOnce, obj.body.getPos.cp2sfml, obj.body.getAngle))
-template newExplosion(obj, animation, angle): stmt =
+template newExplosion(obj, animation, angle): Stmt =
   explosions.add(newAnimation(animation, AnimOnce, obj.body.getPos.cp2sfml, angle))
 
 proc explode*(b: PLiveBullet) =
@@ -260,7 +260,7 @@ proc newBullet*(record: PBulletRecord; fromPlayer: PPlayer): PLiveBullet =
   #result.body.velocityFunc = bulletUpdate
   result.body.setVel((fromPlayer.vehicle.body.getVel() * record.inheritVelocity) + (fireAngleV * record.baseVelocity))
 
-proc update*(b: PLiveBullet; dt: float): bool =
+proc update*(b: PLiveBullet; dt: Float): Bool =
   if b.dead: return true
   b.lifetime -= dt
   b.anim.next(dt)
@@ -305,28 +305,28 @@ proc newVehicle*(record: PVehicleRecord): PVehicle =
   result.body.velocityFunc = angularDampingSim
   result.shape.setCollisionType CTVehicle
   result.shape.setUserData(cast[ptr TVehicle](result))
-proc newVehicle*(name: string): PVehicle =
+proc newVehicle*(name: String): PVehicle =
   result = newVehicle(fetchVeh(name))
 
 proc update*(obj: PVehicle) =
   obj.sprite.setPosition(obj.body.getPos.floor)
-  obj.spriteRect.left = (((-obj.body.getAngVel + W_LIMIT) / (W_LIMIT*2.0) * (obj.record.anim.spriteSheet.cols - 1).float).floor.int * obj.record.anim.spriteSheet.framew).cint
-  obj.spriteRect.top = ((obj.offsetAngle.wmod(TAU) / TAU) * obj.record.anim.spriteSheet.rows.float).floor.cint * obj.record.anim.spriteSheet.frameh.cint
+  obj.spriteRect.left = (((-obj.body.getAngVel + W_LIMIT) / (W_LIMIT*2.0) * (obj.record.anim.spriteSheet.cols - 1).Float).floor.Int * obj.record.anim.spriteSheet.framew).Cint
+  obj.spriteRect.top = ((obj.offsetAngle.wmod(TAU) / TAU) * obj.record.anim.spriteSheet.rows.Float).floor.Cint * obj.record.anim.spriteSheet.frameh.Cint
   obj.sprite.setTextureRect(obj.spriteRect)
 
 
-proc newPlayer*(alias: string = "poo"): PPlayer =
+proc newPlayer*(alias: String = "poo"): PPlayer =
   new(result)
   result.spectator = true
   result.alias     = alias
   result.nameTag   = newNameTag(result.alias)
   result.items     = @[]
-proc updateItems*(player: PPlayer, dt: float) =
+proc updateItems*(player: PPlayer, dt: Float) =
   for i in items(player.items):
     update(i, dt)
-proc addItem*(player: PPlayer; name: string) =
+proc addItem*(player: PPlayer; name: String) =
   player.items.add newItem(name)
-proc useItem*(player: PPlayer; slot: int) =
+proc useItem*(player: PPlayer; slot: Int) =
   if slot > player.items.len - 1: return
   let item = player.items[slot]
   if item.canUse:
@@ -338,7 +338,7 @@ proc useItem*(player: PPlayer; slot: int) =
 proc update*(obj: PPlayer) =
   if not obj.spectator:
     obj.vehicle.update()
-    obj.nameTag.setPosition(obj.vehicle.body.getPos.floor + (nameTagOffset * (obj.vehicle.record.physics.radius + 5).cfloat))
+    obj.nameTag.setPosition(obj.vehicle.body.getPos.floor + (nameTagOffset * (obj.vehicle.record.physics.radius + 5).Cfloat))
 
 proc draw(window: PRenderWindow, player: PPlayer) {.inline.} =
   if not player.spectator: 
@@ -369,7 +369,7 @@ var inputCursor = newVertexArray(sfml.Lines, 2)
 inputCursor[0].position = vec2f(10.0, 10.0)
 inputCursor[1].position = vec2f(50.0, 90.0)
 
-proc hasVehicle(p: PPlayer): bool {.inline.} = 
+proc hasVehicle(p: PPlayer): Bool {.inline.} = 
   result = not p.spectator and not p.vehicle.isNil
 
 proc setMyVehicle(v: PVehicle) {.inline.} =
@@ -408,7 +408,7 @@ proc toggleSpec() {.inline.} =
   elif localPlayer.spectator: unspec()
   else: spec()
 
-proc addObject*(name: string) =
+proc addObject*(name: String) =
   var o = newObject(name)
   if not o.isNil: 
     echo "Adding object ", o
@@ -421,7 +421,7 @@ proc explode(obj: PGameObject) =
   let ind = objects.find(obj)
   if ind != -1:
     delObjects.add ind
-proc update(obj: PGameObject; dt: float) =
+proc update(obj: PGameObject; dt: Float) =
   if not(obj.anim.next(dt)):
     obj.explode()
   else:
@@ -522,11 +522,11 @@ specInputClient.registerHandler(KeyP, down, proc() =
   echo("addObject(solar mold)")
   addObject("Solar Mold"))
 
-proc resetForcesCB(body: PBody; data: pointer) {.cdecl.} =
+proc resetForcesCB(body: PBody; data: Pointer) {.cdecl.} =
   body.resetForces()
 
 var frameCount= 0
-proc mainUpdate(dt: float) =
+proc mainUpdate(dt: Float) =
   if localPlayer.spectator:
     if keyPressed(KeyLeft):
       worldView.move(vec2f(-1.0, 0.0) * specCameraSpeed)
@@ -539,16 +539,16 @@ proc mainUpdate(dt: float) =
   elif not activeVehicle.isNil:
     if keyPressed(KeyUp):
       activeVehicle.accel(dt)
-    elif keyPressed(keyDown):
+    elif keyPressed(KeyDown):
       activeVehicle.reverse(dt)
     if keyPressed(KeyRight):
-      activeVehicle.turn_right(dt)
+      activeVehicle.turnRight(dt)
     elif keyPressed(KeyLeft):
-      activeVehicle.turn_left(dt)
-    if keyPressed(keyz):
-      activeVehicle.strafe_left(dt)
-    elif keyPressed(keyx):
-      activeVehicle.strafe_right(dt)
+      activeVehicle.turnLeft(dt)
+    if keyPressed(KeyZ):
+      activeVehicle.strafeLeft(dt)
+    elif keyPressed(KeyX):
+      activeVehicle.strafeRight(dt)
     if keyPressed(KeyLControl):
       localPlayer.useItem 0
     if keyPressed(KeyTab):
@@ -557,7 +557,7 @@ proc mainUpdate(dt: float) =
       localPlayer.useItem 2
     if keyPressed(KeyW):
       localPlayer.useItem 3
-    if Keypressed(keyA):
+    if keyPressed(KeyA):
       localPlayer.useItem 4
     if keyPressed(sfml.KeyS):
       localPlayer.useItem 5
@@ -618,7 +618,7 @@ proc mainUpdate(dt: float) =
     frameCount = 0
 
 proc mainRender() =
-  window.clear(Black)
+  window.clear(black)
   window.setView(worldView)
   
   if showStars:
@@ -666,11 +666,11 @@ when isMainModule:
   import parseopt
   
   localPlayer = newPlayer()
-  LobbyInit()
+  lobbyInit()
   
   videoMode = getClientSettings().resolution
   window = newRenderWindow(videoMode, "sup", sfDefaultStyle)
-  window.setFrameRateLimit 60
+  window.setFramerateLimit 60
   
   worldView = window.getView.copy()
   guiView = worldView.copy()
@@ -683,21 +683,21 @@ when isMainModule:
     mouseSprite.setOutlineThickness 1.4
     mouseSprite.setOrigin vec2f(14, 14)
   
-  LobbyReady()
+  lobbyReady()
   playBtn = specGui.newButton(
     "Unspec - F12", position = vec2f(680.0, 8.0), onClick = proc(b: PButton) =
       toggleSpec())
   
   block:
     var bPlayOffline = false
-    for kind, key, val in getOpt():
+    for kind, key, val in getopt():
       case kind
       of cmdArgument:
         if key == "offline": bPlayOffline = true
       else:
         echo "Invalid argument ", key, " ", val
     if bPlayOffline:
-      playoffline(nil)
+      playOffline(nil)
   
   gameRunning = true
   while gameRunning:
@@ -710,7 +710,7 @@ when isMainModule:
           worldView.zoom(0.9)
         else:
           worldView.zoom(1.1)
-    let dt = frameRate.restart.asMilliSeconds().float / 1000.0
+    let dt = frameRate.restart.asMilliseconds().Float / 1000.0
     case getActiveState()
     of Field:
       mainUpdate(dt)

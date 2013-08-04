@@ -18,17 +18,17 @@ type
   TSoundStatus* {.size: sizeof(cint).} = enum
     Stopped, Paused, Playing
 
-proc newMusic*(filename: cstring): PMusic {.
+proc newMusic*(filename: Cstring): PMusic {.
   cdecl, importc: "sfMusic_createFromFile", dynlib: Lib.}
-proc newMusic*(data: pointer, size: cint): PMusic {.
+proc newMusic*(data: Pointer, size: Cint): PMusic {.
   cdecl, importc: "sfMusic_createFromMemory", dynlib: Lib.}
 proc newMusic*(stream: PInputStream): PMusic {.
   cdecl, importc: "sfMusic_createFromStream", dynlib: Lib.}
 proc destroy*(music: PMusic) {.
   cdecl, importc: "sfMusic_destroy", dynlib: Lib.}
-proc setLoop*(music: PMusic, loop: bool) {.
+proc setLoop*(music: PMusic, loop: Bool) {.
   cdecl, importc: "sfMusic_setLoop", dynlib: Lib.}
-proc getLoop*(music: PMusic): bool {.
+proc getLoop*(music: PMusic): Bool {.
   cdecl, importc: "sfMusic_getLoop", dynlib: Lib.}
 proc getDuration*(music: PMusic): TTime {.
   cdecl, importc: "sfMusic_getDuration", dynlib: Lib.}
@@ -38,39 +38,39 @@ proc pause*(music: PMusic) {.
   cdecl, importc: "sfMusic_pause", dynlib: Lib.}
 proc stop*(music: PMusic) {.
   cdecl, importc: "sfMusic_stop", dynlib: Lib.}
-proc getChannelCount*(music: PMusic): cint {.
+proc getChannelCount*(music: PMusic): Cint {.
   cdecl, importc: "sfMusic_getChannelCount", dynlib: Lib.}
-proc getSampleRate*(music: PMusic): cint {.
+proc getSampleRate*(music: PMusic): Cint {.
   cdecl, importc: "sfMusic_getSampleRate", dynlib: Lib.}
 proc getStatus*(music: PMusic): TSoundStatus {.
   cdecl, importc: "sfMusic_getStatus", dynlib: Lib.}
 proc getPlayingOffset*(music: PMusic): TTime {.
   cdecl, importc: "sfMusic_getPlayingOffset", dynlib: Lib.}
-proc setPitch*(music: PMusic, pitch: cfloat) {.
+proc setPitch*(music: PMusic, pitch: Cfloat) {.
   cdecl, importc: "sfMusic_setPitch", dynlib: Lib.}
-proc setVolume*(music: PMusic, volume: float) {.
+proc setVolume*(music: PMusic, volume: Float) {.
   cdecl, importc: "sfMusic_setVolume", dynlib: Lib.}
 proc setPosition*(music: PMusic, position: TVector3f) {.
   cdecl, importc: "sfMusic_setPosition", dynlib: Lib.}
-proc setRelativeToListener*(music: PMusic, relative: bool) {.
+proc setRelativeToListener*(music: PMusic, relative: Bool) {.
   cdecl, importc: "sfMusic_setRelativeToListener", dynlib: Lib.}
-proc setMinDistance*(music: PMusic, distance: cfloat) {.
+proc setMinDistance*(music: PMusic, distance: Cfloat) {.
   cdecl, importc: "sfMusic_setMinDistance", dynlib: Lib.}
-proc setAttenuation*(music: PMusic, attenuation: cfloat) {.
+proc setAttenuation*(music: PMusic, attenuation: Cfloat) {.
   cdecl, importc: "sfMusic_setAttenuation", dynlib: Lib.}
 proc setPlayingOffset*(music: PMusic, time: TTime) {.
   cdecl, importc: "sfMusic_setPlayingOffset", dynlib: Lib.}
-proc getPitch*(music: PMusic): cfloat {.
+proc getPitch*(music: PMusic): Cfloat {.
   cdecl, importc: "sfMusic_getPitch", dynlib: Lib.}
-proc getVolume*(music: PMusic): cfloat {.
+proc getVolume*(music: PMusic): Cfloat {.
   cdecl, importc: "sfMusic_getVolume", dynlib: Lib.}
 proc getPosition*(music: PMusic): TVector3f {.
   cdecl, importc: "sfMusic_getPosition", dynlib: Lib.}
-proc isRelativeToListener*(music: PMusic): bool {.
+proc isRelativeToListener*(music: PMusic): Bool {.
   cdecl, importc: "sfMusic_isRelativeToListener", dynlib: Lib.}
-proc getMinDistance*(music: PMusic): cfloat {.
+proc getMinDistance*(music: PMusic): Cfloat {.
   cdecl, importc: "sfMusic_isRelativeToListener", dynlib: Lib.}
-proc getAttenuation*(music: PMusic): cfloat {.
+proc getAttenuation*(music: PMusic): Cfloat {.
   cdecl, importc: "sfMusic_isRelativeToListener", dynlib: Lib.}
 
 #/ \brief Create a new sound
@@ -128,11 +128,11 @@ proc getBuffer*(sound: PSound): PSoundBuffer{.
 #/ reaching the end and so on, until it is stopped or
 #/ sfSound_setLoop(sound, sfFalse) is called.
 #/ The default looping state for sounds is false.
-proc setLoop*(sound: PSound; loop: bool){.
+proc setLoop*(sound: PSound; loop: Bool){.
   cdecl, importc: "sfSound_setLoop", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Tell whether or not a soud is in loop mode
-proc getLoop*(sound: PSound): bool {.
+proc getLoop*(sound: PSound): Bool {.
   cdecl, importc: "sfSound_getLoop", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the current status of a sound (stopped, paused, playing)
@@ -146,14 +146,14 @@ proc getStatus*(sound: PSound): TSoundStatus{.
 #/ by changing its pitch. A side effect of changing the pitch
 #/ is to modify the playing speed of the sound as well.
 #/ The default value for the pitch is 1.
-proc setPitch*(sound: PSound; pitch: cfloat){.
+proc setPitch*(sound: PSound; pitch: Cfloat){.
   cdecl, importc: "sfSound_setPitch", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Set the volume of a sound
 #/
 #/ The volume is a value between 0 (mute) and 100 (full volume).
 #/ The default value for the volume is 100.
-proc setVolume*(sound: PSound; volume: cfloat){.
+proc setVolume*(sound: PSound; volume: Cfloat){.
   cdecl, importc: "sfSound_setVolume", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Set the 3D position of a sound in the audio scene
@@ -171,7 +171,7 @@ proc setPosition*(sound: PSound; position: TVector3f){.
 #/ This can be useful for non-spatialized sounds, sounds that are
 #/ produced by the listener, or sounds attached to it.
 #/ The default value is false (position is absolute).
-proc setRelativeToListener*(sound: PSound; relative: bool){.
+proc setRelativeToListener*(sound: PSound; relative: Bool){.
   cdecl, importc: "sfSound_setRelativeToListener", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Set the minimum distance of a sound
@@ -182,7 +182,7 @@ proc setRelativeToListener*(sound: PSound; relative: bool){.
 #/ to its attenuation factor. A value of 0 ("inside the head
 #/ of the listener") is an invalid value and is forbidden.
 #/ The default value of the minimum distance is 1.
-proc setMinDistance*(sound: PSound; distance: cfloat){.
+proc setMinDistance*(sound: PSound; distance: Cfloat){.
   cdecl, importc: "sfSound_setMinDistance", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Set the attenuation factor of a sound
@@ -195,7 +195,7 @@ proc setMinDistance*(sound: PSound; distance: cfloat){.
 #/ an attenuation value such as 100 will make the sound fade out
 #/ very quickly as it gets further from the listener.
 #/ The default value of the attenuation is 1.
-proc setAttenuation*(sound: PSound; attenuation: cfloat){.
+proc setAttenuation*(sound: PSound; attenuation: Cfloat){.
   cdecl, importc: "sfSound_setAttenuation", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Change the current playing position of a sound
@@ -206,11 +206,11 @@ proc setPlayingOffset*(sound: PSound; timeOffset: sfml.TTime){.
   cdecl, importc: "sfSound_setPlayingOffset", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the pitch of a sound
-proc getPitch*(sound: PSound): cfloat{.
+proc getPitch*(sound: PSound): Cfloat{.
   cdecl, importc: "sfSound_getPitch", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the volume of a sound
-proc getVolume*(sound: PSound): cfloat{.
+proc getVolume*(sound: PSound): Cfloat{.
   cdecl, importc: "sfSound_getVolume", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the 3D position of a sound in the audio scene
@@ -219,15 +219,15 @@ proc getPosition*(sound: PSound): TVector3f{.
 #//////////////////////////////////////////////////////////
 #/ \brief Tell whether a sound's position is relative to the
 #/        listener or is absolute
-proc isRelativeToListener*(sound: PSound): bool{.
+proc isRelativeToListener*(sound: PSound): Bool{.
   cdecl, importc: "sfSound_isRelativeToListener", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the minimum distance of a sound
-proc getMinDistance*(sound: PSound): cfloat{.
+proc getMinDistance*(sound: PSound): Cfloat{.
   cdecl, importc: "sfSound_getMinDistance", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the attenuation factor of a sound
-proc getAttenuation*(sound: PSound): cfloat{.
+proc getAttenuation*(sound: PSound): Cfloat{.
   cdecl, importc: "sfSound_getAttenuation", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the current playing position of a sound
@@ -249,7 +249,7 @@ proc getPlayingOffset*(sound: PSound): TTime{.
 #/ \return A new sfSoundBuffer object (NULL if failed)
 #/
 #//////////////////////////////////////////////////////////
-proc newSoundBuffer*(filename: cstring): PSoundBuffer{.
+proc newSoundBuffer*(filename: Cstring): PSoundBuffer{.
   cdecl, importc: "sfSoundBuffer_createFromFile", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Create a new sound buffer and load it from a file in memory
@@ -264,7 +264,7 @@ proc newSoundBuffer*(filename: cstring): PSoundBuffer{.
 #/ \return A new sfSoundBuffer object (NULL if failed)
 #/
 #//////////////////////////////////////////////////////////
-proc newSoundBuffer*(data: pointer; sizeInBytes: cint): PSoundBuffer{.
+proc newSoundBuffer*(data: Pointer; sizeInBytes: Cint): PSoundBuffer{.
   cdecl, importc: "sfSoundBuffer_createFromMemory", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Create a new sound buffer and load it from a custom stream
@@ -294,8 +294,8 @@ proc newSoundBuffer*(stream: PInputStream): PSoundBuffer{.
 #/ \return A new sfSoundBuffer object (NULL if failed)
 #/
 #//////////////////////////////////////////////////////////
-proc createFromSamples*(samples: ptr int16; sampleCount: cuint; 
-                         channelCount: cuint; sampleRate: cuint): PSoundBuffer{.
+proc createFromSamples*(samples: ptr Int16; sampleCount: Cuint; 
+                         channelCount: Cuint; sampleRate: Cuint): PSoundBuffer{.
   cdecl, importc: "sfSoundBuffer_createFromSamples", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Create a new sound buffer by copying an existing one
@@ -328,7 +328,7 @@ proc destroy*(soundBuffer: PSoundBuffer){.
 #/ \return sfTrue if saving succeeded, sfFalse if it failed
 #/
 #//////////////////////////////////////////////////////////
-proc saveToFile*(soundBuffer: PSoundBuffer; filename: cstring): bool {.
+proc saveToFile*(soundBuffer: PSoundBuffer; filename: Cstring): Bool {.
   cdecl, importc: "sfSoundBuffer_saveToFile", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the array of audio samples stored in a sound buffer
@@ -342,14 +342,14 @@ proc saveToFile*(soundBuffer: PSoundBuffer; filename: cstring): bool {.
 #/ \return Read-only pointer to the array of sound samples
 #/
 #//////////////////////////////////////////////////////////
-proc sfSoundBuffer_getSamples*(soundBuffer: PSoundBuffer): ptr Int16{.
+proc sfSoundBufferGetSamples*(soundBuffer: PSoundBuffer): ptr Int16{.
   cdecl, importc: "sfSoundBuffer_getSamples", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the number of samples stored in a sound buffer
 #/
 #/ The array of samples can be accessed with the
 #/ sfSoundBuffer_getSamples function.
-proc getSampleCount*(soundBuffer: PSoundBuffer): cint{.
+proc getSampleCount*(soundBuffer: PSoundBuffer): Cint{.
   cdecl, importc: "sfSoundBuffer_getSampleCount", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the sample rate of a sound buffer
@@ -357,14 +357,14 @@ proc getSampleCount*(soundBuffer: PSoundBuffer): cint{.
 #/ The sample rate is the number of samples played per second.
 #/ The higher, the better the quality (for example, 44100
 #/ samples/s is CD quality).
-proc getSampleRate*(soundBuffer: PSoundBuffer): cuint{.
+proc getSampleRate*(soundBuffer: PSoundBuffer): Cuint{.
   cdecl, importc: "sfSoundBuffer_getSampleRate", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the number of channels used by a sound buffer
 #/
 #/ If the sound is mono then the number of channels will
 #/ be 1, 2 for stereo, etc.
-proc getChannelCount*(soundBuffer: PSoundBuffer): cuint{.
+proc getChannelCount*(soundBuffer: PSoundBuffer): Cuint{.
   cdecl, importc: "sfSoundBuffer_getChannelCount", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the total duration of a sound buffer
@@ -387,7 +387,7 @@ proc getDuration*(soundBuffer: PSoundBuffer): TTime{.
 #/ \param volume New global volume, in the range [0, 100]
 #/
 #//////////////////////////////////////////////////////////
-proc listenerSetGlobalVolume*(volume: cfloat){.
+proc listenerSetGlobalVolume*(volume: Cfloat){.
   cdecl, importc: "sfListener_setGlobalVolume", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the current value of the global volume
@@ -395,7 +395,7 @@ proc listenerSetGlobalVolume*(volume: cfloat){.
 #/ \return Current global volume, in the range [0, 100]
 #/
 #//////////////////////////////////////////////////////////
-proc listenerGetGlobalVolume*(): cfloat{.
+proc listenerGetGlobalVolume*(): Cfloat{.
   cdecl, importc: "sfListener_getGlobalVolume", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Set the position of the listener in the scene
@@ -438,12 +438,12 @@ proc listenerGetDirection*(): TVector3f{.
   cdecl, importc: "sfListener_getDirection", dynlib: Lib.}
 
 type 
-  TSoundRecorderStartCallback* = proc (a2: pointer): bool {.cdecl.}
+  TSoundRecorderStartCallback* = proc (a2: Pointer): Bool {.cdecl.}
   #/< Type of the callback used when starting a capture 
-  TSoundRecorderProcessCallback* = proc(a2: ptr int16; a3: cuint; 
-    a4: pointer): bool {.cdecl.}
+  TSoundRecorderProcessCallback* = proc(a2: ptr Int16; a3: Cuint; 
+    a4: Pointer): Bool {.cdecl.}
   #/< Type of the callback used to process audio data
-  TSoundRecorderStopCallback* = proc (a2: pointer){.cdecl.}
+  TSoundRecorderStopCallback* = proc (a2: Pointer){.cdecl.}
   #/< Type of the callback used when stopping a capture
 #//////////////////////////////////////////////////////////
 #/ \brief Construct a new sound recorder from callback functions
@@ -459,7 +459,7 @@ type
 proc newSoundRecorder*(onStart: TSoundRecorderStartCallback; 
                         onProcess: TSoundRecorderProcessCallback; 
                         onStop: TSoundRecorderStopCallback; 
-                        userData: pointer = nil): PSoundRecorder{.
+                        userData: Pointer = nil): PSoundRecorder{.
   cdecl, importc: "sfSoundRecorder_create", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Destroy a sound recorder
@@ -483,7 +483,7 @@ proc destroy*(soundRecorder: PSoundRecorder){.
 #/ \param sampleRate    Desired capture rate, in number of samples per second
 #/
 #//////////////////////////////////////////////////////////
-proc start*(soundRecorder: PSoundRecorder; sampleRate: cuint){.
+proc start*(soundRecorder: PSoundRecorder; sampleRate: Cuint){.
   cdecl, importc: "sfSoundRecorder_start", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Stop the capture of a sound recorder
@@ -505,7 +505,7 @@ proc stop*(soundRecorder: PSoundRecorder){.
 #/ \return Sample rate, in samples per second
 #/
 #//////////////////////////////////////////////////////////
-proc getSampleRate*(soundRecorder: PSoundRecorder): cuint{.
+proc getSampleRate*(soundRecorder: PSoundRecorder): Cuint{.
   cdecl, importc: "sfSoundRecorder_getSampleRate", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Check if the system supports audio capture
@@ -517,7 +517,7 @@ proc getSampleRate*(soundRecorder: PSoundRecorder): cuint{.
 #/ \return sfTrue if audio capture is supported, sfFalse otherwise
 #/
 #//////////////////////////////////////////////////////////
-proc soundRecorderIsAvailable*(): bool {.
+proc soundRecorderIsAvailable*(): Bool {.
   cdecl, importc: "sfSoundRecorder_isAvailable", dynlib: Lib.}
 
 #//////////////////////////////////////////////////////////
@@ -550,7 +550,7 @@ proc destroy*(soundBufferRecorder: PSoundBufferRecorder){.
 #/ \param sampleRate          Desired capture rate, in number of samples per second
 #/
 #//////////////////////////////////////////////////////////
-proc start*(soundBufferRecorder: PSoundBufferRecorder; sampleRate: cuint){.
+proc start*(soundBufferRecorder: PSoundBufferRecorder; sampleRate: Cuint){.
   cdecl, importc: "sfSoundBufferRecorder_start", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Stop the capture of a sound recorder
@@ -572,7 +572,7 @@ proc stop*(soundBufferRecorder: PSoundBufferRecorder){.
 #/ \return Sample rate, in samples per second
 #/
 #//////////////////////////////////////////////////////////
-proc getSampleRate*(soundBufferRecorder: PSoundBufferRecorder): cuint{.
+proc getSampleRate*(soundBufferRecorder: PSoundBufferRecorder): Cuint{.
   cdecl, importc: "sfSoundBufferRecorder_getSampleRate", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the sound buffer containing the captured audio data
@@ -598,13 +598,13 @@ proc getBuffer*(soundBufferRecorder: PSoundBufferRecorder): PSoundBuffer{.
 type 
   PSoundStreamChunk* = ptr TSoundStreamChunk
   TSoundStreamChunk*{.pure, final.} = object 
-    samples*: ptr int16   #/< Pointer to the audio samples
-    sampleCount*: cuint     #/< Number of samples pointed by Samples
+    samples*: ptr Int16   #/< Pointer to the audio samples
+    sampleCount*: Cuint     #/< Number of samples pointed by Samples
   
   TSoundStreamGetDataCallback* = proc (a2: PSoundStreamChunk; 
-      a3: pointer): bool{.cdecl.}
+      a3: Pointer): Bool{.cdecl.}
   #/< Type of the callback used to get a sound stream data
-  TSoundStreamSeekCallback* = proc (a2: TTime; a3: pointer){.cdecl.}
+  TSoundStreamSeekCallback* = proc (a2: TTime; a3: Pointer){.cdecl.}
   #/< Type of the callback used to seek in a sound stream
 #//////////////////////////////////////////////////////////
 #/ \brief Create a new sound stream
@@ -619,7 +619,7 @@ type
 #/
 #//////////////////////////////////////////////////////////
 proc create*(onGetData: TSoundStreamGetDataCallback; onSeek: TSoundStreamSeekCallback; 
-              channelCount: cuint; sampleRate: cuint; userData: pointer): PSoundStream{.
+              channelCount: Cuint; sampleRate: Cuint; userData: Pointer): PSoundStream{.
   cdecl, importc: "sfSoundStream_create", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Destroy a sound stream
@@ -686,7 +686,7 @@ proc getStatus*(soundStream: PSoundStream): TSoundStatus{.
 #/ \return Number of channels
 #/
 #//////////////////////////////////////////////////////////
-proc getChannelCount*(soundStream: PSoundStream): cuint{.
+proc getChannelCount*(soundStream: PSoundStream): Cuint{.
   cdecl, importc: "sfSoundStream_getChannelCount", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the sample rate of a sound stream
@@ -699,7 +699,7 @@ proc getChannelCount*(soundStream: PSoundStream): cuint{.
 #/ \return Sample rate, in number of samples per second
 #/
 #//////////////////////////////////////////////////////////
-proc getSampleRate*(soundStream: PSoundStream): cuint{.
+proc getSampleRate*(soundStream: PSoundStream): Cuint{.
   cdecl, importc: "sfSoundStream_getSampleRate", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Set the pitch of a sound stream
@@ -714,7 +714,7 @@ proc getSampleRate*(soundStream: PSoundStream): cuint{.
 #/ \param pitch       New pitch to apply to the stream
 #/
 #//////////////////////////////////////////////////////////
-proc setPitch*(soundStream: PSoundStream; pitch: cfloat){.
+proc setPitch*(soundStream: PSoundStream; pitch: Cfloat){.
   cdecl, importc: "sfSoundStream_setPitch", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Set the volume of a sound stream
@@ -726,7 +726,7 @@ proc setPitch*(soundStream: PSoundStream; pitch: cfloat){.
 #/ \param volume      Volume of the stream
 #/
 #//////////////////////////////////////////////////////////
-proc setVolume*(soundStream: PSoundStream; volume: cfloat){.
+proc setVolume*(soundStream: PSoundStream; volume: Cfloat){.
   cdecl, importc: "sfSoundStream_setVolume", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Set the 3D position of a sound stream in the audio scene
@@ -754,7 +754,7 @@ proc setPosition*(soundStream: PSoundStream; position: TVector3f){.
 #/ \param relative    sfTrue to set the position relative, sfFalse to set it absolute
 #/
 #//////////////////////////////////////////////////////////
-proc setRelativeToListener*(soundStream: PSoundStream; relative: bool){.
+proc setRelativeToListener*(soundStream: PSoundStream; relative: Bool){.
   cdecl, importc: "sfSoundStream_setRelativeToListener", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Set the minimum distance of a sound stream
@@ -770,7 +770,7 @@ proc setRelativeToListener*(soundStream: PSoundStream; relative: bool){.
 #/ \param distance    New minimum distance of the stream
 #/
 #//////////////////////////////////////////////////////////
-proc setMinDistance*(soundStream: PSoundStream; distance: cfloat){.
+proc setMinDistance*(soundStream: PSoundStream; distance: Cfloat){.
   cdecl, importc: "sfSoundStream_setMinDistance", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Set the attenuation factor of a sound stream
@@ -788,7 +788,7 @@ proc setMinDistance*(soundStream: PSoundStream; distance: cfloat){.
 #/ \param attenuation New attenuation factor of the stream
 #/
 #//////////////////////////////////////////////////////////
-proc setAttenuation*(soundStream: PSoundStream; attenuation: cfloat){.
+proc setAttenuation*(soundStream: PSoundStream; attenuation: Cfloat){.
   cdecl, importc: "sfSoundStream_setAttenuation", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Change the current playing position of a sound stream
@@ -814,7 +814,7 @@ proc setPlayingOffset*(soundStream: PSoundStream; timeOffset: TTime){.
 #/ \param loop        sfTrue to play in loop, sfFalse to play once
 #/
 #//////////////////////////////////////////////////////////
-proc setLoop*(soundStream: PSoundStream; loop: bool){.
+proc setLoop*(soundStream: PSoundStream; loop: Bool){.
   cdecl, importc: "sfSoundStream_setLoop", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the pitch of a sound stream
@@ -824,7 +824,7 @@ proc setLoop*(soundStream: PSoundStream; loop: bool){.
 #/ \return Pitch of the stream
 #/
 #//////////////////////////////////////////////////////////
-proc getPitch*(soundStream: PSoundStream): cfloat{.
+proc getPitch*(soundStream: PSoundStream): Cfloat{.
   cdecl, importc: "sfSoundStream_getPitch", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the volume of a sound stream
@@ -834,7 +834,7 @@ proc getPitch*(soundStream: PSoundStream): cfloat{.
 #/ \return Volume of the stream, in the range [0, 100]
 #/
 #//////////////////////////////////////////////////////////
-proc getVolume*(soundStream: PSoundStream): cfloat{.
+proc getVolume*(soundStream: PSoundStream): Cfloat{.
   cdecl, importc: "sfSoundStream_getVolume", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the 3D position of a sound stream in the audio scene
@@ -855,7 +855,7 @@ proc getPosition*(soundStream: PSoundStream): TVector3f{.
 #/ \return sfTrue if the position is relative, sfFalse if it's absolute
 #/
 #//////////////////////////////////////////////////////////
-proc isRelativeToListener*(soundStream: PSoundStream): bool{.
+proc isRelativeToListener*(soundStream: PSoundStream): Bool{.
   cdecl, importc: "sfSoundStream_isRelativeToListener", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the minimum distance of a sound stream
@@ -865,7 +865,7 @@ proc isRelativeToListener*(soundStream: PSoundStream): bool{.
 #/ \return Minimum distance of the stream
 #/
 #//////////////////////////////////////////////////////////
-proc getMinDistance*(soundStream: PSoundStream): cfloat{.
+proc getMinDistance*(soundStream: PSoundStream): Cfloat{.
   cdecl, importc: "sfSoundStream_getMinDistance", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the attenuation factor of a sound stream
@@ -875,7 +875,7 @@ proc getMinDistance*(soundStream: PSoundStream): cfloat{.
 #/ \return Attenuation factor of the stream
 #/
 #//////////////////////////////////////////////////////////
-proc getAttenuation*(soundStream: PSoundStream): cfloat{.
+proc getAttenuation*(soundStream: PSoundStream): Cfloat{.
   cdecl, importc: "sfSoundStream_getAttenuation", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Tell whether or not a sound stream is in loop mode
@@ -885,7 +885,7 @@ proc getAttenuation*(soundStream: PSoundStream): cfloat{.
 #/ \return sfTrue if the music is looping, sfFalse otherwise
 #/
 #//////////////////////////////////////////////////////////
-proc getLoop*(soundStream: PSoundStream): bool{.
+proc getLoop*(soundStream: PSoundStream): Bool{.
   cdecl, importc: "sfSoundStream_getLoop", dynlib: Lib.}
 #//////////////////////////////////////////////////////////
 #/ \brief Get the current playing position of a sound stream

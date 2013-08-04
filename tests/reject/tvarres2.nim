@@ -7,7 +7,7 @@ discard """
 var
   g = 5
 
-proc p(): var int = 
+proc p(): var Int = 
   result = 89
   
 p() = 45

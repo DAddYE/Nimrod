@@ -13,16 +13,16 @@ import numeric
 
 type 
     TPoly* = object
-        cofs:seq[float]
+        cofs:Seq[Float]
 
   
-proc degree*(p:TPoly):int=
+proc degree*(p:TPoly):Int=
   ## Returns the degree of the polynomial,
   ## that is the number of coefficients-1
   return p.cofs.len-1
 
 
-proc eval*(p:TPoly,x:float):float=
+proc eval*(p:TPoly,x:Float):Float=
   ## Evaluates a polynomial function value for `x`
   ## quickly using Horners method
   var n=p.degree
@@ -32,7 +32,7 @@ proc eval*(p:TPoly,x:float):float=
     result = result*x+p.cofs[n]
     dec n
 
-proc `[]` *(p:TPoly;idx:int):float=
+proc `[]` *(p:TPoly;idx:Int):Float=
   ## Gets a coefficient of the polynomial.
   ## p[2] will returns the quadric term, p[3] the cubic etc.
   ## Out of bounds index will return 0.0.
@@ -40,7 +40,7 @@ proc `[]` *(p:TPoly;idx:int):float=
       return 0.0
   return p.cofs[idx]
     
-proc `[]=` *(p:var TPoly;idx:int,v:float)=
+proc `[]=` *(p:var TPoly;idx:Int,v:Float)=
   ## Sets an coefficient of the polynomial by index.
   ## p[2] set the quadric term, p[3] the cubic etc.
   ## If index is out of range for the coefficients,
@@ -56,7 +56,7 @@ proc `[]=` *(p:var TPoly;idx:int,v:float)=
   p.cofs[idx]=v
     
       
-iterator items*(p:TPoly):float=
+iterator items*(p:TPoly):Float=
   ## Iterates through the corfficients of the polynomial.
   var i=p.degree
   while i>=0:
@@ -76,7 +76,7 @@ proc clean*(p:var TPoly;zerotol=0.0)=
   if relen: p.cofs.setLen(n+1)
 
 
-proc `$` *(p:TPoly):string = 
+proc `$` *(p:TPoly):String = 
   ## Gets a somewhat reasonable string representation of the polynomial
   ## The format should be compatible with most online function plotters,
   ## for example directly in google search
@@ -108,16 +108,16 @@ proc derivative*(p:TPoly):TPoly=
   ## Returns a new polynomial, which is the derivative of `p`
   newSeq[float](result.cofs,p.degree)
   for idx in 0..high(result.cofs):
-    result.cofs[idx]=p.cofs[idx+1]*float(idx+1)
+    result.cofs[idx]=p.cofs[idx+1]*Float(idx+1)
     
-proc diff*(p:TPoly,x:float):float=
+proc diff*(p:TPoly,x:Float):Float=
   ## Evaluates the differentiation of a polynomial with
   ## respect to `x` quickly using a modifed Horners method
   var n=p.degree
-  result=p[n]*float(n)
+  result=p[n]*Float(n)
   dec n
   while n>=1:
-    result = result*x+p[n]*float(n)
+    result = result*x+p[n]*Float(n)
     dec n
 
 proc integral*(p:TPoly):TPoly=
@@ -126,28 +126,28 @@ proc integral*(p:TPoly):TPoly=
   newSeq(result.cofs,p.cofs.len+1)
   result.cofs[0]=0.0  #constant arbitrary term, use 0.0
   for i in 1..high(result.cofs):
-    result.cofs[i]=p.cofs[i-1]/float(i)
+    result.cofs[i]=p.cofs[i-1]/Float(i)
         
 
-proc integrate*(p:TPoly;xmin,xmax:float):float=
+proc integrate*(p:TPoly;xmin,xmax:Float):Float=
   ## Computes the definite integral of `p` between `xmin` and `xmax`
   ## quickly using a modified version of Horners method
   var
     n=p.degree
-    s1=p[n]/float(n+1)
+    s1=p[n]/Float(n+1)
     s2=s1
-    fac:float
+    fac:Float
 
   dec n
   while n>=0:
-    fac=p[n]/float(n+1)
+    fac=p[n]/Float(n+1)
     s1 = s1*xmin+fac
     s2 = s2*xmax+fac
     dec n
  
   result=s2*xmax-s1*xmin
   
-proc initPoly*(cofs:varargs[float]):TPoly=
+proc initPoly*(cofs:Varargs[Float]):TPoly=
   ## Initializes a polynomial with given coefficients.
   ## The most significant coefficient is first, so to create x^2-2x+3:
   ## intiPoly(1.0,-2.0,3.0)
@@ -170,7 +170,7 @@ proc divMod*(p,d:TPoly;q,r:var TPoly)=
     pdeg=p.degree
     ddeg=d.degree
     power=p.degree-d.degree
-    ratio:float
+    ratio:Float
   
   r.cofs = p.cofs #initial remainder=numerator
   if power<0: #denominator is larger than numerator
@@ -207,7 +207,7 @@ proc `*` *(p1:TPoly,p2:TPoly):TPoly=
     d1=p1.degree
     d2=p2.degree
     n=d1+d2
-    idx:int
+    idx:Int
       
   newSeq(result.cofs,n)
 
@@ -218,14 +218,14 @@ proc `*` *(p1:TPoly,p2:TPoly):TPoly=
 
   result.clean
 
-proc `*` *(p:TPoly,f:float):TPoly=
+proc `*` *(p:TPoly,f:Float):TPoly=
   ## Multiplies the polynomial `p` with a real number
   newSeq(result.cofs,p.cofs.len)
   for i in 0..high(p.cofs):
     result[i]=p.cofs[i]*f
   result.clean
   
-proc `*` *(f:float,p:TPoly):TPoly=
+proc `*` *(f:Float,p:TPoly):TPoly=
   ## Multiplies a real number with a polynomial
   return p*f
     
@@ -245,7 +245,7 @@ proc `-` *(p1:TPoly,p2:TPoly):TPoly=
       
   result.clean # drop zero coefficients in remainder
     
-proc `/`*(p:TPoly,f:float):TPoly=
+proc `/`*(p:TPoly,f:Float):TPoly=
   ## Divides polynomial `p` with a real number `f`
   newSeq(result.cofs,p.cofs.len)
   for i in 0..high(p.cofs):
@@ -272,12 +272,12 @@ proc normalize*(p:var TPoly)=
   p=p/p[p.degree]
 
 
-proc solveQuadric*(a,b,c:float;zerotol=0.0):seq[float]=
+proc solveQuadric*(a,b,c:Float;zerotol=0.0):Seq[Float]=
   ## Solves the quadric equation `ax^2+bx+c`, with a possible
   ## tolerance `zerotol` to find roots of curves just 'touching'
   ## the x axis. Returns sequence with 0,1 or 2 solutions.
   
-  var p,q,d:float
+  var p,q,d:Float
   
   p=b/(2.0*a)
   
@@ -299,7 +299,7 @@ proc solveQuadric*(a,b,c:float;zerotol=0.0):seq[float]=
     var sr=sqrt(d)
     result= @[-sr-p,sr-p]
 
-proc getRangeForRoots(p:TPoly):tuple[xmin,xmax:float]=
+proc getRangeForRoots(p:TPoly):tuple[xmin,xmax:Float]=
   ## helper function for `roots` function
   ## quickly computes a range, guaranteed to contain
   ## all the real roots of the polynomial
@@ -307,7 +307,7 @@ proc getRangeForRoots(p:TPoly):tuple[xmin,xmax:float]=
 
   var deg=p.degree
   var d=p[deg]
-  var bound1,bound2:float
+  var bound1,bound2:Float
   
   for i in countup(0,deg):
       var c=abs(p.cofs[i]/d)
@@ -319,7 +319,7 @@ proc getRangeForRoots(p:TPoly):tuple[xmin,xmax:float]=
   result.xmin= -result.xmax
 
 
-proc addRoot(p:TPoly,res:var seq[float],xp0,xp1,tol,zerotol,mergetol:float,maxiter:int)=
+proc addRoot(p:TPoly,res:var Seq[Float],xp0,xp1,tol,zerotol,mergetol:Float,maxiter:Int)=
   ## helper function for `roots` function
   ## try to do a numeric search for a single root in range xp0-xp1,
   ## adding it to `res` (allocating `res` if nil)
@@ -335,7 +335,7 @@ proc addRoot(p:TPoly,res:var seq[float],xp0,xp1,tol,zerotol,mergetol:float,maxit
         res.add(br.rootx) 
 
 
-proc roots*(p:TPoly,tol=1.0e-9,zerotol=1.0e-6,mergetol=1.0e-12,maxiter=1000):seq[float]=
+proc roots*(p:TPoly,tol=1.0e-9,zerotol=1.0e-6,mergetol=1.0e-12,maxiter=1000):Seq[Float]=
   ## Computes the real roots of the polynomial `p`
   ## `tol` is the tolerance used to break searching for each root when reached.
   ## `zerotol` is the tolerance, which is 'close enough' to zero to be considered a root

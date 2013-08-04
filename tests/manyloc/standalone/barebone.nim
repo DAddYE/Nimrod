@@ -1,5 +1,5 @@
 
-proc printf(frmt: cstring) {.varargs, header: "<stdio.h>", cdecl.}
+proc printf(frmt: Cstring) {.varargs, header: "<stdio.h>", cdecl.}
 
 var x = 0
 inc x

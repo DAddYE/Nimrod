@@ -1,6 +1,6 @@
 
 type
-  TArray = array[0x0012..0x0013, int]
+  TArray = Array[0x0012..0x0013, Int]
   
 var a: TArray
 

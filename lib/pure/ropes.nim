@@ -33,10 +33,10 @@ type
   PRope* = ref TRope ## empty rope is represented by nil
   TRope {.acyclic, final, pure.} = object
     left, right: PRope
-    length: int
-    data: string # != nil if a leaf
+    length: Int
+    data: String # != nil if a leaf
 
-proc isConc(r: PRope): bool {.inline.} = return isNil(r.data)
+proc isConc(r: PRope): Bool {.inline.} = return isNil(r.data)
 
 # Note that the left and right pointers are not needed for leafs.
 # Leaves have relatively high memory overhead (~30 bytes on a 32
@@ -46,31 +46,31 @@ proc isConc(r: PRope): bool {.inline.} = return isNil(r.data)
 # performance. But for the caching tree we use the leaf's left and right
 # pointers.
 
-proc len*(a: PRope): int {.rtl, extern: "nro$1".} =
+proc len*(a: PRope): Int {.rtl, extern: "nro$1".} =
   ## the rope's length
   if a == nil: result = 0
   else: result = a.length
   
 proc newRope(): PRope = new(result)
-proc newRope(data: string): PRope = 
+proc newRope(data: String): PRope = 
   new(result)
   result.length = len(data)
   result.data = data
 
 var 
   cache: PRope                # the root of the cache tree
-  N: PRope                    # dummy rope needed for splay algorithm
+  n: PRope                    # dummy rope needed for splay algorithm
 
 when countCacheMisses:
   var misses, hits: int
   
-proc splay(s: string, tree: PRope, cmpres: var int): PRope = 
-  var c: int
+proc splay(s: String, tree: PRope, cmpres: var Int): PRope = 
+  var c: Int
   var t = tree
-  N.left = nil
-  N.right = nil               # reset to nil
-  var le = N
-  var r = N
+  n.left = nil
+  n.right = nil               # reset to nil
+  var le = n
+  var r = n
   while true: 
     c = cmp(s, t.data)
     if c < 0: 
@@ -98,17 +98,17 @@ proc splay(s: string, tree: PRope, cmpres: var int): PRope =
   cmpres = c
   le.right = t.left
   r.left = t.right
-  t.left = N.right
-  t.right = N.left
+  t.left = n.right
+  t.right = n.left
   result = t
 
-proc insertInCache(s: string, tree: PRope): PRope = 
+proc insertInCache(s: String, tree: PRope): PRope = 
   var t = tree
   if t == nil: 
     result = newRope(s)
     when countCacheMisses: inc(misses)
     return 
-  var cmp: int
+  var cmp: Int
   t = splay(s, t, cmp)
   if cmp == 0: 
     # We get here if it's already in the Tree
@@ -128,7 +128,7 @@ proc insertInCache(s: string, tree: PRope): PRope =
       result.left = t
       t.right = nil
 
-proc rope*(s: string): PRope {.rtl, extern: "nro$1Str".} =
+proc rope*(s: String): PRope {.rtl, extern: "nro$1Str".} =
   ## Converts a string to a rope. 
   if s.len == 0: 
     result = nil
@@ -176,15 +176,15 @@ proc `&`*(a, b: PRope): PRope {.rtl, extern: "nroConcRopeRope".} =
       result.left = a
       result.right = b
   
-proc `&`*(a: PRope, b: string): PRope {.rtl, extern: "nroConcRopeStr".} = 
+proc `&`*(a: PRope, b: String): PRope {.rtl, extern: "nroConcRopeStr".} = 
   ## the concatenation operator for ropes.
   result = a & rope(b)
   
-proc `&`*(a: string, b: PRope): PRope {.rtl, extern: "nroConcStrRope".} = 
+proc `&`*(a: String, b: PRope): PRope {.rtl, extern: "nroConcStrRope".} = 
   ## the concatenation operator for ropes.
   result = rope(a) & b
   
-proc `&`*(a: openarray[PRope]): PRope {.rtl, extern: "nroConcOpenArray".} = 
+proc `&`*(a: Openarray[PRope]): PRope {.rtl, extern: "nroConcOpenArray".} = 
   ## the concatenation operator for an openarray of ropes.
   for i in countup(0, high(a)): result = result & a[i]
 
@@ -192,11 +192,11 @@ proc add*(a: var PRope, b: PRope) {.rtl, extern: "nro$1Rope".} =
   ## adds `b` to the rope `a`.
   a = a & b
 
-proc add*(a: var PRope, b: string) {.rtl, extern: "nro$1Str".} =
+proc add*(a: var PRope, b: String) {.rtl, extern: "nro$1Str".} =
   ## adds `b` to the rope `a`.
   a = a & b
   
-proc `[]`*(r: PRope, i: int): char {.rtl, extern: "nroCharAt".} =
+proc `[]`*(r: PRope, i: Int): Char {.rtl, extern: "nroCharAt".} =
   ## returns the character at position `i` in the rope `r`. This is quite
   ## expensive! Worst-case: O(n). If ``i >= r.len``, ``\0`` is returned.
   var x = r
@@ -213,7 +213,7 @@ proc `[]`*(r: PRope, i: int): char {.rtl, extern: "nroCharAt".} =
         x = x.right
         dec(j, x.len)
 
-iterator leaves*(r: PRope): string =
+iterator leaves*(r: PRope): String =
   ## iterates over any leaf string in the rope `r`.
   if r != nil:
     var stack = @[r]
@@ -226,7 +226,7 @@ iterator leaves*(r: PRope): string =
       assert(it.data != nil)
       yield it.data
   
-iterator items*(r: PRope): char =
+iterator items*(r: PRope): Char =
   ## iterates over any character in the rope `r`.
   for s in leaves(r):
     for c in items(s): yield c
@@ -235,7 +235,7 @@ proc write*(f: TFile, r: PRope) {.rtl, extern: "nro$1".} =
   ## writes a rope to a file.
   for s in leaves(r): write(f, s)
 
-proc `$`*(r: PRope): string  {.rtl, extern: "nroToString".}= 
+proc `$`*(r: PRope): String  {.rtl, extern: "nroToString".}= 
   ## converts a rope back to a string.
   result = newString(r.len)
   setLen(result, 0)
@@ -289,7 +289,7 @@ when false:
       if i - 1 >= start: 
         add(result, substr(frmt, start, i-1))
   
-proc `%`*(frmt: string, args: openarray[PRope]): PRope {. 
+proc `%`*(frmt: String, args: Openarray[PRope]): PRope {. 
   rtl, extern: "nroFormat".} =
   ## `%` substitution operator for ropes. Does not support the ``$identifier``
   ## nor ``${identifier}`` notations.
@@ -332,27 +332,27 @@ proc `%`*(frmt: string, args: openarray[PRope]): PRope {.
     if i - 1 >= start: 
       add(result, substr(frmt, start, i - 1))
 
-proc addf*(c: var PRope, frmt: string, args: openarray[PRope]) {.
+proc addf*(c: var PRope, frmt: String, args: Openarray[PRope]) {.
   rtl, extern: "nro$1".} =
   ## shortcut for ``add(c, frmt % args)``.
   add(c, frmt % args)
 
-proc equalsFile*(r: PRope, f: TFile): bool {.rtl, extern: "nro$1File".} =
+proc equalsFile*(r: PRope, f: TFile): Bool {.rtl, extern: "nro$1File".} =
   ## returns true if the contents of the file `f` equal `r`.
   var bufSize = 1024 # reasonable start value
-  var buf = alloc(BufSize)
+  var buf = alloc(bufSize)
   for s in leaves(r):
     if s.len > bufSize:
       bufSize = max(bufSize * 2, s.len)
       buf = realloc(buf, bufSize)
     var readBytes = readBuffer(f, buf, s.len)
-    result = readBytes == s.len and equalMem(buf, cstring(s), s.len)
+    result = readBytes == s.len and equalMem(buf, Cstring(s), s.len)
     if not result: break
   if result:
     result = readBuffer(f, buf, 1) == 0 # really at the end of file?
   dealloc(buf)
 
-proc equalsFile*(r: PRope, f: string): bool {.rtl, extern: "nro$1Str".} =
+proc equalsFile*(r: PRope, f: String): Bool {.rtl, extern: "nro$1Str".} =
   ## returns true if the contents of the file `f` equal `r`. If `f` does not
   ## exist, false is returned.
   var bin: TFile
@@ -361,6 +361,6 @@ proc equalsFile*(r: PRope, f: string): bool {.rtl, extern: "nro$1Str".} =
     result = equalsFile(r, bin)
     close(bin)
 
-new(N) # init dummy node for splay algorithm
+new(n) # init dummy node for splay algorithm
 
 {.pop.}

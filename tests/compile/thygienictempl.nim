@@ -2,7 +2,7 @@
 var
   e = "abc"
     
-raise newException(EIO, e & "ha!")
+raise newException(Eio, e & "ha!")
 
 template t() = echo(foo)
 
@@ -10,7 +10,7 @@ var foo = 12
 t()
 
 
-template test_in(a, b, c: expr): bool {.immediate, dirty.} =
+template testIn(a, b, c: Expr): Bool {.immediate, dirty.} =
   var result {.gensym.}: bool = false
   false
 

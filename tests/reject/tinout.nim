@@ -5,7 +5,7 @@ discard """
 """
 # Test in out checking for parameters
 
-proc abc(x: var int) =
+proc abc(x: var Int) =
     x = 0
 
 proc b() =

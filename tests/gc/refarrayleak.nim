@@ -4,11 +4,11 @@ discard """
 
 type
   TNode = object
-    data: array[0..300, char]
+    data: Array[0..300, Char]
 
   PNode = ref TNode
 
-  TNodeArray = array[0..10, PNode]
+  TNodeArray = Array[0..10, PNode]
 
   TArrayHolder = object
     sons: TNodeArray

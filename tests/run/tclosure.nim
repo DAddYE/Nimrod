@@ -5,19 +5,19 @@ discard """
 """
 # Test the closure implementation
 
-proc map(n: var openarray[int], fn: proc (x: int): int {.closure}) =
+proc map(n: var Openarray[Int], fn: proc (x: Int): Int {.closure}) =
   for i in 0..n.len-1: n[i] = fn(n[i])
 
-proc foldr(n: openarray[int], fn: proc (x, y: int): int {.closure}): int =
+proc foldr(n: Openarray[Int], fn: proc (x, y: Int): Int {.closure}): Int =
   for i in 0..n.len-1:
     result = fn(result, n[i])
 
-proc each(n: openarray[int], fn: proc(x: int) {.closure.}) =
+proc each(n: Openarray[Int], fn: proc(x: Int) {.closure.}) =
   for i in 0..n.len-1:
     fn(n[i])
 
 var
-  myData: array[0..4, int] = [0, 1, 2, 3, 4]
+  myData: Array[0..4, Int] = [0, 1, 2, 3, 4]
 
 proc testA() =
   var p = 0
@@ -29,7 +29,7 @@ proc testA() =
 
 testA()
 
-myData.each do (x: int):
+myData.each do (x: Int):
   write(stout, x)
 
 #OUT 2 4 6 8 10
@@ -37,7 +37,7 @@ myData.each do (x: int):
 type
   ITest = tuple[
     setter: proc(v: Int),
-    getter: proc(): int]
+    getter: proc(): Int]
 
 proc getInterf(): ITest =
   var shared: int

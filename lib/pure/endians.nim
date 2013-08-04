@@ -10,11 +10,11 @@
 ## This module contains helpers that deal with different byte orders
 ## (`endian`:idx:).
 
-proc swapEndian64*(outp, inp: pointer) =
+proc swapEndian64*(outp, inp: Pointer) =
   ## copies `inp` to `outp` swapping bytes. Both buffers are supposed to
   ## contain at least 8 bytes.
-  var i = cast[cstring](inp)
-  var o = cast[cstring](outp)
+  var i = cast[Cstring](inp)
+  var o = cast[Cstring](outp)
   o[0] = i[7]
   o[1] = i[6]
   o[2] = i[5]
@@ -24,11 +24,11 @@ proc swapEndian64*(outp, inp: pointer) =
   o[6] = i[1]
   o[7] = i[0]
 
-proc swapEndian32*(outp, inp: pointer) = 
+proc swapEndian32*(outp, inp: Pointer) = 
   ## copies `inp` to `outp` swapping bytes. Both buffers are supposed to
   ## contain at least 4 bytes.
-  var i = cast[cstring](inp)
-  var o = cast[cstring](outp)
+  var i = cast[Cstring](inp)
+  var o = cast[Cstring](outp)
   o[0] = i[3]
   o[1] = i[2]
   o[2] = i[1]
@@ -40,8 +40,8 @@ when system.cpuEndian == bigEndian:
   proc bigEndian64*(outp, inp: pointer) {.inline.} = copyMem(outp, inp, 8)
   proc bigEndian32*(outp, inp: pointer) {.inline.} = copyMem(outp, inp, 4)
 else: 
-  proc littleEndian64*(outp, inp: pointer) {.inline.} = copyMem(outp, inp, 8)
-  proc littleEndian32*(outp, inp: pointer) {.inline.} = copyMem(outp, inp, 4)
-  proc bigEndian64*(outp, inp: pointer) {.inline.} = swapEndian64(outp, inp)
-  proc bigEndian32*(outp, inp: pointer) {.inline.} = swapEndian32(outp, inp)
+  proc littleEndian64*(outp, inp: Pointer) {.inline.} = copyMem(outp, inp, 8)
+  proc littleEndian32*(outp, inp: Pointer) {.inline.} = copyMem(outp, inp, 4)
+  proc bigEndian64*(outp, inp: Pointer) {.inline.} = swapEndian64(outp, inp)
+  proc bigEndian32*(outp, inp: Pointer) {.inline.} = swapEndian32(outp, inp)
 

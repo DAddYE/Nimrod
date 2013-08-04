@@ -2,7 +2,7 @@
 
 import macros
 
-proc dumpit(n: PNimrodNode): string {.compileTime.} = 
+proc dumpit(n: PNimrodNode): String {.compileTime.} = 
   if n == nil: return "nil"
   result = $n.kind
   add(result, "(")
@@ -21,7 +21,7 @@ proc dumpit(n: PNimrodNode): string {.compileTime.} =
       add(result, dumpit(n[j]))
   add(result, ")")
   
-macro dumpAST(n: stmt): stmt {.immediate.} = 
+macro dumpAST(n: Stmt): Stmt {.immediate.} = 
   # dump AST as a side-effect and return the inner node
   let n = callsite()
   echo dumpit(n)

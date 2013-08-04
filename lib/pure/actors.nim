@@ -30,7 +30,7 @@ type
       receiver*: ptr TChannel[TOut] ## the receiver channel of the response
     action*: proc (x: TIn): TOut {.thread.} ## action to execute;
                                             ## sometimes useful
-    shutDown*: bool ## set to tell an actor to shut-down
+    shutDown*: Bool ## set to tell an actor to shut-down
     data*: TIn ## the data to process
 
   TActor[TIn, TOut] = object{.pure, final.}
@@ -51,11 +51,11 @@ proc inbox*[TIn, TOut](self: PActor[TIn, TOut]): ptr TChannel[TIn] =
   ## gets a pointer to the associated inbox of the actor `self`.
   result = addr(self.i)
 
-proc running*[TIn, TOut](a: PActor[TIn, TOut]): bool =
+proc running*[TIn, TOut](a: PActor[TIn, TOut]): Bool =
   ## returns true if the actor `a` is running.
   result = running(a.t)
 
-proc ready*[TIn, TOut](a: PActor[TIn, TOut]): bool =
+proc ready*[TIn, TOut](a: PActor[TIn, TOut]): Bool =
   ## returns true if the actor `a` is ready to process new messages.
   result = ready(a.i)
 
@@ -93,7 +93,7 @@ proc sendShutdown*[TIn, TOut](receiver: PActor[TIn, TOut]) =
 
 proc reply*[TIn, TOut](t: TTask[TIn, TOut], m: TOut) =
   ## sends a message to io's output message box.
-  when TOut is void:
+  when TOut is Void:
     {.error: "you cannot reply to a void outbox".}
   assert t.receiver != nil
   send(t.receiver[], m)
@@ -103,7 +103,7 @@ proc reply*[TIn, TOut](t: TTask[TIn, TOut], m: TOut) =
 
 type
   TActorPool*[TIn, TOut] = object{.pure, final.}  ## an actor pool
-    actors: seq[PActor[TIn, TOut]]
+    actors: Seq[PActor[TIn, TOut]]
     when TOut isnot void:
       outputs: TChannel[TOut]
 
@@ -115,7 +115,7 @@ proc poolWorker[TIn, TOut](self: PActor[TIn, TOut]) {.thread.} =
   while true:
     var m = self.recv
     if m.shutDown: break
-    when TOut is void:
+    when TOut is Void:
       m.action(m.data)
     else:
       send(m.receiver[], m.action(m.data))
@@ -124,7 +124,7 @@ proc poolWorker[TIn, TOut](self: PActor[TIn, TOut]) {.thread.} =
 proc createActorPool*[TIn, TOut](a: var TActorPool[TIn, TOut], poolSize = 4) =
   ## creates an actor pool.
   newSeq(a.actors, poolSize)
-  when TOut isnot void:
+  when TOut isnot Void:
     open(a.outputs)
   for i in 0 .. < a.actors.len:
     a.actors[i] = spawn(poolWorker[TIn, TOut])
@@ -159,7 +159,7 @@ proc terminate*[TIn, TOut](a: var TActorPool[TIn, TOut]) =
   t.shutdown = true
   for i in 0.. <a.actors.len: send(a.actors[i].i, t)
   for i in 0.. <a.actors.len: join(a.actors[i])
-  when TOut isnot void:
+  when TOut isnot Void:
     close(a.outputs)
   a.actors = nil
 
@@ -182,7 +182,7 @@ template schedule =
   # no thread ready :-( --> send message to the thread which has the least
   # messages pending:
   var minIdx = -1
-  var minVal = high(int)
+  var minVal = high(Int)
   for i in 0..high(p.actors):
     var curr = p.actors[i].i.peek
     if curr == 0:
@@ -208,20 +208,20 @@ proc spawn*[TIn, TOut](p: var TActorPool[TIn, TOut], input: TIn,
   t.receiver = result
   schedule()
 
-proc spawn*[TIn](p: var TActorPool[TIn, void], input: TIn,
+proc spawn*[TIn](p: var TActorPool[TIn, Void], input: TIn,
                  action: proc (input: TIn) {.thread.}) =
   ## uses the actor pool to run ``action(input)`` concurrently.
   ## `spawn` is guaranteed to not block.
-  var t: TTask[TIn, void]
+  var t: TTask[TIn, Void]
   setupTask()
   schedule()
   
 when isMainModule:
   var
-    a: TActorPool[int, void]
+    a: TActorPool[Int, Void]
   createActorPool(a)
   for i in 0 .. < 300:
-    a.spawn(i, proc (x: int) {.thread.} = echo x)
+    a.spawn(i, proc (x: Int) {.thread.} = echo x)
 
   when false:
     proc treeDepth(n: PNode): int {.thread.} =

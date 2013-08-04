@@ -4,7 +4,7 @@ discard """
 
 type
   TValue* {.pure, final.} = object of TObject
-    a: int
+    a: Int
   PValue = ref TValue
   PPValue = ptr PValue
 

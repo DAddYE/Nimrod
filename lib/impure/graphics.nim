@@ -17,15 +17,15 @@ from sdl import PSurface # Bug
 from sdl_ttf import OpenFont, closeFont
 
 type
-  TRect* = tuple[x, y, width, height: int]
-  TPoint* = tuple[x, y: int]
+  TRect* = tuple[x, y, width, height: Int]
+  TPoint* = tuple[x, y: Int]
 
   PSurface* = ref TSurface ## a surface to draw onto
   TSurface* {.pure, final.} = object
     w*, h*: Natural
     s*: sdl.PSurface
   
-  EGraphics* = object of EIO
+  EGraphics* = object of Eio
 
   TFont {.pure, final.} = object
     f: sdl_ttf.PFont
@@ -39,7 +39,7 @@ proc toSdlColor*(c: TColor): Sdl.TColor =
   result.g = x.g and 0xff
   result.b = x.b and 0xff
 
-proc createSdlColor*(sur: PSurface, c: TColor, alpha: int = 0): int32 =
+proc createSdlColor*(sur: PSurface, c: TColor, alpha: Int = 0): Int32 =
   ## Creates a color using ``sdl.MapRGBA``.
   var x = c.extractRGB
   return sdl.MapRGBA(sur.s.format, x.r and 0xff, x.g and 0xff, 
@@ -47,17 +47,17 @@ proc createSdlColor*(sur: PSurface, c: TColor, alpha: int = 0): int32 =
 
 proc toSdlRect*(r: TRect): sdl.TRect =
   ## Convert ``graphics.TRect`` to ``sdl.TRect``.
-  result.x = int16(r.x)
-  result.y = int16(r.y)
-  result.w = uint16(r.width)
-  result.h = uint16(r.height)
+  result.x = Int16(r.x)
+  result.y = Int16(r.y)
+  result.w = Uint16(r.width)
+  result.h = Uint16(r.height)
 
 proc raiseEGraphics = 
   raise newException(EGraphics, $SDL.GetError())
   
 proc surfaceFinalizer(s: PSurface) = sdl.freeSurface(s.s)
   
-proc newSurface*(width, height: int): PSurface =
+proc newSurface*(width, height: Int): PSurface =
   ## creates a new surface.
   new(result, surfaceFinalizer)
   result.w = width
@@ -74,9 +74,9 @@ proc fontFinalizer(f: PFont) = closeFont(f.f)
 proc newFont*(name = "VeraMono.ttf", size = 9, color = colBlack): PFont =  
   ## Creates a new font object. Raises ``EIO`` if the font cannot be loaded.
   new(result, fontFinalizer)
-  result.f = OpenFont(name, size.cint)
+  result.f = openFont(name, size.Cint)
   if result.f == nil:
-    raise newException(EIO, "Could not open font file: " & name)
+    raise newException(Eio, "Could not open font file: " & name)
   result.color = toSdlColor(color)
 
 var
@@ -87,7 +87,7 @@ proc initDefaultFont*(name = "VeraMono.ttf", size = 9, color = colBlack) =
   ## initializes the `defaultFont` var.
   defaultFont = newFont(name, size, color)
 
-proc newScreenSurface*(width, height: int): PSurface =
+proc newScreenSurface*(width, height: Int): PSurface =
   ## Creates a new screen surface
   new(result, surfaceFinalizer)
   result.w = width
@@ -96,20 +96,20 @@ proc newScreenSurface*(width, height: int): PSurface =
   if result.s == nil:
     raiseEGraphics()
 
-proc writeToBMP*(sur: PSurface, filename: string) =
+proc writeToBMP*(sur: PSurface, filename: String) =
   ## Saves the contents of the surface `sur` to the file `filename` as a 
   ## BMP file.
   if sdl.saveBMP(sur.s, filename) != 0:
-    raise newException(EIO, "cannot write: " & filename)
+    raise newException(Eio, "cannot write: " & filename)
 
 type
-  TPixels = array[0..1000_000-1, int32]
+  TPixels = Array[0..1000_000-1, Int32]
   PPixels = ptr TPixels
 
-template setPix(video, pitch, x, y, col: expr): stmt =
-  video[y * pitch + x] = int32(col)
+template setPix(video, pitch, x, y, col: Expr): Stmt =
+  video[y * pitch + x] = Int32(col)
 
-template getPix(video, pitch, x, y: expr): expr = 
+template getPix(video, pitch, x, y: Expr): Expr = 
   colors.TColor(video[y * pitch + x])
 
 const
@@ -118,7 +118,7 @@ const
 proc getPixel(sur: PSurface, x, y: Natural): colors.TColor {.inline.} =
   assert x <% sur.w
   assert y <% sur.h
-  result = getPix(cast[PPixels](sur.s.pixels), sur.s.pitch.int div ColSize, 
+  result = getPix(cast[PPixels](sur.s.pixels), sur.s.pitch.Int div ColSize, 
                   x, y)
 
 proc setPixel(sur: PSurface, x, y: Natural, col: colors.TColor) {.inline.} =
@@ -126,13 +126,13 @@ proc setPixel(sur: PSurface, x, y: Natural, col: colors.TColor) {.inline.} =
   assert y <% sur.h
   var pixs = cast[PPixels](sur.s.pixels)
   #pixs[y * (sur.s.pitch div colSize) + x] = int(col)
-  setPix(pixs, sur.s.pitch.int div ColSize, x, y, col)
+  setPix(pixs, sur.s.pitch.Int div ColSize, x, y, col)
 
 proc `[]`*(sur: PSurface, p: TPoint): TColor =
   ## get pixel at position `p`. No range checking is done!
   result = getPixel(sur, p.x, p.y)
 
-proc `[]`*(sur: PSurface, x, y: int): TColor =
+proc `[]`*(sur: PSurface, x, y: Int): TColor =
   ## get pixel at position ``(x, y)``. No range checking is done!
   result = getPixel(sur, x, y)
 
@@ -140,7 +140,7 @@ proc `[]=`*(sur: PSurface, p: TPoint, col: TColor) =
   ## set the pixel at position `p`. No range checking is done!
   setPixel(sur, p.x, p.y, col)
 
-proc `[]=`*(sur: PSurface, x, y: int, col: TColor) =
+proc `[]=`*(sur: PSurface, x, y: Int, col: TColor) =
   ## set the pixel at position ``(x, y)``. No range checking is done!
   setPixel(sur, x, y, col)
 
@@ -149,26 +149,26 @@ proc blit*(destSurf: PSurface, destRect: TRect, srcSurf: PSurface,
   ## Copies ``srcSurf`` into ``destSurf``
   var destTRect, srcTRect: SDL.TRect
 
-  destTRect.x = int16(destRect.x)
-  destTRect.y = int16(destRect.y)
-  destTRect.w = uint16(destRect.width)
-  destTRect.h = uint16(destRect.height)
+  destTRect.x = Int16(destRect.x)
+  destTRect.y = Int16(destRect.y)
+  destTRect.w = Uint16(destRect.width)
+  destTRect.h = Uint16(destRect.height)
 
-  srcTRect.x = int16(srcRect.x)
-  srcTRect.y = int16(srcRect.y)
-  srcTRect.w = uint16(srcRect.width)
-  srcTRect.h = uint16(srcRect.height)
+  srcTRect.x = Int16(srcRect.x)
+  srcTRect.y = Int16(srcRect.y)
+  srcTRect.w = Uint16(srcRect.width)
+  srcTRect.h = Uint16(srcRect.height)
 
   if SDL.blitSurface(srcSurf.s, addr(srcTRect), destSurf.s, addr(destTRect)) != 0:
     raiseEGraphics()
 
-proc textBounds*(text: string, font = defaultFont): tuple[width, height: int] =
-  var w, h: cint
+proc textBounds*(text: String, font = defaultFont): tuple[width, height: Int] =
+  var w, h: Cint
   if sdl_ttf.SizeUTF8(font.f, text, w, h) < 0: raiseEGraphics()
-  result.width = int(w)
-  result.height = int(h)
+  result.width = Int(w)
+  result.height = Int(h)
 
-proc drawText*(sur: PSurface, p: TPoint, text: string, font = defaultFont) =
+proc drawText*(sur: PSurface, p: TPoint, text: String, font = defaultFont) =
   ## Draws text with a transparent background, at location ``p`` with the given
   ## font.
   var textSur: PSurface # This surface will have the text drawn on it
@@ -179,7 +179,7 @@ proc drawText*(sur: PSurface, p: TPoint, text: string, font = defaultFont) =
   # Merge the text surface with sur
   sur.blit((p.x, p.y, sur.w, sur.h), textSur, (0, 0, sur.w, sur.h))
 
-proc drawText*(sur: PSurface, p: TPoint, text: string,
+proc drawText*(sur: PSurface, p: TPoint, text: String,
                bg: TColor, font = defaultFont) =
   ## Draws text, at location ``p`` with font ``font``. ``bg`` 
   ## is the background color.
@@ -193,7 +193,7 @@ proc drawCircle*(sur: PSurface, p: TPoint, r: Natural, color: TColor) =
   ## draws a circle with center `p` and radius `r` with the given color
   ## onto the surface `sur`.
   var video = cast[PPixels](sur.s.pixels)
-  var pitch = sur.s.pitch.int div ColSize
+  var pitch = sur.s.pitch.Int div ColSize
   var a = 1 - r
   var py = r
   var px = 0
@@ -223,16 +223,16 @@ proc drawCircle*(sur: PSurface, p: TPoint, r: Natural, color: TColor) =
       py = py - 1
     px = px + 1
 
-proc `>-<`(val: int, s: PSurface): int {.inline.} = 
+proc `>-<`(val: Int, s: PSurface): Int {.inline.} = 
   return if val < 0: 0 elif val >= s.w: s.w-1 else: val
 
-proc `>|<`(val: int, s: PSurface): int {.inline.} = 
+proc `>|<`(val: Int, s: PSurface): Int {.inline.} = 
   return if val < 0: 0 elif val >= s.h: s.h-1 else: val
 
 proc drawLine*(sur: PSurface, p1, p2: TPoint, color: TColor) =
   ## draws a line between the two points `p1` and `p2` with the given color
   ## onto the surface `sur`.
-  var stepx, stepy: int = 0
+  var stepx, stepy: Int = 0
   var x0 = p1.x >-< sur
   var x1 = p2.x >-< sur
   var y0 = p1.y >|< sur
@@ -252,7 +252,7 @@ proc drawLine*(sur: PSurface, p1, p2: TPoint, color: TColor) =
   dy = dy * 2 
   dx = dx * 2
   var video = cast[PPixels](sur.s.pixels)
-  var pitch = sur.s.pitch.int div ColSize
+  var pitch = sur.s.pitch.Int div ColSize
   setPix(video, pitch, x0, y0, color)
   if dx > dy:
     var fraction = dy - (dx div 2)
@@ -276,7 +276,7 @@ proc drawLine*(sur: PSurface, p1, p2: TPoint, color: TColor) =
 proc drawHorLine*(sur: PSurface, x, y, w: Natural, Color: TColor) =
   ## draws a horizontal line from (x,y) to (x+w-1, y).
   var video = cast[PPixels](sur.s.pixels)
-  var pitch = sur.s.pitch.int div ColSize
+  var pitch = sur.s.pitch.Int div ColSize
 
   if y >= 0 and y <= sur.s.h:
     for i in 0 .. min(sur.s.w-x, w)-1:
@@ -285,7 +285,7 @@ proc drawHorLine*(sur: PSurface, x, y, w: Natural, Color: TColor) =
 proc drawVerLine*(sur: PSurface, x, y, h: Natural, Color: TColor) =
   ## draws a vertical line from (x,y) to (x, y+h-1).
   var video = cast[PPixels](sur.s.pixels)
-  var pitch = sur.s.pitch.int div ColSize
+  var pitch = sur.s.pitch.Int div ColSize
 
   if x >= 0 and x <= sur.s.w:
     for i in 0 .. min(sur.s.h-y, h)-1:
@@ -295,17 +295,17 @@ proc fillCircle*(s: PSurface, p: TPoint, r: Natural, color: TColor) =
   ## draws a circle with center `p` and radius `r` with the given color
   ## onto the surface `sur` and fills it.
   var a = 1 - r
-  var py: int = r
+  var py: Int = r
   var px = 0
   var x = p.x
   var y = p.y
   while px <= py:
     # Fill up the middle half of the circle
-    DrawVerLine(s, x + px, y, py + 1, color)
-    DrawVerLine(s, x + px, y - py, py, color)
+    drawVerLine(s, x + px, y, py + 1, color)
+    drawVerLine(s, x + px, y - py, py, color)
     if px != 0:
-      DrawVerLine(s, x - px, y, py + 1, color)
-      DrawVerLine(s, x - px, y - py, py, color)
+      drawVerLine(s, x - px, y, py + 1, color)
+      drawVerLine(s, x - px, y - py, py, color)
     if a < 0:
       a = a + (2 * px + 3)
     else:
@@ -313,16 +313,16 @@ proc fillCircle*(s: PSurface, p: TPoint, r: Natural, color: TColor) =
       py = py - 1
       # Fill up the left/right half of the circle
       if py >= px:
-        DrawVerLine(s, x + py + 1, y, px + 1, color)
-        DrawVerLine(s, x + py + 1, y - px, px, color)
-        DrawVerLine(s, x - py - 1, y, px + 1, color)
-        DrawVerLine(s, x - py - 1, y - px,  px, color)
+        drawVerLine(s, x + py + 1, y, px + 1, color)
+        drawVerLine(s, x + py + 1, y - px, px, color)
+        drawVerLine(s, x - py - 1, y, px + 1, color)
+        drawVerLine(s, x - py - 1, y - px,  px, color)
     px = px + 1
 
 proc drawRect*(sur: PSurface, r: TRect, color: TColor) =
   ## draws a rectangle.
   var video = cast[PPixels](sur.s.pixels)
-  var pitch = sur.s.pitch.int div ColSize
+  var pitch = sur.s.pitch.Int div ColSize
   if (r.x >= 0 and r.x <= sur.s.w) and (r.y >= 0 and r.y <= sur.s.h):
     var minW = min(sur.s.w - r.x, r.width)
     var minH = min(sur.s.h - r.y, r.height)
@@ -343,15 +343,15 @@ proc fillRect*(sur: PSurface, r: TRect, col: TColor) =
   if sdl.FillRect(sur.s, addr(rect), sur.createSdlColor(col)) == -1:
     raiseEGraphics()
 
-proc Plot4EllipsePoints(sur: PSurface, CX, CY, X, Y: Natural, col: TColor) =
+proc plot4EllipsePoints(sur: PSurface, CX, CY, X, Y: Natural, col: TColor) =
   var video = cast[PPixels](sur.s.pixels)
-  var pitch = sur.s.pitch.int div ColSize
-  if CX+X <= sur.s.w-1:
-    if CY+Y <= sur.s.h-1: setPix(video, pitch, CX+X, CY+Y, col)
-    if CY-Y <= sur.s.h-1: setPix(video, pitch, CX+X, CY-Y, col)    
-  if CX-X <= sur.s.w-1:
-    if CY+Y <= sur.s.h-1: setPix(video, pitch, CX-X, CY+Y, col)
-    if CY-Y <= sur.s.h-1: setPix(video, pitch, CX-X, CY-Y, col)
+  var pitch = sur.s.pitch.Int div ColSize
+  if cx+x <= sur.s.w-1:
+    if cy+y <= sur.s.h-1: setPix(video, pitch, cx+x, cy+y, col)
+    if cy-y <= sur.s.h-1: setPix(video, pitch, cx+x, cy-y, col)    
+  if cx-x <= sur.s.w-1:
+    if cy+y <= sur.s.h-1: setPix(video, pitch, cx-x, cy+y, col)
+    if cy-y <= sur.s.h-1: setPix(video, pitch, cx-x, cy-y, col)
 
 proc drawEllipse*(sur: PSurface, CX, CY, XRadius, YRadius: Natural, 
                   col: TColor) =
@@ -359,59 +359,59 @@ proc drawEllipse*(sur: PSurface, CX, CY, XRadius, YRadius: Natural,
   ## ellipse, ``XRadius`` and ``YRadius`` specify half the width and height
   ## of the ellipse.
   var 
-    X, Y: Natural
-    XChange, YChange: Int
-    EllipseError: Natural
-    TwoASquare, TwoBSquare: Natural
-    StoppingX, StoppingY: Natural
+    x, y: Natural
+    xChange, yChange: Int
+    ellipseError: Natural
+    twoASquare, twoBSquare: Natural
+    stoppingX, stoppingY: Natural
     
-  TwoASquare = 2 * XRadius * XRadius
-  TwoBSquare = 2 * YRadius * YRadius
-  X = XRadius
-  Y = 0
-  XChange = YRadius * YRadius * (1 - 2 * XRadius)
-  YChange = XRadius * XRadius
-  EllipseError = 0
-  StoppingX = TwoBSquare * XRadius
-  StoppingY = 0
+  twoASquare = 2 * xRadius * xRadius
+  twoBSquare = 2 * yRadius * yRadius
+  x = xRadius
+  y = 0
+  xChange = yRadius * yRadius * (1 - 2 * xRadius)
+  yChange = xRadius * xRadius
+  ellipseError = 0
+  stoppingX = twoBSquare * xRadius
+  stoppingY = 0
   
-  while StoppingX >=  StoppingY: # 1st set of points, y` > - 1
-    sur.Plot4EllipsePoints(CX, CY, X, Y, col)
-    inc(Y)
-    inc(StoppingY, TwoASquare)
-    inc(EllipseError, YChange)
-    inc(YChange, TwoASquare)
-    if (2 * EllipseError + XChange) > 0 :
+  while stoppingX >=  stoppingY: # 1st set of points, y` > - 1
+    sur.plot4EllipsePoints(cx, cy, x, y, col)
+    inc(y)
+    inc(stoppingY, twoASquare)
+    inc(ellipseError, yChange)
+    inc(yChange, twoASquare)
+    if (2 * ellipseError + xChange) > 0 :
       dec(x)
-      dec(StoppingX, TwoBSquare)
-      inc(EllipseError, XChange)
-      inc(XChange, TwoBSquare)
+      dec(stoppingX, twoBSquare)
+      inc(ellipseError, xChange)
+      inc(xChange, twoBSquare)
       
   # 1st point set is done; start the 2nd set of points
-  X = 0
-  Y = YRadius
-  XChange = YRadius * YRadius
-  YChange = XRadius * XRadius * (1 - 2 * YRadius)
-  EllipseError = 0
-  StoppingX = 0
-  StoppingY = TwoASquare * YRadius
-  while StoppingX <= StoppingY:
-    sur.Plot4EllipsePoints(CX, CY, X, Y, col)
-    inc(X)
-    inc(StoppingX, TwoBSquare)
-    inc(EllipseError, XChange)
-    inc(XChange,TwoBSquare)
-    if (2 * EllipseError + YChange) > 0:
-      dec(Y)
-      dec(StoppingY, TwoASquare)
-      inc(EllipseError, YChange)
-      inc(YChange,TwoASquare)
+  x = 0
+  y = yRadius
+  xChange = yRadius * yRadius
+  yChange = xRadius * xRadius * (1 - 2 * yRadius)
+  ellipseError = 0
+  stoppingX = 0
+  stoppingY = twoASquare * yRadius
+  while stoppingX <= stoppingY:
+    sur.plot4EllipsePoints(cx, cy, x, y, col)
+    inc(x)
+    inc(stoppingX, twoBSquare)
+    inc(ellipseError, xChange)
+    inc(xChange,twoBSquare)
+    if (2 * ellipseError + yChange) > 0:
+      dec(y)
+      dec(stoppingY, twoASquare)
+      inc(ellipseError, yChange)
+      inc(yChange,twoASquare)
   
 
-proc plotAA(sur: PSurface, x, y: int, c: float, color: TColor) =
+proc plotAA(sur: PSurface, x, y: Int, c: Float, color: TColor) =
   if (x > 0 and x < sur.s.w) and (y > 0 and y < sur.s.h):
     var video = cast[PPixels](sur.s.pixels)
-    var pitch = sur.s.pitch.int div ColSize
+    var pitch = sur.s.pitch.Int div ColSize
 
     var pixColor = getPix(video, pitch, x, y)
 
@@ -419,10 +419,10 @@ proc plotAA(sur: PSurface, x, y: int, c: float, color: TColor) =
            pixColor.intensity(1.0 - c) + color.intensity(c))
  
 
-template ipart(x: expr): expr = floor(x) 
-template cround(x: expr): expr = ipart(x + 0.5)
-template fpart(x: expr): expr = x - ipart(x)
-template rfpart(x: expr): expr = 1.0 - fpart(x)
+template ipart(x: Expr): Expr = floor(x) 
+template cround(x: Expr): Expr = ipart(x + 0.5)
+template fpart(x: Expr): Expr = x - ipart(x)
+template rfpart(x: Expr): Expr = 1.0 - fpart(x)
 
 proc drawLineAA*(sur: PSurface, p1, p2: TPoint, color: TColor) =
   ## Draws a anti-aliased line from ``p1`` to ``p2``, using Xiaolin Wu's 
@@ -444,11 +444,11 @@ proc drawLineAA*(sur: PSurface, p1, p2: TPoint, color: TColor) =
     swap(x2, y2)
     swap(dx, dy)
   
-  template doPlot(x, y: int, c: float, color: TColor): stmt =
+  template doPlot(x, y: Int, c: Float, color: TColor): Stmt =
     if ax < ay:
-      sur.PlotAA(y, x, c, color)
+      sur.plotAA(y, x, c, color)
     else:
-      sur.PlotAA(x, y, c, color)
+      sur.plotAA(x, y, c, color)
   
   if x2 < x1:
     swap(x1, x2)
@@ -459,8 +459,8 @@ proc drawLineAA*(sur: PSurface, p1, p2: TPoint, color: TColor) =
   var xend = cround(x1)
   var yend = y1 + gradient * (xend - x1)
   var xgap = rfpart(x1 + 0.5)
-  var xpxl1 = int(xend) # this will be used in the main loop
-  var ypxl1 = int(ipart(yend))
+  var xpxl1 = Int(xend) # this will be used in the main loop
+  var ypxl1 = Int(ipart(yend))
   doPlot(xpxl1, ypxl1, rfpart(yend)*xgap, color)
   doPlot(xpxl1, ypxl1 + 1, fpart(yend)*xgap, color)
   var intery = yend + gradient # first y-intersection for the main loop
@@ -469,16 +469,16 @@ proc drawLineAA*(sur: PSurface, p1, p2: TPoint, color: TColor) =
   xend = cround(x2)
   yend = y2 + gradient * (xend - x2)
   xgap = fpart(x2 + 0.5)
-  var xpxl2 = int(xend) # this will be used in the main loop
-  var ypxl2 = int(ipart(yend))
+  var xpxl2 = Int(xend) # this will be used in the main loop
+  var ypxl2 = Int(ipart(yend))
   doPlot(xpxl2, ypxl2, rfpart(yend) * xgap, color)
   doPlot(xpxl2, ypxl2 + 1, fpart(yend) * xgap, color)
 
   # main loop
   var x = xpxl1 + 1
   while x <= xpxl2-1:
-    doPlot(x, int(ipart(intery)), rfpart(intery), color)
-    doPlot(x, int(ipart(intery)) + 1, fpart(intery), color)
+    doPlot(x, Int(ipart(intery)), rfpart(intery), color)
+    doPlot(x, Int(ipart(intery)) + 1, fpart(intery), color)
     intery = intery + gradient
     inc(x)
 
@@ -487,7 +487,7 @@ proc fillSurface*(sur: PSurface, color: TColor) =
   if sdl.FillRect(sur.s, nil, sur.createSdlColor(color)) == -1:
     raiseEGraphics()
 
-template withEvents*(surf: PSurface, event: expr, actions: stmt): stmt {.
+template withEvents*(surf: PSurface, event: Expr, actions: Stmt): Stmt {.
   immediate.} =
   ## Simple template which creates an event loop. ``Event`` is the name of the
   ## variable containing the TEvent object.

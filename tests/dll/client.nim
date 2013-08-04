@@ -7,7 +7,7 @@ type
   TNodeKind = enum nkLit, nkSub, nkAdd, nkDiv, nkMul
   TNode = object
     case k: TNodeKind
-    of nkLit: x: int
+    of nkLit: x: Int
     else: a, b: ref TNode
 
   PNode = ref TNode
@@ -20,12 +20,12 @@ elif defined(macosx):
 else:
   const dllname = "libserver.so"
 
-proc newLit(x: int): PNode {.importc: "newLit", dynlib: dllname.}
+proc newLit(x: Int): PNode {.importc: "newLit", dynlib: dllname.}
 proc newOp(k: TNodeKind, a, b: PNode): PNode {.
   importc: "newOp", dynlib: dllname.}  
-proc buildTree(x: int): PNode {.importc: "buildTree", dynlib: dllname.} 
+proc buildTree(x: Int): PNode {.importc: "buildTree", dynlib: dllname.} 
 
-proc eval(n: PNode): int =
+proc eval(n: PNode): Int =
   case n.k
   of nkLit: result = n.x
   of nkSub: result = eval(n.a) - eval(n.b)

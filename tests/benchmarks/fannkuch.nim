@@ -1,15 +1,15 @@
 import os
 import strutils
 
-proc fannkuch (n: int): int =
+proc fannkuch (n: Int): Int =
     var 
-        count: seq[int]
+        count: Seq[Int]
         maxFlips = 0
         m        = n-1
         r        = n
         check    = 0
-        perm1: seq[int]
-        perm:  seq[int]
+        perm1: Seq[Int]
+        perm:  Seq[Int]
 
     newSeq (count, n+1)
     newSeq (perm1, n)
@@ -20,7 +20,7 @@ proc fannkuch (n: int): int =
         perm[i]  = i
     count[n] = n+1
 
-    while True:
+    while true:
         if check < 30:
             for i in items (perm1):
                 write (stdout, $(i+1))

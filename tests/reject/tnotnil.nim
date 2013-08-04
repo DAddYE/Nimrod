@@ -6,17 +6,17 @@ discard """
 type
   PObj = ref TObj not nil
   TObj = object
-    x: int
+    x: Int
   
-  MyString = string not nil
+  MyString = String not nil
 
 #var x: PObj = nil
 
-proc p(x: string not nil): int =
+proc p(x: String not nil): Int =
   result = 45
 
 proc q(x: MyString) = nil
-proc q2(x: string) = nil
+proc q2(x: String) = nil
 
 q2(nil)
 q(nil)

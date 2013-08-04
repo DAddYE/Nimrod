@@ -1,11 +1,11 @@
 import macros
 
-proc testProc: string {.compileTime.} =
+proc testProc: String {.compileTime.} =
   result = ""
   result = result & ""
 
 when true:
-  macro test(n: stmt): stmt {.immediate.} =
+  macro test(n: Stmt): Stmt {.immediate.} =
     result = newNimNode(nnkStmtList)
     echo "#", testProc(), "#"
   test:

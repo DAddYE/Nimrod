@@ -5,15 +5,15 @@ type
   TListItem* = object
     case kind*: TListItemType
     of RedisString:
-      str*: string
+      str*: String
     else: nil
-  TRedisList* = seq[TListItem]
+  TRedisList* = Seq[TListItem]
 
 # Caused by this.
 proc seq*() =
   nil
 
-proc lrange*(key: string): TRedisList =
+proc lrange*(key: String): TRedisList =
   var foo: TListItem
   foo.kind = RedisNil
   result = @[foo]

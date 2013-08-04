@@ -12,22 +12,22 @@ type
   TRadixNode {.pure, inheritable.} = object
     kind: TRadixNodeKind
   TRadixNodeLinear = object of TRadixNode
-    len: int8
-    keys: array [0..31, int8]
-    vals: array [0..31, PRadixNode]
+    len: Int8
+    keys: Array [0..31, Int8]
+    vals: Array [0..31, PRadixNode]
   
   TRadixNodeFull = object of TRadixNode
-    b: array [0..255, PRadixNode]
+    b: Array [0..255, PRadixNode]
   TRadixNodeLeafBits = object of TRadixNode
-    b: array [0..7, int]
+    b: Array [0..7, Int]
   TRadixNodeLeafLinear = object of TRadixNode
-    len: int8
-    keys: array [0..31, int8]
+    len: Int8
+    keys: Array [0..31, Int8]
 
 var
   root: PRadixNode
 
-proc searchInner(r: PRadixNode, a: int): PRadixNode = 
+proc searchInner(r: PRadixNode, a: Int): PRadixNode = 
   case r.kind
   of rnLinear:
     var x = cast[ptr TRadixNodeLinear](r)
@@ -38,21 +38,21 @@ proc searchInner(r: PRadixNode, a: int): PRadixNode =
     return x.b[a]
   else: assert(false)
 
-proc testBit(w, i: int): bool {.inline.} = 
+proc testBit(w, i: Int): Bool {.inline.} = 
   result = (w and (1 shl (i %% BitsPerUnit))) != 0
 
-proc setBit(w: var int, i: int) {.inline.} = 
+proc setBit(w: var Int, i: Int) {.inline.} = 
   w = w or (1 shl (i %% bitsPerUnit))
 
-proc resetBit(w: var int, i: int) {.inline.} = 
+proc resetBit(w: var Int, i: Int) {.inline.} = 
   w = w and not (1 shl (i %% bitsPerUnit))
 
-proc testOrSetBit(w: var int, i: int): bool {.inline.} = 
+proc testOrSetBit(w: var Int, i: Int): Bool {.inline.} = 
   var x = (1 shl (i %% bitsPerUnit))
   if (w and x) != 0: return true
   w = w or x
 
-proc searchLeaf(r: PRadixNode, a: int): bool = 
+proc searchLeaf(r: PRadixNode, a: Int): Bool = 
   case r.kind
   of rnLeafBits:
     var x = cast[ptr TRadixNodeLeafBits](r)
@@ -63,7 +63,7 @@ proc searchLeaf(r: PRadixNode, a: int): bool =
       if ze(x.keys[i]) == a: return true
   else: assert(false)
 
-proc exclLeaf(r: PRadixNode, a: int) = 
+proc exclLeaf(r: PRadixNode, a: Int) = 
   case r.kind
   of rnLeafBits:
     var x = cast[ptr TRadixNodeLeafBits](r)
@@ -78,7 +78,7 @@ proc exclLeaf(r: PRadixNode, a: int) =
         return
   else: assert(false)
 
-proc contains*(r: PRadixNode, a: TAddress): bool =
+proc contains*(r: PRadixNode, a: TAddress): Bool =
   if r == nil: return false
   var x = searchInner(r, a shr 24 and 0xff)
   if x == nil: return false
@@ -88,7 +88,7 @@ proc contains*(r: PRadixNode, a: TAddress): bool =
   if x == nil: return false
   return searchLeaf(x, a and 0xff)
 
-proc excl*(r: PRadixNode, a: TAddress): bool =
+proc excl*(r: PRadixNode, a: TAddress): Bool =
   if r == nil: return false
   var x = searchInner(r, a shr 24 and 0xff)
   if x == nil: return false
@@ -98,7 +98,7 @@ proc excl*(r: PRadixNode, a: TAddress): bool =
   if x == nil: return false
   exclLeaf(x, a and 0xff)
 
-proc addLeaf(r: var PRadixNode, a: int): bool = 
+proc addLeaf(r: var PRadixNode, a: Int): Bool = 
   if r == nil:
     # a linear node:
     var x = cast[ptr TRadixNodeLinear](alloc(sizeof(TRadixNodeLinear)))
@@ -131,7 +131,7 @@ proc addLeaf(r: var PRadixNode, a: int): bool =
       r = y
   else: assert(false)
 
-proc addInner(r: var PRadixNode, a: int, d: int): bool = 
+proc addInner(r: var PRadixNode, a: Int, d: Int): Bool = 
   if d == 0: 
     return addLeaf(r, a and 0xff)
   var k = a shr d and 0xff
@@ -170,10 +170,10 @@ proc addInner(r: var PRadixNode, a: int, d: int): bool =
 proc incl*(r: var PRadixNode, a: TAddress) {.inline.} = 
   discard addInner(r, a, 24)
   
-proc testOrIncl*(r: var PRadixNode, a: TAddress): bool {.inline.} = 
+proc testOrIncl*(r: var PRadixNode, a: TAddress): Bool {.inline.} = 
   return addInner(r, a, 24)
       
-iterator innerElements(r: PRadixNode): tuple[prefix: int, n: PRadixNode] = 
+iterator innerElements(r: PRadixNode): tuple[prefix: Int, n: PRadixNode] = 
   if r != nil:
     case r.kind 
     of rnFull: 
@@ -187,7 +187,7 @@ iterator innerElements(r: PRadixNode): tuple[prefix: int, n: PRadixNode] =
         yield (ze(r.keys[i]), r.vals[i])
     else: assert(false)
 
-iterator leafElements(r: PRadixNode): int = 
+iterator leafElements(r: PRadixNode): Int = 
   if r != nil:
     case r.kind
     of rnLeafBits: 

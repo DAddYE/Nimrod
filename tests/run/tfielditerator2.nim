@@ -24,22 +24,22 @@ Z
 
 type
   TMyObj = object
-    a, b: char
-    x, y: int
-    z: string
+    a, b: Char
+    x, y: Int
+    z: String
     
   TEnum = enum enA, enB, enC
   TMyCaseObj = object
     case myDisc: TEnum
-    of enA: a: int
-    of enB: b: string
-    of enC: c: char
+    of enA: a: Int
+    of enB: b: String
+    of enC: c: Char
 
-proc p(x: char) = echo "a char: ", x <= 'a'
-proc p(x: int) = echo "an int: ", x
-proc p(x: string) = echo "a string: ", x
+proc p(x: Char) = echo "a char: ", x <= 'a'
+proc p(x: Int) = echo "an int: ", x
+proc p(x: String) = echo "a string: ", x
 
-proc myobj(a, b: char, x, y: int, z: string): TMyObj =
+proc myobj(a, b: Char, x, y: Int, z: String): TMyObj =
   result.a = a; result.b = b; result.x = x; result.y = y; result.z = z
 
 var x = myobj('a', 'b', 5, 6, "abc")

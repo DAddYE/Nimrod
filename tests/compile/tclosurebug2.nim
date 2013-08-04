@@ -3,19 +3,19 @@ import hashes, math
 type
   TSlotEnum = enum seEmpty, seFilled, seDeleted
   TKeyValuePair[A, B] = tuple[slot: TSlotEnum, key: A, val: B]
-  TKeyValuePairSeq[A, B] = seq[TKeyValuePair[A, B]]
+  TKeyValuePairSeq[A, B] = Seq[TKeyValuePair[A, B]]
 
   TOrderedKeyValuePair[A, B] = tuple[
-    slot: TSlotEnum, next: int, key: A, val: B]
-  TOrderedKeyValuePairSeq[A, B] = seq[TOrderedKeyValuePair[A, B]]
+    slot: TSlotEnum, next: Int, key: A, val: B]
+  TOrderedKeyValuePairSeq[A, B] = Seq[TOrderedKeyValuePair[A, B]]
   TOrderedTable*[A, B] = object ## table that remembers insertion order
     data: TOrderedKeyValuePairSeq[A, B]
-    counter, first, last: int
+    counter, first, last: Int
 
 const
   growthFactor = 2
 
-proc mustRehash(length, counter: int): bool {.inline.} =
+proc mustRehash(length, counter: Int): Bool {.inline.} =
   assert(length > counter)
   result = (length * 2 < counter * 3) or (length - counter < 4)
 
@@ -38,23 +38,23 @@ template rawInsertImpl() {.dirty.} =
   data[h].val = val
   data[h].slot = seFilled
 
-template AddImpl() {.dirty.} =
-  if mustRehash(len(t.data), t.counter): Enlarge(t)
-  RawInsert(t, t.data, key, val)
+template addImpl() {.dirty.} =
+  if mustRehash(len(t.data), t.counter): enlarge(t)
+  rawInsert(t, t.data, key, val)
   inc(t.counter)
 
-template PutImpl() {.dirty.} =
-  var index = RawGet(t, key)
+template putImpl() {.dirty.} =
+  var index = rawGet(t, key)
   if index >= 0:
     t.data[index].val = val
   else:
     AddImpl()
 
-proc len*[A, B](t: TOrderedTable[A, B]): int {.inline.} =
+proc len*[A, B](t: TOrderedTable[A, B]): Int {.inline.} =
   ## returns the number of keys in `t`.
   result = t.counter
 
-template forAllOrderedPairs(yieldStmt: stmt) {.dirty, immediate.} =
+template forAllOrderedPairs(yieldStmt: Stmt) {.dirty, immediate.} =
   var h = t.first
   while h >= 0:
     var nxt = t.data[h].next
@@ -89,7 +89,7 @@ iterator mvalues*[A, B](t: var TOrderedTable[A, B]): var B =
   forAllOrderedPairs:
     yield t.data[h].val
 
-proc RawGet[A, B](t: TOrderedTable[A, B], key: A): int =
+proc rawGet[A, B](t: TOrderedTable[A, B], key: A): Int =
   rawGetImpl()
 
 proc `[]`*[A, B](t: TOrderedTable[A, B], key: A): B =
@@ -97,21 +97,21 @@ proc `[]`*[A, B](t: TOrderedTable[A, B], key: A): B =
   ## default empty value for the type `B` is returned
   ## and no exception is raised. One can check with ``hasKey`` whether the key
   ## exists.
-  var index = RawGet(t, key)
+  var index = rawGet(t, key)
   if index >= 0: result = t.data[index].val
 
 proc mget*[A, B](t: var TOrderedTable[A, B], key: A): var B =
   ## retrieves the value at ``t[key]``. The value can be modified.
   ## If `key` is not in `t`, the ``EInvalidKey`` exception is raised.
-  var index = RawGet(t, key)
+  var index = rawGet(t, key)
   if index >= 0: result = t.data[index].val
   else: raise newException(EInvalidKey, "key not found: " & $key)
 
-proc hasKey*[A, B](t: TOrderedTable[A, B], key: A): bool =
+proc hasKey*[A, B](t: TOrderedTable[A, B], key: A): Bool =
   ## returns true iff `key` is in the table `t`.
   result = rawGet(t, key) >= 0
 
-proc RawInsert[A, B](t: var TOrderedTable[A, B], 
+proc rawInsert[A, B](t: var TOrderedTable[A, B], 
                      data: var TOrderedKeyValuePairSeq[A, B],
                      key: A, val: B) =
   rawInsertImpl()
@@ -120,7 +120,7 @@ proc RawInsert[A, B](t: var TOrderedTable[A, B],
   if t.last >= 0: data[t.last].next = h
   t.last = h
 
-proc Enlarge[A, B](t: var TOrderedTable[A, B]) =
+proc enlarge[A, B](t: var TOrderedTable[A, B]) =
   var n: TOrderedKeyValuePairSeq[A, B]
   newSeq(n, len(t.data) * growthFactor)
   var h = t.first
@@ -129,7 +129,7 @@ proc Enlarge[A, B](t: var TOrderedTable[A, B]) =
   while h >= 0:
     var nxt = t.data[h].next
     if t.data[h].slot == seFilled: 
-      RawInsert(t, n, t.data[h].key, t.data[h].val)
+      rawInsert(t, n, t.data[h].key, t.data[h].val)
     h = nxt
   swap(t.data, n)
 
@@ -150,14 +150,14 @@ proc initOrderedTable*[A, B](initialSize=64): TOrderedTable[A, B] =
   result.last = -1
   newSeq(result.data, initialSize)
 
-proc toOrderedTable*[A, B](pairs: openarray[tuple[key: A, 
+proc toOrderedTable*[A, B](pairs: Openarray[tuple[key: A, 
                            val: B]]): TOrderedTable[A, B] =
   ## creates a new ordered hash table that contains the given `pairs`.
   result = initOrderedTable[A, B](nextPowerOfTwo(pairs.len+10))
   for key, val in items(pairs): result[key] = val
 
 proc sort*[A, B](t: var TOrderedTable[A,B], 
-                 cmp: proc (x, y: tuple[key: A, val: B]): int {.closure.}) =
+                 cmp: proc (x, y: tuple[key: A, val: B]): Int {.closure.}) =
   ## sorts the ordered table so that the entry with the highest counter comes
   ## first. This is destructive (with the advantage of being efficient)! 
   ## You must not modify `t` afterwards!
@@ -175,7 +175,7 @@ proc sort*[A, B](t: var TOrderedTable[A,B],
       var j = i
       #echo(t.data.len, " ", j, " - ", h)
       #echo(repr(t.data[j-h]))
-      proc rawCmp(x, y: TOrderedKeyValuePair[A, B]): int =
+      proc rawCmp(x, y: TOrderedKeyValuePair[A, B]): Int =
         if x.slot in {seEmpty, seDeleted} and y.slot in {seEmpty, seDeleted}:
           return 0
         elif x.slot in {seEmpty, seDeleted}:

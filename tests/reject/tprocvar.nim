@@ -5,9 +5,9 @@ discard """
 """
 
 type
-  TCallback = proc (a, b: int)
+  TCallback = proc (a, b: Int)
 
-proc huh(x, y: var int) =
+proc huh(x, y: var Int) =
   x = 0
   y = x+1
 

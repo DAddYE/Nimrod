@@ -1,7 +1,7 @@
 
 {.pragma: rtl, cdecl, exportc.}
 
-proc myproc(x, y: int): int {.rtl} =
+proc myproc(x, y: Int): Int {.rtl} =
   nil
 
 

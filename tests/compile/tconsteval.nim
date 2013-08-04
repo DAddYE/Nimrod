@@ -27,5 +27,5 @@ Possible Commands:
 """ % [NimrodVersion & repeatChar(44-len(NimrodVersion)), 
        CompileDate, CompileTime]
 
-echo helpText
+echo HelpText
 

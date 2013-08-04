@@ -19,31 +19,31 @@ import times, endians
 
 type
   Toid* {.pure, final.} = object ## an OID
-    time: int32  ## 
-    fuzz: int32  ## 
-    count: int32 ## 
+    time: Int32  ## 
+    fuzz: Int32  ## 
+    count: Int32 ## 
 
-proc hexbyte*(hex: char): int = 
+proc hexbyte*(hex: Char): Int = 
   case hex
   of '0'..'9': result = (ord(hex) - ord('0'))
   of 'a'..'f': result = (ord(hex) - ord('a') + 10)
   of 'A'..'F': result = (ord(hex) - ord('A') + 10)
   else: nil
 
-proc parseOid*(str: cstring): TOid =
+proc parseOid*(str: Cstring): Toid =
   ## parses an OID.
-  var bytes = cast[cstring](addr(result.time))
+  var bytes = cast[Cstring](addr(result.time))
   var i = 0
   while i < 12:
     bytes[i] = chr((hexbyte(str[2 * i]) shl 4) or hexbyte(str[2 * i + 1]))
     inc(i)
 
-proc oidToString*(oid: TOid, str: cstring) = 
+proc oidToString*(oid: Toid, str: Cstring) = 
   const hex = "0123456789abcdef"
   # work around a compiler bug:
   var str = str
   var o = oid
-  var bytes = cast[cstring](addr(o))
+  var bytes = cast[Cstring](addr(o))
   var i = 0
   while i < 12:
     let b = bytes[i].ord
@@ -53,18 +53,18 @@ proc oidToString*(oid: TOid, str: cstring) =
   str[24] = '\0'
 
 var
-  incr: int 
-  fuzz: int32
+  incr: Int 
+  fuzz: Int32
 
-proc genOid*(): TOid =
+proc genOid*(): Toid =
   ## generates a new OID.
-  proc rand(): cint {.importc: "rand", nodecl.}
-  proc gettime(dummy: ptr cint): cint {.importc: "time", header: "<time.h>".}
-  proc srand(seed: cint) {.importc: "srand", nodecl.}
+  proc rand(): Cint {.importc: "rand", nodecl.}
+  proc gettime(dummy: ptr Cint): Cint {.importc: "time", header: "<time.h>".}
+  proc srand(seed: Cint) {.importc: "srand", nodecl.}
 
   var t = gettime(nil)
   
-  var i = int32(incr)
+  var i = Int32(incr)
   atomicInc(incr)
   
   if fuzz == 0:
@@ -75,9 +75,9 @@ proc genOid*(): TOid =
   result.fuzz = fuzz
   bigEndian32(addr result.count, addr(i))
 
-proc generatedTime*(oid: TOid): TTime =
+proc generatedTime*(oid: Toid): TTime =
   ## returns the generated timestamp of the OID.
-  var tmp: int32
+  var tmp: Int32
   var dummy = oid.time
   bigEndian32(addr(tmp), addr(dummy))
   result = TTime(tmp)

@@ -13,14 +13,14 @@ import
   ast, modules, passes, passaux, condsyms, 
   options, nimconf, lists, sem, semdata, llstream, vm
 
-proc execute*(program: string) =
+proc execute*(program: String) =
   passes.gIncludeFile = includeModule
   passes.gImportModule = importModule
   initDefines()
-  LoadConfigs(DefaultConfig)
+  loadConfigs(DefaultConfig)
 
   initDefines()
-  DefineSymbol("nimrodvm")
+  defineSymbol("nimrodvm")
   when hasFFI: DefineSymbol("nimffi")
   registerPass(verbosePass)
   registerPass(semPass)
@@ -30,4 +30,4 @@ proc execute*(program: string) =
   compileSystemModule()
   var m = makeStdinModule()
   incl(m.flags, sfMainModule)
-  processModule(m, LLStreamOpen(program), nil)
+  processModule(m, lLStreamOpen(program), nil)

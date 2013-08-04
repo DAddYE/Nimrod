@@ -2,13 +2,13 @@
 
 import macros
 
-template plus(a, b: expr): expr =
+template plus(a, b: Expr): Expr =
   a + b
 
-macro call(e: expr): expr =
+macro call(e: Expr): Expr =
   result = newCall("foo", newStrLitNode("bar"))
   
-macro dumpAST(n: stmt): stmt {.immediate.} =
+macro dumpAST(n: Stmt): Stmt {.immediate.} =
   # dump AST as a side-effect and return the inner node
   let n = callsite()
   echo n.lispRepr

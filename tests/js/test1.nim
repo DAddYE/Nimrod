@@ -11,7 +11,7 @@ import
 var
   inputElement = "1123"
 
-proc OnButtonClick(inputElement: string) {.exportc.} =
+proc OnButtonClick(inputElement: String) {.exportc.} =
   let v = $inputElement
   if v.allCharsInSet(whiteSpace):
     echo "only whitespace, hu?"

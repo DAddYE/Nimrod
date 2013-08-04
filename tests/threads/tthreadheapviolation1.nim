@@ -5,8 +5,8 @@ discard """
 """
 
 var 
-  global: string = "test string"
-  t: TThread[void]
+  global: String = "test string"
+  t: TThread[Void]
 
 proc horrible() {.thread.} =
   global = "string in thread local heap!"

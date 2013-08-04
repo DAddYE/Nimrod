@@ -3,8 +3,8 @@ discard """
   line: 7
 """
 
-var x: array[100, char] 
-template Foo : expr = x[42]
+var x: Array[100, Char] 
+template foo : Expr = x[42]
 
 
 const myConst = foo

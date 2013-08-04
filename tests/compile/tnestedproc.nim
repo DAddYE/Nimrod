@@ -2,11 +2,11 @@ discard """
   output: "11"
 """
 
-proc p(x, y: int): int = 
+proc p(x, y: Int): Int = 
   result = x + y
 
-echo p((proc (): int = 
+echo p((proc (): Int = 
           var x = 7
           return x)(),
-       (proc (): int = return 4)())
+       (proc (): Int = return 4)())
 

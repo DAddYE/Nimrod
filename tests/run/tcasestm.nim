@@ -5,12 +5,12 @@ discard """
 # Test the case statement
 
 type
-  tenum = enum eA, eB, eC
+  TEnum = enum eA, eB, eC
 
 var
-  x: string = "yyy"
-  y: Tenum = eA
-  i: int
+  x: String = "yyy"
+  y: TEnum = eA
+  i: Int
 
 case y
 of eA: write(stdout, "a")

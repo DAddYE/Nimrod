@@ -5,8 +5,8 @@ const
   MinDistance* = 350.0
   Attenuation* = 20.0
 var
-  liveSounds: seq[PSound] = @[]
-  deadSounds: seq[PSound] = @[]
+  liveSounds: Seq[PSound] = @[]
+  deadSounds: Seq[PSound] = @[]
 
 proc playSound*(sound: PSoundRecord, pos: TVector) =
   if sound.isNil or sound.soundBuf.isNil: return
@@ -27,7 +27,7 @@ proc playSound*(sound: PSoundRecord, pos: TVector) =
 proc updateSoundBuffer*() =
   var i = 0
   while i < len(liveSounds):
-    if liveSounds[i].getStatus == Stopped:
+    if liveSounds[i].getStatus == stopped:
       deadSounds.add liveSounds[i]
       liveSounds.del i
     else:

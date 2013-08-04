@@ -17,9 +17,9 @@
 const
   NilLibHandle: TLibHandle = nil
 
-proc rawWrite(f: TFile, s: string) = 
+proc rawWrite(f: TFile, s: String) = 
   # we cannot throw an exception here!
-  discard writeBuffer(f, cstring(s), s.len)
+  discard writeBuffer(f, Cstring(s), s.len)
 
 proc nimLoadLibraryError(path: string) =
   # carefully written to avoid memory allocation:
@@ -28,7 +28,7 @@ proc nimLoadLibraryError(path: string) =
   stdout.rawWrite("\n")
   quit(1)
 
-proc ProcAddrError(name: cstring) {.noinline.} =
+proc procAddrError(name: Cstring) {.noinline.} =
   # carefully written to avoid memory allocation:
   stdout.rawWrite("could not import: ")
   stdout.write(name)
@@ -53,26 +53,26 @@ when defined(posix):
 
   # c stuff:
   var
-    RTLD_NOW {.importc: "RTLD_NOW", header: "<dlfcn.h>".}: int
+    rtldNow {.importc: "RTLD_NOW", header: "<dlfcn.h>".}: Int
 
   proc dlclose(lib: TLibHandle) {.importc, header: "<dlfcn.h>".}
-  proc dlopen(path: CString, mode: int): TLibHandle {.
+  proc dlopen(path: Cstring, mode: Int): TLibHandle {.
       importc, header: "<dlfcn.h>".}
-  proc dlsym(lib: TLibHandle, name: cstring): TProcAddr {.
+  proc dlsym(lib: TLibHandle, name: Cstring): TProcAddr {.
       importc, header: "<dlfcn.h>".}
 
-  proc dlerror(): cstring {.importc, header: "<dlfcn.h>".}
+  proc dlerror(): Cstring {.importc, header: "<dlfcn.h>".}
 
   proc nimUnloadLibrary(lib: TLibHandle) =
     dlclose(lib)
 
   proc nimLoadLibrary(path: string): TLibHandle =
-    result = dlopen(path, RTLD_NOW)
+    result = dlopen(path, rtldNow)
     #c_fprintf(c_stdout, "%s\n", dlerror())
 
   proc nimGetProcAddr(lib: TLibHandle, name: cstring): TProcAddr =
     result = dlsym(lib, name)
-    if result == nil: ProcAddrError(name)
+    if result == nil: procAddrError(name)
 
 elif defined(windows) or defined(dos):
   #

@@ -14,7 +14,7 @@ const
   RomanNumeralDigits* = {'I', 'i', 'V', 'v', 'X', 'x', 'L', 'l', 'C', 'c', 
     'D', 'd', 'M', 'm'} ## set of all characters a Roman numeral may consist of
 
-proc romanToDecimal*(romanVal: string): int =
+proc romanToDecimal*(romanVal: String): Int =
   ## Converts a Roman numeral to its int representation.
   result = 0
   var prevVal = 0
@@ -36,7 +36,7 @@ proc romanToDecimal*(romanVal: string): int =
       dec(result, val)
     prevVal = val
 
-proc decimalToRoman*(number: range[1..3_999]): string =
+proc decimalToRoman*(number: Range[1..3_999]): String =
   ## Converts a number to a Roman numeral.
   const romanComposites = [
     ("M", 1000), ("CM", 900),

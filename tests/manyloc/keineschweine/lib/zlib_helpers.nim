@@ -1,21 +1,21 @@
 import zlib
 
-proc compress*(source: string): string =
+proc compress*(source: String): String =
   var
     sourcelen = source.len
-    destlen = sourcelen + (sourcelen.float * 0.1).int + 16
+    destlen = sourcelen + (sourcelen.Float * 0.1).Int + 16
   result = ""
-  result.setLen destLen
-  var res = zlib.compress(cstring(result), addr destLen, cstring(source), sourceLen)
+  result.setLen destlen
+  var res = zlib.compress(Cstring(result), addr destlen, Cstring(source), sourcelen)
   if res != Z_OK:
     echo "Error occured: ", res
-  elif destLen < result.len:
-    result.setLen(destLen)
+  elif destlen < result.len:
+    result.setLen(destlen)
 
-proc uncompress*(source: string, destLen: var int): string =
+proc uncompress*(source: String, destLen: var Int): String =
   result = ""
   result.setLen destLen
-  var res = zlib.uncompress(cstring(result), addr destLen, cstring(source), source.len)
+  var res = zlib.uncompress(Cstring(result), addr destLen, Cstring(source), source.len)
   if res != Z_OK:
     echo "Error occured: ", res
     
@@ -29,7 +29,7 @@ when isMainModule:
   echo repr(rr)
   assert rr == "Hello"
 
-  proc `*`(a: string; b: int): string {.inline.} = result = repeatStr(b, a)
+  proc `*`(a: String; b: Int): String {.inline.} = result = repeatStr(b, a)
   var s = "yo dude sup bruh homie" * 50
   r = compress(s)
   echo s.len, " -> ", r.len

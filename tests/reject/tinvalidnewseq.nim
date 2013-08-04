@@ -6,12 +6,12 @@ discard """
 import re, strutils
 
 type
-  TURL = tuple[protocol, subdomain, domain, port: string, path: seq[string]]
+  TURL = tuple[protocol, subdomain, domain, port: String, path: Seq[String]]
 
-proc parseURL(url: string): TURL =
+proc parseURL(url: String): TURL =
   #([a-zA-Z]+://)?(\w+?\.)?(\w+)(\.\w+)(:[0-9]+)?(/.+)?
-  var pattern: string = r"([a-zA-Z]+://)?(\w+?\.)?(\w+)(\.\w+)(:[0-9]+)?(/.+)?"
-  var m: array[0..6, string] #Array with the matches
+  var pattern: String = r"([a-zA-Z]+://)?(\w+?\.)?(\w+)(\.\w+)(:[0-9]+)?(/.+)?"
+  var m: Array[0..6, String] #Array with the matches
   newSeq(m, 7) #ERROR
   discard regexprs.match(url, re(pattern), m)
  
@@ -20,7 +20,7 @@ proc parseURL(url: string): TURL =
  
 var r: TUrl
  
-r = parseUrl(r"http://google.com/search?var=bleahdhsad")
+r = parseURL(r"http://google.com/search?var=bleahdhsad")
 echo(r.domain)
 
 

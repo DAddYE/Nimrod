@@ -13,18 +13,18 @@ discard """
 
 type
   TArg = object
-    x: string
-    z: seq[int]
+    x: String
+    z: Seq[Int]
   TKind = enum kindXY, kindA
   TEmpty = object
   TDummy = ref object
     case k: TKind
-    of kindXY: x, y: int
+    of kindXY: x, y: Int
     of kindA: 
       a: TArg
       empty: TEmpty
 
-proc `$`[T](s: seq[T]): string =
+proc `$`[T](s: Seq[T]): String =
   # XXX why is that not in the stdlib?
   result = "["
   for i, x in s:

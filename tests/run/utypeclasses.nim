@@ -1,6 +1,6 @@
 import unittest
 
-proc concat(a, b): string =
+proc concat(a, b): String =
   result = $a & $b
 
 test "if proc param types are not supplied, the params are assumed to be generic":

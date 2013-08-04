@@ -3,14 +3,14 @@ import strutils
 # Verifies if the --suggestion switch differentiates types for dot notation.
 
 type
-  TDollar = distinct int
-  TEuro = distinct int
+  TDollar = distinct Int
+  TEuro = distinct Int
 
 proc echoRemainingDollars(amount: TDollar) =
-  echo "You have $1 dollars" % [$int(amount)]
+  echo "You have $1 dollars" % [$Int(amount)]
 
 proc echoRemainingEuros(amount: TEuro) =
-  echo "You have $1 euros" % [$int(amount)]
+  echo "You have $1 euros" % [$Int(amount)]
 
 proc echoRemainingBugs() =
   echo "You still have bugs"

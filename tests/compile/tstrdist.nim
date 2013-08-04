@@ -1,8 +1,8 @@
 # compute the edit distance between two strings
 
-proc editDistance(a, b: string): int =
+proc editDistance(a, b: String): Int =
   var
-    c: seq[int]
+    c: Seq[Int]
     n = a.len
     m = b.len
   newSeq(c, (n+1)*(m+1))
@@ -15,7 +15,7 @@ proc editDistance(a, b: string): int =
     for j in 1..m:
       var x = c[(i-1)*n + j]+1
       var y = c[i*n + j-1]+1
-      var z: int
+      var z: Int
       if a[i-1] == b[j-1]:
         z = c[(i-1)*n + j-1]
       else:

@@ -7,7 +7,7 @@ discard """
 import tbintree
 
 var
-  root: PBinaryTree[string]
+  root: PBinaryTree[String]
   x = newNode("hello")
 add(root, x)
 add(root, "world")
@@ -18,7 +18,7 @@ else:
   stdout.writeln("BUG")
 
 var
-  r2: PBinaryTree[int]
+  r2: PBinaryTree[Int]
 add(r2, newNode(110))
 add(r2, 223)
 add(r2, 99)

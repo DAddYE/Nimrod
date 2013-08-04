@@ -12,16 +12,16 @@ import
   re, htmlgen, macros, md5
 
 type
-  TKeyValPair = tuple[key, id, val: string]
+  TKeyValPair = tuple[key, id, val: String]
   TConfigData = object of TObject
-    tabs, links: seq[TKeyValPair]
-    doc, srcdoc, srcdoc2, webdoc, pdf: seq[string]
-    authors, projectName, projectTitle, logo, infile, outdir, ticker: string
+    tabs, links: Seq[TKeyValPair]
+    doc, srcdoc, srcdoc2, webdoc, pdf: Seq[String]
+    authors, projectName, projectTitle, logo, infile, outdir, ticker: String
     vars: PStringTable
-    nimrodArgs: string
-    quotations: TTable[string, tuple[quote, author: string]]
+    nimrodArgs: String
+    quotations: TTable[String, tuple[quote, author: String]]
   TRssItem = object
-    year, month, day, title: string
+    year, month, day, title: String
 
 proc initConfigData(c: var TConfigData) =
   c.tabs = @[]
@@ -68,28 +68,28 @@ Compile_options:
   validAnchorCharacters = Letters + Digits
 
 
-macro id(e: expr): expr {.immediate.} =
+macro id(e: Expr): Expr {.immediate.} =
   ## generates the rss xml ``id`` element.
   let e = callsite()
   result = xmlCheckedTag(e, "id")
 
-macro updated(e: expr): expr {.immediate.} =
+macro updated(e: Expr): Expr {.immediate.} =
   ## generates the rss xml ``updated`` element.
   let e = callsite()
   result = xmlCheckedTag(e, "updated")
 
-proc updatedDate(year, month, day: string): string =
+proc updatedDate(year, month, day: String): String =
   ## wrapper around the update macro with easy input.
   result = updated("$1-$2-$3T00:00:00Z" % [year,
     repeatStr(2 - len(month), "0") & month,
     repeatStr(2 - len(day), "0") & day])
 
-macro entry(e: expr): expr {.immediate.} =
+macro entry(e: Expr): Expr {.immediate.} =
   ## generates the rss xml ``entry`` element.
   let e = callsite()
   result = xmlCheckedTag(e, "entry")
 
-macro content(e: expr): expr {.immediate.} =
+macro content(e: Expr): Expr {.immediate.} =
   ## generates the rss xml ``content`` element.
   let e = callsite()
   result = xmlCheckedTag(e, "content", reqAttr = "type")
@@ -123,7 +123,7 @@ proc parseCmdLine(c: var TConfigData) =
     of cmdEnd: break
   if c.infile.len == 0: quit(Usage)
 
-proc walkDirRecursively(s: var seq[string], root, ext: string) =
+proc walkDirRecursively(s: var Seq[String], root, ext: String) =
   for k, f in walkDir(root):
     case k
     of pcFile, pcLinkToFile:
@@ -132,7 +132,7 @@ proc walkDirRecursively(s: var seq[string], root, ext: string) =
     of pcDir: walkDirRecursively(s, f, ext)
     of pcLinkToDir: nil
 
-proc addFiles(s: var seq[string], dir, ext: string, patterns: seq[string]) =
+proc addFiles(s: var Seq[String], dir, ext: String, patterns: Seq[String]) =
   for p in items(patterns):
     if existsDir(dir / p):
       walkDirRecursively(s, dir / p, ext)
@@ -142,7 +142,7 @@ proc addFiles(s: var seq[string], dir, ext: string, patterns: seq[string]) =
 proc parseIniFile(c: var TConfigData) =
   var
     p: TCfgParser
-    section: string # current section
+    section: String # current section
   var input = newFileStream(c.infile, fmRead)
   if input != nil:
     open(p, input, c.infile)
@@ -200,32 +200,32 @@ proc parseIniFile(c: var TConfigData) =
 
 # ------------------- main ----------------------------------------------------
 
-proc Exec(cmd: string) =
+proc exec(cmd: String) =
   echo(cmd)
   if os.execShellCmd(cmd) != 0: quit("external program failed")
 
-proc buildDoc(c: var TConfigData, destPath: string) =
+proc buildDoc(c: var TConfigData, destPath: String) =
   # call nim for the documentation:
   for d in items(c.doc):
-    Exec("nimrod rst2html $# -o:$# --index:on $#" %
+    exec("nimrod rst2html $# -o:$# --index:on $#" %
       [c.nimrodArgs, destPath / changeFileExt(splitFile(d).name, "html"), d])
   for d in items(c.srcdoc):
-    Exec("nimrod doc $# -o:$# --index:on $#" %
+    exec("nimrod doc $# -o:$# --index:on $#" %
       [c.nimrodArgs, destPath / changeFileExt(splitFile(d).name, "html"), d])
   for d in items(c.srcdoc2):
-    Exec("nimrod doc2 $# -o:$# --index:on $#" %
+    exec("nimrod doc2 $# -o:$# --index:on $#" %
       [c.nimrodArgs, destPath / changeFileExt(splitFile(d).name, "html"), d])
-  Exec("nimrod buildIndex -o:$1/theindex.html $1" % [destPath])
+  exec("nimrod buildIndex -o:$1/theindex.html $1" % [destPath])
 
-proc buildPdfDoc(c: var TConfigData, destPath: string) =
+proc buildPdfDoc(c: var TConfigData, destPath: String) =
   if os.execShellCmd("pdflatex -version") != 0:
     echo "pdflatex not found; no PDF documentation generated"
   else:
     for d in items(c.pdf):
-      Exec("nimrod rst2tex $# $#" % [c.nimrodArgs, d])
+      exec("nimrod rst2tex $# $#" % [c.nimrodArgs, d])
       # call LaTeX twice to get cross references right:
-      Exec("pdflatex " & changeFileExt(d, "tex"))
-      Exec("pdflatex " & changeFileExt(d, "tex"))
+      exec("pdflatex " & changeFileExt(d, "tex"))
+      exec("pdflatex " & changeFileExt(d, "tex"))
       # delete all the crappy temporary files:
       var pdf = splitFile(d).name & ".pdf"
       moveFile(dest=destPath / pdf, source=pdf)
@@ -236,13 +236,13 @@ proc buildPdfDoc(c: var TConfigData, destPath: string) =
       removeFile(changeFileExt(pdf, "out"))
       removeFile(changeFileExt(d, "tex"))
 
-proc buildAddDoc(c: var TConfigData, destPath: string) =
+proc buildAddDoc(c: var TConfigData, destPath: String) =
   # build additional documentation (without the index):
   for d in items(c.webdoc):
-    Exec("nimrod doc $# -o:$# $#" %
+    exec("nimrod doc $# -o:$# $#" %
       [c.nimrodArgs, destPath / changeFileExt(splitFile(d).name, "html"), d])
 
-proc parseNewsTitles(inputFilename: string): seq[TRssItem] =
+proc parseNewsTitles(inputFilename: String): Seq[TRssItem] =
   # parses the file for titles and returns them as TRssItem blocks.
   let reYearMonthDayTitle = re(rYearMonthDayTitle)
   var
@@ -253,12 +253,12 @@ proc parseNewsTitles(inputFilename: string): seq[TRssItem] =
   if not open(input, inputFilename):
     quit("Could not read $1 for rss generation" % [inputFilename])
   finally: input.close()
-  while input.readline(line):
+  while input.readLine(line):
     if line =~ reYearMonthDayTitle:
       result.add(TRssItem(year: matches[0], month: matches[1], day: matches[2],
         title: matches[3]))
 
-proc genUUID(text: string): string =
+proc genUUID(text: String): String =
   # Returns a valid RSS uuid, which is basically md5 with dashes and a prefix.
   result = getMD5(text)
   result.insert("-", 20)
@@ -267,7 +267,7 @@ proc genUUID(text: string): string =
   result.insert("-", 8)
   result.insert("urn:uuid:")
 
-proc genNewsLink(title: string): string =
+proc genNewsLink(title: String): String =
   # Mangles a title string into an expected news.html anchor.
   result = title
   result.insert("Z")
@@ -279,7 +279,7 @@ proc genNewsLink(title: string): string =
       result[i] = '-'
   result.insert(rssNewsUrl & "#")
 
-proc generateRss(outputFilename: string, news: seq[TRssItem]) =
+proc generateRss(outputFilename: String, news: Seq[TRssItem]) =
   # Given a list of rss items generates an rss overwriting destination.
   var
     output: TFile
@@ -297,7 +297,7 @@ proc generateRss(outputFilename: string, news: seq[TRssItem]) =
   output.write(id(rssNewsUrl))
 
   let now = getGMTime(getTime())
-  output.write(updatedDate($now.year, $(int(now.month) + 1), $now.monthday))
+  output.write(updatedDate($now.year, $(Int(now.month) + 1), $now.monthday))
 
   for rss in news:
     let joinedTitle = "$1-$2-$3 $4" % [rss.year, rss.month, rss.day, rss.title]
@@ -313,7 +313,7 @@ proc generateRss(outputFilename: string, news: seq[TRssItem]) =
 
   output.write("""</feed>""")
 
-proc buildNewsRss(c: var TConfigData, destPath: string) =
+proc buildNewsRss(c: var TConfigData, destPath: String) =
   # generates an xml feed from the web/news.txt file
   let
     srcFilename = "web" / "news.txt"
@@ -332,9 +332,9 @@ proc main(c: var TConfigData) =
   for i in 0..c.tabs.len-1:
     var file = c.tabs[i].val
     let rss = if file in ["news", "index"]: extractFilename(rssUrl) else: ""
-    Exec(cmd % [c.nimrodArgs, file])
+    exec(cmd % [c.nimrodArgs, file])
     var temp = "web" / changeFileExt(file, "temp")
-    var content: string
+    var content: String
     try:
       content = readFile(temp)
     except EIO:

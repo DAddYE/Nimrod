@@ -36,10 +36,10 @@ var
   hd = ""
   tl = ""
 
-proc myExec(cmd: string): bool = 
+proc myExec(cmd: String): Bool = 
   return execShellCmd(cmd) == 0
 
-proc header(s: string): bool = 
+proc header(s: String): Bool = 
   const testh = "testh"
   var f: TFile
   if open(f, addFileExt(testh, "c"), fmWrite):
@@ -65,7 +65,7 @@ proc main =
   removeFile(addFileExt(gen, "c"))
   echo("Success")
 
-proc v(name: string, typ: TTypeKind=cint) = 
+proc v(name: String, typ: TTypeKind=cint) = 
   var n = if name[0] == '_': copy(name, 1) else: name
   var t = $typ
   case typ

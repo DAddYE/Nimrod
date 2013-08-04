@@ -2,9 +2,9 @@
 
 type
   TMyRecord {.final.} = object
-    x, y: int
-    b: bool
-    r: float
-    s: string
+    x, y: Int
+    b: Bool
+    r: Float
+    s: String
 
 write(stdout, sizeof(TMyRecord))

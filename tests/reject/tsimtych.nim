@@ -6,7 +6,7 @@ discard """
 # Test 2
 # Simple type checking
 
-var a: string
+var a: String
 a = false #ERROR
 
 

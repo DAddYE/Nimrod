@@ -17,7 +17,7 @@ type
   TBar[U] = object
     x: U
 
-var bar: TBar[int]
+var bar: TBar[Int]
 
 foo 10
 foo "test"
@@ -30,17 +30,17 @@ proc foo2[T](x: TBar[T]) =
 foo2 bar
 
 # less usual generic params on built-in types
-var arr: array[0..2, int] = [1, 2, 3]
+var arr: Array[0..2, Int] = [1, 2, 3]
 
-proc foo3[R, T](x: array[R, T]) =
+proc foo3[R, T](x: Array[R, T]) =
   echo name(R)
 
 foo3 arr
 
-const TypeList = [int, string, seq[int]]
+const TypeList = [Int, String, seq[int]]
 
-macro selectType(inType: typedesc): typedesc =
-  var typeSeq = @[float, TBar[int]]
+macro selectType(inType: TypeDesc): TypeDesc =
+  var typeSeq = @[Float, TBar[int]]
   
   for t in TypeList:
     typeSeq.add(t)
@@ -48,12 +48,12 @@ macro selectType(inType: typedesc): typedesc =
   typeSeq.add(inType)
   typeSeq.add(type(10))
   
-  var typeSeq2: seq[typedesc] = @[]
+  var typeSeq2: Seq[TypeDesc] = @[]
   typeSeq2 = typeSeq
 
   result = typeSeq2[5]
   
-var xvar: selectType(string)
+var xvar: selectType(String)
 xvar = "proba"
 echo xvar.type.name
 

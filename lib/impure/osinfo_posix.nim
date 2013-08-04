@@ -3,55 +3,55 @@ import posix, strutils, os
 type
   Tstatfs {.importc: "struct statfs64", 
             header: "<sys/statfs.h>", final, pure.} = object
-    f_type: int
-    f_bsize: int
-    f_blocks: int
-    f_bfree: int
-    f_bavail: int
-    f_files: int
-    f_ffree: int
-    f_fsid: int
-    f_namelen: int
+    f_type: Int
+    f_bsize: Int
+    f_blocks: Int
+    f_bfree: Int
+    f_bavail: Int
+    f_files: Int
+    f_ffree: Int
+    f_fsid: Int
+    f_namelen: Int
 
-proc statfs(path: string, buf: var Tstatfs): int {.
+proc statfs(path: String, buf: var Tstatfs): Int {.
   importc, header: "<sys/vfs.h>".}
 
 
-proc getSystemVersion*(): string =
+proc getSystemVersion*(): String =
   result = ""
   
-  var unix_info: TUtsname
+  var unixInfo: Tutsname
   
-  if uname(unix_info) != 0:
+  if uname(unixInfo) != 0:
     os.OSError()
   
-  if $unix_info.sysname == "Linux":
+  if $unixInfo.sysname == "Linux":
     # Linux
     result.add("Linux ")
 
-    result.add($unix_info.release & " ")
-    result.add($unix_info.machine)
-  elif $unix_info.sysname == "Darwin":
+    result.add($unixInfo.release & " ")
+    result.add($unixInfo.machine)
+  elif $unixInfo.sysname == "Darwin":
     # Darwin
     result.add("Mac OS X ")
-    if "10" in $unix_info.release:
+    if "10" in $unixInfo.release:
       result.add("v10.6 Snow Leopard")
-    elif "9" in $unix_info.release:
+    elif "9" in $unixInfo.release:
       result.add("v10.5 Leopard")
-    elif "8" in $unix_info.release:
+    elif "8" in $unixInfo.release:
       result.add("v10.4 Tiger")
-    elif "7" in $unix_info.release:
+    elif "7" in $unixInfo.release:
       result.add("v10.3 Panther")
-    elif "6" in $unix_info.release:
+    elif "6" in $unixInfo.release:
       result.add("v10.2 Jaguar")
-    elif "1.4" in $unix_info.release:
+    elif "1.4" in $unixInfo.release:
       result.add("v10.1 Puma")
-    elif "1.3" in $unix_info.release:
+    elif "1.3" in $unixInfo.release:
       result.add("v10.0 Cheetah")
-    elif "0" in $unix_info.release:
+    elif "0" in $unixInfo.release:
       result.add("Server 1.0 Hera")
   else:
-    result.add($unix_info.sysname & " " & $unix_info.release)
+    result.add($unixInfo.sysname & " " & $unixInfo.release)
     
     
 when false:

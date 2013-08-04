@@ -7,9 +7,9 @@ discard """
 type
   TNode = object {.pure.}
     le, ri: ref TNode
-    data: string
+    data: String
 
-proc newNode(data: string): ref TNode =
+proc newNode(data: String): ref TNode =
   new(result)
   result.data = data
   

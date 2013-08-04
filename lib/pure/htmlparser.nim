@@ -264,12 +264,12 @@ const
     ("loz", 0x25CA), ("spades", 0x2660), ("clubs", 0x2663),
     ("hearts", 0x2665), ("diams", 0x2666)]
 
-proc allLower(s: string): bool =
+proc allLower(s: String): Bool =
   for c in s:
     if c < 'a' or c > 'z': return false
   return true
 
-proc toHtmlTag(s: string): THtmlTag =
+proc toHtmlTag(s: String): THtmlTag =
   case s
   of "a": tagA
   of "abbr": tagAbbr
@@ -402,32 +402,32 @@ proc htmlTag*(n: PXmlNode): THtmlTag =
     n.clientData = toHtmlTag(n.tag).ord
   result = THtmlTag(n.clientData)
 
-proc htmlTag*(s: string): THtmlTag =
+proc htmlTag*(s: String): THtmlTag =
   ## converts `s` to a ``THtmlTag``. If `s` is no HTML tag, ``tagUnknown`` is
   ## returned.
   let s = if allLower(s): s else: s.toLower
   result = toHtmlTag(s)
 
-proc entityToUtf8*(entity: string): string = 
+proc entityToUtf8*(entity: String): String = 
   ## converts an HTML entity name like ``&Uuml;`` to its UTF-8 equivalent.
   ## "" is returned if the entity name is unknown. The HTML parser
   ## already converts entities to UTF-8.
-  for name, val in items(entities):
+  for name, val in items(Entities):
     if name == entity: return toUTF8(TRune(val))
   result = ""
 
 proc addNode(father, son: PXmlNode) = 
   if son != nil: add(father, son)
 
-proc parse(x: var TXmlParser, errors: var seq[string]): PXmlNode
+proc parse(x: var TXmlParser, errors: var Seq[String]): PXmlNode
 
-proc expected(x: var TXmlParser, n: PXmlNode): string =
+proc expected(x: var TXmlParser, n: PXmlNode): String =
   result = errorMsg(x, "</" & n.tag & "> expected")
 
-template elemName(x: expr): expr = rawData(x)
+template elemName(x: Expr): Expr = rawData(x)
 
 proc untilElementEnd(x: var TXmlParser, result: PXmlNode, 
-                     errors: var seq[string]) =
+                     errors: var Seq[String]) =
   # we parsed e.g. ``<br>`` and don't really expect a ``</br>``: 
   if result.htmlTag in singleTags:
     if x.kind != xmlElementEnd or cmpIgnoreCase(x.elemName, result.tag) != 0:
@@ -523,8 +523,8 @@ proc parse(x: var TXmlParser, errors: var seq[string]): PXmlNode =
     next(x)
   of xmlEof: nil
 
-proc parseHtml*(s: PStream, filename: string, 
-                errors: var seq[string]): PXmlNode = 
+proc parseHtml*(s: PStream, filename: String, 
+                errors: var Seq[String]): PXmlNode = 
   ## parses the XML from stream `s` and returns a ``PXmlNode``. Every
   ## occured parsing error is added to the `errors` sequence.
   var x: TXmlParser
@@ -550,21 +550,21 @@ proc parseHtml*(s: PStream, filename: string,
 proc parseHtml*(s: PStream): PXmlNode = 
   ## parses the XTML from stream `s` and returns a ``PXmlNode``. All parsing
   ## errors are ignored.
-  var errors: seq[string] = @[]
+  var errors: Seq[String] = @[]
   result = parseHtml(s, "unknown_html_doc", errors)
 
-proc loadHtml*(path: string, errors: var seq[string]): PXmlNode = 
+proc loadHtml*(path: String, errors: var Seq[String]): PXmlNode = 
   ## Loads and parses HTML from file specified by ``path``, and returns 
   ## a ``PXmlNode``.  Every occured parsing error is added to
   ## the `errors` sequence.
   var s = newFileStream(path, fmRead)
-  if s == nil: raise newException(EIO, "Unable to read file: " & path)
+  if s == nil: raise newException(Eio, "Unable to read file: " & path)
   result = parseHtml(s, path, errors)
 
-proc loadHtml*(path: string): PXmlNode = 
+proc loadHtml*(path: String): PXmlNode = 
   ## Loads and parses HTML from file specified by ``path``, and returns 
   ## a ``PXmlNode``. All parsing errors are ignored.
-  var errors: seq[string] = @[]
+  var errors: Seq[String] = @[]
   result = loadHtml(path, errors)
 
 when isMainModule:

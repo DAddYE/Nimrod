@@ -12,31 +12,31 @@
 ## Windows ``LoadLibrary``. 
 
 type
-  TLibHandle* = pointer ## a handle to a dynamically loaded library
+  TLibHandle* = Pointer ## a handle to a dynamically loaded library
 
-proc LoadLib*(path: string): TLibHandle
+proc loadLib*(path: String): TLibHandle
   ## loads a library from `path`. Returns nil if the library could not 
   ## be loaded.
 
-proc LoadLib*(): TLibHandle
+proc loadLib*(): TLibHandle
   ## gets the handle from the current executable. Returns nil if the 
   ## library could not be loaded.
 
-proc UnloadLib*(lib: TLibHandle)
+proc unloadLib*(lib: TLibHandle)
   ## unloads the library `lib`
 
-proc raiseInvalidLibrary*(name: cstring) {.noinline, noreturn.} =
+proc raiseInvalidLibrary*(name: Cstring) {.noinline, noreturn.} =
   ## raises an `EInvalidLibrary` exception.
   var e: ref EInvalidLibrary
   new(e)
   e.msg = "could not find symbol: " & $name
   raise e
 
-proc symAddr*(lib: TLibHandle, name: cstring): pointer
+proc symAddr*(lib: TLibHandle, name: Cstring): Pointer
   ## retrieves the address of a procedure/variable from `lib`. Returns nil
   ## if the symbol could not be found.
 
-proc checkedSymAddr*(lib: TLibHandle, name: cstring): pointer =
+proc checkedSymAddr*(lib: TLibHandle, name: Cstring): Pointer =
   ## retrieves the address of a procedure/variable from `lib`. Raises
   ## `EInvalidLibrary` if the symbol could not be found.
   result = symAddr(lib, name)
@@ -52,17 +52,17 @@ when defined(posix):
   # =========================================================================
   #
   var
-    RTLD_NOW {.importc: "RTLD_NOW", header: "<dlfcn.h>".}: int
+    rtldNow {.importc: "RTLD_NOW", header: "<dlfcn.h>".}: Int
 
   proc dlclose(lib: TLibHandle) {.importc, header: "<dlfcn.h>".}
-  proc dlopen(path: CString, mode: int): TLibHandle {.
+  proc dlopen(path: Cstring, mode: Int): TLibHandle {.
       importc, header: "<dlfcn.h>".}
-  proc dlsym(lib: TLibHandle, name: cstring): pointer {.
+  proc dlsym(lib: TLibHandle, name: Cstring): Pointer {.
       importc, header: "<dlfcn.h>".}
 
-  proc LoadLib(path: string): TLibHandle = return dlopen(path, RTLD_NOW)
-  proc LoadLib(): TLibHandle = return dlopen(nil, RTLD_NOW)
-  proc UnloadLib(lib: TLibHandle) = dlclose(lib)
+  proc loadLib(path: string): TLibHandle = return dlopen(path, rtldNow)
+  proc loadLib(): TLibHandle = return dlopen(nil, rtldNow)
+  proc unloadLib(lib: TLibHandle) = dlclose(lib)
   proc symAddr(lib: TLibHandle, name: cstring): pointer = 
     return dlsym(lib, name)
 

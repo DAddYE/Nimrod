@@ -6,12 +6,12 @@ discard """
 
 type
   TMyType = object
-    len: int
-    data: string
+    len: Int
+    data: String
     
-proc len(x: TMyType): int {.inline.} = return x.len
+proc len(x: TMyType): Int {.inline.} = return x.len
 
-proc x(s: TMyType, len: int) = 
+proc x(s: TMyType, len: Int) = 
   writeln(stdout, len(s))
   
 var

@@ -10,7 +10,7 @@
 ## This module implements semantic checking for calls. 
 # included from sem.nim
 
-proc sameMethodDispatcher(a, b: PSym): bool =
+proc sameMethodDispatcher(a, b: PSym): Bool =
   result = false
   if a.kind == skMethod and b.kind == skMethod: 
     var aa = lastSon(a.ast)
@@ -49,7 +49,7 @@ proc resolveOverloads(c: PContext, n, orig: PNode,
     o: TOverloadIter
     alt, z: TCandidate
 
-  template best: expr = result
+  template best: Expr = result
   #Message(n.info, warnUser, renderTree(n))
   var sym = initOverloadIter(o, c, f)
   var symScope = o.lastOverloadScope
@@ -83,12 +83,12 @@ proc resolveOverloads(c: PContext, n, orig: PNode,
   elif alt.state == csMatch and cmpCandidates(best, alt) == 0 and
       not sameMethodDispatcher(best.calleeSym, alt.calleeSym):
     if best.state != csMatch:
-      InternalError(n.info, "x.state is not csMatch")
+      internalError(n.info, "x.state is not csMatch")
     #writeMatches(best)
     #writeMatches(alt)
     if c.inCompilesContext > 0: 
       # quick error message for performance of 'compiles' built-in:
-      GlobalError(n.Info, errGenerated, "ambiguous call")
+      globalError(n.Info, errGenerated, "ambiguous call")
     elif gErrorCounter == 0:
       # don't cascade errors
       var args = "("
@@ -97,7 +97,7 @@ proc resolveOverloads(c: PContext, n, orig: PNode,
         add(args, typeToString(n.sons[i].typ))
       add(args, ")")
 
-      LocalError(n.Info, errGenerated, msgKindToString(errAmbiguousCallXYZ) % [
+      localError(n.Info, errGenerated, msgKindToString(errAmbiguousCallXYZ) % [
         getProcHeader(best.calleeSym), getProcHeader(alt.calleeSym),
         args])
 
@@ -116,14 +116,14 @@ proc instGenericConvertersSons*(c: PContext, n: PNode, x: TCandidate) =
     for i in 1 .. <n.len:
       instGenericConvertersArg(c, n.sons[i], x)
 
-proc IndexTypesMatch(c: PContext, f, a: PType, arg: PNode): PNode = 
+proc indexTypesMatch(c: PContext, f, a: PType, arg: PNode): PNode = 
   var m: TCandidate
   initCandidate(m, f)
   result = paramTypesMatch(c, m, f, a, arg, nil)
   if m.genericConverter and result != nil:
     instGenericConvertersArg(c, result, m)
 
-proc ConvertTo*(c: PContext, f: PType, n: PNode): PNode = 
+proc convertTo*(c: PContext, f: PType, n: PNode): PNode = 
   var m: TCandidate
   initCandidate(m, f)
   result = paramTypesMatch(c, m, f, n.typ, n, nil)
@@ -144,7 +144,7 @@ proc semResolvedCall(c: PContext, n: PNode, x: TCandidate): PNode =
       result = x.call
       result.sons[0] = newSymNode(finalCallee, result.sons[0].info)
       result.typ = finalCallee.typ.sons[0]
-      if ContainsGenericType(result.typ): result.typ = errorType(c)
+      if containsGenericType(result.typ): result.typ = errorType(c)
       return
   result = x.call
   instGenericConvertersSons(c, result, x)
@@ -157,7 +157,7 @@ proc semOverloadedCall(c: PContext, n, nOrig: PNode,
   if r.state == csMatch: result = semResolvedCall(c, n, r)
     
 proc explicitGenericInstError(n: PNode): PNode =
-  LocalError(n.info, errCannotInstantiateX, renderTree(n))
+  localError(n.info, errCannotInstantiateX, renderTree(n))
   result = n
 
 proc explicitGenericSym(c: PContext, n: PNode, s: PSym): PNode =
@@ -178,7 +178,7 @@ proc explicitGenericInstantiation(c: PContext, n: PNode, s: PSym): PNode =
     # number of generic type parameters:
     if safeLen(s.ast.sons[genericParamsPos]) != n.len-1:
       let expected = safeLen(s.ast.sons[genericParamsPos])
-      LocalError(n.info, errGenerated, "cannot instantiate: " & renderTree(n) &
+      localError(n.info, errGenerated, "cannot instantiate: " & renderTree(n) &
          "; got " & $(n.len-1) & " type(s) but expected " & $expected)
       return n
     result = explicitGenericSym(c, n, s)
@@ -201,7 +201,7 @@ proc explicitGenericInstantiation(c: PContext, n: PNode, s: PSym): PNode =
   else:
     result = explicitGenericInstError(n)
 
-proc SearchForBorrowProc(c: PContext, startScope: PScope, fn: PSym): PSym =
+proc searchForBorrowProc(c: PContext, startScope: PScope, fn: PSym): PSym =
   # Searchs for the fn in the symbol table. If the parameter lists are suitable
   # for borrowing the sym in the symbol table is returned, else nil.
   # New approach: generate fn(x, y, z) where x, y, z have the proper types

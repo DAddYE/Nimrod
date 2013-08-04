@@ -14,25 +14,25 @@ import
 
 proc toBitSet*(s: PNode, b: var TBitSet)
   # this function is used for case statement checking:
-proc overlap*(a, b: PNode): bool
-proc inSet*(s: PNode, elem: PNode): bool
-proc someInSet*(s: PNode, a, b: PNode): bool
-proc emptyRange*(a, b: PNode): bool
-proc SetHasRange*(s: PNode): bool
+proc overlap*(a, b: PNode): Bool
+proc inSet*(s: PNode, elem: PNode): Bool
+proc someInSet*(s: PNode, a, b: PNode): Bool
+proc emptyRange*(a, b: PNode): Bool
+proc setHasRange*(s: PNode): Bool
   # returns true if set contains a range (needed by the code generator)
   # these are used for constant folding:
 proc unionSets*(a, b: PNode): PNode
 proc diffSets*(a, b: PNode): PNode
 proc intersectSets*(a, b: PNode): PNode
 proc symdiffSets*(a, b: PNode): PNode
-proc containsSets*(a, b: PNode): bool
-proc equalSets*(a, b: PNode): bool
+proc containsSets*(a, b: PNode): Bool
+proc equalSets*(a, b: PNode): Bool
 proc cardSet*(s: PNode): BiggestInt
 # implementation
 
 proc inSet(s: PNode, elem: PNode): bool = 
   if s.kind != nkCurly: 
-    InternalError(s.info, "inSet")
+    internalError(s.info, "inSet")
     return false
   for i in countup(0, sonsLen(s) - 1): 
     if s.sons[i].kind == nkRange: 
@@ -58,10 +58,10 @@ proc overlap(a, b: PNode): bool =
     else:
       result = sameValue(a, b)
 
-proc SomeInSet(s: PNode, a, b: PNode): bool = 
+proc someInSet(s: PNode, a, b: PNode): bool = 
   # checks if some element of a..b is in the set s
   if s.kind != nkCurly:
-    InternalError(s.info, "SomeInSet")
+    internalError(s.info, "SomeInSet")
     return false
   for i in countup(0, sonsLen(s) - 1): 
     if s.sons[i].kind == nkRange: 
@@ -77,17 +77,17 @@ proc SomeInSet(s: PNode, a, b: PNode): bool =
 proc toBitSet(s: PNode, b: var TBitSet) = 
   var first, j: BiggestInt
   first = firstOrd(s.typ.sons[0])
-  bitSetInit(b, int(getSize(s.typ)))
+  bitSetInit(b, Int(getSize(s.typ)))
   for i in countup(0, sonsLen(s) - 1): 
     if s.sons[i].kind == nkRange: 
       j = getOrdValue(s.sons[i].sons[0])
       while j <= getOrdValue(s.sons[i].sons[1]): 
-        BitSetIncl(b, j - first)
+        bitSetIncl(b, j - first)
         inc(j)
     else: 
-      BitSetIncl(b, getOrdValue(s.sons[i]) - first)
+      bitSetIncl(b, getOrdValue(s.sons[i]) - first)
   
-proc ToTreeSet(s: TBitSet, settype: PType, info: TLineInfo): PNode = 
+proc toTreeSet(s: TBitSet, settype: PType, info: TLineInfo): PNode = 
   var 
     a, b, e, first: BiggestInt # a, b are interval borders
     elemType: PType
@@ -103,9 +103,9 @@ proc ToTreeSet(s: TBitSet, settype: PType, info: TLineInfo): PNode =
       a = e
       b = e
       while true: 
-        Inc(b)
+        inc(b)
         if (b >= len(s) * elemSize) or not bitSetIn(s, b): break 
-      Dec(b)
+      dec(b)
       if a == b: 
         addSon(result, newIntTypeNode(nkIntLit, a + first, elemType))
       else: 
@@ -115,7 +115,7 @@ proc ToTreeSet(s: TBitSet, settype: PType, info: TLineInfo): PNode =
         addSon(n, newIntTypeNode(nkIntLit, b + first, elemType))
         addSon(result, n)
       e = b
-    Inc(e)
+    inc(e)
 
 type 
   TSetOP = enum 
@@ -126,10 +126,10 @@ proc nodeSetOp(a, b: PNode, op: TSetOp): PNode =
   toBitSet(a, x)
   toBitSet(b, y)
   case op
-  of soUnion: BitSetUnion(x, y)
-  of soDiff: BitSetDiff(x, y)
-  of soSymDiff: BitSetSymDiff(x, y)
-  of soIntersect: BitSetIntersect(x, y)
+  of soUnion: bitSetUnion(x, y)
+  of soDiff: bitSetDiff(x, y)
+  of soSymDiff: bitSetSymDiff(x, y)
+  of soIntersect: bitSetIntersect(x, y)
   result = toTreeSet(x, a.typ, a.info)
 
 proc unionSets(a, b: PNode): PNode = 
@@ -171,11 +171,11 @@ proc cardSet(s: PNode): BiggestInt =
       result = result + getOrdValue(s.sons[i].sons[1]) -
           getOrdValue(s.sons[i].sons[0]) + 1
     else: 
-      Inc(result)
+      inc(result)
   
-proc SetHasRange(s: PNode): bool = 
+proc setHasRange(s: PNode): bool = 
   if s.kind != nkCurly:
-    InternalError(s.info, "SetHasRange")
+    internalError(s.info, "SetHasRange")
     return false
   for i in countup(0, sonsLen(s) - 1): 
     if s.sons[i].kind == nkRange: 

@@ -14,9 +14,9 @@ import streams, parsexml, strtabs, xmltree
 type
   EInvalidXml* = object of EInvalidValue ## exception that is raised
                                          ## for invalid XML
-    errors*: seq[string]                 ## all detected parsing errors
+    errors*: Seq[String]                 ## all detected parsing errors
 
-proc raiseInvalidXml(errors: seq[string]) = 
+proc raiseInvalidXml(errors: Seq[String]) = 
   var e: ref EInvalidXml
   new(e)
   e.msg = errors[0]
@@ -26,10 +26,10 @@ proc raiseInvalidXml(errors: seq[string]) =
 proc addNode(father, son: PXmlNode) = 
   if son != nil: add(father, son)
 
-proc parse(x: var TXmlParser, errors: var seq[string]): PXmlNode
+proc parse(x: var TXmlParser, errors: var Seq[String]): PXmlNode
 
 proc untilElementEnd(x: var TXmlParser, result: PXmlNode, 
-                     errors: var seq[string]) =
+                     errors: var Seq[String]) =
   while true:
     case x.kind
     of xmlElementEnd: 
@@ -98,8 +98,8 @@ proc parse(x: var TXmlParser, errors: var seq[string]): PXmlNode =
     next(x)
   of xmlEof: nil
 
-proc parseXml*(s: PStream, filename: string, 
-               errors: var seq[string]): PXmlNode = 
+proc parseXml*(s: PStream, filename: String, 
+               errors: var Seq[String]): PXmlNode = 
   ## parses the XML from stream `s` and returns a ``PXmlNode``. Every
   ## occured parsing error is added to the `errors` sequence.
   var x: TXmlParser
@@ -121,25 +121,25 @@ proc parseXml*(s: PStream, filename: string,
 proc parseXml*(s: PStream): PXmlNode = 
   ## parses the XTML from stream `s` and returns a ``PXmlNode``. All parsing
   ## errors are turned into an ``EInvalidXML`` exception.
-  var errors: seq[string] = @[]
+  var errors: Seq[String] = @[]
   result = parseXml(s, "unknown_html_doc", errors)
-  if errors.len > 0: raiseInvalidXMl(errors)
+  if errors.len > 0: raiseInvalidXml(errors)
 
-proc loadXml*(path: string, errors: var seq[string]): PXmlNode = 
+proc loadXml*(path: String, errors: var Seq[String]): PXmlNode = 
   ## Loads and parses XML from file specified by ``path``, and returns 
   ## a ``PXmlNode``. Every occured parsing error is added to the `errors`
   ## sequence.
   var s = newFileStream(path, fmRead)
-  if s == nil: raise newException(EIO, "Unable to read file: " & path)
+  if s == nil: raise newException(Eio, "Unable to read file: " & path)
   result = parseXml(s, path, errors)
 
-proc loadXml*(path: string): PXmlNode = 
+proc loadXml*(path: String): PXmlNode = 
   ## Loads and parses XML from file specified by ``path``, and returns 
   ## a ``PXmlNode``.  All parsing errors are turned into an ``EInvalidXML``
   ## exception.  
-  var errors: seq[string] = @[]
+  var errors: Seq[String] = @[]
   result = loadXml(path, errors)
-  if errors.len > 0: raiseInvalidXMl(errors)
+  if errors.len > 0: raiseInvalidXml(errors)
 
 when isMainModule:
   import os

@@ -4,44 +4,44 @@ import
 
 type 
   TButtonSignalState = object 
-    Obj: gtk2.PObject
-    SignalID: int32
-    Disable: bool
+    obj: gtk2.PObject
+    signalID: Int32
+    disable: Bool
 
   PButtonSignalState = ptr TButtonSignalState
 
-proc destroy(widget: pWidget, data: pgpointer){.cdecl.} = 
-  main_quit()
+proc destroy(widget: PWidget, data: Pgpointer){.cdecl.} = 
+  mainQuit()
 
 proc widgetDestroy(w: PWidget) {.cdecl.} = destroy(w)
 
-proc disablesignal(widget: pWidget, data: pgpointer){.cdecl.} = 
-  var s = cast[PButtonSignalState](Data)
+proc disablesignal(widget: PWidget, data: Pgpointer){.cdecl.} = 
+  var s = cast[PButtonSignalState](data)
   if s.Disable: 
-    signal_handler_block(s.Obj, s.SignalID)
+    signalHandlerBlock(s.Obj, s.SignalID)
   else: 
-    signal_handler_unblock(s.Obj, s.SignalID)
+    signalHandlerUnblock(s.Obj, s.SignalID)
   s.disable = not s.disable
 
 var 
-  QuitState: TButtonSignalState
+  quitState: TButtonSignalState
 
-nimrod_init()
-var window = window_new(WINDOW_TOPLEVEL)
-var quitbutton = button_new("Quit program")
-var disablebutton = button_new("Disable button")
-var windowbox = vbox_new(TRUE, 10)
-pack_start(windowbox, disablebutton, True, false, 0)
-pack_start(windowbox, quitbutton, True, false, 0)
-set_border_width(Window, 10)
+nimrodInit()
+var window = windowNew(WINDOW_TOPLEVEL)
+var quitbutton = buttonNew("Quit program")
+var disablebutton = buttonNew("Disable button")
+var windowbox = vboxNew(true, 10)
+packStart(windowbox, disablebutton, true, false, 0)
+packStart(windowbox, quitbutton, true, false, 0)
+setBorderWidth(window, 10)
 add(window, windowbox)
-discard signal_connect(window, "destroy", SIGNAL_FUNC(ex6.destroy), nil)
-QuitState.Obj = QuitButton
-quitState.SignalID = signal_connect_object(QuitState.Obj, "clicked", 
-                       SIGNAL_FUNC(widgetDestroy), window).int32
-QuitState.Disable = True
-discard signal_connect(disablebutton, "clicked", 
-                   SIGNAL_FUNC(disablesignal), addr(QuitState))
+discard signalConnect(window, "destroy", signalFunc(ex6.destroy), nil)
+quitState.Obj = quitbutton
+quitState.SignalID = signalConnectObject(quitState.Obj, "clicked", 
+                       signalFunc(widgetDestroy), window).Int32
+quitState.Disable = true
+discard signalConnect(disablebutton, "clicked", 
+                   signalFunc(disablesignal), addr(quitState))
 show(quitbutton)
 show(disablebutton)
 show(windowbox)

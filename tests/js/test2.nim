@@ -16,7 +16,7 @@ foo()
   
 # #376
 when not defined(JS):
-  proc foo(val: float): string = "no js " & $val
+  proc foo(val: Float): String = "no js " & $val
 else:
   proc foo(val: float): string = "js " & $val
 

@@ -22,9 +22,9 @@ while server.hostService(addr event, 2500) >= 0:
     
     var
       msg = "hello" 
-      resp = createPacket(cstring(msg), msg.len + 1, FlagReliable)
+      resp = createPacket(Cstring(msg), msg.len + 1, FlagReliable)
       
-    if event.peer.send(0.cuchar, resp) < 0:
+    if event.peer.send(0.Cuchar, resp) < 0:
       echo "FAILED"
     else:
       echo "Replied"

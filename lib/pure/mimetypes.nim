@@ -495,14 +495,14 @@ proc newMimetypes*(): TMimeDB =
 
   result.mimes = mimes.newStringTable()
 
-proc getMimetype*(mimedb: TMimeDB, ext: string, default = "text/plain"): string =
+proc getMimetype*(mimedb: TMimeDB, ext: String, default = "text/plain"): String =
   ## Gets mimetype which corresponds to ``ext``. Returns ``default`` if ``ext``
   ## could not be found.
   result = mimedb.mimes[ext]
   if result == "":
     return default
 
-proc getExt*(mimedb: TMimeDB, mimetype: string, default = "txt"): string =
+proc getExt*(mimedb: TMimeDB, mimetype: String, default = "txt"): String =
   ## Gets extension which corresponds to ``mimetype``. Returns ``default`` if
   ## ``mimetype`` could not be found. Extensions are returned without the
   ## leading dot.
@@ -511,7 +511,7 @@ proc getExt*(mimedb: TMimeDB, mimetype: string, default = "txt"): string =
     if m == mimetype:
       result = e
 
-proc register*(mimedb: var TMimeDB, ext: string, mimetype: string) =
+proc register*(mimedb: var TMimeDB, ext: String, mimetype: String) =
   ## Adds ``mimetype`` to the ``mimedb``.
   mimedb.mimes[ext] = mimetype
 

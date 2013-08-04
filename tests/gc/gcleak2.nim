@@ -7,10 +7,10 @@ when defined(GC_setMaxPause):
 
 type
   TTestObj = object of TObject
-    x: string
-    s: seq[int]
+    x: String
+    s: Seq[Int]
 
-proc MakeObj(): TTestObj =
+proc makeObj(): TTestObj =
   result.x = "Hello"
   result.s = @[1,2,3]
 
@@ -19,7 +19,7 @@ proc inProc() =
     when defined(gcMarkAndSweep):
       GC_fullcollect()
     var obj: TTestObj
-    obj = MakeObj()
+    obj = makeObj()
     if getOccupiedMem() > 300_000: quit("still a leak!")
 
 inProc()

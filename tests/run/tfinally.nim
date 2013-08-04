@@ -6,7 +6,7 @@ here
 """
 # Test return in try statement:
 
-proc main: int = 
+proc main: Int = 
   try:
     try:
       return 1

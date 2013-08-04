@@ -7,8 +7,8 @@ discard """
 {.push overflowChecks: on.}
 
 var
-  a, b: int
-a = high(int)
+  a, b: Int
+a = high(Int)
 b = -2
 try:
   writeln(stdout, b - a)

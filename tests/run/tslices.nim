@@ -21,14 +21,14 @@ mystr[4..4] = "5"
 type
   TEnum = enum e1, e2, e3, e4, e5, e6
 
-var myarr: array[TEnum, int] = [1, 2, 3, 4, 5, 6]
+var myarr: Array[TEnum, Int] = [1, 2, 3, 4, 5, 6]
 myarr[e1..e3] = myarr[e4..e6]
 myarr[..e3] = myarr[e4..e6]
 
 for x in items(myarr): stdout.write(x)
 echo()
 
-var myarr2: array[0..5, int] = [1, 2, 3, 4, 5, 6]
+var myarr2: Array[0..5, Int] = [1, 2, 3, 4, 5, 6]
 myarr2[0..2] = myarr2[3..5]
 
 for x in items(myarr2): stdout.write(x)

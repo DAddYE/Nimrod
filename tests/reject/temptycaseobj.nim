@@ -8,7 +8,7 @@ type
   TMyCase = object
     case e: TMyEnum
     of enA:
-    of enU: x, y: int
-    of enO: a, b: string
+    of enU: x, y: Int
+    of enO: a, b: String
 
 

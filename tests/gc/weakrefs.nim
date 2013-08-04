@@ -6,14 +6,14 @@ import intsets
 
 type
   TMyObject = object
-    id: int
+    id: Int
   StrongObject = ref TMyObject
   WeakObject = object
-    id: int
+    id: Int
     data: ptr TMyObject
 
 var
-  gid: int # for id generation
+  gid: Int # for id generation
   valid = initIntSet()
 
 proc finalizer(x: StrongObject) =
@@ -35,7 +35,7 @@ proc access(w: WeakObject): StrongObject =
     result = cast[StrongObject](w.data)
 
 proc main =
-  var s: seq[WeakObject]
+  var s: Seq[WeakObject]
   newSeq(s, 10_000)
   for i in 0 .. s.high:
     s[i] = register(create())

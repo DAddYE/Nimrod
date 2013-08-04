@@ -26,25 +26,25 @@ type
     dMon, dTue, dWed, dThu, dFri, dSat, dSun
 
 var
-  timezone {.importc, header: "<time.h>".}: int
-  tzname {.importc, header: "<time.h>" .}: array[0..1, cstring]
+  timezone {.importc, header: "<time.h>".}: Int
+  tzname {.importc, header: "<time.h>" .}: Array[0..1, Cstring]
 
 when defined(posix) and not defined(JS):
   type
-    TTimeImpl {.importc: "time_t", header: "<sys/time.h>".} = int
+    TTimeImpl {.importc: "time_t", header: "<sys/time.h>".} = Int
     TTime* = distinct TTimeImpl ## distinct type that represents a time
                                 ## measured as number of seconds since the epoch
     
     Ttimeval {.importc: "struct timeval", header: "<sys/select.h>", 
                final, pure.} = object ## struct timeval
-      tv_sec: int  ## Seconds. 
-      tv_usec: int ## Microseconds. 
+      tv_sec: Int  ## Seconds. 
+      tv_usec: Int ## Microseconds. 
       
   # we cannot import posix.nim here, because posix.nim depends on times.nim.
   # Ok, we could, but I don't want circular dependencies. 
   # And gettimeofday() is not defined in the posix module anyway. Sigh.
   
-  proc posix_gettimeofday(tp: var Ttimeval, unused: pointer = nil) {.
+  proc posixGettimeofday(tp: var Ttimeval, unused: Pointer = nil) {.
     importc: "gettimeofday", header: "<sys/time.h>".}
 
 elif defined(windows):
@@ -103,37 +103,37 @@ elif defined(JS):
 
 type
   TTimeInfo* = object of TObject ## represents a time in different parts
-    second*: range[0..61]     ## The number of seconds after the minute,
+    second*: Range[0..61]     ## The number of seconds after the minute,
                               ## normally in the range 0 to 59, but can
                               ## be up to 61 to allow for leap seconds.
-    minute*: range[0..59]     ## The number of minutes after the hour,
+    minute*: Range[0..59]     ## The number of minutes after the hour,
                               ## in the range 0 to 59.
-    hour*: range[0..23]       ## The number of hours past midnight,
+    hour*: Range[0..23]       ## The number of hours past midnight,
                               ## in the range 0 to 23.
-    monthday*: range[1..31]   ## The day of the month, in the range 1 to 31.
+    monthday*: Range[1..31]   ## The day of the month, in the range 1 to 31.
     month*: TMonth            ## The current month.
-    year*: range[-10_000..10_000] ## The current year.
+    year*: Range[-10_000..10_000] ## The current year.
     weekday*: TWeekDay        ## The current day of the week.
-    yearday*: range[0..365]   ## The number of days since January 1,
+    yearday*: Range[0..365]   ## The number of days since January 1,
                               ## in the range 0 to 365.
                               ## Always 0 if the target is JS.
-    isDST*: bool              ## Determines whether DST is in effect. Always
+    isDST*: Bool              ## Determines whether DST is in effect. Always
                               ## ``False`` if time is UTC.
-    tzname*: string           ## The timezone this time is in. E.g. GMT
-    timezone*: int            ## The offset of the (non-DST) timezone in seconds
+    tzname*: String           ## The timezone this time is in. E.g. GMT
+    timezone*: Int            ## The offset of the (non-DST) timezone in seconds
                               ## west of UTC.
 
   ## I make some assumptions about the data in here. Either
   ## everything should be positive or everything negative. Zero is
   ## fine too. Mixed signs will lead to unexpected results.
   TTimeInterval* {.pure.} = object ## a time interval
-    miliseconds*: int ## The number of miliseconds
-    seconds*: int     ## The number of seconds
-    minutes*: int     ## The number of minutes
-    hours*: int       ## The number of hours
-    days*: int        ## The number of days
-    months*: int      ## The number of months
-    years*: int       ## The number of years
+    miliseconds*: Int ## The number of miliseconds
+    seconds*: Int     ## The number of seconds
+    minutes*: Int     ## The number of minutes
+    hours*: Int       ## The number of hours
+    days*: Int        ## The number of days
+    months*: Int      ## The number of months
+    years*: Int       ## The number of years
 
 proc getTime*(): TTime {.tags: [FTime].}
   ## gets the current calendar time as a UNIX epoch value (number of seconds
@@ -146,62 +146,62 @@ proc getGMTime*(t: TTime): TTimeInfo {.tags: [FTime], raises: [].}
   ## converts the calendar time `t` to broken-down time representation,
   ## expressed in Coordinated Universal Time (UTC).
 
-proc TimeInfoToTime*(timeInfo: TTimeInfo): TTime {.tags: [].}
+proc timeInfoToTime*(timeInfo: TTimeInfo): TTime {.tags: [].}
   ## converts a broken-down time structure to
   ## calendar time representation. The function ignores the specified
   ## contents of the structure members `weekday` and `yearday` and recomputes
   ## them from the other information in the broken-down time structure.
 
-proc fromSeconds*(since1970: float): TTime {.tags: [], raises: [].}
+proc fromSeconds*(since1970: Float): TTime {.tags: [], raises: [].}
   ## Takes a float which contains the number of seconds since the unix epoch and
   ## returns a time object.
 
-proc fromSeconds*(since1970: int64): TTime {.tags: [], raises: [].} = 
+proc fromSeconds*(since1970: Int64): TTime {.tags: [], raises: [].} = 
   ## Takes an int which contains the number of seconds since the unix epoch and
   ## returns a time object.
-  fromSeconds(float(since1970))
+  fromSeconds(Float(since1970))
 
-proc toSeconds*(time: TTime): float {.tags: [], raises: [].}
+proc toSeconds*(time: TTime): Float {.tags: [], raises: [].}
   ## Returns the time in seconds since the unix epoch.
 
-proc `$` *(timeInfo: TTimeInfo): string {.tags: [], raises: [].}
+proc `$` *(timeInfo: TTimeInfo): String {.tags: [], raises: [].}
   ## converts a `TTimeInfo` object to a string representation.
-proc `$` *(time: TTime): string {.tags: [], raises: [].}
+proc `$` *(time: TTime): String {.tags: [], raises: [].}
   ## converts a calendar time to a string representation.
 
-proc `-`*(a, b: TTime): int64 {.
+proc `-`*(a, b: TTime): Int64 {.
   rtl, extern: "ntDiffTime", tags: [], raises: [].}
   ## computes the difference of two calendar times. Result is in seconds.
 
-proc `<`*(a, b: TTime): bool {.
+proc `<`*(a, b: TTime): Bool {.
   rtl, extern: "ntLtTime", tags: [], raises: [].} = 
   ## returns true iff ``a < b``, that is iff a happened before b.
   result = a - b < 0
   
-proc `<=` * (a, b: TTime): bool {.
+proc `<=` * (a, b: TTime): Bool {.
   rtl, extern: "ntLeTime", tags: [], raises: [].}= 
   ## returns true iff ``a <= b``.
   result = a - b <= 0
 
-proc `==`*(a, b: TTime): bool {.
+proc `==`*(a, b: TTime): Bool {.
   rtl, extern: "ntEqTime", tags: [], raises: [].} =
   ## returns true if ``a == b``, that is if both times represent the same value
   result = a - b == 0
 
 when not defined(JS):
-  proc getTzname*(): tuple[nonDST, DST: string] {.tags: [FTime], raises: [].}
+  proc getTzname*(): tuple[nonDST, dst: String] {.tags: [FTime], raises: [].}
     ## returns the local timezone; ``nonDST`` is the name of the local non-DST
     ## timezone, ``DST`` is the name of the local DST timezone.
 
-proc getTimezone*(): int {.tags: [FTime], raises: [].}
+proc getTimezone*(): Int {.tags: [FTime], raises: [].}
   ## returns the offset of the local (non-DST) timezone in seconds west of UTC.
 
-proc getStartMilsecs*(): int {.deprecated, tags: [FTime].}
+proc getStartMilsecs*(): Int {.deprecated, tags: [FTime].}
   ## get the miliseconds from the start of the program. **Deprecated since
   ## version 0.8.10.** Use ``epochTime`` or ``cpuTime`` instead.
 
 proc initInterval*(miliseconds, seconds, minutes, hours, days, months, 
-                   years: int = 0): TTimeInterval =
+                   years: Int = 0): TTimeInterval =
   ## creates a new ``TTimeInterval``.
   result.miliseconds = miliseconds
   result.seconds = seconds
@@ -211,7 +211,7 @@ proc initInterval*(miliseconds, seconds, minutes, hours, days, months,
   result.months = months
   result.years = years
 
-proc isLeapYear(year: int): bool =
+proc isLeapYear(year: Int): Bool =
   if year mod 400 == 0:
     return true
   elif year mod 100 == 0: 
@@ -221,14 +221,14 @@ proc isLeapYear(year: int): bool =
   else:
     return false
 
-proc getDaysInMonth(month: TMonth, year: int): int =
+proc getDaysInMonth(month: TMonth, year: Int): Int =
   # http://www.dispersiondesign.com/articles/time/number_of_days_in_a_month
   case month 
   of mFeb: result = if isLeapYear(year): 29 else: 28
   of mApr, mJun, mSep, mNov: result = 30
   else: result = 31
 
-proc toSeconds(a: TTimeInfo, interval: TTimeInterval): float =
+proc toSeconds(a: TTimeInfo, interval: TTimeInterval): Float =
   ## Calculates how many seconds the interval is worth by adding up
   ## all the fields
 
@@ -239,15 +239,15 @@ proc toSeconds(a: TTimeInfo, interval: TTimeInterval): float =
   newinterv.months += interval.years * 12
   var curMonth = anew.month
   for mth in 1 .. newinterv.months:
-    result += float(getDaysInMonth(curMonth, anew.year) * 24 * 60 * 60)
+    result += Float(getDaysInMonth(curMonth, anew.year) * 24 * 60 * 60)
     if curMonth == mDec:
       curMonth = mJan
       anew.year.inc()
     else:
       curMonth.inc()
-  result += float(newinterv.days * 24 * 60 * 60)
-  result += float(newinterv.minutes * 60 * 60)
-  result += float(newinterv.seconds)
+  result += Float(newinterv.days * 24 * 60 * 60)
+  result += Float(newinterv.minutes * 60 * 60)
+  result += Float(newinterv.seconds)
   result += newinterv.miliseconds / 1000
 
 proc `+`*(a: TTimeInfo, interval: TTimeInterval): TTimeInfo =
@@ -255,7 +255,7 @@ proc `+`*(a: TTimeInfo, interval: TTimeInterval): TTimeInfo =
   ##
   ## **Note:** This has been only briefly tested and it may not be
   ## very accurate.
-  let t = toSeconds(TimeInfoToTime(a))
+  let t = toSeconds(timeInfoToTime(a))
   let secs = toSeconds(a, interval)
   if a.tzname == "UTC":
     result = getGMTime(fromSeconds(t + secs))
@@ -267,7 +267,7 @@ proc `-`*(a: TTimeInfo, interval: TTimeInterval): TTimeInfo =
   ##
   ## **Note:** This has been only briefly tested, it is inaccurate especially
   ## when you subtract so much that you reach the Julian calendar.
-  let t = toSeconds(TimeInfoToTime(a))
+  let t = toSeconds(timeInfoToTime(a))
   let secs = toSeconds(a, interval)
   if a.tzname == "UTC":
     result = getGMTime(fromSeconds(t - secs))
@@ -275,12 +275,12 @@ proc `-`*(a: TTimeInfo, interval: TTimeInterval): TTimeInfo =
     result = getLocalTime(fromSeconds(t - secs))
 
 when not defined(JS):  
-  proc epochTime*(): float {.rtl, extern: "nt$1", tags: [FTime].}
+  proc epochTime*(): Float {.rtl, extern: "nt$1", tags: [FTime].}
     ## gets time after the UNIX epoch (1970) in seconds. It is a float
     ## because sub-second resolution is likely to be supported (depending 
     ## on the hardware/OS).
 
-  proc cpuTime*(): float {.rtl, extern: "nt$1", tags: [FTime].}
+  proc cpuTime*(): Float {.rtl, extern: "nt$1", tags: [FTime].}
     ## gets time spent that the CPU spent to run the current process in
     ## seconds. This may be more useful for benchmarking than ``epochTime``.
     ## However, it may measure the real time instead (depending on the OS).
@@ -296,7 +296,7 @@ when not defined(JS):
 when not defined(JS):
   # C wrapper:
   type
-    structTM {.importc: "struct tm", final.} = object
+    StructTM {.importc: "struct tm", final.} = object
       second {.importc: "tm_sec".},
         minute {.importc: "tm_min".},
         hour {.importc: "tm_hour".},
@@ -305,12 +305,12 @@ when not defined(JS):
         year {.importc: "tm_year".},
         weekday {.importc: "tm_wday".},
         yearday {.importc: "tm_yday".},
-        isdst {.importc: "tm_isdst".}: cint
+        isdst {.importc: "tm_isdst".}: Cint
   
-    PTimeInfo = ptr structTM
+    PTimeInfo = ptr StructTM
     PTime = ptr TTime
   
-    TClock {.importc: "clock_t".} = distinct int
+    TClock {.importc: "clock_t".} = distinct Int
   
   proc localtime(timer: PTime): PTimeInfo {.
     importc: "localtime", header: "<time.h>", tags: [].}
@@ -318,34 +318,34 @@ when not defined(JS):
     importc: "gmtime", header: "<time.h>", tags: [].}
   proc timec(timer: PTime): TTime {.
     importc: "time", header: "<time.h>", tags: [].}
-  proc mktime(t: structTM): TTime {.
+  proc mktime(t: StructTM): TTime {.
     importc: "mktime", header: "<time.h>", tags: [].}
-  proc asctime(tblock: structTM): CString {.
+  proc asctime(tblock: StructTM): Cstring {.
     importc: "asctime", header: "<time.h>", tags: [].}
-  proc ctime(time: PTime): CString {.
+  proc ctime(time: PTime): Cstring {.
     importc: "ctime", header: "<time.h>", tags: [].}
   #  strftime(s: CString, maxsize: int, fmt: CString, t: tm): int {.
   #    importc: "strftime", header: "<time.h>".}
   proc clock(): TClock {.importc: "clock", header: "<time.h>", tags: [FTime].}
-  proc difftime(a, b: TTime): float {.importc: "difftime", header: "<time.h>", 
+  proc difftime(a, b: TTime): Float {.importc: "difftime", header: "<time.h>", 
     tags: [].}
   
   var
-    clocksPerSec {.importc: "CLOCKS_PER_SEC", nodecl.}: int
+    clocksPerSec {.importc: "CLOCKS_PER_SEC", nodecl.}: Int
     
   # our own procs on top of that:
-  proc tmToTimeInfo(tm: structTM, local: bool): TTimeInfo =
+  proc tmToTimeInfo(tm: StructTM, local: Bool): TTimeInfo =
     const
-      weekDays: array [0..6, TWeekDay] = [
+      weekDays: Array [0..6, TWeekDay] = [
         dSun, dMon, dTue, dWed, dThu, dFri, dSat]
-    TTimeInfo(second: int(tm.second),
-      minute: int(tm.minute),
-      hour: int(tm.hour),
-      monthday: int(tm.monthday),
+    TTimeInfo(second: Int(tm.second),
+      minute: Int(tm.minute),
+      hour: Int(tm.hour),
+      monthday: Int(tm.monthday),
       month: TMonth(tm.month),
       year: tm.year + 1900'i32,
-      weekday: weekDays[int(tm.weekDay)],
-      yearday: int(tm.yearday),
+      weekday: weekDays[Int(tm.weekDay)],
+      yearday: Int(tm.yearday),
       isDST: tm.isDST > 0,
       tzname: if local:
           if tm.isDST > 0:
@@ -357,9 +357,9 @@ when not defined(JS):
       timezone: if local: getTimezone() else: 0
     )
   
-  proc timeInfoToTM(t: TTimeInfo): structTM =
+  proc timeInfoToTM(t: TTimeInfo): StructTM =
     const
-      weekDays: array [TWeekDay, int8] = [1'i8,2'i8,3'i8,4'i8,5'i8,6'i8,0'i8]
+      weekDays: Array [TWeekDay, Int8] = [1'i8,2'i8,3'i8,4'i8,5'i8,6'i8,0'i8]
     result.second = t.second
     result.minute = t.minute
     result.hour = t.hour
@@ -378,7 +378,7 @@ when not defined(JS):
     #echo "clocks per sec: ", clocksPerSec, "clock: ", int(clock())
     #return clock() div (clocksPerSec div 1000)
     when defined(macosx):
-      result = toInt(toFloat(int(clock())) / (toFloat(clocksPerSec) / 1000.0))
+      result = toInt(toFloat(Int(clock())) / (toFloat(clocksPerSec) / 1000.0))
     else:
       result = int(clock()) div (clocksPerSec div 1000)
     when false:
@@ -400,12 +400,12 @@ when not defined(JS):
     # copying is needed anyway to provide reentrancity; thus
     # the conversion is not expensive
   
-  proc TimeInfoToTime(timeInfo: TTimeInfo): TTime =
+  proc timeInfoToTime(timeInfo: TTimeInfo): TTime =
     var cTimeInfo = timeInfo # for C++ we have to make a copy,
     # because the header of mktime is broken in my version of libc
     return mktime(timeInfoToTM(cTimeInfo))
 
-  proc toStringTillNL(p: cstring): string = 
+  proc toStringTillNL(p: Cstring): String = 
     result = ""
     var i = 0
     while p[i] != '\0' and p[i] != '\10' and p[i] != '\13': 
@@ -426,11 +426,11 @@ when not defined(JS):
     epochDiff = 116444736000000000'i64
     rateDiff = 10000000'i64 # 100 nsecs
 
-  proc unixTimeToWinTime*(t: TTime): int64 = 
+  proc unixTimeToWinTime*(t: TTime): Int64 = 
     ## converts a UNIX `TTime` (``time_t``) to a Windows file time
-    result = int64(t) * rateDiff + epochDiff
+    result = Int64(t) * rateDiff + epochDiff
     
-  proc winTimeToUnixTime*(t: int64): TTime = 
+  proc winTimeToUnixTime*(t: Int64): TTime = 
     ## converts a Windows time to a UNIX `TTime` (``time_t``)
     result = TTime((t - epochDiff) div rateDiff)
  
@@ -442,13 +442,13 @@ when not defined(JS):
 
   proc fromSeconds(since1970: float): TTime = TTime(since1970)
 
-  proc toSeconds(time: TTime): float = float(time)
+  proc toSeconds(time: TTime): float = Float(time)
 
   when not defined(useNimRtl):
     proc epochTime(): float = 
       when defined(posix):
         var a: Ttimeval
-        posix_gettimeofday(a)
+        posixGettimeofday(a)
         result = toFloat(a.tv_sec) + toFloat(a.tv_usec)*0.00_0001
       elif defined(windows):
         var f: winlean.TFiletime
@@ -461,7 +461,7 @@ when not defined(JS):
         {.error: "unknown OS".}
       
     proc cpuTime(): float = 
-      result = toFloat(int(clock())) / toFloat(clocksPerSec)
+      result = toFloat(Int(clock())) / toFloat(clocksPerSec)
     
 elif defined(JS):
   proc newDate(): TTime {.importc: "new Date".}
@@ -527,32 +527,32 @@ elif defined(JS):
 
   proc getTimezone(): int = result = newDate().getTimezoneOffset()
 
-proc getDateStr*(): string {.rtl, extern: "nt$1", tags: [FTime].} =
+proc getDateStr*(): String {.rtl, extern: "nt$1", tags: [FTime].} =
   ## gets the current date as a string of the format ``YYYY-MM-DD``.
   var ti = getLocalTime(getTime())
   result = $ti.year & '-' & intToStr(ord(ti.month)+1, 2) &
     '-' & intToStr(ti.monthDay, 2)
 
-proc getClockStr*(): string {.rtl, extern: "nt$1", tags: [FTime].} =
+proc getClockStr*(): String {.rtl, extern: "nt$1", tags: [FTime].} =
   ## gets the current clock time as a string of the format ``HH:MM:SS``.
   var ti = getLocalTime(getTime())
   result = intToStr(ti.hour, 2) & ':' & intToStr(ti.minute, 2) &
     ':' & intToStr(ti.second, 2)
 
-proc `$`*(day: TWeekDay): string =
+proc `$`*(day: TWeekDay): String =
   ## stingify operator for ``TWeekDay``.
-  const lookup: array[TWeekDay, string] = ["Monday", "Tuesday", "Wednesday",
+  const lookup: Array[TWeekDay, String] = ["Monday", "Tuesday", "Wednesday",
      "Thursday", "Friday", "Saturday", "Sunday"]
   return lookup[day]
 
-proc `$`*(m: TMonth): string =
+proc `$`*(m: TMonth): String =
   ## stingify operator for ``TMonth``.
-  const lookup: array[TMonth, string] = ["January", "February", "March", 
+  const lookup: Array[TMonth, String] = ["January", "February", "March", 
       "April", "May", "June", "July", "August", "September", "October",
       "November", "December"]
   return lookup[m]
 
-proc format*(info: TTimeInfo, f: string): string =
+proc format*(info: TTimeInfo, f: String): String =
   ## This function formats `info` as specified by `f`. The following format
   ## specifiers are available:
   ## 
@@ -592,7 +592,7 @@ proc format*(info: TTimeInfo, f: string): string =
   result = ""
   var i = 0
   var currentF = ""
-  while True:
+  while true:
     case f[i]
     of ' ', '-', '/', ':', '\'', '\0', '(', ')', '[', ']', ',':
       case currentF
@@ -626,11 +626,11 @@ proc format*(info: TTimeInfo, f: string): string =
           result.add('0')
         result.add($info.minute)
       of "M":
-        result.add($(int(info.month)+1))
+        result.add($(Int(info.month)+1))
       of "MM":
         if info.month < mOct:
           result.add('0')
-        result.add($(int(info.month)+1))
+        result.add($(Int(info.month)+1))
       of "MMM":
         result.add(($info.month)[0..2])
       of "MMMM":

@@ -9,23 +9,23 @@ type
   TExpr = object ## abstract base class for an expression
   PLiteral = ref TLiteral
   TLiteral = object of TExpr
-    x: int
-    op1: string
+    x: Int
+    op1: String
   TPlusExpr = object of TExpr
     a, b: ref TExpr
-    op2: string
+    op2: String
     
-method eval(e: ref TExpr): int =
+method eval(e: ref TExpr): Int =
   # override this base method
   quit "to override!"
 
-method eval(e: ref TLiteral): int = return e.x
+method eval(e: ref TLiteral): Int = return e.x
 
-method eval(e: ref TPlusExpr): int =
+method eval(e: ref TPlusExpr): Int =
   # watch out: relies on dynamic binding
   return eval(e.a) + eval(e.b)
 
-proc newLit(x: int): ref TLiteral =
+proc newLit(x: Int): ref TLiteral =
   new(result)
   {.watchpoint: result.}
   result.x = x
@@ -39,7 +39,7 @@ proc newPlus(a, b: ref TExpr): ref TPlusExpr =
   result.op2 = $getOccupiedMem()
 
 for i in 0..100_000:
-  var s: array[0..11, ref TExpr]
+  var s: Array[0..11, ref TExpr]
   for j in 0..high(s):
     s[j] = newPlus(newPlus(newLit(j), newLit(2)), newLit(4))
     if eval(s[j]) != j+6:

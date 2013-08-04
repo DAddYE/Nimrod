@@ -4,7 +4,7 @@ discard """
 """
 # the Ackermann function
 
-proc ack(x, y: int): int =
+proc ack(x, y: Int): Int =
   if x != 0:
     if y != 0:
       return ack(x-1, ack(x, y-1))

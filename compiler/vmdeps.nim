@@ -9,23 +9,23 @@
 
 import ast, msgs, osproc, streams, options
 
-proc readOutput(p: PProcess): string =
+proc readOutput(p: PProcess): String =
   result = ""
   var output = p.outputStream
   discard p.waitForExit
   while not output.atEnd:
     result.add(output.readLine)
 
-proc opGorge*(cmd, input: string): string =
+proc opGorge*(cmd, input: String): String =
   var p = startCmd(cmd)
   if input.len != 0:
     p.inputStream.write(input)
     p.inputStream.close()
   result = p.readOutput
 
-proc opSlurp*(file: string, info: TLineInfo, module: PSym): string = 
+proc opSlurp*(file: String, info: TLineInfo, module: PSym): String = 
   try:
-    let filename = file.FindFile
+    let filename = file.findFile
     result = readFile(filename)
     # we produce a fake include statement for every slurped filename, so that
     # the module dependencies are accurate:
@@ -33,7 +33,7 @@ proc opSlurp*(file: string, info: TLineInfo, module: PSym): string =
       newStrNode(nkStrLit, filename)]))
   except EIO:
     result = ""
-    LocalError(info, errCannotOpenFile, file)
+    localError(info, errCannotOpenFile, file)
 
 when false:
   proc opExpandToAst*(c: PEvalContext, original: PNode): PNode =

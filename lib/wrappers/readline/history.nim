@@ -28,20 +28,20 @@ const
 import times, rltypedefs
 
 type 
-  Thistdata* = pointer
+  Thistdata* = Pointer
 
 # The structure used to store a history entry. 
 
 type 
   THIST_ENTRY*{.pure, final.} = object 
-    line*: cstring
-    timestamp*: cstring       # char * rather than time_t for read/write 
+    line*: Cstring
+    timestamp*: Cstring       # char * rather than time_t for read/write 
     data*: Thistdata
 
 
 # Size of the history-library-managed space in history entry HS. 
 
-template HISTENT_BYTES*(hs: expr): expr = 
+template histentBytes*(hs: Expr): Expr = 
   (strlen(hs.line) + strlen(hs.timestamp))
 
 # A structure used to pass the current state of the history stuff around. 
@@ -49,122 +49,122 @@ template HISTENT_BYTES*(hs: expr): expr =
 type 
   THISTORY_STATE*{.pure, final.} = object 
     entries*: ptr ptr THIST_ENTRY # Pointer to the entries themselves. 
-    offset*: cint             # The location pointer within this array. 
-    length*: cint             # Number of elements within this array. 
-    size*: cint               # Number of slots allocated to this array. 
-    flags*: cint
+    offset*: Cint             # The location pointer within this array. 
+    length*: Cint             # Number of elements within this array. 
+    size*: Cint               # Number of slots allocated to this array. 
+    flags*: Cint
 
 
 # Flag values for the `flags' member of HISTORY_STATE. 
 
 const 
-  HS_STIFLED* = 0x00000001
+  HsStifled* = 0x00000001
 
 # Initialization and state management. 
 # Begin a session in which the history functions might be used.  This
 #   just initializes the interactive variables. 
 
-proc using_history*(){.cdecl, importc: "using_history", dynlib: historyDll.}
+proc usingHistory*(){.cdecl, importc: "using_history", dynlib: historyDll.}
 # Return the current HISTORY_STATE of the history. 
 
-proc history_get_history_state*(): ptr THISTORY_STATE{.cdecl, 
+proc historyGetHistoryState*(): ptr THISTORY_STATE{.cdecl, 
     importc: "history_get_history_state", dynlib: historyDll.}
 # Set the state of the current history array to STATE. 
 
-proc history_set_history_state*(a2: ptr THISTORY_STATE){.cdecl, 
+proc historySetHistoryState*(a2: ptr THISTORY_STATE){.cdecl, 
     importc: "history_set_history_state", dynlib: historyDll.}
 # Manage the history list. 
 # Place STRING at the end of the history list.
 #   The associated data field (if any) is set to NULL. 
 
-proc add_history*(a2: cstring){.cdecl, importc: "add_history", 
+proc addHistory*(a2: Cstring){.cdecl, importc: "add_history", 
                                 dynlib: historyDll.}
 # Change the timestamp associated with the most recent history entry to
 #   STRING. 
 
-proc add_history_time*(a2: cstring){.cdecl, importc: "add_history_time", 
+proc addHistoryTime*(a2: Cstring){.cdecl, importc: "add_history_time", 
                                      dynlib: historyDll.}
 # A reasonably useless function, only here for completeness.  WHICH
 #   is the magic number that tells us which element to delete.  The
 #   elements are numbered from 0. 
 
-proc remove_history*(a2: cint): ptr THIST_ENTRY{.cdecl, 
+proc removeHistory*(a2: Cint): ptr THIST_ENTRY{.cdecl, 
     importc: "remove_history", dynlib: historyDll.}
 # Free the history entry H and return any application-specific data
 #   associated with it. 
 
-proc free_history_entry*(a2: ptr THIST_ENTRY): Thistdata{.cdecl, 
+proc freeHistoryEntry*(a2: ptr THIST_ENTRY): Thistdata{.cdecl, 
     importc: "free_history_entry", dynlib: historyDll.}
 # Make the history entry at WHICH have LINE and DATA.  This returns
 #   the old entry so you can dispose of the data.  In the case of an
 #   invalid WHICH, a NULL pointer is returned. 
 
-proc replace_history_entry*(a2: cint, a3: cstring, a4: Thistdata): ptr THIST_ENTRY{.
+proc replaceHistoryEntry*(a2: Cint, a3: Cstring, a4: Thistdata): ptr THIST_ENTRY{.
     cdecl, importc: "replace_history_entry", dynlib: historyDll.}
 # Clear the history list and start over. 
 
-proc clear_history*(){.cdecl, importc: "clear_history", dynlib: historyDll.}
+proc clearHistory*(){.cdecl, importc: "clear_history", dynlib: historyDll.}
 # Stifle the history list, remembering only MAX number of entries. 
 
-proc stifle_history*(a2: cint){.cdecl, importc: "stifle_history", 
+proc stifleHistory*(a2: Cint){.cdecl, importc: "stifle_history", 
                                 dynlib: historyDll.}
 # Stop stifling the history.  This returns the previous amount the
 #   history was stifled by.  The value is positive if the history was
 #   stifled, negative if it wasn't. 
 
-proc unstifle_history*(): cint{.cdecl, importc: "unstifle_history", 
+proc unstifleHistory*(): Cint{.cdecl, importc: "unstifle_history", 
                                 dynlib: historyDll.}
 # Return 1 if the history is stifled, 0 if it is not. 
 
-proc history_is_stifled*(): cint{.cdecl, importc: "history_is_stifled", 
+proc historyIsStifled*(): Cint{.cdecl, importc: "history_is_stifled", 
                                   dynlib: historyDll.}
 # Information about the history list. 
 # Return a NULL terminated array of HIST_ENTRY which is the current input
 #   history.  Element 0 of this list is the beginning of time.  If there
 #   is no history, return NULL. 
 
-proc history_list*(): ptr ptr THIST_ENTRY{.cdecl, importc: "history_list", 
+proc historyList*(): ptr ptr THIST_ENTRY{.cdecl, importc: "history_list", 
     dynlib: historyDll.}
 # Returns the number which says what history element we are now
 #   looking at.  
 
-proc where_history*(): cint{.cdecl, importc: "where_history", dynlib: historyDll.}
+proc whereHistory*(): Cint{.cdecl, importc: "where_history", dynlib: historyDll.}
 # Return the history entry at the current position, as determined by
 #   history_offset.  If there is no entry there, return a NULL pointer. 
 
-proc current_history*(): ptr THIST_ENTRY{.cdecl, importc: "current_history", 
+proc currentHistory*(): ptr THIST_ENTRY{.cdecl, importc: "current_history", 
     dynlib: historyDll.}
 # Return the history entry which is logically at OFFSET in the history
 #   array.  OFFSET is relative to history_base. 
 
-proc history_get*(a2: cint): ptr THIST_ENTRY{.cdecl, importc: "history_get", 
+proc historyGet*(a2: Cint): ptr THIST_ENTRY{.cdecl, importc: "history_get", 
     dynlib: historyDll.}
 # Return the timestamp associated with the HIST_ENTRY * passed as an
 #   argument 
 
-proc history_get_time*(a2: ptr THIST_ENTRY): TTime{.cdecl, 
+proc historyGetTime*(a2: ptr THIST_ENTRY): TTime{.cdecl, 
     importc: "history_get_time", dynlib: historyDll.}
 # Return the number of bytes that the primary history entries are using.
 #   This just adds up the lengths of the_history->lines. 
 
-proc history_total_bytes*(): cint{.cdecl, importc: "history_total_bytes", 
+proc historyTotalBytes*(): Cint{.cdecl, importc: "history_total_bytes", 
                                    dynlib: historyDll.}
 # Moving around the history list. 
 # Set the position in the history list to POS. 
 
-proc history_set_pos*(a2: cint): cint{.cdecl, importc: "history_set_pos", 
+proc historySetPos*(a2: Cint): Cint{.cdecl, importc: "history_set_pos", 
                                        dynlib: historyDll.}
 # Back up history_offset to the previous history entry, and return
 #   a pointer to that entry.  If there is no previous entry, return
 #   a NULL pointer. 
 
-proc previous_history*(): ptr THIST_ENTRY{.cdecl, importc: "previous_history", 
+proc previousHistory*(): ptr THIST_ENTRY{.cdecl, importc: "previous_history", 
     dynlib: historyDll.}
 # Move history_offset forward to the next item in the input_history,
 #   and return the a pointer to that entry.  If there is no next entry,
 #   return a NULL pointer. 
 
-proc next_history*(): ptr THIST_ENTRY{.cdecl, importc: "next_history", 
+proc nextHistory*(): ptr THIST_ENTRY{.cdecl, importc: "next_history", 
                                        dynlib: historyDll.}
 # Searching the history list. 
 # Search the history for STRING, starting at history_offset.
@@ -174,13 +174,13 @@ proc next_history*(): ptr THIST_ENTRY{.cdecl, importc: "next_history",
 #   is the offset in the line of that history entry that the string was
 #   found in.  Otherwise, nothing is changed, and a -1 is returned. 
 
-proc history_search*(a2: cstring, a3: cint): cint{.cdecl, 
+proc historySearch*(a2: Cstring, a3: Cint): Cint{.cdecl, 
     importc: "history_search", dynlib: historyDll.}
 # Search the history for STRING, starting at history_offset.
 #   The search is anchored: matching lines must begin with string.
 #   DIRECTION is as in history_search(). 
 
-proc history_search_prefix*(a2: cstring, a3: cint): cint{.cdecl, 
+proc historySearchPrefix*(a2: Cstring, a3: Cint): Cint{.cdecl, 
     importc: "history_search_prefix", dynlib: historyDll.}
 # Search for STRING in the history list, starting at POS, an
 #   absolute index into the list.  DIR, if negative, says to search
@@ -188,14 +188,14 @@ proc history_search_prefix*(a2: cstring, a3: cint): cint{.cdecl,
 #   Returns the absolute index of the history element where STRING
 #   was found, or -1 otherwise. 
 
-proc history_search_pos*(a2: cstring, a3: cint, a4: cint): cint{.cdecl, 
+proc historySearchPos*(a2: Cstring, a3: Cint, a4: Cint): Cint{.cdecl, 
     importc: "history_search_pos", dynlib: historyDll.}
 # Managing the history file. 
 # Add the contents of FILENAME to the history list, a line at a time.
 #   If FILENAME is NULL, then read from ~/.history.  Returns 0 if
 #   successful, or errno if not. 
 
-proc read_history*(a2: cstring): cint{.cdecl, importc: "read_history", 
+proc readHistory*(a2: Cstring): Cint{.cdecl, importc: "read_history", 
                                        dynlib: historyDll.}
 # Read a range of lines from FILENAME, adding them to the history list.
 #   Start reading at the FROM'th line and end at the TO'th.  If FROM
@@ -203,22 +203,22 @@ proc read_history*(a2: cstring): cint{.cdecl, importc: "read_history",
 #   until the end of the file.  If FILENAME is NULL, then read from
 #   ~/.history.  Returns 0 if successful, or errno if not. 
 
-proc read_history_range*(a2: cstring, a3: cint, a4: cint): cint{.cdecl, 
+proc readHistoryRange*(a2: Cstring, a3: Cint, a4: Cint): Cint{.cdecl, 
     importc: "read_history_range", dynlib: historyDll.}
 # Write the current history to FILENAME.  If FILENAME is NULL,
 #   then write the history list to ~/.history.  Values returned
 #   are as in read_history ().  
 
-proc write_history*(a2: cstring): cint{.cdecl, importc: "write_history", 
+proc writeHistory*(a2: Cstring): Cint{.cdecl, importc: "write_history", 
                                         dynlib: historyDll.}
 # Append NELEMENT entries to FILENAME.  The entries appended are from
 #   the end of the list minus NELEMENTs up to the end of the list. 
 
-proc append_history*(a2: cint, a3: cstring): cint{.cdecl, 
+proc appendHistory*(a2: Cint, a3: Cstring): Cint{.cdecl, 
     importc: "append_history", dynlib: historyDll.}
 # Truncate the history file, leaving only the last NLINES lines. 
 
-proc history_truncate_file*(a2: cstring, a3: cint): cint{.cdecl, 
+proc historyTruncateFile*(a2: Cstring, a3: Cint): Cint{.cdecl, 
     importc: "history_truncate_file", dynlib: historyDll.}
 # History expansion. 
 # Expand the string STRING, placing the result into OUTPUT, a pointer
@@ -234,13 +234,13 @@ proc history_truncate_file*(a2: cstring, a3: cint): cint{.cdecl,
 #  If an error ocurred in expansion, then OUTPUT contains a descriptive
 #  error message. 
 
-proc history_expand*(a2: cstring, a3: cstringArray): cint{.cdecl, 
+proc historyExpand*(a2: Cstring, a3: CstringArray): Cint{.cdecl, 
     importc: "history_expand", dynlib: historyDll.}
 # Extract a string segment consisting of the FIRST through LAST
 #   arguments present in STRING.  Arguments are broken up as in
 #   the shell. 
 
-proc history_arg_extract*(a2: cint, a3: cint, a4: cstring): cstring{.cdecl, 
+proc historyArgExtract*(a2: Cint, a3: Cint, a4: Cstring): Cstring{.cdecl, 
     importc: "history_arg_extract", dynlib: historyDll.}
 # Return the text of the history event beginning at the current
 #   offset into STRING.  Pass STRING with *INDEX equal to the
@@ -249,12 +249,12 @@ proc history_arg_extract*(a2: cint, a3: cint, a4: cstring): cstring{.cdecl,
 #   specification for what to search for in addition to the normal
 #   characters `:', ` ', `\t', `\n', and sometimes `?'. 
 
-proc get_history_event*(a2: cstring, a3: ptr cint, a4: cint): cstring{.cdecl, 
+proc getHistoryEvent*(a2: Cstring, a3: ptr Cint, a4: Cint): Cstring{.cdecl, 
     importc: "get_history_event", dynlib: historyDll.}
 # Return an array of tokens, much as the shell might.  The tokens are
 #   parsed out of STRING. 
 
-proc history_tokenize*(a2: cstring): cstringArray{.cdecl, 
+proc historyTokenize*(a2: Cstring): CstringArray{.cdecl, 
     importc: "history_tokenize", dynlib: historyDll.}
 when false: 
   # Exported history variables. 

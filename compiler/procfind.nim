@@ -13,24 +13,24 @@
 import
   ast, astalgo, msgs, semdata, types, trees
 
-proc equalGenericParams(procA, procB: PNode): bool =
+proc equalGenericParams(procA, procB: PNode): Bool =
   if sonsLen(procA) != sonsLen(procB): return
   for i in countup(0, sonsLen(procA) - 1):
     if procA.sons[i].kind != nkSym:
-      InternalError(procA.info, "equalGenericParams")
+      internalError(procA.info, "equalGenericParams")
       return
     if procB.sons[i].kind != nkSym:
-      InternalError(procB.info, "equalGenericParams")
+      internalError(procB.info, "equalGenericParams")
       return
     let a = procA.sons[i].sym
     let b = procB.sons[i].sym
     if a.name.id != b.name.id or
         not sameTypeOrNil(a.typ, b.typ, {TypeDescExactMatch}): return
     if a.ast != nil and b.ast != nil:
-      if not ExprStructuralEquivalent(a.ast, b.ast): return
+      if not exprStructuralEquivalent(a.ast, b.ast): return
   result = true
 
-proc SearchForProc*(c: PContext, scope: PScope, fn: PSym): PSym =
+proc searchForProc*(c: PContext, scope: PScope, fn: PSym): PSym =
   # Searchs for a forward declaration or a "twin" symbol of fn
   # in the symbol table. If the parameter lists are exactly
   # the same the sym in the symbol table is returned, else nil.
@@ -44,12 +44,12 @@ proc SearchForProc*(c: PContext, scope: PScope, fn: PSym): PSym =
       if result.Kind == fn.kind and isGenericRoutine(result):
         let genR = result.ast.sons[genericParamsPos]
         let genF = fn.ast.sons[genericParamsPos]
-        if ExprStructuralEquivalent(genR, genF) and
-           ExprStructuralEquivalent(result.ast.sons[paramsPos],
+        if exprStructuralEquivalent(genR, genF) and
+           exprStructuralEquivalent(result.ast.sons[paramsPos],
                                     fn.ast.sons[paramsPos]) and
            equalGenericParams(genR, genF):
             return
-      result = NextIdentIter(it, scope.symbols)
+      result = nextIdentIter(it, scope.symbols)
   else:
     while result != nil:
       if result.Kind == fn.kind and not isGenericRoutine(result):
@@ -57,11 +57,11 @@ proc SearchForProc*(c: PContext, scope: PScope, fn: PSym): PSym =
         of paramsEqual:
           return
         of paramsIncompatible:
-          LocalError(fn.info, errNotOverloadable, fn.name.s)
+          localError(fn.info, errNotOverloadable, fn.name.s)
           return
         of paramsNotEqual:
           nil
-      result = NextIdentIter(it, scope.symbols)
+      result = nextIdentIter(it, scope.symbols)
 
 when false:
   proc paramsFitBorrow(child, parent: PNode): bool = 

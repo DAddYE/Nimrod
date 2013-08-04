@@ -1,3 +1,3 @@
 # export an identifier:
 var
-  global*: int
+  global*: Int

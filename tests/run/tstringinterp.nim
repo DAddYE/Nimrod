@@ -5,11 +5,11 @@ discard """
 
 import macros, parseutils, strutils
 
-proc concat(strings: varargs[string]): string =
+proc concat(strings: Varargs[String]): String =
   result = newString(0)
   for s in items(strings): result.add(s)
 
-template ProcessInterpolations(e: expr) =
+template processInterpolations(e: Expr) =
   var s = e[1].strVal
   for f in interpolatedFragments(s):
     case f.kind
@@ -17,14 +17,14 @@ template ProcessInterpolations(e: expr) =
     of ikDollar:      addDollar()
     of ikVar, ikExpr: addExpr(newCall("$", parseExpr(f.value)))
 
-macro formatStyleInterpolation(e: expr): expr =
+macro formatStyleInterpolation(e: Expr): Expr =
   let e = callsite()
   var 
     formatString = ""
     arrayNode = newNimNode(nnkBracket)
     idx = 1
 
-  proc addString(s: string) =
+  proc addString(s: String) =
     formatString.add(s)
 
   proc addExpr(e: PNimrodNode) =
@@ -41,12 +41,12 @@ macro formatStyleInterpolation(e: expr): expr =
   result[1].strVal = formatString
   result[2] = arrayNode
 
-macro concatStyleInterpolation(e: expr): expr =
+macro concatStyleInterpolation(e: Expr): Expr =
   let e = callsite()
-  var args: seq[PNimrodNode]
+  var args: Seq[PNimrodNode]
   newSeq(args, 0)
 
-  proc addString(s: string)    = args.add(newStrLitNode(s))
+  proc addString(s: String)    = args.add(newStrLitNode(s))
   proc addExpr(e: PNimrodNode) = args.add(e)
   proc addDollar()             = args.add(newStrLitNode"$")
 
@@ -56,7 +56,7 @@ macro concatStyleInterpolation(e: expr): expr =
 
 ###
 
-proc sum(a, b, c: int): int =
+proc sum(a, b, c: Int): Int =
   return (a + b + c)
 
 var 

@@ -4,11 +4,11 @@ import macros
 proc und*(a: PNimrodNode; b: PNimrodNode): PNimrodNode {.compileTime.} =
   a.add(b)
   result = a
-proc und*(a: PNimrodNode; b: varargs[PNimrodNode]): PNimrodNode {.compileTime.} =
+proc und*(a: PNimrodNode; b: Varargs[PNimrodNode]): PNimrodNode {.compileTime.} =
   a.add(b)
   result = a
 
-proc `^`*(a: string): PNimrodNode {.compileTime.} = 
+proc `^`*(a: String): PNimrodNode {.compileTime.} = 
   ## new ident node
   result = newIdentNode(!a)
 proc `[]`*(a, b: PNimrodNode): PNimrodNode {.compileTime.} =
@@ -18,13 +18,13 @@ proc `:=`*(left, right: PNimrodNode): PNimrodNode {.compileTime.} =
   ## new Asgn node:  left = right
   result = newNimNode(nnkAsgn).und(left, right)
 
-proc lit*(a: string): PNimrodNode {.compileTime.} =
+proc lit*(a: String): PNimrodNode {.compileTime.} =
   result = newStrLitNode(a)
-proc lit*(a: int): PNimrodNode {.compileTime.} =
+proc lit*(a: Int): PNimrodNode {.compileTime.} =
   result = newIntLitNode(a)
-proc lit*(a: float): PNimrodNode {.compileTime.} =
+proc lit*(a: Float): PNimrodNode {.compileTime.} =
   result = newFloatLitNode(a)
-proc lit*(a: char): PNimrodNode {.compileTime.} =
+proc lit*(a: Char): PNimrodNode {.compileTime.} =
   result = newNimNode(nnkCharLit)
   result.intval = a.ord
 
@@ -33,7 +33,7 @@ proc emptyNode*(): PNimrodNode {.compileTime.} =
 
 proc dot*(left, right: PNimrodNode): PNimrodNode {.compileTime.} =
   result = newNimNode(nnkDotExpr).und(left, right)
-proc prefix*(a: string, b: PNimrodNode): PNimrodNode {.compileTime.} =
+proc prefix*(a: String, b: PNimrodNode): PNimrodNode {.compileTime.} =
   result = newNimNode(nnkPrefix).und(newIdentNode(!a), b)
 
 proc quoted2ident*(a: PNimrodNode): PNimrodNode {.compileTime.} = 
@@ -45,7 +45,7 @@ proc quoted2ident*(a: PNimrodNode): PNimrodNode {.compileTime.} =
   result = ^pname
 
 
-macro `?`(a: expr): expr =
+macro `?`(a: Expr): Expr =
   ## Character literal ?A #=> 'A'
   result = ($a[1].ident)[0].lit
 ## echo(?F,?a,?t,?t,?y)

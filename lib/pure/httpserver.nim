@@ -37,7 +37,7 @@ proc sendTextContentType(client: TSocket) =
   send(client, "Content-type: text/html" & wwwNL)
   send(client, wwwNL)
 
-proc sendStatus(client: TSocket, status: string) =
+proc sendStatus(client: TSocket, status: String) =
   send(client, "HTTP/1.1 " & status & wwwNL)
 
 proc badRequest(client: TSocket) =
@@ -53,7 +53,7 @@ when false:
     sendTextContentType(client)
     send(client, "<P>Error prohibited CGI execution." & wwwNL)
 
-proc headers(client: TSocket, filename: string) =
+proc headers(client: TSocket, filename: String) =
   # XXX could use filename to determine file type
   send(client, "HTTP/1.1 200 OK" & wwwNL)
   send(client, ServerSig)
@@ -83,21 +83,21 @@ proc unimplemented(client: TSocket) =
 when false:
   proc discardHeaders(client: TSocket) = skip(client)
 
-proc serveFile*(client: TSocket, filename: string) =
+proc serveFile*(client: TSocket, filename: String) =
   ## serves a file to the client.
   var f: TFile
   if open(f, filename):
     headers(client, filename)
     const bufSize = 8000 # != 8K might be good for memory manager
     var buf = alloc(bufsize)
-    while True:
+    while true:
       var bytesread = readBuffer(f, buf, bufsize)
       if bytesread > 0:
         var byteswritten = send(client, buf, bytesread)
-        if bytesread != bytesWritten:
+        if bytesread != byteswritten:
           dealloc(buf)
           close(f)
-          OSError(OSLastError())
+          oSError(oSLastError())
       if bytesread != bufSize: break
     dealloc(buf)
     close(f)
@@ -214,11 +214,11 @@ type
     socket: TSocket
     port: TPort
     client*: TSocket      ## the socket to write the file data to
-    reqMethod*: string    ## Request method. GET or POST.
-    path*, query*: string ## path and query the client requested
+    reqMethod*: String    ## Request method. GET or POST.
+    path*, query*: String ## path and query the client requested
     headers*: PStringTable ## headers with which the client made the request
-    body*: string          ## only set with POST requests
-    ip*: string            ## ip address of the requesting client
+    body*: String          ## only set with POST requests
+    ip*: String            ## ip address of the requesting client
   
   PAsyncHTTPServer* = ref TAsyncHTTPServer
   TAsyncHTTPServer = object of TServer
@@ -227,8 +227,8 @@ type
 proc open*(s: var TServer, port = TPort(80)) =
   ## creates a new server at port `port`. If ``port == 0`` a free port is
   ## acquired that can be accessed later by the ``port`` proc.
-  s.socket = socket(AF_INET)
-  if s.socket == InvalidSocket: OSError(OSLastError())
+  s.socket = socket(AfInet)
+  if s.socket == invalidSocket: oSError(oSLastError())
   bindAddr(s.socket, port)
   listen(s.socket)
 
@@ -236,7 +236,7 @@ proc open*(s: var TServer, port = TPort(80)) =
     s.port = getSockName(s.socket)
   else:
     s.port = port
-  s.client = InvalidSocket
+  s.client = invalidSocket
   s.reqMethod = ""
   s.body = ""
   s.path = ""
@@ -251,7 +251,7 @@ proc next*(s: var TServer) =
   ## proceed to the first/next request.
   var client: TSocket
   new(client)
-  var ip: string
+  var ip: String
   acceptAddr(s.socket, client, ip)
   s.client = client
   s.ip = ip
@@ -274,7 +274,7 @@ proc next*(s: var TServer) =
       var value = ""
       i = header.parseUntil(key, ':')
       inc(i) # skip :
-      i += header.skipWhiteSpace(i)
+      i += header.skipWhitespace(i)
       i += header.parseUntil(value, {'\c', '\L'}, i)
       s.headers[key] = value
     else:
@@ -320,7 +320,7 @@ proc next*(s: var TServer) =
           if (contentLength - totalRead) < 8000:
             chunkSize = (contentLength - totalRead)
           var bodyData = newString(chunkSize)
-          var octetsRead = s.client.recv(cstring(bodyData), chunkSize)
+          var octetsRead = s.client.recv(Cstring(bodyData), chunkSize)
           if octetsRead <= 0:
             s.client.close()
             next(s)
@@ -359,7 +359,7 @@ proc close*(s: TServer) =
   close(s.socket)
 
 proc run*(handleRequest: proc (client: TSocket, 
-                               path, query: string): bool {.closure.},
+                               path, query: String): Bool {.closure.},
           port = TPort(80)) =
   ## encapsulates the server object and main loop
   var s: TServer
@@ -377,7 +377,7 @@ proc nextAsync(s: PAsyncHTTPServer) =
   ## proceed to the first/next request.
   var client: TSocket
   new(client)
-  var ip: string
+  var ip: String
   acceptAddr(getSocket(s.asyncSocket), client, ip)
   s.client = client
   s.ip = ip
@@ -399,7 +399,7 @@ proc nextAsync(s: PAsyncHTTPServer) =
       var value = ""
       i = header.parseUntil(key, ':')
       inc(i) # skip :
-      i += header.skipWhiteSpace(i)
+      i += header.skipWhitespace(i)
       i += header.parseUntil(value, {'\c', '\L'}, i)
       s.headers[key] = value
     else:
@@ -442,7 +442,7 @@ proc nextAsync(s: PAsyncHTTPServer) =
           if (contentLength - totalRead) < 8000:
             chunkSize = (contentLength - totalRead)
           var bodyData = newString(chunkSize)
-          var octetsRead = s.client.recv(cstring(bodyData), chunkSize)
+          var octetsRead = s.client.recv(Cstring(bodyData), chunkSize)
           if octetsRead <= 0:
             s.client.close()
             return
@@ -474,12 +474,12 @@ proc nextAsync(s: PAsyncHTTPServer) =
     s.path = data.substr(i, last-1)
 
 proc asyncHTTPServer*(handleRequest: proc (server: PAsyncHTTPServer, client: TSocket, 
-                        path, query: string): bool {.closure.},
+                        path, query: String): Bool {.closure.},
                      port = TPort(80), address = ""): PAsyncHTTPServer =
   ## Creates an Asynchronous HTTP server at ``port``.
   var capturedRet: PAsyncHTTPServer
   new(capturedRet)
-  capturedRet.asyncSocket = AsyncSocket()
+  capturedRet.asyncSocket = asyncSocket()
   capturedRet.asyncSocket.handleAccept =
     proc (s: PAsyncSocket) =
       nextAsync(capturedRet)
@@ -494,7 +494,7 @@ proc asyncHTTPServer*(handleRequest: proc (server: PAsyncHTTPServer, client: TSo
   else:
     capturedRet.port = port
   
-  capturedRet.client = InvalidSocket
+  capturedRet.client = invalidSocket
   capturedRet.reqMethod = ""
   capturedRet.body = ""
   capturedRet.path = ""

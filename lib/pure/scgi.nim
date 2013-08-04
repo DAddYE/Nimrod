@@ -29,43 +29,43 @@
 import sockets, strutils, os, strtabs, asyncio
 
 type
-  EScgi* = object of EIO ## the exception that is raised, if a SCGI error occurs
+  EScgi* = object of Eio ## the exception that is raised, if a SCGI error occurs
 
-proc scgiError*(msg: string) {.noreturn.} = 
+proc scgiError*(msg: String) {.noreturn.} = 
   ## raises an EScgi exception with message `msg`.
   var e: ref EScgi
   new(e)
   e.msg = msg
   raise e
 
-proc parseWord(inp: string, outp: var string, start: int): int = 
+proc parseWord(inp: String, outp: var String, start: Int): Int = 
   result = start
   while inp[result] != '\0': inc(result)
   outp = substr(inp, start, result-1)
 
-proc parseHeaders(s: string, L: int): PStringTable = 
+proc parseHeaders(s: String, L: Int): PStringTable = 
   result = newStringTable()
   var i = 0
   while i < L:
-    var key, val: string
+    var key, val: String
     i = parseWord(s, key, i)+1
     i = parseWord(s, val, i)+1
     result[key] = val
   if s[i] == ',': inc(i)
   else: scgiError("',' after netstring expected")
   
-proc recvChar(s: TSocket): char = 
-  var c: char
+proc recvChar(s: TSocket): Char = 
+  var c: Char
   if recv(s, addr(c), sizeof(c)) == sizeof(c): 
     result = c
   
 type
   TScgiState* = object of TObject ## SCGI state object
     server: TSocket
-    bufLen: int
+    bufLen: Int
     client*: TSocket ## the client socket to send data to
     headers*: PStringTable ## the parsed headers
-    input*: string  ## the input buffer
+    input*: String  ## the input buffer
   
   
   # Async
@@ -76,22 +76,22 @@ type
   PAsyncClient = ref object
     c: PAsyncSocket
     mode: TClientMode
-    dataLen: int
+    dataLen: Int
     headers: PStringTable ## the parsed headers
-    input: string  ## the input buffer
+    input: String  ## the input buffer
   
   TAsyncScgiState = object
     handleRequest: proc (client: PAsyncSocket, 
-                         input: string, headers: PStringTable) {.closure.}
+                         input: String, headers: PStringTable) {.closure.}
     asyncServer: PAsyncSocket
     disp: PDispatcher
   PAsyncScgiState* = ref TAsyncScgiState
     
-proc recvBuffer(s: var TScgiState, L: int) =
+proc recvBuffer(s: var TScgiState, L: Int) =
   if L > s.bufLen: 
     s.bufLen = L
     s.input = newString(L)
-  if L > 0 and recv(s.client, cstring(s.input), L) != L: 
+  if L > 0 and recv(s.client, Cstring(s.input), L) != L: 
     scgiError("could not read all data")
   setLen(s.input, L)
   
@@ -102,7 +102,7 @@ proc open*(s: var TScgiState, port = TPort(4000), address = "127.0.0.1") =
   
   s.server = socket()
   new(s.client) # Initialise s.client for `next`
-  if s.server == InvalidSocket: scgiError("could not open socket")
+  if s.server == invalidSocket: scgiError("could not open socket")
   #s.server.connect(connectionName, port)
   bindAddr(s.server, port, address)
   listen(s.server)
@@ -111,7 +111,7 @@ proc close*(s: var TScgiState) =
   ## closes the connection.
   s.server.close()
 
-proc next*(s: var TScgistate, timeout: int = -1): bool = 
+proc next*(s: var TScgistate, timeout: Int = -1): Bool = 
   ## proceed to the first/next request. Waits ``timeout`` miliseconds for a
   ## request, if ``timeout`` is `-1` then this function will never time out.
   ## Returns `True` if a new request has been processed.
@@ -134,7 +134,7 @@ proc next*(s: var TScgistate, timeout: int = -1): bool =
     if s.headers["SCGI"] != "1": scgiError("SCGI Version 1 expected")
     L = parseInt(s.headers["CONTENT_LENGTH"])
     recvBuffer(s, L)
-    return True
+    return true
   
 proc writeStatusOkTextContent*(c: TSocket, contentType = "text/html") = 
   ## sends the following string to the socket `c`::
@@ -145,8 +145,8 @@ proc writeStatusOkTextContent*(c: TSocket, contentType = "text/html") =
   c.send("Status: 200 OK\r\L" &
          "Content-Type: $1\r\L\r\L" % contentType)
 
-proc run*(handleRequest: proc (client: TSocket, input: string, 
-                               headers: PStringTable): bool {.nimcall.},
+proc run*(handleRequest: proc (client: TSocket, input: String, 
+                               headers: PStringTable): Bool {.nimcall.},
           port = TPort(4000)) = 
   ## encapsulates the SCGI object and main loop.
   var s: TScgiState
@@ -160,7 +160,7 @@ proc run*(handleRequest: proc (client: TSocket, input: string,
 
 # -- AsyncIO start
 
-proc recvBufferAsync(client: PAsyncClient, L: int): TReadLineResult =
+proc recvBufferAsync(client: PAsyncClient, L: Int): TReadLineResult =
   result = ReadPartialLine
   var data = ""
   if L < 1:
@@ -242,7 +242,7 @@ proc handleAccept(sock: PAsyncSocket, s: PAsyncScgiState) =
   s.disp.register(client)
 
 proc open*(handleRequest: proc (client: PAsyncSocket, 
-                                input: string, headers: PStringTable) {.closure.},
+                                input: String, headers: PStringTable) {.closure.},
            port = TPort(4000), address = "127.0.0.1"): PAsyncScgiState =
   ## Creates an ``PAsyncScgiState`` object which serves as a SCGI server.
   ##
@@ -250,7 +250,7 @@ proc open*(handleRequest: proc (client: PAsyncSocket,
   ## automatically unless it has already been closed.
   var cres: PAsyncScgiState
   new(cres)
-  cres.asyncServer = AsyncSocket()
+  cres.asyncServer = asyncSocket()
   cres.asyncServer.handleAccept = proc (s: PAsyncSocket) = handleAccept(s, cres)
   bindAddr(cres.asyncServer, port, address)
   listen(cres.asyncServer)

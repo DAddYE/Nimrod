@@ -2,8 +2,8 @@ type
   TFoo[T] = object
     val: T
 
-  T1 = expr
-  T2 = expr
+  T1 = Expr
+  T2 = Expr
 
 proc takesExpr(x, y) =
   echo x, y
@@ -24,7 +24,7 @@ takesExpr[bool, int](true, 0)
 same(1, 2)
 same("test", "test")
 
-var f: TFoo[int]
+var f: TFoo[Int]
 f.val = 10
 
 takesFoo(f, f)

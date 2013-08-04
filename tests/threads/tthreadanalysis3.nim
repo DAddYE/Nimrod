@@ -8,7 +8,7 @@ discard """
 import os
 
 var
-  thr: array [0..5, TThread[tuple[a, b: int]]]
+  thr: Array [0..5, TThread[tuple[a, b: Int]]]
 
 proc doNothing() = nil
 
@@ -16,12 +16,12 @@ type
   PNode = ref TNode
   TNode = object {.pure.}
     le, ri: PNode
-    data: string
+    data: String
 
 var
   root: PNode
 
-proc buildTree(depth: int): PNode =
+proc buildTree(depth: Int): PNode =
   if depth == 3: return nil
   new(result)
   result.le = buildTree(depth-1)
@@ -34,7 +34,7 @@ proc echoLeTree(n: PNode) =
     echo it.data
     it = it.le
 
-proc threadFunc(interval: tuple[a, b: int]) {.thread.} = 
+proc threadFunc(interval: tuple[a, b: Int]) {.thread.} = 
   doNothing()
   for i in interval.a..interval.b: 
     var r = buildTree(i)

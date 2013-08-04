@@ -19,56 +19,56 @@
 #
 
 type 
-  TFunction* = proc (): cint{.cdecl.}
+  TFunction* = proc (): Cint{.cdecl.}
   TVFunction* = proc (){.cdecl.}
-  TCPFunction* = proc (): cstring{.cdecl.}
-  TCPPFunction* = proc (): cstringArray{.cdecl.}
+  TCPFunction* = proc (): Cstring{.cdecl.}
+  TCPPFunction* = proc (): CstringArray{.cdecl.}
 
 # Bindable functions 
 
 type 
-  Tcommand_func* = proc (a2: cint, a3: cint): cint{.cdecl.}
+  TcommandFunc* = proc (a2: Cint, a3: Cint): Cint{.cdecl.}
 
 # Typedefs for the completion system 
 
 type 
-  Tcompentry_func* = proc (a2: cstring, a3: cint): cstring{.cdecl.}
-  Tcompletion_func* = proc (a2: cstring, a3: cint, a4: cint): cstringArray{.
+  TcompentryFunc* = proc (a2: Cstring, a3: Cint): Cstring{.cdecl.}
+  TcompletionFunc* = proc (a2: Cstring, a3: Cint, a4: Cint): CstringArray{.
       cdecl.}
-  Tquote_func* = proc (a2: cstring, a3: cint, a4: cstring): cstring{.cdecl.}
-  Tdequote_func* = proc (a2: cstring, a3: cint): cstring{.cdecl.}
-  Tcompignore_func* = proc (a2: cstringArray): cint{.cdecl.}
-  Tcompdisp_func* = proc (a2: cstringArray, a3: cint, a4: cint){.cdecl.}
+  TquoteFunc* = proc (a2: Cstring, a3: Cint, a4: Cstring): Cstring{.cdecl.}
+  TdequoteFunc* = proc (a2: Cstring, a3: Cint): Cstring{.cdecl.}
+  TcompignoreFunc* = proc (a2: CstringArray): Cint{.cdecl.}
+  TcompdispFunc* = proc (a2: CstringArray, a3: Cint, a4: Cint){.cdecl.}
 
 # Type for input and pre-read hook functions like rl_event_hook 
 
 type 
-  Thook_func* = proc (): cint{.cdecl.}
+  ThookFunc* = proc (): Cint{.cdecl.}
 
 # Input function type 
 
 type 
-  Tgetc_func* = proc (a2: TFile): cint{.cdecl.}
+  TgetcFunc* = proc (a2: TFile): Cint{.cdecl.}
 
 # Generic function that takes a character buffer (which could be the readline
 #   line buffer) and an index into it (which could be rl_point) and returns
 #   an int. 
 
 type 
-  Tlinebuf_func* = proc (a2: cstring, a3: cint): cint{.cdecl.}
+  TlinebufFunc* = proc (a2: Cstring, a3: Cint): Cint{.cdecl.}
 
 # `Generic' function pointer typedefs 
 
 type 
-  Tintfunc* = proc (a2: cint): cint{.cdecl.}
-  Tivoidfunc* = proc (): cint{.cdecl.}
-  Ticpfunc* = proc (a2: cstring): cint{.cdecl.}
-  Ticppfunc* = proc (a2: cstringArray): cint{.cdecl.}
+  Tintfunc* = proc (a2: Cint): Cint{.cdecl.}
+  Tivoidfunc* = proc (): Cint{.cdecl.}
+  Ticpfunc* = proc (a2: Cstring): Cint{.cdecl.}
+  Ticppfunc* = proc (a2: CstringArray): Cint{.cdecl.}
   Tvoidfunc* = proc (){.cdecl.}
-  Tvintfunc* = proc (a2: cint){.cdecl.}
-  Tvcpfunc* = proc (a2: cstring){.cdecl.}
-  Tvcppfunc* = proc (a2: cstringArray){.cdecl.}
-  Tcpvfunc* = proc (): cstring{.cdecl.}
-  Tcpifunc* = proc (a2: cint): cstring{.cdecl.}
-  Tcpcpfunc* = proc (a2: cstring): cstring{.cdecl.}
-  Tcpcppfunc* = proc (a2: cstringArray): cstring{.cdecl.}
+  Tvintfunc* = proc (a2: Cint){.cdecl.}
+  Tvcpfunc* = proc (a2: Cstring){.cdecl.}
+  Tvcppfunc* = proc (a2: CstringArray){.cdecl.}
+  Tcpvfunc* = proc (): Cstring{.cdecl.}
+  Tcpifunc* = proc (a2: Cint): Cstring{.cdecl.}
+  Tcpcpfunc* = proc (a2: Cstring): Cstring{.cdecl.}
+  Tcpcppfunc* = proc (a2: CstringArray): Cstring{.cdecl.}

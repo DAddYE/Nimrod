@@ -13,8 +13,8 @@ proc tup[S, T](x: tuple[a: S, b: ref T]) = echo "tup1"
 proc tup[S, T](x: tuple[a: S, b: T]) = echo "tup2"
 
 var
-  obj: ref int
-  tu: tuple[a: int, b: ref bool]
+  obj: ref Int
+  tu: tuple[a: Int, b: ref Bool]
   
 m(obj)
 tup(tu)

@@ -8,7 +8,7 @@ type
   TUnit[T] = object of TThing
     x: T
   TParticle = object of TThing
-    a, b: int
+    a, b: Int
     
 method collide(a, b: TThing) {.inline.} =
   quit "to override!"
@@ -24,7 +24,7 @@ proc test(a, b: TThing) {.inline.} =
 
 var
   a: TThing
-  b, c: TUnit[string]
+  b, c: TUnit[String]
 collide(b, TThing(c))
 test(b, c)
 collide(a, b)

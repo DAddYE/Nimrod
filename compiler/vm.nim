@@ -23,18 +23,18 @@ type
     slots: TNodeSeq           # parameters passed to the proc + locals;
                               # parameters come first
     next: PStackFrame         # for stacking
-    comesFrom: int
-    safePoints: seq[int]      # used for exception handling
+    comesFrom: Int
+    safePoints: Seq[Int]      # used for exception handling
                               # XXX 'break' should perform cleanup actions
                               # What does the C backend do for it?
 
-proc stackTraceAux(c: PCtx; x: PStackFrame; pc: int) =
+proc stackTraceAux(c: PCtx; x: PStackFrame; pc: Int) =
   if x != nil:
     stackTraceAux(c, x.next, x.comesFrom)
     var info = c.debug[pc]
     # we now use the same format as in system/except.nim
     var s = toFilename(info)
-    var line = toLineNumber(info)
+    var line = toLinenumber(info)
     if line > 0:
       add(s, '(')
       add(s, $line)
@@ -42,13 +42,13 @@ proc stackTraceAux(c: PCtx; x: PStackFrame; pc: int) =
     if x.prc != nil:
       for k in 1..max(1, 25-s.len): add(s, ' ')
       add(s, x.prc.name.s)
-    MsgWriteln(s)
+    msgWriteln(s)
 
-proc stackTrace(c: PCtx, tos: PStackFrame, pc: int,
+proc stackTrace(c: PCtx, tos: PStackFrame, pc: Int,
                 msg: TMsgKind, arg = "") =
-  MsgWriteln("stack trace: (most recent call last)")
+  msgWriteln("stack trace: (most recent call last)")
   stackTraceAux(c, tos, pc)
-  LocalError(c.debug[pc], msg, arg)
+  localError(c.debug[pc], msg, arg)
 
 proc bailOut(c: PCtx; tos: PStackFrame) =
   stackTrace(c, tos, c.exceptionInstr, errUnhandledExceptionX,
@@ -60,16 +60,16 @@ when not defined(nimHasInterpreterLoop):
 template inc(pc: ptr TInstr, diff = 1) =
   inc cast[TAddress](pc), TInstr.sizeof * diff
 
-template ensureKind(k: expr) {.immediate, dirty.} =
+template ensureKind(k: Expr) {.immediate, dirty.} =
   if regs[ra].kind != k:
     myreset(regs[ra])
     regs[ra].kind = k
 
-template decodeB(k: expr) {.immediate, dirty.} =
+template decodeB(k: Expr) {.immediate, dirty.} =
   let rb = instr.regB
   ensureKind(k)
 
-template decodeBC(k: expr) {.immediate, dirty.} =
+template decodeBC(k: Expr) {.immediate, dirty.} =
   let rb = instr.regB
   let rc = instr.regC
   ensureKind(k)
@@ -78,12 +78,12 @@ template declBC() {.immediate, dirty.} =
   let rb = instr.regB
   let rc = instr.regC
 
-template decodeBImm(k: expr) {.immediate, dirty.} =
+template decodeBImm(k: Expr) {.immediate, dirty.} =
   let rb = instr.regB
   let imm = instr.regC - byteExcess
   ensureKind(k)
 
-template decodeBx(k: expr) {.immediate, dirty.} =
+template decodeBx(k: Expr) {.immediate, dirty.} =
   let rbx = instr.regBx - wordExcess
   ensureKind(k)
 
@@ -93,7 +93,7 @@ proc myreset(n: PNode) =
     reset(n[])
     n.info = oldInfo
 
-template move(a, b: expr) = system.shallowCopy(a, b)
+template move(a, b: Expr) = system.shallowCopy(a, b)
 # XXX fix minor 'shallowCopy' overloading bug in compiler
 
 proc asgnRef(x, y: PNode) =
@@ -125,16 +125,16 @@ proc asgnComplex(x, y: PNode) =
       let y = y.copyTree
       for i in countup(0, sonsLen(y) - 1): addSon(x, y.sons[i])
 
-template getstr(a: expr): expr =
+template getstr(a: Expr): Expr =
   (if a.kind == nkStrLit: a.strVal else: $chr(int(a.intVal)))
 
-proc pushSafePoint(f: PStackFrame; pc: int) =
+proc pushSafePoint(f: PStackFrame; pc: Int) =
   if f.safePoints.isNil: f.safePoints = @[]
   f.safePoints.add(pc)
 
 proc popSafePoint(f: PStackFrame) = discard f.safePoints.pop()
 
-proc cleanUpOnException(c: PCtx; tos: PStackFrame; regs: TNodeSeq): int =
+proc cleanUpOnException(c: PCtx; tos: PStackFrame; regs: TNodeSeq): Int =
   let raisedType = c.currentExceptionA.typ.skipTypes(abstractPtrs)
   var f = tos
   while true:
@@ -166,7 +166,7 @@ proc cleanUpOnException(c: PCtx; tos: PStackFrame; regs: TNodeSeq): int =
     # not the right one:
     discard f.safePoints.pop
 
-proc cleanUpOnReturn(c: PCtx; f: PStackFrame): int =
+proc cleanUpOnReturn(c: PCtx; f: PStackFrame): Int =
   if f.safePoints.isNil: return -1
   for s in f.safePoints:
     var pc = s
@@ -176,11 +176,11 @@ proc cleanUpOnReturn(c: PCtx; f: PStackFrame): int =
       return pc
   return -1
 
-proc compile(c: PCtx, s: PSym): int = 
+proc compile(c: PCtx, s: PSym): Int = 
   result = vmgen.genProc(c, s)
   #c.echoCode
 
-proc execute(c: PCtx, start: int) =
+proc execute(c: PCtx, start: Int) =
   var pc = start
   var regs: TNodeSeq # alias to tos.slots for performance
   var tos: PStackFrame
@@ -228,22 +228,22 @@ proc execute(c: PCtx, start: int) =
       let rc = instr.regC
       let idx = regs[rc].intVal
       # XXX what if the array is not 0-based? -> codegen should insert a sub
-      regs[ra] = regs[rb].sons[idx.int]
+      regs[ra] = regs[rb].sons[idx.Int]
     of opcLdStrIdx:
       decodeBC(nkIntLit)
       let idx = regs[rc].intVal
-      regs[ra].intVal = regs[rb].strVal[idx.int].ord
+      regs[ra].intVal = regs[rb].strVal[idx.Int].ord
     of opcWrArr:
       # a[b] = c
       let rb = instr.regB
       let rc = instr.regC
       let idx = regs[rb].intVal
-      asgnComplex(regs[ra].sons[idx.int], regs[rc])
+      asgnComplex(regs[ra].sons[idx.Int], regs[rc])
     of opcWrArrRef:
       let rb = instr.regB
       let rc = instr.regC
       let idx = regs[rb].intVal
-      asgnRef(regs[ra].sons[idx.int], regs[rc])
+      asgnRef(regs[ra].sons[idx.Int], regs[rc])
     of opcLdObj:
       # a = b.c
       let rb = instr.regB
@@ -261,7 +261,7 @@ proc execute(c: PCtx, start: int) =
       asgnRef(regs[ra].sons[rb], regs[rc])
     of opcWrStrIdx:
       decodeBC(nkStrLit)
-      let idx = regs[rb].intVal.int
+      let idx = regs[rb].intVal.Int
       regs[ra].strVal[idx] = chr(regs[rc].intVal)
     of opcAddr:
       decodeB(nkRefTy)
@@ -409,24 +409,24 @@ proc execute(c: PCtx, start: int) =
       regs[ra].intVal = not regs[rb].intVal
     of opcEqStr:
       decodeBC(nkIntLit)
-      regs[ra].intVal = Ord(regs[rb].strVal == regs[rc].strVal)
+      regs[ra].intVal = ord(regs[rb].strVal == regs[rc].strVal)
     of opcLeStr:
       decodeBC(nkIntLit)
-      regs[ra].intVal = Ord(regs[rb].strVal <= regs[rc].strVal)
+      regs[ra].intVal = ord(regs[rb].strVal <= regs[rc].strVal)
     of opcLtStr:
       decodeBC(nkIntLit)
-      regs[ra].intVal = Ord(regs[rb].strVal < regs[rc].strVal)
+      regs[ra].intVal = ord(regs[rb].strVal < regs[rc].strVal)
     of opcLeSet:
       decodeBC(nkIntLit)
-      regs[ra].intVal = Ord(containsSets(regs[rb], regs[rc]))
+      regs[ra].intVal = ord(containsSets(regs[rb], regs[rc]))
     of opcEqSet: 
       decodeBC(nkIntLit)
-      regs[ra].intVal = Ord(equalSets(regs[rb], regs[rc]))
+      regs[ra].intVal = ord(equalSets(regs[rb], regs[rc]))
     of opcLtSet:
       decodeBC(nkIntLit)
       let a = regs[rb]
       let b = regs[rc]
-      regs[ra].intVal = Ord(containsSets(a, b) and not equalSets(a, b))
+      regs[ra].intVal = ord(containsSets(a, b) and not equalSets(a, b))
     of opcMulSet:
       decodeBC(nkCurly)
       move(regs[ra].sons, nimsets.intersectSets(regs[rb], regs[rc]).sons)
@@ -441,9 +441,9 @@ proc execute(c: PCtx, start: int) =
       move(regs[ra].sons, nimsets.symdiffSets(regs[rb], regs[rc]).sons)    
     of opcConcatStr:
       decodeBC(nkStrLit)
-      regs[ra].strVal = getstr(regs[rb])
+      regs[ra].strVal = getStr(regs[rb])
       for i in rb+1..rb+rc-1:
-        regs[ra].strVal.add getstr(regs[i])
+        regs[ra].strVal.add getStr(regs[i])
     of opcAddStrCh:
       decodeB(nkStrLit)
       regs[ra].strVal.add(regs[rb].intVal.chr)
@@ -457,14 +457,14 @@ proc execute(c: PCtx, start: int) =
       echo regs[ra].strVal
     of opcContainsSet:
       decodeBC(nkIntLit)
-      regs[ra].intVal = Ord(inSet(regs[rb], regs[rc]))
+      regs[ra].intVal = ord(inSet(regs[rb], regs[rc]))
     of opcSubStr:
       decodeBC(nkStrLit)
       inc pc
       assert c.code[pc].opcode == opcSubStr
       let rd = c.code[pc].regA
-      regs[ra].strVal = substr(regs[rb].strVal, regs[rc].intVal.int, 
-                               regs[rd].intVal.int)
+      regs[ra].strVal = substr(regs[rb].strVal, regs[rc].intVal.Int, 
+                               regs[rd].intVal.Int)
     of opcRangeChck:
       let rb = instr.regB
       let rc = instr.regC
@@ -536,7 +536,7 @@ proc execute(c: PCtx, start: int) =
     of opcFinallyEnd:
       if c.currentExceptionA != nil:
         # we are in a cleanup run:
-        pc = cleanupOnException(c, tos, regs)-1
+        pc = cleanUpOnException(c, tos, regs)-1
         if pc < 0: 
           bailOut(c, tos)
           return
@@ -545,7 +545,7 @@ proc execute(c: PCtx, start: int) =
       c.currentExceptionA = raised
       c.exceptionInstr = pc
       # -1 because of the following 'inc'
-      pc = cleanupOnException(c, tos, regs) - 1
+      pc = cleanUpOnException(c, tos, regs) - 1
       if pc < 0:
         bailOut(c, tos)
         return
@@ -564,7 +564,7 @@ proc execute(c: PCtx, start: int) =
         regs[ra].sons[i] = getNullValue(typ, regs[ra].info)
     of opcNewStr:
       decodeB(nkStrLit)
-      regs[ra].strVal = newString(regs[rb].intVal.int)
+      regs[ra].strVal = newString(regs[rb].intVal.Int)
     of opcLdImmInt:
       # dest = immediate value
       decodeBx(nkIntLit)
@@ -587,11 +587,11 @@ proc execute(c: PCtx, start: int) =
     of opcNChild:
       let rb = instr.regB
       let rc = instr.regC
-      regs[ra] = regs[rb].sons[regs[rc].intVal.int]
+      regs[ra] = regs[rb].sons[regs[rc].intVal.Int]
     of opcNSetChild:
       let rb = instr.regB
       let rc = instr.regC
-      regs[ra].sons[regs[rb].intVal.int] = regs[rc]
+      regs[ra].sons[regs[rb].intVal.Int] = regs[rc]
     of opcNAdd:
       declBC()
       regs[rb].add(regs[rb])
@@ -628,7 +628,7 @@ proc execute(c: PCtx, start: int) =
         stackTrace(c, tos, pc, errFieldXNotFound, "ident")
       regs[ra] = regs[rb]
     of opcNGetType:
-      InternalError(c.debug[pc], "unknown opcode " & $instr.opcode)      
+      internalError(c.debug[pc], "unknown opcode " & $instr.opcode)      
     of opcNStrVal:
       decodeB(nkStrLit)
       let a = regs[rb]
@@ -644,21 +644,21 @@ proc execute(c: PCtx, start: int) =
     of opcNError:
       stackTrace(c, tos, pc, errUser, regs[ra].strVal)
     of opcNWarning:
-      Message(c.debug[pc], warnUser, regs[ra].strVal)
+      message(c.debug[pc], warnUser, regs[ra].strVal)
     of opcNHint:
-      Message(c.debug[pc], hintUser, regs[ra].strVal)
+      message(c.debug[pc], hintUser, regs[ra].strVal)
     of opcParseExprToAst:
       let rb = instr.regB
       # c.debug[pc].line.int - countLines(regs[rb].strVal) ?
       let ast = parseString(regs[rb].strVal, c.debug[pc].toFilename,
-                            c.debug[pc].line.int)
+                            c.debug[pc].line.Int)
       if sonsLen(ast) != 1:
-        GlobalError(c.debug[pc], errExprExpected, "multiple statements")
+        globalError(c.debug[pc], errExprExpected, "multiple statements")
       regs[ra] = ast.sons[0]
     of opcParseStmtToAst:
       let rb = instr.regB
       let ast = parseString(regs[rb].strVal, c.debug[pc].toFilename,
-                            c.debug[pc].line.int)
+                            c.debug[pc].line.Int)
       regs[ra] = ast
     of opcCallSite:
       if c.callsite != nil: regs[ra] = c.callsite
@@ -668,7 +668,7 @@ proc execute(c: PCtx, start: int) =
       let n = regs[rb]
       regs[ra] = newStrNodeT(n.info.toFileLineCol, n)
     else:
-      InternalError(c.debug[pc], "unknown opcode " & $instr.opcode)
+      internalError(c.debug[pc], "unknown opcode " & $instr.opcode)
     inc pc
 
 proc eval*(c: PCtx, n: PNode): PNode =
@@ -687,7 +687,7 @@ proc myOpen(module: PSym): PPassContext =
   #pushStackFrame(c, newStackFrame())
   result = newCtx(module)
 
-var oldErrorCount: int
+var oldErrorCount: Int
 
 proc myProcess(c: PPassContext, n: PNode): PNode =
   # don't eval errornous code:

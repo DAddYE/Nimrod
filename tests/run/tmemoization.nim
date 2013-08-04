@@ -5,7 +5,7 @@ discard """
 
 import strutils
 
-proc foo(s: expr[string]): string =
+proc foo(s: Expr[String]): String =
   static: echo s
 
   const R = s.toUpper

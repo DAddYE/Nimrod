@@ -16,73 +16,73 @@ import
 # to be style insensitive. Otherwise hell would break lose.
 var gSymbols: PStringTable
 
-proc DefineSymbol*(symbol: string) = 
+proc defineSymbol*(symbol: String) = 
   gSymbols[symbol] = "true"
 
-proc UndefSymbol*(symbol: string) = 
+proc undefSymbol*(symbol: String) = 
   gSymbols[symbol] = "false"
 
-proc isDefined*(symbol: string): bool = 
+proc isDefined*(symbol: String): Bool = 
   if gSymbols.hasKey(symbol):
     result = gSymbols[symbol] == "true"
   
-proc isDefined*(symbol: PIdent): bool = isDefined(symbol.s)
+proc isDefined*(symbol: PIdent): Bool = isDefined(symbol.s)
 
-iterator definedSymbolNames*: string =
+iterator definedSymbolNames*: String =
   for key, val in pairs(gSymbols):
     if val == "true": yield key
 
-proc countDefinedSymbols*(): int = 
+proc countDefinedSymbols*(): Int = 
   result = 0
   for key, val in pairs(gSymbols):
     if val == "true": inc(result)
 
-proc InitDefines*() = 
+proc initDefines*() = 
   gSymbols = newStringTable(modeStyleInsensitive)
-  DefineSymbol("nimrod") # 'nimrod' is always defined
+  defineSymbol("nimrod") # 'nimrod' is always defined
   # for bootstrapping purposes and old code:
-  DefineSymbol("nimhygiene")
-  DefineSymbol("niminheritable")
-  DefineSymbol("nimmixin")
-  DefineSymbol("nimeffects")
-  DefineSymbol("nimbabel")
-  DefineSymbol("nimsuperops")
+  defineSymbol("nimhygiene")
+  defineSymbol("niminheritable")
+  defineSymbol("nimmixin")
+  defineSymbol("nimeffects")
+  defineSymbol("nimbabel")
+  defineSymbol("nimsuperops")
   
   # add platform specific symbols:
   case targetCPU
-  of cpuI386: DefineSymbol("x86")
-  of cpuIa64: DefineSymbol("itanium")
-  of cpuAmd64: DefineSymbol("x8664")
+  of cpuI386: defineSymbol("x86")
+  of cpuIa64: defineSymbol("itanium")
+  of cpuAmd64: defineSymbol("x8664")
   else: discard
   case targetOS
   of osDOS: 
-    DefineSymbol("msdos")
+    defineSymbol("msdos")
   of osWindows: 
-    DefineSymbol("mswindows")
-    DefineSymbol("win32")
+    defineSymbol("mswindows")
+    defineSymbol("win32")
   of osLinux, osMorphOS, osSkyOS, osIrix, osPalmOS, osQNX, osAtari, osAix, 
      osHaiku:
     # these are all 'unix-like'
-    DefineSymbol("unix")
-    DefineSymbol("posix")
+    defineSymbol("unix")
+    defineSymbol("posix")
   of osSolaris: 
-    DefineSymbol("sunos")
-    DefineSymbol("unix")
-    DefineSymbol("posix")
+    defineSymbol("sunos")
+    defineSymbol("unix")
+    defineSymbol("posix")
   of osNetBSD, osFreeBSD, osOpenBSD: 
-    DefineSymbol("unix")
-    DefineSymbol("bsd")
-    DefineSymbol("posix")
+    defineSymbol("unix")
+    defineSymbol("bsd")
+    defineSymbol("posix")
   of osMacOS: 
-    DefineSymbol("macintosh")
+    defineSymbol("macintosh")
   of osMacOSX: 
-    DefineSymbol("macintosh")
-    DefineSymbol("unix")
-    DefineSymbol("posix")
+    defineSymbol("macintosh")
+    defineSymbol("unix")
+    defineSymbol("posix")
   else: discard
-  DefineSymbol("cpu" & $cpu[targetCPU].bit)
-  DefineSymbol(normalize(endianToStr[cpu[targetCPU].endian]))
-  DefineSymbol(cpu[targetCPU].name)
-  DefineSymbol(platform.os[targetOS].name)
+  defineSymbol("cpu" & $Cpu[targetCPU].bit)
+  defineSymbol(normalize(EndianToStr[Cpu[targetCPU].endian]))
+  defineSymbol(Cpu[targetCPU].name)
+  defineSymbol(platform.os[targetOS].name)
   if platform.OS[targetOS].props.contains(ospLacksThreadVars):
-    DefineSymbol("emulatedthreadvars")
+    defineSymbol("emulatedthreadvars")

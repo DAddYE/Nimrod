@@ -7,13 +7,13 @@ import tables, lists
 type
   TEventArgs = object of TObject
   TEventEmitter = object of TObject
-    events*: TTable[string, TDoublyLinkedList[proc(e: TEventArgs) {.nimcall.}]]
+    events*: TTable[String, TDoublyLinkedList[proc(e: TEventArgs) {.nimcall.}]]
 
-proc emit*(emitter: TEventEmitter, event: string, args: TEventArgs) =
+proc emit*(emitter: TEventEmitter, event: String, args: TEventArgs) =
   for func in nodes(emitter.events[event]):
     func.value(args) #call function with args.
 
-proc on*(emitter: var TEventEmitter, event: string, 
+proc on*(emitter: var TEventEmitter, event: String, 
          func: proc(e: TEventArgs) {.nimcall.}) =
   if not hasKey(emitter.events, event):
     var list: TDoublyLinkedList[proc(e: TEventArgs) {.nimcall.}]

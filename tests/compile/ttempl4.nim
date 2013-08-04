@@ -1,5 +1,5 @@
 
-template `:=`(name, val: expr): stmt {.immediate.} =
+template `:=`(name, val: Expr): Stmt {.immediate.} =
   var name = val
 
 ha := 1 * 4

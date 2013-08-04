@@ -6,7 +6,7 @@ discard """
 
 type
   TDict*[TKey, TValue] = object 
-    data: seq[tuple[k: TKey, v: TValue]]
+    data: Seq[tuple[k: TKey, v: TValue]]
   PDict*[TKey, #with `==`(a, b: TKey): bool
                #     hash(a: TKey): int, 
          TValue] = ref TDict[TKey, TValue]
@@ -18,7 +18,7 @@ proc newDict*[TKey, TValue](): PDict[TKey, TValue] =
 proc add*[TKey, TValue](d: PDict[TKey, TValue], k: TKey, v: TValue) = 
   d.data.add((k, v))
   
-iterator items*[Tkey, tValue](d: PDict[TKey, TValue]): tuple[k: TKey, 
+iterator items*[Tkey, TValue](d: PDict[TKey, TValue]): tuple[k: TKey, 
                v: TValue] = 
   for k, v in items(d.data): yield (k, v)
     

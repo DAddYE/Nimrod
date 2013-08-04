@@ -11,8 +11,8 @@
 ## `<https://github.com/jckarter/clay/blob/master/compiler/src/hirestimer.cpp>`_
 
 type
-  TTicks = distinct int64
-  TNanos = int64
+  TTicks = distinct Int64
+  TNanos = Int64
 
 when defined(windows):
 
@@ -36,9 +36,9 @@ elif defined(macosx):
     TMachTimebaseInfoData {.pure, final, 
         importc: "mach_timebase_info_data_t", 
         header: "<mach/mach_time.h>".} = object
-      numer, denom: int32
+      numer, denom: Int32
 
-  proc mach_absolute_time(): int64 {.importc, header: "<mach/mach.h>".}
+  proc mach_absolute_time(): Int64 {.importc, header: "<mach/mach.h>".}
   proc mach_timebase_info(info: var TMachTimebaseInfoData) {.importc,
     header: "<mach/mach_time.h>".}
 
@@ -49,7 +49,7 @@ elif defined(macosx):
   mach_timebase_info(timeBaseInfo)
     
   proc `-`(a, b: TTicks): TNanos =
-    result = (a.int64 - b.int64)  * timeBaseInfo.numer div timeBaseInfo.denom
+    result = (a.Int64 - b.Int64)  * timeBaseInfo.numer div timeBaseInfo.denom
 
 elif defined(posixRealtime):
   type

@@ -2,7 +2,7 @@ discard """
   output: "23"
 """
 
-template optslice{a = b + c}(a: expr{noalias}, b, c: expr): stmt =
+template optslice{a = b + c}(a: Expr{noalias}, b, c: Expr): Stmt =
   a = b
   inc a, c
 

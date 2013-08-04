@@ -15,14 +15,14 @@
 ## not work with cyclic data structures.
 
 type
-  pbytes = ptr array[0.. 0xffff, byte]
+  Pbytes = ptr Array[0.. 0xffff, Byte]
   TRawChannel {.pure, final.} = object ## msg queue for a thread
-    rd, wr, count, mask: int
-    data: pbytes
+    rd, wr, count, mask: Int
+    data: Pbytes
     lock: TSysLock
     cond: TSysCond
     elemType: PNimType
-    ready: bool
+    ready: Bool
     region: TMemRegion
   PRawChannel = ptr TRawChannel
   TLoadStoreMode = enum mStore, mLoad
@@ -30,13 +30,13 @@ type
 
 const ChannelDeadMask = -2
 
-proc initRawChannel(p: pointer) =
+proc initRawChannel(p: Pointer) =
   var c = cast[PRawChannel](p)
   initSysLock(c.lock)
   initSysCond(c.cond)
   c.mask = -1
 
-proc deinitRawChannel(p: pointer) =
+proc deinitRawChannel(p: Pointer) =
   var c = cast[PRawChannel](p)
   # we need to grab the lock to be safe against sending threads!
   acquireSys(c.lock)
@@ -53,12 +53,12 @@ proc storeAux(dest, src: Pointer, n: ptr TNimNode, t: PRawChannel,
     d = cast[TAddress](dest)
     s = cast[TAddress](src)
   case n.kind
-  of nkSlot: storeAux(cast[pointer](d +% n.offset), 
-                      cast[pointer](s +% n.offset), n.typ, t, mode)
+  of nkSlot: storeAux(cast[Pointer](d +% n.offset), 
+                      cast[Pointer](s +% n.offset), n.typ, t, mode)
   of nkList:
     for i in 0..n.len-1: storeAux(dest, src, n.sons[i], t, mode)
   of nkCase:
-    copyMem(cast[pointer](d +% n.offset), cast[pointer](s +% n.offset),
+    copyMem(cast[Pointer](d +% n.offset), cast[Pointer](s +% n.offset),
             n.typ.size)
     var m = selectBranch(src, n)
     if m != nil: storeAux(dest, src, m, t, mode)
@@ -80,7 +80,7 @@ proc storeAux(dest, src: Pointer, mt: PNimType, t: PRawChannel,
       else:
         var ss = cast[NimString](s2)
         var ns = cast[NimString](Alloc(t.region, ss.len+1 + GenericSeqSize))
-        copyMem(ns, ss, ss.len+1 + GenericSeqSize)
+        copyMem(ns, ss, ss.len+1 + genericSeqSize)
         x[] = ns
     else:
       var x = cast[ppointer](dest)
@@ -108,9 +108,9 @@ proc storeAux(dest, src: Pointer, mt: PNimType, t: PRawChannel,
       var dst = cast[taddress](cast[ppointer](dest)[])
       for i in 0..seq.len-1:
         storeAux(
-          cast[pointer](dst +% i*% mt.base.size +% GenericSeqSize),
-          cast[pointer](cast[TAddress](s2) +% i *% mt.base.size +%
-                        GenericSeqSize),
+          cast[Pointer](dst +% i*% mt.base.size +% genericSeqSize),
+          cast[Pointer](cast[TAddress](s2) +% i *% mt.base.size +%
+                        genericSeqSize),
           mt.Base, t, mode)
       var dstseq = cast[PGenericSeq](dst)
       dstseq.len = seq.len
@@ -126,8 +126,8 @@ proc storeAux(dest, src: Pointer, mt: PNimType, t: PRawChannel,
     storeAux(dest, src, mt.node, t, mode)
   of tyArray, tyArrayConstr:
     for i in 0..(mt.size div mt.base.size)-1:
-      storeAux(cast[pointer](d +% i*% mt.base.size),
-               cast[pointer](s +% i*% mt.base.size), mt.base, t, mode)
+      storeAux(cast[Pointer](d +% i*% mt.base.size),
+               cast[Pointer](s +% i*% mt.base.size), mt.base, t, mode)
   of tyRef:
     var s = cast[ppointer](src)[]
     var x = cast[ppointer](dest)
@@ -150,13 +150,13 @@ proc storeAux(dest, src: Pointer, mt: PNimType, t: PRawChannel,
   else:
     copyMem(dest, src, mt.size) # copy raw bits
 
-proc rawSend(q: PRawChannel, data: pointer, typ: PNimType) =
+proc rawSend(q: PRawChannel, data: Pointer, typ: PNimType) =
   ## adds an `item` to the end of the queue `q`.
   var cap = q.mask+1
   if q.count >= cap:
     # start with capacity for 2 entries in the queue:
     if cap == 0: cap = 1
-    var n = cast[pbytes](Alloc0(q.region, cap*2*typ.size))
+    var n = cast[Pbytes](Alloc0(q.region, cap*2*typ.size))
     var z = 0
     var i = q.rd
     var c = q.count
@@ -174,18 +174,18 @@ proc rawSend(q: PRawChannel, data: pointer, typ: PNimType) =
   inc q.count
   q.wr = (q.wr + 1) and q.mask
 
-proc rawRecv(q: PRawChannel, data: pointer, typ: PNimType) =
+proc rawRecv(q: PRawChannel, data: Pointer, typ: PNimType) =
   sysAssert q.count > 0, "rawRecv"
   dec q.count
   storeAux(data, addr(q.data[q.rd * typ.size]), typ, q, mLoad)
   q.rd = (q.rd + 1) and q.mask
 
-template lockChannel(q: expr, action: stmt) {.immediate.} =
+template lockChannel(q: Expr, action: Stmt) {.immediate.} =
   acquireSys(q.lock)
   action
   releaseSys(q.lock)
 
-template sendImpl(q: expr) {.immediate.} =  
+template sendImpl(q: Expr) {.immediate.} =  
   if q.mask == ChannelDeadMask:
     sysFatal(EDeadThread, "cannot send message; thread died")
   acquireSys(q.lock)
@@ -202,7 +202,7 @@ proc send*[TMsg](c: var TChannel[TMsg], msg: TMsg) =
   var q = cast[PRawChannel](addr(c))
   sendImpl(q)
 
-proc llRecv(q: PRawChannel, res: pointer, typ: PNimType) =
+proc llRecv(q: PRawChannel, res: Pointer, typ: PNimType) =
   # to save space, the generic is as small as possible
   acquireSys(q.lock)
   q.ready = true
@@ -221,7 +221,7 @@ proc recv*[TMsg](c: var TChannel[TMsg]): TMsg =
   var q = cast[PRawChannel](addr(c))
   llRecv(q, addr(result), cast[PNimType](getTypeInfo(result)))
 
-proc peek*[TMsg](c: var TChannel[TMsg]): int =
+proc peek*[TMsg](c: var TChannel[TMsg]): Int =
   ## returns the current number of messages in the channel `c`. Returns -1
   ## if the channel has been closed.
   var q = cast[PRawChannel](addr(c))
@@ -239,7 +239,7 @@ proc close*[TMsg](c: var TChannel[TMsg]) =
   ## closes a channel `c` and frees its associated resources.
   deinitRawChannel(addr(c))
 
-proc ready*[TMsg](c: var TChannel[TMsg]): bool =
+proc ready*[TMsg](c: var TChannel[TMsg]): Bool =
   ## returns true iff some thread is waiting on the channel `c` for
   ## new messages.
   var q = cast[PRawChannel](addr(c))

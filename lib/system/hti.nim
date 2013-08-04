@@ -67,11 +67,11 @@ type
   TNimNodeKind = enum nkNone, nkSlot, nkList, nkCase
   TNimNode {.codegenType, final.} = object
     kind: TNimNodeKind
-    offset: int
+    offset: Int
     typ: ptr TNimType
     name: Cstring
-    len: int
-    sons: ptr array [0..0x7fff, ptr TNimNode]
+    len: Int
+    sons: ptr Array [0..0x7fff, ptr TNimNode]
 
   TNimTypeFlag = enum 
     ntfNoRefs = 0,     # type contains no tyRef, tySequence, tyString
@@ -79,13 +79,13 @@ type
     ntfEnumHole = 2    # enum has holes and thus `$` for them needs the slow
                        # version
   TNimType {.codegenType, final.} = object
-    size: int
+    size: Int
     kind: TNimKind
-    flags: set[TNimTypeFlag]
+    flags: Set[TNimTypeFlag]
     base: ptr TNimType
     node: ptr TNimNode # valid for tyRecord, tyObject, tyTuple, tyEnum
-    finalizer: pointer # the finalizer for the type
-    marker: proc (p: pointer, op: int) {.nimcall.} # marker proc for GC
+    finalizer: Pointer # the finalizer for the type
+    marker: proc (p: Pointer, op: Int) {.nimcall.} # marker proc for GC
   PNimType = ptr TNimType
   
 # node.len may be the ``first`` element of a set

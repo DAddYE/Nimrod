@@ -39,7 +39,7 @@ proc add*[Ty](root: var PBinaryTree[Ty], data: Ty) =
   # convenience proc:
   add(root, newNode(data))
 
-proc find*[Ty2](b: PBinaryTree[Ty2], data: Ty2): bool =
+proc find*[Ty2](b: PBinaryTree[Ty2], data: Ty2): Bool =
   # for testing this needs to be recursive, so that the
   # instantiated type is checked for proper tyGenericInst envelopes
   if b == nil:
@@ -54,7 +54,7 @@ iterator preorder*[T](root: PBinaryTree[T]): T =
   # Preorder traversal of a binary tree.
   # Since recursive iterators are not yet implemented,
   # this uses an explicit stack:
-  var stack: seq[PBinaryTree[T]] = @[root]
+  var stack: Seq[PBinaryTree[T]] = @[root]
   while stack.len > 0:
     var n = stack.pop()
     while n != nil:
@@ -64,7 +64,7 @@ iterator preorder*[T](root: PBinaryTree[T]): T =
 
 iterator items*[T](root: PBinaryTree[T]): T =
   ## Inorder traversal of the binary tree.
-  var stack: seq[PBinaryTree[T]] = @[]
+  var stack: Seq[PBinaryTree[T]] = @[]
   var n = root
   while true:
     while n != nil:
@@ -84,7 +84,7 @@ proc debug[T](a: PBinaryTree[T]) =
 
 when isMainModule:
   var
-    root: PBinaryTree[string]
+    root: PBinaryTree[String]
     x = newNode("hello")
   add(root, x)
   add(root, "world")
@@ -95,7 +95,7 @@ when isMainModule:
     stdout.writeln("BUG")
 
   var
-    r2: PBinaryTree[int]
+    r2: PBinaryTree[Int]
   add(r2, newNode(110))
   add(r2, 223)
   add(r2, 99)

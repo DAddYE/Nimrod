@@ -30,15 +30,15 @@ type
     ospCaseInsensitive,       # OS filesystem is case insensitive
     ospPosix,                 # OS is posix-like
     ospLacksThreadVars        # OS lacks proper __threadvar support
-  TInfoOSProps* = set[TInfoOSProp]
-  TInfoOS* = tuple[name: string, parDir: string, dllFrmt: string, 
-                   altDirSep: string, objExt: string, newLine: string, 
-                   pathSep: string, dirSep: string, scriptExt: string, 
-                   curDir: string, exeExt: string, extSep: string, 
+  TInfoOSProps* = Set[TInfoOSProp]
+  TInfoOS* = tuple[name: String, parDir: String, dllFrmt: String, 
+                   altDirSep: String, objExt: String, newLine: String, 
+                   pathSep: String, dirSep: String, scriptExt: String, 
+                   curDir: String, exeExt: String, extSep: String, 
                    props: TInfoOSProps]
 
 const 
-  OS*: array[succ(low(TSystemOS))..high(TSystemOS), TInfoOS] = [
+  Os*: Array[succ(low(TSystemOS))..high(TSystemOS), TInfoOS] = [
      (name: "DOS", 
       parDir: "..", dllFrmt: "$1.dll", altDirSep: "/", objExt: ".obj", 
       newLine: "\x0D\x0A", pathSep: ";", dirSep: "\\", scriptExt: ".bat", 
@@ -160,12 +160,12 @@ type
 type 
   TEndian* = enum 
     littleEndian, bigEndian
-  TInfoCPU* = tuple[name: string, intSize: int, endian: TEndian, 
-                    floatSize, bit: int]
+  TInfoCPU* = tuple[name: String, intSize: Int, endian: TEndian, 
+                    floatSize, bit: Int]
 
 const
-  EndianToStr*: array[TEndian, string] = ["littleEndian", "bigEndian"]
-  CPU*: array[succ(low(TSystemCPU))..high(TSystemCPU), TInfoCPU] = [
+  EndianToStr*: Array[TEndian, String] = ["littleEndian", "bigEndian"]
+  Cpu*: Array[succ(low(TSystemCPU))..high(TSystemCPU), TInfoCPU] = [
     (name: "i386", intSize: 32, endian: littleEndian, floatSize: 64, bit: 32), 
     (name: "m68k", intSize: 32, endian: bigEndian, floatSize: 64, bit: 32), 
     (name: "alpha", intSize: 64, endian: littleEndian, floatSize: 64, bit: 64), 
@@ -185,14 +185,14 @@ var
   targetCPU*, hostCPU*: TSystemCPU
   targetOS*, hostOS*: TSystemOS
 
-proc NameToOS*(name: string): TSystemOS
-proc NameToCPU*(name: string): TSystemCPU
+proc nameToOS*(name: String): TSystemOS
+proc nameToCPU*(name: String): TSystemCPU
 
 var 
-  IntSize*: int
-  floatSize*: int
-  PtrSize*: int
-  tnl*: string                # target newline
+  intSize*: Int
+  floatSize*: Int
+  ptrSize*: Int
+  tnl*: String                # target newline
 
 proc setTarget*(o: TSystemOS, c: TSystemCPU) = 
   assert(c != cpuNone)
@@ -200,20 +200,20 @@ proc setTarget*(o: TSystemOS, c: TSystemCPU) =
   #echo "new Target: OS: ", o, " CPU: ", c
   targetCPU = c
   targetOS = o
-  intSize = cpu[c].intSize div 8
-  floatSize = cpu[c].floatSize div 8
-  ptrSize = cpu[c].bit div 8
-  tnl = os[o].newLine
+  intSize = Cpu[c].intSize div 8
+  floatSize = Cpu[c].floatSize div 8
+  ptrSize = Cpu[c].bit div 8
+  tnl = Os[o].newLine
 
-proc NameToOS(name: string): TSystemOS = 
+proc nameToOS(name: string): TSystemOS = 
   for i in countup(succ(osNone), high(TSystemOS)): 
-    if cmpIgnoreStyle(name, OS[i].name) == 0: 
+    if cmpIgnoreStyle(name, Os[i].name) == 0: 
       return i
   result = osNone
 
-proc NameToCPU(name: string): TSystemCPU = 
+proc nameToCPU(name: string): TSystemCPU = 
   for i in countup(succ(cpuNone), high(TSystemCPU)): 
-    if cmpIgnoreStyle(name, CPU[i].name) == 0: 
+    if cmpIgnoreStyle(name, Cpu[i].name) == 0: 
       return i
   result = cpuNone
 

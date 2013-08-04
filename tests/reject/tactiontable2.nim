@@ -5,16 +5,16 @@ discard """
 
 import tables
 
-proc action1(arg: string) = 
+proc action1(arg: String) = 
   echo "action 1 ", arg
 
-proc action2(arg: string) = 
+proc action2(arg: String) = 
   echo "action 2 ", arg
 
-proc action3(arg: string) = 
+proc action3(arg: String) = 
   echo "action 3 ", arg
 
-proc action4(arg: string) = 
+proc action4(arg: String) = 
   echo "action 4 ", arg
 
 const

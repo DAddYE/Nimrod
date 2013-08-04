@@ -3,10 +3,10 @@
 
 var
   inp: TFile
-  line: string
+  line: String
 
 if open(inp, "readme.txt"):
-  while not EndOfFile(inp):
+  while not endOfFile(inp):
     line = readLine(inp)
     echo("#" & line & "#")
   close(inp)

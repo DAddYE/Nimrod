@@ -34,29 +34,29 @@ when defined(Windows):
 else:
   import readline, history
     
-  proc ReadLineFromStdin*(prompt: string): TaintedString {.
+  proc readLineFromStdin*(prompt: String): TaintedString {.
                           tags: [FReadIO, FWriteIO].} =
     var buffer = readline.readLine(prompt)
     if isNil(buffer): quit(0)
     result = TaintedString($buffer)
-    if result.string.len > 0:
-      add_history(buffer)
+    if result.String.len > 0:
+      addHistory(buffer)
     readline.free(buffer)
 
-  proc ReadLineFromStdin*(prompt: string, line: var TaintedString): bool {.
+  proc readLineFromStdin*(prompt: String, line: var TaintedString): Bool {.
                           tags: [FReadIO, FWriteIO].} =
     var buffer = readline.readLine(prompt)
     if isNil(buffer): quit(0)
     line = TaintedString($buffer)
-    if line.string.len > 0:
-      add_history(buffer)
+    if line.String.len > 0:
+      addHistory(buffer)
     readline.free(buffer)
     # XXX how to determine CTRL+D?
     result = true
 
   # initialization:
   # disable auto-complete: 
-  proc doNothing(a, b: cint): cint {.cdecl, procvar.} = nil
+  proc doNothing(a, b: Cint): Cint {.cdecl, procvar.} = nil
   
   discard readline.bind_key('\t'.ord, doNothing)
 

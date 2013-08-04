@@ -33,7 +33,7 @@ type                          # please make sure we have under 32 options
                               # evaluation
     optPatterns               # en/disable pattern matching
 
-  TOptions* = set[TOption]
+  TOptions* = Set[TOption]
   TGlobalOption* = enum       # **keep binary compatible**
     gloptNone, optForceFullMake, optDeadCodeElim, 
     optListCmd, optCompileOnly, optNoLinking, 
@@ -65,7 +65,7 @@ type                          # please make sure we have under 32 options
     optEmbedOrigSrc           # embed the original source in the generated code
                               # also: generate header file
    
-  TGlobalOptions* = set[TGlobalOption]
+  TGlobalOptions* = Set[TGlobalOption]
   TCommands* = enum           # Nimrod's commands
                               # **keep binary compatible**
     cmdNone, cmdCompileToC, cmdCompileToCpp, cmdCompileToOC, 
@@ -80,7 +80,7 @@ type                          # please make sure we have under 32 options
     cmdRst2tex,               # convert a reStructuredText file to TeX
     cmdInteractive,           # start interactive session
     cmdRun                    # run the project via TCC backend
-  TStringSeq* = seq[string]
+  TStringSeq* = Seq[String]
   TGCMode* = enum             # the selected GC
     gcNone, gcBoehm, gcMarkAndSweep, gcRefc, gcV2, gcGenerational
 
@@ -94,36 +94,36 @@ var
                          optHints, optStackTrace, optLineTrace,
                          optPatterns, optNilCheck}
   gGlobalOptions*: TGlobalOptions = {optThreadAnalysis}
-  gExitcode*: int8
+  gExitcode*: Int8
   gCmd*: TCommands = cmdNone  # the command
   gSelectedGC* = gcRefc       # the selected GC
   searchPaths*, lazyPaths*: TLinkedList
-  outFile*: string = ""
-  headerFile*: string = ""
+  outFile*: String = ""
+  headerFile*: String = ""
   gVerbosity* = 1             # how verbose the compiler is
-  gNumberOfProcessors*: int   # number of processors
-  gWholeProject*: bool        # for 'doc2': output any dependency
+  gNumberOfProcessors*: Int   # number of processors
+  gWholeProject*: Bool        # for 'doc2': output any dependency
   gEvalExpr* = ""             # expression for idetools --eval
-  gLastCmdTime*: float        # when caas is enabled, we measure each command
-  gListFullPaths*: bool
-  isServing*: bool = false
+  gLastCmdTime*: Float        # when caas is enabled, we measure each command
+  gListFullPaths*: Bool
+  isServing*: Bool = false
   gDirtyBufferIdx* = 0'i32    # indicates the fileIdx of the dirty version of
                               # the tracked source X, saved by the CAAS client.
   gDirtyOriginalIdx* = 0'i32  # the original source file of the dirtified buffer.
 
-proc importantComments*(): bool {.inline.} = gCmd in {cmdDoc, cmdIdeTools}
-proc usesNativeGC*(): bool {.inline.} = gSelectedGC >= gcRefc
+proc importantComments*(): Bool {.inline.} = gCmd in {cmdDoc, cmdIdeTools}
+proc usesNativeGC*(): Bool {.inline.} = gSelectedGC >= gcRefc
 
-template isWorkingWithDirtyBuffer*: expr =
+template isWorkingWithDirtyBuffer*: Expr =
   gDirtyBufferIdx != 0
 
-template compilationCachePresent*: expr =
+template compilationCachePresent*: Expr =
   {optCaasEnabled, optSymbolFiles} * gGlobalOptions != {}
 
-template optPreserveOrigSource*: expr =
+template optPreserveOrigSource*: Expr =
   optEmbedOrigSrc in gGlobalOptions
 
-template optPrintSurroundingSrc*: expr =
+template optPrintSurroundingSrc*: Expr =
   gVerbosity >= 2
 
 const 
@@ -140,23 +140,23 @@ const
 # additional configuration variables:
 var
   gConfigVars* = newStringTable(modeStyleInsensitive)
-  gDllOverrides = newStringtable(modeCaseInsensitive)
+  gDllOverrides = newStringTable(modeCaseInsensitive)
   libpath* = ""
   gProjectName* = "" # holds a name like 'nimrod'
   gProjectPath* = "" # holds a path like /home/alice/projects/nimrod/compiler/
   gProjectFull* = "" # projectPath/projectName
-  gProjectMainIdx*: int32 # the canonical path id of the main module
+  gProjectMainIdx*: Int32 # the canonical path id of the main module
   optMainModule* = "" # the main module that should be used for idetools commands
   nimcacheDir* = ""
   command* = "" # the main command (e.g. cc, check, scan, etc)
-  commandArgs*: seq[string] = @[] # any arguments after the main command
-  gKeepComments*: bool = true # whether the parser needs to keep comments
-  implicitImports*: seq[string] = @[] # modules that are to be implicitly imported
-  implicitIncludes*: seq[string] = @[] # modules that are to be implicitly included
+  commandArgs*: Seq[String] = @[] # any arguments after the main command
+  gKeepComments*: Bool = true # whether the parser needs to keep comments
+  implicitImports*: Seq[String] = @[] # modules that are to be implicitly imported
+  implicitIncludes*: Seq[String] = @[] # modules that are to be implicitly included
 
 const oKeepVariableNames* = true
 
-proc mainCommandArg*: string =
+proc mainCommandArg*: String =
   ## This is intended for commands like check or parse
   ## which will work on the main project file unless
   ## explicitly given a specific file argument
@@ -165,28 +165,28 @@ proc mainCommandArg*: string =
   else:
     result = gProjectName
 
-proc existsConfigVar*(key: string): bool = 
+proc existsConfigVar*(key: String): Bool = 
   result = hasKey(gConfigVars, key)
 
-proc getConfigVar*(key: string): string = 
+proc getConfigVar*(key: String): String = 
   result = gConfigVars[key]
 
-proc setConfigVar*(key, val: string) = 
+proc setConfigVar*(key, val: String) = 
   gConfigVars[key] = val
 
-proc getOutFile*(filename, ext: string): string = 
+proc getOutFile*(filename, ext: String): String = 
   if options.outFile != "": result = options.outFile
   else: result = changeFileExt(filename, ext)
   
-proc getPrefixDir*(): string = 
+proc getPrefixDir*(): String = 
   ## gets the application directory
-  result = SplitPath(getAppDir()).head
+  result = splitPath(getAppDir()).head
 
-proc canonicalizePath*(path: string): string =
+proc canonicalizePath*(path: String): String =
   result = path.expandFilename
   when not FileSystemCaseSensitive: result = result.toLower
 
-proc shortenDir*(dir: string): string = 
+proc shortenDir*(dir: String): String = 
   ## returns the interesting part of a dir
   var prefix = getPrefixDir() & dirSep
   if startsWith(dir, prefix): 
@@ -196,24 +196,24 @@ proc shortenDir*(dir: string): string =
     return substr(dir, len(prefix))
   result = dir
 
-proc removeTrailingDirSep*(path: string): string = 
+proc removeTrailingDirSep*(path: String): String = 
   if (len(path) > 0) and (path[len(path) - 1] == dirSep): 
     result = substr(path, 0, len(path) - 2)
   else: 
     result = path
   
-proc getGeneratedPath: string =
+proc getGeneratedPath: String =
   result = if nimcacheDir.len > 0: nimcacheDir else: gProjectPath.shortenDir /
                                                          genSubDir
   
-proc toGeneratedFile*(path, ext: string): string = 
+proc toGeneratedFile*(path, ext: String): String = 
   ## converts "/home/a/mymodule.nim", "rod" to "/home/a/nimcache/mymodule.rod"
   var (head, tail) = splitPath(path)
   #if len(head) > 0: head = shortenDir(head & dirSep)
   result = joinPath([getGeneratedPath(), changeFileExt(tail, ext)])
   #echo "toGeneratedFile(", path, ", ", ext, ") = ", result
 
-proc completeGeneratedFilePath*(f: string, createSubDir: bool = true): string = 
+proc completeGeneratedFilePath*(f: String, createSubDir: Bool = true): String = 
   var (head, tail) = splitPath(f)
   #if len(head) > 0: head = removeTrailingDirSep(shortenDir(head & dirSep))
   var subdir = getGeneratedPath() # / head
@@ -226,30 +226,30 @@ proc completeGeneratedFilePath*(f: string, createSubDir: bool = true): string =
   result = joinPath(subdir, tail)
   #echo "completeGeneratedFilePath(", f, ") = ", result
 
-iterator iterSearchPath*(SearchPaths: TLinkedList): string = 
-  var it = PStrEntry(SearchPaths.head)
+iterator iterSearchPath*(SearchPaths: TLinkedList): String = 
+  var it = PStrEntry(searchPaths.head)
   while it != nil:
     yield it.data
     it = PStrEntry(it.Next)
 
-proc rawFindFile(f: string): string =
-  for it in iterSearchPath(SearchPaths):
-    result = JoinPath(it, f)
+proc rawFindFile(f: String): String =
+  for it in iterSearchPath(searchPaths):
+    result = joinPath(it, f)
     if existsFile(result):
       return result.canonicalizePath
   result = ""
 
-proc rawFindFile2(f: string): string =
+proc rawFindFile2(f: String): String =
   var it = PStrEntry(lazyPaths.head)
   while it != nil:
-    result = JoinPath(it.data, f)
+    result = joinPath(it.data, f)
     if existsFile(result):
       bringToFront(lazyPaths, it)
       return result.canonicalizePath
     it = PStrEntry(it.Next)
   result = ""
 
-proc FindFile*(f: string): string {.procvar.} = 
+proc findFile*(f: String): String {.procvar.} = 
   result = f.rawFindFile
   if result.len == 0:
     result = f.toLower.rawFindFile
@@ -258,11 +258,11 @@ proc FindFile*(f: string): string {.procvar.} =
       if result.len == 0:
         result = f.toLower.rawFindFile2
 
-proc findModule*(modulename: string): string {.inline.} =
+proc findModule*(modulename: String): String {.inline.} =
   # returns path to module
-  result = FindFile(AddFileExt(modulename, nimExt))
+  result = findFile(addFileExt(modulename, NimExt))
 
-proc libCandidates*(s: string, dest: var seq[string]) = 
+proc libCandidates*(s: String, dest: var Seq[String]) = 
   var le = strutils.find(s, '(')
   var ri = strutils.find(s, ')', le+1)
   if le >= 0 and ri > le:
@@ -273,7 +273,7 @@ proc libCandidates*(s: string, dest: var seq[string]) =
   else: 
     add(dest, s)
 
-proc canonDynlibName(s: string): string =
+proc canonDynlibName(s: String): String =
   let start = if s.startsWith("lib"): 3 else: 0
   let ende = strutils.find(s, {'(', ')', '.'})
   if ende >= 0:
@@ -281,13 +281,13 @@ proc canonDynlibName(s: string): string =
   else:
     result = s.substr(start)
 
-proc inclDynlibOverride*(lib: string) =
+proc inclDynlibOverride*(lib: String) =
   gDllOverrides[lib.canonDynlibName] = "true"
 
-proc isDynlibOverride*(lib: string): bool =
+proc isDynlibOverride*(lib: String): Bool =
   result = gDllOverrides.hasKey(lib.canonDynlibName)
 
-proc binaryStrSearch*(x: openarray[string], y: string): int = 
+proc binaryStrSearch*(x: Openarray[String], y: String): Int = 
   var a = 0
   var b = len(x) - 1
   while a <= b: 
@@ -301,8 +301,8 @@ proc binaryStrSearch*(x: openarray[string], y: string): int =
       return mid
   result = - 1
 
-template nimdbg*: expr = c.module.fileIdx == gProjectMainIdx
-template cnimdbg*: expr = p.module.module.fileIdx == gProjectMainIdx
-template pnimdbg*: expr = p.lex.fileIdx == gProjectMainIdx
-template lnimdbg*: expr = L.fileIdx == gProjectMainIdx
+template nimdbg*: Expr = c.module.fileIdx == gProjectMainIdx
+template cnimdbg*: Expr = p.module.module.fileIdx == gProjectMainIdx
+template pnimdbg*: Expr = p.lex.fileIdx == gProjectMainIdx
+template lnimdbg*: Expr = L.fileIdx == gProjectMainIdx
 

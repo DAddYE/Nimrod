@@ -2,7 +2,7 @@ discard """
   output: "61, 125"
 """
 
-proc `^` (a, b: int): int =
+proc `^` (a, b: Int): Int =
   result = 1
   for i in 1..b: result = result * a
 

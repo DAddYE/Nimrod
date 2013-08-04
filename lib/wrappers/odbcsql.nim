@@ -3,7 +3,7 @@
 
 when not defined(ODBCVER):
   const
-    ODBCVER = 0x0351 ## define ODBC version 3.51 by default
+    Odbcver = 0x0351 ## define ODBC version 3.51 by default
 
 when defined(windows):
   {.push callconv: stdcall.}
@@ -28,90 +28,90 @@ else:
 #
 
 type 
-  TSqlChar* = char
-  TSqlSmallInt* = int16
-  TSqlUSmallInt* = int16
-  TSqlHandle* = pointer
+  TSqlChar* = Char
+  TSqlSmallInt* = Int16
+  TSqlUSmallInt* = Int16
+  TSqlHandle* = Pointer
   TSqlHEnv* = TSqlHandle
   TSqlHDBC* = TSqlHandle
   TSqlHStmt* = TSqlHandle
   TSqlHDesc* = TSqlHandle
-  TSqlInteger* = int
-  TSqlUInteger* = int
-  TSqlPointer* = pointer
-  TSqlReal* = cfloat
-  TSqlDouble* = cdouble
-  TSqlFloat* = cdouble
-  TSqlHWND* = pointer
-  PSQLCHAR* = cstring
-  PSQLINTEGER* = ptr TSqlInteger
-  PSQLUINTEGER* = ptr TSqlUInteger
-  PSQLSMALLINT* = ptr TSqlSmallInt
-  PSQLUSMALLINT* = ptr TSqlUSmallInt
-  PSQLREAL* = ptr TSqlReal
-  PSQLDOUBLE* = ptr TSqlDouble
-  PSQLFLOAT* = ptr TSqlFloat
-  PSQLHANDLE* = ptr TSqlHandle
+  TSqlInteger* = Int
+  TSqlUInteger* = Int
+  TSqlPointer* = Pointer
+  TSqlReal* = Cfloat
+  TSqlDouble* = Cdouble
+  TSqlFloat* = Cdouble
+  TSqlHWND* = Pointer
+  Psqlchar* = Cstring
+  Psqlinteger* = ptr TSqlInteger
+  Psqluinteger* = ptr TSqlUInteger
+  Psqlsmallint* = ptr TSqlSmallInt
+  Psqlusmallint* = ptr TSqlUSmallInt
+  Psqlreal* = ptr TSqlReal
+  Psqldouble* = ptr TSqlDouble
+  Psqlfloat* = ptr TSqlFloat
+  Psqlhandle* = ptr TSqlHandle
 
 const                         # SQL data type codes 
-  SQL_UNKNOWN_TYPE* = 0
-  SQL_LONGVARCHAR* = (- 1)
-  SQL_BINARY* = (- 2)
-  SQL_VARBINARY* = (- 3)
-  SQL_LONGVARBINARY* = (- 4)
-  SQL_BIGINT* = (- 5)
-  SQL_TINYINT* = (- 6)
-  SQL_BIT* = (- 7)
-  SQL_WCHAR* = (- 8)
-  SQL_WVARCHAR* = (- 9)
-  SQL_WLONGVARCHAR* = (- 10)
-  SQL_CHAR* = 1
-  SQL_NUMERIC* = 2
-  SQL_DECIMAL* = 3
-  SQL_INTEGER* = 4
-  SQL_SMALLINT* = 5
-  SQL_FLOAT* = 6
-  SQL_REAL* = 7
-  SQL_DOUBLE* = 8
-  SQL_DATETIME* = 9
-  SQL_VARCHAR* = 12
-  SQL_TYPE_DATE* = 91
-  SQL_TYPE_TIME* = 92
-  SQL_TYPE_TIMESTAMP* = 93
-  SQL_DATE* = 9
-  SQL_TIME* = 10
-  SQL_TIMESTAMP* = 11
-  SQL_INTERVAL* = 10
-  SQL_GUID* = - 11            # interval codes
+  SqlUnknownType* = 0
+  SqlLongvarchar* = (- 1)
+  SqlBinary* = (- 2)
+  SqlVarbinary* = (- 3)
+  SqlLongvarbinary* = (- 4)
+  SqlBigint* = (- 5)
+  SqlTinyint* = (- 6)
+  SqlBit* = (- 7)
+  SqlWchar* = (- 8)
+  SqlWvarchar* = (- 9)
+  SqlWlongvarchar* = (- 10)
+  SqlChar* = 1
+  SqlNumeric* = 2
+  SqlDecimal* = 3
+  SqlInteger* = 4
+  SqlSmallint* = 5
+  SqlFloat* = 6
+  SqlReal* = 7
+  SqlDouble* = 8
+  SqlDatetime* = 9
+  SqlVarchar* = 12
+  SqlTypeDate* = 91
+  SqlTypeTime* = 92
+  SqlTypeTimestamp* = 93
+  SqlDate* = 9
+  SqlTime* = 10
+  SqlTimestamp* = 11
+  SqlInterval* = 10
+  SqlGuid* = - 11            # interval codes
 
 when ODBCVER >= 0x0300: 
   const 
-    SQL_CODE_YEAR* = 1
-    SQL_CODE_MONTH* = 2
-    SQL_CODE_DAY* = 3
-    SQL_CODE_HOUR* = 4
-    SQL_CODE_MINUTE* = 5
-    SQL_CODE_SECOND* = 6
-    SQL_CODE_YEAR_TO_MONTH* = 7
-    SQL_CODE_DAY_TO_HOUR* = 8
-    SQL_CODE_DAY_TO_MINUTE* = 9
-    SQL_CODE_DAY_TO_SECOND* = 10
-    SQL_CODE_HOUR_TO_MINUTE* = 11
-    SQL_CODE_HOUR_TO_SECOND* = 12
-    SQL_CODE_MINUTE_TO_SECOND* = 13
-    SQL_INTERVAL_YEAR* = 100 + SQL_CODE_YEAR
-    SQL_INTERVAL_MONTH* = 100 + SQL_CODE_MONTH
-    SQL_INTERVAL_DAY* = 100 + SQL_CODE_DAY
-    SQL_INTERVAL_HOUR* = 100 + SQL_CODE_HOUR
-    SQL_INTERVAL_MINUTE* = 100 + SQL_CODE_MINUTE
-    SQL_INTERVAL_SECOND* = 100 + SQL_CODE_SECOND
-    SQL_INTERVAL_YEAR_TO_MONTH* = 100 + SQL_CODE_YEAR_TO_MONTH
-    SQL_INTERVAL_DAY_TO_HOUR* = 100 + SQL_CODE_DAY_TO_HOUR
-    SQL_INTERVAL_DAY_TO_MINUTE* = 100 + SQL_CODE_DAY_TO_MINUTE
-    SQL_INTERVAL_DAY_TO_SECOND* = 100 + SQL_CODE_DAY_TO_SECOND
-    SQL_INTERVAL_HOUR_TO_MINUTE* = 100 + SQL_CODE_HOUR_TO_MINUTE
-    SQL_INTERVAL_HOUR_TO_SECOND* = 100 + SQL_CODE_HOUR_TO_SECOND
-    SQL_INTERVAL_MINUTE_TO_SECOND* = 100 + SQL_CODE_MINUTE_TO_SECOND
+    SqlCodeYear* = 1
+    SqlCodeMonth* = 2
+    SqlCodeDay* = 3
+    SqlCodeHour* = 4
+    SqlCodeMinute* = 5
+    SqlCodeSecond* = 6
+    SqlCodeYearToMonth* = 7
+    SqlCodeDayToHour* = 8
+    SqlCodeDayToMinute* = 9
+    SqlCodeDayToSecond* = 10
+    SqlCodeHourToMinute* = 11
+    SqlCodeHourToSecond* = 12
+    SqlCodeMinuteToSecond* = 13
+    SqlIntervalYear* = 100 + SQL_CODE_YEAR
+    SqlIntervalMonth* = 100 + SQL_CODE_MONTH
+    SqlIntervalDay* = 100 + SQL_CODE_DAY
+    SqlIntervalHour* = 100 + SQL_CODE_HOUR
+    SqlIntervalMinute* = 100 + SQL_CODE_MINUTE
+    SqlIntervalSecond* = 100 + SQL_CODE_SECOND
+    SqlIntervalYearToMonth* = 100 + SQL_CODE_YEAR_TO_MONTH
+    SqlIntervalDayToHour* = 100 + SQL_CODE_DAY_TO_HOUR
+    SqlIntervalDayToMinute* = 100 + SQL_CODE_DAY_TO_MINUTE
+    SqlIntervalDayToSecond* = 100 + SQL_CODE_DAY_TO_SECOND
+    SqlIntervalHourToMinute* = 100 + SQL_CODE_HOUR_TO_MINUTE
+    SqlIntervalHourToSecond* = 100 + SQL_CODE_HOUR_TO_SECOND
+    SqlIntervalMinuteToSecond* = 100 + SQL_CODE_MINUTE_TO_SECOND
 else: 
   const 
     SQL_INTERVAL_YEAR* = - 80
@@ -138,53 +138,53 @@ when ODBCVER < 0x0300:
 else: 
   # The previous definitions for SQL_UNICODE_ are historical and obsolete 
   const 
-    SQL_UNICODE* = SQL_WCHAR
-    SQL_UNICODE_VARCHAR* = SQL_WVARCHAR
-    SQL_UNICODE_LONGVARCHAR* = SQL_WLONGVARCHAR
-    SQL_UNICODE_CHAR* = SQL_WCHAR
+    SqlUnicode* = SQL_WCHAR
+    SqlUnicodeVarchar* = SQL_WVARCHAR
+    SqlUnicodeLongvarchar* = SQL_WLONGVARCHAR
+    SqlUnicodeChar* = SQL_WCHAR
 const                         # C datatype to SQL datatype mapping 
-  SQL_C_CHAR* = SQL_CHAR
-  SQL_C_LONG* = SQL_INTEGER
-  SQL_C_SHORT* = SQL_SMALLINT
-  SQL_C_FLOAT* = SQL_REAL
-  SQL_C_DOUBLE* = SQL_DOUBLE
-  SQL_C_NUMERIC* = SQL_NUMERIC
-  SQL_C_DEFAULT* = 99
-  SQL_SIGNED_OFFSET* = - 20
-  SQL_UNSIGNED_OFFSET* = - 22
-  SQL_C_DATE* = SQL_DATE
-  SQL_C_TIME* = SQL_TIME
-  SQL_C_TIMESTAMP* = SQL_TIMESTAMP
-  SQL_C_TYPE_DATE* = SQL_TYPE_DATE
-  SQL_C_TYPE_TIME* = SQL_TYPE_TIME
-  SQL_C_TYPE_TIMESTAMP* = SQL_TYPE_TIMESTAMP
-  SQL_C_INTERVAL_YEAR* = SQL_INTERVAL_YEAR
-  SQL_C_INTERVAL_MONTH* = SQL_INTERVAL_MONTH
-  SQL_C_INTERVAL_DAY* = SQL_INTERVAL_DAY
-  SQL_C_INTERVAL_HOUR* = SQL_INTERVAL_HOUR
-  SQL_C_INTERVAL_MINUTE* = SQL_INTERVAL_MINUTE
-  SQL_C_INTERVAL_SECOND* = SQL_INTERVAL_SECOND
-  SQL_C_INTERVAL_YEAR_TO_MONTH* = SQL_INTERVAL_YEAR_TO_MONTH
-  SQL_C_INTERVAL_DAY_TO_HOUR* = SQL_INTERVAL_DAY_TO_HOUR
-  SQL_C_INTERVAL_DAY_TO_MINUTE* = SQL_INTERVAL_DAY_TO_MINUTE
-  SQL_C_INTERVAL_DAY_TO_SECOND* = SQL_INTERVAL_DAY_TO_SECOND
-  SQL_C_INTERVAL_HOUR_TO_MINUTE* = SQL_INTERVAL_HOUR_TO_MINUTE
-  SQL_C_INTERVAL_HOUR_TO_SECOND* = SQL_INTERVAL_HOUR_TO_SECOND
-  SQL_C_INTERVAL_MINUTE_TO_SECOND* = SQL_INTERVAL_MINUTE_TO_SECOND
-  SQL_C_BINARY* = SQL_BINARY
-  SQL_C_BIT* = SQL_BIT
-  SQL_C_SBIGINT* = SQL_BIGINT + SQL_SIGNED_OFFSET # SIGNED BIGINT
-  SQL_C_UBIGINT* = SQL_BIGINT + SQL_UNSIGNED_OFFSET # UNSIGNED BIGINT
-  SQL_C_TINYINT* = SQL_TINYINT
-  SQL_C_SLONG* = SQL_C_LONG + SQL_SIGNED_OFFSET # SIGNED INTEGER
-  SQL_C_SSHORT* = SQL_C_SHORT + SQL_SIGNED_OFFSET # SIGNED SMALLINT
-  SQL_C_STINYINT* = SQL_TINYINT + SQL_SIGNED_OFFSET # SIGNED TINYINT
-  SQL_C_ULONG* = SQL_C_LONG + SQL_UNSIGNED_OFFSET # UNSIGNED INTEGER
-  SQL_C_USHORT* = SQL_C_SHORT + SQL_UNSIGNED_OFFSET # UNSIGNED SMALLINT
-  SQL_C_UTINYINT* = SQL_TINYINT + SQL_UNSIGNED_OFFSET # UNSIGNED TINYINT
-  SQL_C_BOOKMARK* = SQL_C_ULONG # BOOKMARK
-  SQL_C_GUID* = SQL_GUID
-  SQL_TYPE_NULL* = 0
+  SqlCChar* = SQL_CHAR
+  SqlCLong* = SQL_INTEGER
+  SqlCShort* = SQL_SMALLINT
+  SqlCFloat* = SQL_REAL
+  SqlCDouble* = SQL_DOUBLE
+  SqlCNumeric* = SQL_NUMERIC
+  SqlCDefault* = 99
+  SqlSignedOffset* = - 20
+  SqlUnsignedOffset* = - 22
+  SqlCDate* = SQL_DATE
+  SqlCTime* = SQL_TIME
+  SqlCTimestamp* = SQL_TIMESTAMP
+  SqlCTypeDate* = SQL_TYPE_DATE
+  SqlCTypeTime* = SQL_TYPE_TIME
+  SqlCTypeTimestamp* = SQL_TYPE_TIMESTAMP
+  SqlCIntervalYear* = SQL_INTERVAL_YEAR
+  SqlCIntervalMonth* = SQL_INTERVAL_MONTH
+  SqlCIntervalDay* = SQL_INTERVAL_DAY
+  SqlCIntervalHour* = SQL_INTERVAL_HOUR
+  SqlCIntervalMinute* = SQL_INTERVAL_MINUTE
+  SqlCIntervalSecond* = SQL_INTERVAL_SECOND
+  SqlCIntervalYearToMonth* = SQL_INTERVAL_YEAR_TO_MONTH
+  SqlCIntervalDayToHour* = SQL_INTERVAL_DAY_TO_HOUR
+  SqlCIntervalDayToMinute* = SQL_INTERVAL_DAY_TO_MINUTE
+  SqlCIntervalDayToSecond* = SQL_INTERVAL_DAY_TO_SECOND
+  SqlCIntervalHourToMinute* = SQL_INTERVAL_HOUR_TO_MINUTE
+  SqlCIntervalHourToSecond* = SQL_INTERVAL_HOUR_TO_SECOND
+  SqlCIntervalMinuteToSecond* = SQL_INTERVAL_MINUTE_TO_SECOND
+  SqlCBinary* = SQL_BINARY
+  SqlCBit* = SQL_BIT
+  SqlCSbigint* = SQL_BIGINT + SQL_SIGNED_OFFSET # SIGNED BIGINT
+  SqlCUbigint* = SQL_BIGINT + SQL_UNSIGNED_OFFSET # UNSIGNED BIGINT
+  SqlCTinyint* = SQL_TINYINT
+  SqlCSlong* = SQL_C_LONG + SQL_SIGNED_OFFSET # SIGNED INTEGER
+  SqlCSshort* = SQL_C_SHORT + SQL_SIGNED_OFFSET # SIGNED SMALLINT
+  SqlCStinyint* = SQL_TINYINT + SQL_SIGNED_OFFSET # SIGNED TINYINT
+  SqlCUlong* = SQL_C_LONG + SQL_UNSIGNED_OFFSET # UNSIGNED INTEGER
+  SqlCUshort* = SQL_C_SHORT + SQL_UNSIGNED_OFFSET # UNSIGNED SMALLINT
+  SqlCUtinyint* = SQL_TINYINT + SQL_UNSIGNED_OFFSET # UNSIGNED TINYINT
+  SqlCBookmark* = SQL_C_ULONG # BOOKMARK
+  SqlCGuid* = SQL_GUID
+  SqlTypeNull* = 0
 
 when ODBCVER < 0x0300: 
   const 
@@ -192,24 +192,24 @@ when ODBCVER < 0x0300:
     SQL_TYPE_MAX* = SQL_VARCHAR
 
 const 
-  SQL_C_VARBOOKMARK* = SQL_C_BINARY
-  SQL_API_SQLDESCRIBEPARAM* = 58
-  SQL_NO_TOTAL* = - 4
+  SqlCVarbookmark* = SQL_C_BINARY
+  SqlApiSqldescribeparam* = 58
+  SqlNoTotal* = - 4
 
 type 
-  SQL_DATE_STRUCT* {.final, pure.} = object 
+  SqlDateStruct* {.final, pure.} = object 
     Year*: TSqlSmallInt
     Month*: TSqlUSmallInt
     Day*: TSqlUSmallInt
 
-  PSQL_DATE_STRUCT* = ptr SQL_DATE_STRUCT
-  SQL_TIME_STRUCT* {.final, pure.} = object 
+  PsqlDateStruct* = ptr SqlDateStruct
+  SqlTimeStruct* {.final, pure.} = object 
     Hour*: TSqlUSmallInt
     Minute*: TSqlUSmallInt
     Second*: TSqlUSmallInt
 
-  PSQL_TIME_STRUCT* = ptr SQL_TIME_STRUCT
-  SQL_TIMESTAMP_STRUCT* {.final, pure.} = object 
+  PsqlTimeStruct* = ptr SqlTimeStruct
+  SqlTimestampStruct* {.final, pure.} = object 
     Year*: TSqlUSmallInt
     Month*: TSqlUSmallInt
     Day*: TSqlUSmallInt
@@ -218,409 +218,409 @@ type
     Second*: TSqlUSmallInt
     Fraction*: TSqlUInteger
 
-  PSQL_TIMESTAMP_STRUCT* = ptr SQL_TIMESTAMP_STRUCT
+  PsqlTimestampStruct* = ptr SqlTimestampStruct
 
 const 
-  SQL_NAME_LEN* = 128
-  SQL_OV_ODBC3* = 3
-  SQL_OV_ODBC2* = 2
-  SQL_ATTR_ODBC_VERSION* = 200 # Options for SQLDriverConnect 
-  SQL_DRIVER_NOPROMPT* = 0
-  SQL_DRIVER_COMPLETE* = 1
-  SQL_DRIVER_PROMPT* = 2
-  SQL_DRIVER_COMPLETE_REQUIRED* = 3 
-  SQL_IS_POINTER* = (- 4)  # whether an attribute is a pointer or not 
-  SQL_IS_UINTEGER* = (- 5)
-  SQL_IS_INTEGER* = (- 6)
-  SQL_IS_USMALLINT* = (- 7)
-  SQL_IS_SMALLINT* = (- 8)    # SQLExtendedFetch "fFetchType" values 
-  SQL_FETCH_BOOKMARK* = 8
-  SQL_SCROLL_OPTIONS* = 44    # SQL_USE_BOOKMARKS options 
-  SQL_UB_OFF* = 0
-  SQL_UB_ON* = 1
-  SQL_UB_DEFAULT* = SQL_UB_OFF
-  SQL_UB_FIXED* = SQL_UB_ON
-  SQL_UB_VARIABLE* = 2        # SQL_SCROLL_OPTIONS masks 
-  SQL_SO_FORWARD_ONLY* = 0x00000001
-  SQL_SO_KEYSET_DRIVEN* = 0x00000002
-  SQL_SO_DYNAMIC* = 0x00000004
-  SQL_SO_MIXED* = 0x00000008
-  SQL_SO_STATIC* = 0x00000010
-  SQL_BOOKMARK_PERSISTENCE* = 82
-  SQL_STATIC_SENSITIVITY* = 83 # SQL_BOOKMARK_PERSISTENCE values 
-  SQL_BP_CLOSE* = 0x00000001
-  SQL_BP_DELETE* = 0x00000002
-  SQL_BP_DROP* = 0x00000004
-  SQL_BP_TRANSACTION* = 0x00000008
-  SQL_BP_UPDATE* = 0x00000010
-  SQL_BP_OTHER_HSTMT* = 0x00000020
-  SQL_BP_SCROLL* = 0x00000040
-  SQL_DYNAMIC_CURSOR_ATTRIBUTES1* = 144
-  SQL_DYNAMIC_CURSOR_ATTRIBUTES2* = 145
-  SQL_FORWARD_ONLY_CURSOR_ATTRIBUTES1* = 146
-  SQL_FORWARD_ONLY_CURSOR_ATTRIBUTES2* = 147
-  SQL_INDEX_KEYWORDS* = 148
-  SQL_INFO_SCHEMA_VIEWS* = 149
-  SQL_KEYSET_CURSOR_ATTRIBUTES1* = 150
-  SQL_KEYSET_CURSOR_ATTRIBUTES2* = 151
-  SQL_STATIC_CURSOR_ATTRIBUTES1* = 167
-  SQL_STATIC_CURSOR_ATTRIBUTES2* = 168 # supported SQLFetchScroll FetchOrientation's 
-  SQL_CA1_NEXT* = 1
-  SQL_CA1_ABSOLUTE* = 2
-  SQL_CA1_RELATIVE* = 4
-  SQL_CA1_BOOKMARK* = 8       # supported SQLSetPos LockType's 
-  SQL_CA1_LOCK_NO_CHANGE* = 0x00000040
-  SQL_CA1_LOCK_EXCLUSIVE* = 0x00000080
-  SQL_CA1_LOCK_UNLOCK* = 0x00000100 # supported SQLSetPos Operations 
-  SQL_CA1_POS_POSITION* = 0x00000200
-  SQL_CA1_POS_UPDATE* = 0x00000400
-  SQL_CA1_POS_DELETE* = 0x00000800
-  SQL_CA1_POS_REFRESH* = 0x00001000 # positioned updates and deletes 
-  SQL_CA1_POSITIONED_UPDATE* = 0x00002000
-  SQL_CA1_POSITIONED_DELETE* = 0x00004000
-  SQL_CA1_SELECT_FOR_UPDATE* = 0x00008000 # supported SQLBulkOperations operations 
-  SQL_CA1_BULK_ADD* = 0x00010000
-  SQL_CA1_BULK_UPDATE_BY_BOOKMARK* = 0x00020000
-  SQL_CA1_BULK_DELETE_BY_BOOKMARK* = 0x00040000
-  SQL_CA1_BULK_FETCH_BY_BOOKMARK* = 0x00080000 # supported values for SQL_ATTR_SCROLL_CONCURRENCY 
-  SQL_CA2_READ_ONLY_CONCURRENCY* = 1
-  SQL_CA2_LOCK_CONCURRENCY* = 2
-  SQL_CA2_OPT_ROWVER_CONCURRENCY* = 4
-  SQL_CA2_OPT_VALUES_CONCURRENCY* = 8 # sensitivity of the cursor to its own inserts, deletes, and updates 
-  SQL_CA2_SENSITIVITY_ADDITIONS* = 0x00000010
-  SQL_CA2_SENSITIVITY_DELETIONS* = 0x00000020
-  SQL_CA2_SENSITIVITY_UPDATES* = 0x00000040 #  semantics of SQL_ATTR_MAX_ROWS 
-  SQL_CA2_MAX_ROWS_SELECT* = 0x00000080
-  SQL_CA2_MAX_ROWS_INSERT* = 0x00000100
-  SQL_CA2_MAX_ROWS_DELETE* = 0x00000200
-  SQL_CA2_MAX_ROWS_UPDATE* = 0x00000400
-  SQL_CA2_MAX_ROWS_CATALOG* = 0x00000800
-  SQL_CA2_MAX_ROWS_AFFECTS_ALL* = (SQL_CA2_MAX_ROWS_SELECT or
+  SqlNameLen* = 128
+  SqlOvOdbc3* = 3
+  SqlOvOdbc2* = 2
+  SqlAttrOdbcVersion* = 200 # Options for SQLDriverConnect 
+  SqlDriverNoprompt* = 0
+  SqlDriverComplete* = 1
+  SqlDriverPrompt* = 2
+  SqlDriverCompleteRequired* = 3 
+  SqlIsPointer* = (- 4)  # whether an attribute is a pointer or not 
+  SqlIsUinteger* = (- 5)
+  SqlIsInteger* = (- 6)
+  SqlIsUsmallint* = (- 7)
+  SqlIsSmallint* = (- 8)    # SQLExtendedFetch "fFetchType" values 
+  SqlFetchBookmark* = 8
+  SqlScrollOptions* = 44    # SQL_USE_BOOKMARKS options 
+  SqlUbOff* = 0
+  SqlUbOn* = 1
+  SqlUbDefault* = SQL_UB_OFF
+  SqlUbFixed* = SQL_UB_ON
+  SqlUbVariable* = 2        # SQL_SCROLL_OPTIONS masks 
+  SqlSoForwardOnly* = 0x00000001
+  SqlSoKeysetDriven* = 0x00000002
+  SqlSoDynamic* = 0x00000004
+  SqlSoMixed* = 0x00000008
+  SqlSoStatic* = 0x00000010
+  SqlBookmarkPersistence* = 82
+  SqlStaticSensitivity* = 83 # SQL_BOOKMARK_PERSISTENCE values 
+  SqlBpClose* = 0x00000001
+  SqlBpDelete* = 0x00000002
+  SqlBpDrop* = 0x00000004
+  SqlBpTransaction* = 0x00000008
+  SqlBpUpdate* = 0x00000010
+  SqlBpOtherHstmt* = 0x00000020
+  SqlBpScroll* = 0x00000040
+  SqlDynamicCursorAttributes1* = 144
+  SqlDynamicCursorAttributes2* = 145
+  SqlForwardOnlyCursorAttributes1* = 146
+  SqlForwardOnlyCursorAttributes2* = 147
+  SqlIndexKeywords* = 148
+  SqlInfoSchemaViews* = 149
+  SqlKeysetCursorAttributes1* = 150
+  SqlKeysetCursorAttributes2* = 151
+  SqlStaticCursorAttributes1* = 167
+  SqlStaticCursorAttributes2* = 168 # supported SQLFetchScroll FetchOrientation's 
+  SqlCa1Next* = 1
+  SqlCa1Absolute* = 2
+  SqlCa1Relative* = 4
+  SqlCa1Bookmark* = 8       # supported SQLSetPos LockType's 
+  SqlCa1LockNoChange* = 0x00000040
+  SqlCa1LockExclusive* = 0x00000080
+  SqlCa1LockUnlock* = 0x00000100 # supported SQLSetPos Operations 
+  SqlCa1PosPosition* = 0x00000200
+  SqlCa1PosUpdate* = 0x00000400
+  SqlCa1PosDelete* = 0x00000800
+  SqlCa1PosRefresh* = 0x00001000 # positioned updates and deletes 
+  SqlCa1PositionedUpdate* = 0x00002000
+  SqlCa1PositionedDelete* = 0x00004000
+  SqlCa1SelectForUpdate* = 0x00008000 # supported SQLBulkOperations operations 
+  SqlCa1BulkAdd* = 0x00010000
+  SqlCa1BulkUpdateByBookmark* = 0x00020000
+  SqlCa1BulkDeleteByBookmark* = 0x00040000
+  SqlCa1BulkFetchByBookmark* = 0x00080000 # supported values for SQL_ATTR_SCROLL_CONCURRENCY 
+  SqlCa2ReadOnlyConcurrency* = 1
+  SqlCa2LockConcurrency* = 2
+  SqlCa2OptRowverConcurrency* = 4
+  SqlCa2OptValuesConcurrency* = 8 # sensitivity of the cursor to its own inserts, deletes, and updates 
+  SqlCa2SensitivityAdditions* = 0x00000010
+  SqlCa2SensitivityDeletions* = 0x00000020
+  SqlCa2SensitivityUpdates* = 0x00000040 #  semantics of SQL_ATTR_MAX_ROWS 
+  SqlCa2MaxRowsSelect* = 0x00000080
+  SqlCa2MaxRowsInsert* = 0x00000100
+  SqlCa2MaxRowsDelete* = 0x00000200
+  SqlCa2MaxRowsUpdate* = 0x00000400
+  SqlCa2MaxRowsCatalog* = 0x00000800
+  SqlCa2MaxRowsAffectsAll* = (SQL_CA2_MAX_ROWS_SELECT or
       SQL_CA2_MAX_ROWS_INSERT or SQL_CA2_MAX_ROWS_DELETE or
       SQL_CA2_MAX_ROWS_UPDATE or SQL_CA2_MAX_ROWS_CATALOG) # semantics of 
                                                            # SQL_DIAG_CURSOR_ROW_COUNT 
-  SQL_CA2_CRC_EXACT* = 0x00001000
-  SQL_CA2_CRC_APPROXIMATE* = 0x00002000 #  the kinds of positioned statements that can be simulated 
-  SQL_CA2_SIMULATE_NON_UNIQUE* = 0x00004000
-  SQL_CA2_SIMULATE_TRY_UNIQUE* = 0x00008000
-  SQL_CA2_SIMULATE_UNIQUE* = 0x00010000 #  Operations in SQLBulkOperations 
-  SQL_ADD* = 4
-  SQL_SETPOS_MAX_OPTION_VALUE* = SQL_ADD
-  SQL_UPDATE_BY_BOOKMARK* = 5
-  SQL_DELETE_BY_BOOKMARK* = 6
-  SQL_FETCH_BY_BOOKMARK* = 7  # Operations in SQLSetPos 
-  SQL_POSITION* = 0
-  SQL_REFRESH* = 1
-  SQL_UPDATE* = 2
-  SQL_DELETE* = 3             # Lock options in SQLSetPos 
-  SQL_LOCK_NO_CHANGE* = 0
-  SQL_LOCK_EXCLUSIVE* = 1
-  SQL_LOCK_UNLOCK* = 2        # SQLExtendedFetch "rgfRowStatus" element values 
-  SQL_ROW_SUCCESS* = 0
-  SQL_ROW_DELETED* = 1
-  SQL_ROW_UPDATED* = 2
-  SQL_ROW_NOROW* = 3
-  SQL_ROW_ADDED* = 4
-  SQL_ROW_ERROR* = 5
-  SQL_ROW_SUCCESS_WITH_INFO* = 6
-  SQL_ROW_PROCEED* = 0
-  SQL_ROW_IGNORE* = 1
-  SQL_MAX_DSN_LENGTH* = 32    # maximum data source name size 
-  SQL_MAX_OPTION_STRING_LENGTH* = 256
-  SQL_ODBC_CURSORS* = 110
-  SQL_ATTR_ODBC_CURSORS* = SQL_ODBC_CURSORS # SQL_ODBC_CURSORS options 
-  SQL_CUR_USE_IF_NEEDED* = 0
-  SQL_CUR_USE_ODBC* = 1
-  SQL_CUR_USE_DRIVER* = 2
-  SQL_CUR_DEFAULT* = SQL_CUR_USE_DRIVER
-  SQL_PARAM_TYPE_UNKNOWN* = 0
-  SQL_PARAM_INPUT* = 1
-  SQL_PARAM_INPUT_OUTPUT* = 2
-  SQL_RESULT_COL* = 3
-  SQL_PARAM_OUTPUT* = 4
-  SQL_RETURN_VALUE* = 5       # special length/indicator values 
-  SQL_NULL_DATA* = (- 1)
-  SQL_DATA_AT_EXEC* = (- 2)
-  SQL_SUCCESS* = 0
-  SQL_SUCCESS_WITH_INFO* = 1
-  SQL_NO_DATA* = 100
-  SQL_ERROR* = (- 1)
-  SQL_INVALID_HANDLE* = (- 2)
-  SQL_STILL_EXECUTING* = 2
-  SQL_NEED_DATA* = 99         # flags for null-terminated string 
-  SQL_NTS* = (- 3)            # maximum message length 
-  SQL_MAX_MESSAGE_LENGTH* = 512 # date/time length constants 
-  SQL_DATE_LEN* = 10
-  SQL_TIME_LEN* = 8           # add P+1 if precision is nonzero 
-  SQL_TIMESTAMP_LEN* = 19     # add P+1 if precision is nonzero 
+  SqlCa2CrcExact* = 0x00001000
+  SqlCa2CrcApproximate* = 0x00002000 #  the kinds of positioned statements that can be simulated 
+  SqlCa2SimulateNonUnique* = 0x00004000
+  SqlCa2SimulateTryUnique* = 0x00008000
+  SqlCa2SimulateUnique* = 0x00010000 #  Operations in SQLBulkOperations 
+  SqlAdd* = 4
+  SqlSetposMaxOptionValue* = SQL_ADD
+  SqlUpdateByBookmark* = 5
+  SqlDeleteByBookmark* = 6
+  SqlFetchByBookmark* = 7  # Operations in SQLSetPos 
+  SqlPosition* = 0
+  SqlRefresh* = 1
+  SqlUpdate* = 2
+  SqlDelete* = 3             # Lock options in SQLSetPos 
+  SqlLockNoChange* = 0
+  SqlLockExclusive* = 1
+  SqlLockUnlock* = 2        # SQLExtendedFetch "rgfRowStatus" element values 
+  SqlRowSuccess* = 0
+  SqlRowDeleted* = 1
+  SqlRowUpdated* = 2
+  SqlRowNorow* = 3
+  SqlRowAdded* = 4
+  SqlRowError* = 5
+  SqlRowSuccessWithInfo* = 6
+  SqlRowProceed* = 0
+  SqlRowIgnore* = 1
+  SqlMaxDsnLength* = 32    # maximum data source name size 
+  SqlMaxOptionStringLength* = 256
+  SqlOdbcCursors* = 110
+  SqlAttrOdbcCursors* = SQL_ODBC_CURSORS # SQL_ODBC_CURSORS options 
+  SqlCurUseIfNeeded* = 0
+  SqlCurUseOdbc* = 1
+  SqlCurUseDriver* = 2
+  SqlCurDefault* = SQL_CUR_USE_DRIVER
+  SqlParamTypeUnknown* = 0
+  SqlParamInput* = 1
+  SqlParamInputOutput* = 2
+  SqlResultCol* = 3
+  SqlParamOutput* = 4
+  SqlReturnValue* = 5       # special length/indicator values 
+  SqlNullData* = (- 1)
+  SqlDataAtExec* = (- 2)
+  SqlSuccess* = 0
+  SqlSuccessWithInfo* = 1
+  SqlNoData* = 100
+  SqlError* = (- 1)
+  SqlInvalidHandle* = (- 2)
+  SqlStillExecuting* = 2
+  SqlNeedData* = 99         # flags for null-terminated string 
+  SqlNts* = (- 3)            # maximum message length 
+  SqlMaxMessageLength* = 512 # date/time length constants 
+  SqlDateLen* = 10
+  SqlTimeLen* = 8           # add P+1 if precision is nonzero 
+  SqlTimestampLen* = 19     # add P+1 if precision is nonzero 
                               # handle type identifiers 
-  SQL_HANDLE_ENV* = 1
-  SQL_HANDLE_DBC* = 2
-  SQL_HANDLE_STMT* = 3
-  SQL_HANDLE_DESC* = 4        # environment attribute 
-  SQL_ATTR_OUTPUT_NTS* = 10001 # connection attributes 
-  SQL_ATTR_AUTO_IPD* = 10001
-  SQL_ATTR_METADATA_ID* = 10014 # statement attributes 
-  SQL_ATTR_APP_ROW_DESC* = 10010
-  SQL_ATTR_APP_PARAM_DESC* = 10011
-  SQL_ATTR_IMP_ROW_DESC* = 10012
-  SQL_ATTR_IMP_PARAM_DESC* = 10013
-  SQL_ATTR_CURSOR_SCROLLABLE* = (- 1)
-  SQL_ATTR_CURSOR_SENSITIVITY* = (- 2)
-  SQL_QUERY_TIMEOUT* = 0
-  SQL_MAX_ROWS* = 1
-  SQL_NOSCAN* = 2
-  SQL_MAX_LENGTH* = 3
-  SQL_ASYNC_ENABLE* = 4       # same as SQL_ATTR_ASYNC_ENABLE */
-  SQL_BIND_TYPE* = 5
-  SQL_CURSOR_TYPE* = 6
-  SQL_CONCURRENCY* = 7
-  SQL_KEYSET_SIZE* = 8
-  SQL_ROWSET_SIZE* = 9
-  SQL_SIMULATE_CURSOR* = 10
-  SQL_RETRIEVE_DATA* = 11
-  SQL_USE_BOOKMARKS* = 12
-  SQL_GET_BOOKMARK* = 13      #      GetStmtOption Only */
-  SQL_ROW_NUMBER* = 14        #      GetStmtOption Only */
-  SQL_ATTR_CURSOR_TYPE* = SQL_CURSOR_TYPE
-  SQL_ATTR_CONCURRENCY* = SQL_CONCURRENCY
-  SQL_ATTR_FETCH_BOOKMARK_PTR* = 16
-  SQL_ATTR_ROW_STATUS_PTR* = 25
-  SQL_ATTR_ROWS_FETCHED_PTR* = 26
-  SQL_AUTOCOMMIT* = 102
-  SQL_ATTR_AUTOCOMMIT* = SQL_AUTOCOMMIT
-  SQL_ATTR_ROW_NUMBER* = SQL_ROW_NUMBER
-  SQL_TXN_ISOLATION* = 108
-  SQL_ATTR_TXN_ISOLATION* = SQL_TXN_ISOLATION
-  SQL_ATTR_MAX_ROWS* = SQL_MAX_ROWS
-  SQL_ATTR_USE_BOOKMARKS* = SQL_USE_BOOKMARKS #* connection attributes */
-  SQL_ACCESS_MODE* = 101      #  SQL_AUTOCOMMIT              =102;
-  SQL_LOGIN_TIMEOUT* = 103
-  SQL_OPT_TRACE* = 104
-  SQL_OPT_TRACEFILE* = 105
-  SQL_TRANSLATE_DLL* = 106
-  SQL_TRANSLATE_OPTION* = 107 #  SQL_TXN_ISOLATION           =108;
-  SQL_CURRENT_QUALIFIER* = 109 #  SQL_ODBC_CURSORS            =110;
-  SQL_QUIET_MODE* = 111
-  SQL_PACKET_SIZE* = 112      #* connection attributes with new names */
-  SQL_ATTR_ACCESS_MODE* = SQL_ACCESS_MODE #  SQL_ATTR_AUTOCOMMIT                       =SQL_AUTOCOMMIT;
-  SQL_ATTR_CONNECTION_DEAD* = 1209 #* GetConnectAttr only */
-  SQL_ATTR_CONNECTION_TIMEOUT* = 113
-  SQL_ATTR_CURRENT_CATALOG* = SQL_CURRENT_QUALIFIER
-  SQL_ATTR_DISCONNECT_BEHAVIOR* = 114
-  SQL_ATTR_ENLIST_IN_DTC* = 1207
-  SQL_ATTR_ENLIST_IN_XA* = 1208
-  SQL_ATTR_LOGIN_TIMEOUT* = SQL_LOGIN_TIMEOUT #  SQL_ATTR_ODBC_CURSORS             =SQL_ODBC_CURSORS;
-  SQL_ATTR_PACKET_SIZE* = SQL_PACKET_SIZE
-  SQL_ATTR_QUIET_MODE* = SQL_QUIET_MODE
-  SQL_ATTR_TRACE* = SQL_OPT_TRACE
-  SQL_ATTR_TRACEFILE* = SQL_OPT_TRACEFILE
-  SQL_ATTR_TRANSLATE_LIB* = SQL_TRANSLATE_DLL
-  SQL_ATTR_TRANSLATE_OPTION* = SQL_TRANSLATE_OPTION #  SQL_ATTR_TXN_ISOLATION                  =SQL_TXN_ISOLATION;
+  SqlHandleEnv* = 1
+  SqlHandleDbc* = 2
+  SqlHandleStmt* = 3
+  SqlHandleDesc* = 4        # environment attribute 
+  SqlAttrOutputNts* = 10001 # connection attributes 
+  SqlAttrAutoIpd* = 10001
+  SqlAttrMetadataId* = 10014 # statement attributes 
+  SqlAttrAppRowDesc* = 10010
+  SqlAttrAppParamDesc* = 10011
+  SqlAttrImpRowDesc* = 10012
+  SqlAttrImpParamDesc* = 10013
+  SqlAttrCursorScrollable* = (- 1)
+  SqlAttrCursorSensitivity* = (- 2)
+  SqlQueryTimeout* = 0
+  SqlMaxRows* = 1
+  SqlNoscan* = 2
+  SqlMaxLength* = 3
+  SqlAsyncEnable* = 4       # same as SQL_ATTR_ASYNC_ENABLE */
+  SqlBindType* = 5
+  SqlCursorType* = 6
+  SqlConcurrency* = 7
+  SqlKeysetSize* = 8
+  SqlRowsetSize* = 9
+  SqlSimulateCursor* = 10
+  SqlRetrieveData* = 11
+  SqlUseBookmarks* = 12
+  SqlGetBookmark* = 13      #      GetStmtOption Only */
+  SqlRowNumber* = 14        #      GetStmtOption Only */
+  SqlAttrCursorType* = SQL_CURSOR_TYPE
+  SqlAttrConcurrency* = SQL_CONCURRENCY
+  SqlAttrFetchBookmarkPtr* = 16
+  SqlAttrRowStatusPtr* = 25
+  SqlAttrRowsFetchedPtr* = 26
+  SqlAutocommit* = 102
+  SqlAttrAutocommit* = SQL_AUTOCOMMIT
+  SqlAttrRowNumber* = SQL_ROW_NUMBER
+  SqlTxnIsolation* = 108
+  SqlAttrTxnIsolation* = SQL_TXN_ISOLATION
+  SqlAttrMaxRows* = SQL_MAX_ROWS
+  SqlAttrUseBookmarks* = SQL_USE_BOOKMARKS #* connection attributes */
+  SqlAccessMode* = 101      #  SQL_AUTOCOMMIT              =102;
+  SqlLoginTimeout* = 103
+  SqlOptTrace* = 104
+  SqlOptTracefile* = 105
+  SqlTranslateDll* = 106
+  SqlTranslateOption* = 107 #  SQL_TXN_ISOLATION           =108;
+  SqlCurrentQualifier* = 109 #  SQL_ODBC_CURSORS            =110;
+  SqlQuietMode* = 111
+  SqlPacketSize* = 112      #* connection attributes with new names */
+  SqlAttrAccessMode* = SQL_ACCESS_MODE #  SQL_ATTR_AUTOCOMMIT                       =SQL_AUTOCOMMIT;
+  SqlAttrConnectionDead* = 1209 #* GetConnectAttr only */
+  SqlAttrConnectionTimeout* = 113
+  SqlAttrCurrentCatalog* = SQL_CURRENT_QUALIFIER
+  SqlAttrDisconnectBehavior* = 114
+  SqlAttrEnlistInDtc* = 1207
+  SqlAttrEnlistInXa* = 1208
+  SqlAttrLoginTimeout* = SQL_LOGIN_TIMEOUT #  SQL_ATTR_ODBC_CURSORS             =SQL_ODBC_CURSORS;
+  SqlAttrPacketSize* = SQL_PACKET_SIZE
+  SqlAttrQuietMode* = SQL_QUIET_MODE
+  SqlAttrTrace* = SQL_OPT_TRACE
+  SqlAttrTracefile* = SQL_OPT_TRACEFILE
+  SqlAttrTranslateLib* = SQL_TRANSLATE_DLL
+  SqlAttrTranslateOption* = SQL_TRANSLATE_OPTION #  SQL_ATTR_TXN_ISOLATION                  =SQL_TXN_ISOLATION;
                                                     #* SQL_ACCESS_MODE options */
-  SQL_MODE_READ_WRITE* = 0
-  SQL_MODE_READ_ONLY* = 1
-  SQL_MODE_DEFAULT* = SQL_MODE_READ_WRITE #* SQL_AUTOCOMMIT options */
-  SQL_AUTOCOMMIT_OFF* = 0
-  SQL_AUTOCOMMIT_ON* = 1
-  SQL_AUTOCOMMIT_DEFAULT* = SQL_AUTOCOMMIT_ON # SQL_ATTR_CURSOR_SCROLLABLE values 
-  SQL_NONSCROLLABLE* = 0
-  SQL_SCROLLABLE* = 1         # SQL_CURSOR_TYPE options 
-  SQL_CURSOR_FORWARD_ONLY* = 0
-  SQL_CURSOR_KEYSET_DRIVEN* = 1
-  SQL_CURSOR_DYNAMIC* = 2
-  SQL_CURSOR_STATIC* = 3
-  SQL_CURSOR_TYPE_DEFAULT* = SQL_CURSOR_FORWARD_ONLY # Default value 
+  SqlModeReadWrite* = 0
+  SqlModeReadOnly* = 1
+  SqlModeDefault* = SQL_MODE_READ_WRITE #* SQL_AUTOCOMMIT options */
+  SqlAutocommitOff* = 0
+  SqlAutocommitOn* = 1
+  SqlAutocommitDefault* = SQL_AUTOCOMMIT_ON # SQL_ATTR_CURSOR_SCROLLABLE values 
+  SqlNonscrollable* = 0
+  SqlScrollable* = 1         # SQL_CURSOR_TYPE options 
+  SqlCursorForwardOnly* = 0
+  SqlCursorKeysetDriven* = 1
+  SqlCursorDynamic* = 2
+  SqlCursorStatic* = 3
+  SqlCursorTypeDefault* = SQL_CURSOR_FORWARD_ONLY # Default value 
                                                      # SQL_CONCURRENCY options 
-  SQL_CONCUR_READ_ONLY* = 1
-  SQL_CONCUR_LOCK* = 2
-  SQL_CONCUR_ROWVER* = 3
-  SQL_CONCUR_VALUES* = 4
-  SQL_CONCUR_DEFAULT* = SQL_CONCUR_READ_ONLY # Default value 
+  SqlConcurReadOnly* = 1
+  SqlConcurLock* = 2
+  SqlConcurRowver* = 3
+  SqlConcurValues* = 4
+  SqlConcurDefault* = SQL_CONCUR_READ_ONLY # Default value 
                                              # identifiers of fields in the SQL descriptor 
-  SQL_DESC_COUNT* = 1001
-  SQL_DESC_TYPE* = 1002
-  SQL_DESC_LENGTH* = 1003
-  SQL_DESC_OCTET_LENGTH_PTR* = 1004
-  SQL_DESC_PRECISION* = 1005
-  SQL_DESC_SCALE* = 1006
-  SQL_DESC_DATETIME_INTERVAL_CODE* = 1007
-  SQL_DESC_NULLABLE* = 1008
-  SQL_DESC_INDICATOR_PTR* = 1009
-  SQL_DESC_DATA_PTR* = 1010
-  SQL_DESC_NAME* = 1011
-  SQL_DESC_UNNAMED* = 1012
-  SQL_DESC_OCTET_LENGTH* = 1013
-  SQL_DESC_ALLOC_TYPE* = 1099 # identifiers of fields in the diagnostics area 
-  SQL_DIAG_RETURNCODE* = 1
-  SQL_DIAG_NUMBER* = 2
-  SQL_DIAG_ROW_COUNT* = 3
-  SQL_DIAG_SQLSTATE* = 4
-  SQL_DIAG_NATIVE* = 5
-  SQL_DIAG_MESSAGE_TEXT* = 6
-  SQL_DIAG_DYNAMIC_FUNCTION* = 7
-  SQL_DIAG_CLASS_ORIGIN* = 8
-  SQL_DIAG_SUBCLASS_ORIGIN* = 9
-  SQL_DIAG_CONNECTION_NAME* = 10
-  SQL_DIAG_SERVER_NAME* = 11
-  SQL_DIAG_DYNAMIC_FUNCTION_CODE* = 12 # dynamic function codes 
-  SQL_DIAG_ALTER_TABLE* = 4
-  SQL_DIAG_CREATE_INDEX* = (- 1)
-  SQL_DIAG_CREATE_TABLE* = 77
-  SQL_DIAG_CREATE_VIEW* = 84
-  SQL_DIAG_DELETE_WHERE* = 19
-  SQL_DIAG_DROP_INDEX* = (- 2)
-  SQL_DIAG_DROP_TABLE* = 32
-  SQL_DIAG_DROP_VIEW* = 36
-  SQL_DIAG_DYNAMIC_DELETE_CURSOR* = 38
-  SQL_DIAG_DYNAMIC_UPDATE_CURSOR* = 81
-  SQL_DIAG_GRANT* = 48
-  SQL_DIAG_INSERT* = 50
-  SQL_DIAG_REVOKE* = 59
-  SQL_DIAG_SELECT_CURSOR* = 85
-  SQL_DIAG_UNKNOWN_STATEMENT* = 0
-  SQL_DIAG_UPDATE_WHERE* = 82 # Statement attribute values for cursor sensitivity 
-  SQL_UNSPECIFIED* = 0
-  SQL_INSENSITIVE* = 1
-  SQL_SENSITIVE* = 2          # GetTypeInfo() request for all data types 
-  SQL_ALL_TYPES* = 0          # Default conversion code for SQLBindCol(), SQLBindParam() and SQLGetData() 
-  SQL_DEFAULT* = 99 # SQLGetData() code indicating that the application row descriptor
+  SqlDescCount* = 1001
+  SqlDescType* = 1002
+  SqlDescLength* = 1003
+  SqlDescOctetLengthPtr* = 1004
+  SqlDescPrecision* = 1005
+  SqlDescScale* = 1006
+  SqlDescDatetimeIntervalCode* = 1007
+  SqlDescNullable* = 1008
+  SqlDescIndicatorPtr* = 1009
+  SqlDescDataPtr* = 1010
+  SqlDescName* = 1011
+  SqlDescUnnamed* = 1012
+  SqlDescOctetLength* = 1013
+  SqlDescAllocType* = 1099 # identifiers of fields in the diagnostics area 
+  SqlDiagReturncode* = 1
+  SqlDiagNumber* = 2
+  SqlDiagRowCount* = 3
+  SqlDiagSqlstate* = 4
+  SqlDiagNative* = 5
+  SqlDiagMessageText* = 6
+  SqlDiagDynamicFunction* = 7
+  SqlDiagClassOrigin* = 8
+  SqlDiagSubclassOrigin* = 9
+  SqlDiagConnectionName* = 10
+  SqlDiagServerName* = 11
+  SqlDiagDynamicFunctionCode* = 12 # dynamic function codes 
+  SqlDiagAlterTable* = 4
+  SqlDiagCreateIndex* = (- 1)
+  SqlDiagCreateTable* = 77
+  SqlDiagCreateView* = 84
+  SqlDiagDeleteWhere* = 19
+  SqlDiagDropIndex* = (- 2)
+  SqlDiagDropTable* = 32
+  SqlDiagDropView* = 36
+  SqlDiagDynamicDeleteCursor* = 38
+  SqlDiagDynamicUpdateCursor* = 81
+  SqlDiagGrant* = 48
+  SqlDiagInsert* = 50
+  SqlDiagRevoke* = 59
+  SqlDiagSelectCursor* = 85
+  SqlDiagUnknownStatement* = 0
+  SqlDiagUpdateWhere* = 82 # Statement attribute values for cursor sensitivity 
+  SqlUnspecified* = 0
+  SqlInsensitive* = 1
+  SqlSensitive* = 2          # GetTypeInfo() request for all data types 
+  SqlAllTypes* = 0          # Default conversion code for SQLBindCol(), SQLBindParam() and SQLGetData() 
+  SqlDefault* = 99 # SQLGetData() code indicating that the application row descriptor
                     #    specifies the data type 
-  SQL_ARD_TYPE* = (- 99)      # SQL date/time type subcodes 
-  SQL_CODE_DATE* = 1
-  SQL_CODE_TIME* = 2
-  SQL_CODE_TIMESTAMP* = 3     # CLI option values 
-  SQL_FALSE* = 0
-  SQL_TRUE* = 1               # values of NULLABLE field in descriptor 
-  SQL_NO_NULLS* = 0
-  SQL_NULLABLE* = 1 # Value returned by SQLGetTypeInfo() to denote that it is
+  SqlArdType* = (- 99)      # SQL date/time type subcodes 
+  SqlCodeDate* = 1
+  SqlCodeTime* = 2
+  SqlCodeTimestamp* = 3     # CLI option values 
+  SqlFalse* = 0
+  SqlTrue* = 1               # values of NULLABLE field in descriptor 
+  SqlNoNulls* = 0
+  SqlNullable* = 1 # Value returned by SQLGetTypeInfo() to denote that it is
                     # not known whether or not a data type supports null values. 
-  SQL_NULLABLE_UNKNOWN* = 2 
-  SQL_CLOSE* = 0
-  SQL_DROP* = 1
-  SQL_UNBIND* = 2
-  SQL_RESET_PARAMS* = 3 # Codes used for FetchOrientation in SQLFetchScroll(),
+  SqlNullableUnknown* = 2 
+  SqlClose* = 0
+  SqlDrop* = 1
+  SqlUnbind* = 2
+  SqlResetParams* = 3 # Codes used for FetchOrientation in SQLFetchScroll(),
                         #   and in SQLDataSources() 
-  SQL_FETCH_NEXT* = 1
-  SQL_FETCH_FIRST* = 2
-  SQL_FETCH_FIRST_USER* = 31
-  SQL_FETCH_FIRST_SYSTEM* = 32 # Other codes used for FetchOrientation in SQLFetchScroll() 
-  SQL_FETCH_LAST* = 3
-  SQL_FETCH_PRIOR* = 4
-  SQL_FETCH_ABSOLUTE* = 5
-  SQL_FETCH_RELATIVE* = 6   
-  SQL_NULL_HENV* = TSqlHEnv(nil)
-  SQL_NULL_HDBC* = TSqlHDBC(nil)
-  SQL_NULL_HSTMT* = TSqlHStmt(nil)
-  SQL_NULL_HDESC* = TSqlHDesc(nil) #* null handle used in place of parent handle when allocating HENV */
-  SQL_NULL_HANDLE* = TSqlHandle(nil) #* Values that may appear in the result set of SQLSpecialColumns() */
-  SQL_SCOPE_CURROW* = 0
-  SQL_SCOPE_TRANSACTION* = 1
-  SQL_SCOPE_SESSION* = 2      #* Column types and scopes in SQLSpecialColumns.  */
-  SQL_BEST_ROWID* = 1
-  SQL_ROWVER* = 2             
-  SQL_ROW_IDENTIFIER* = 1     #* Reserved values for UNIQUE argument of SQLStatistics() */
-  SQL_INDEX_UNIQUE* = 0
-  SQL_INDEX_ALL* = 1          #* Reserved values for RESERVED argument of SQLStatistics() */
-  SQL_QUICK* = 0
-  SQL_ENSURE* = 1             #* Values that may appear in the result set of SQLStatistics() */
-  SQL_TABLE_STAT* = 0
-  SQL_INDEX_CLUSTERED* = 1
-  SQL_INDEX_HASHED* = 2
-  SQL_INDEX_OTHER* = 3 
-  SQL_SCROLL_CONCURRENCY* = 43
-  SQL_TXN_CAPABLE* = 46
-  SQL_TRANSACTION_CAPABLE* = SQL_TXN_CAPABLE
-  SQL_USER_NAME* = 47
-  SQL_TXN_ISOLATION_OPTION* = 72
-  SQL_TRANSACTION_ISOLATION_OPTION* = SQL_TXN_ISOLATION_OPTION 
-  SQL_OJ_CAPABILITIES* = 115
-  SQL_OUTER_JOIN_CAPABILITIES* = SQL_OJ_CAPABILITIES
-  SQL_XOPEN_CLI_YEAR* = 10000
-  SQL_CURSOR_SENSITIVITY* = 10001
-  SQL_DESCRIBE_PARAMETER* = 10002
-  SQL_CATALOG_NAME* = 10003
-  SQL_COLLATION_SEQ* = 10004
-  SQL_MAX_IDENTIFIER_LEN* = 10005
-  SQL_MAXIMUM_IDENTIFIER_LENGTH* = SQL_MAX_IDENTIFIER_LEN
-  SQL_SCCO_READ_ONLY* = 1
-  SQL_SCCO_LOCK* = 2
-  SQL_SCCO_OPT_ROWVER* = 4
-  SQL_SCCO_OPT_VALUES* = 8    #* SQL_TXN_CAPABLE values */
-  SQL_TC_NONE* = 0
-  SQL_TC_DML* = 1
-  SQL_TC_ALL* = 2
-  SQL_TC_DDL_COMMIT* = 3
-  SQL_TC_DDL_IGNORE* = 4      #* SQL_TXN_ISOLATION_OPTION bitmasks */
-  SQL_TXN_READ_UNCOMMITTED* = 1
-  SQL_TRANSACTION_READ_UNCOMMITTED* = SQL_TXN_READ_UNCOMMITTED
-  SQL_TXN_READ_COMMITTED* = 2
-  SQL_TRANSACTION_READ_COMMITTED* = SQL_TXN_READ_COMMITTED
-  SQL_TXN_REPEATABLE_READ* = 4
-  SQL_TRANSACTION_REPEATABLE_READ* = SQL_TXN_REPEATABLE_READ
-  SQL_TXN_SERIALIZABLE* = 8
-  SQL_TRANSACTION_SERIALIZABLE* = SQL_TXN_SERIALIZABLE 
-  SQL_SS_ADDITIONS* = 1
-  SQL_SS_DELETIONS* = 2
-  SQL_SS_UPDATES* = 4         # SQLColAttributes defines 
-  SQL_COLUMN_COUNT* = 0
-  SQL_COLUMN_NAME* = 1
-  SQL_COLUMN_TYPE* = 2
-  SQL_COLUMN_LENGTH* = 3
-  SQL_COLUMN_PRECISION* = 4
-  SQL_COLUMN_SCALE* = 5
-  SQL_COLUMN_DISPLAY_SIZE* = 6
-  SQL_COLUMN_NULLABLE* = 7
-  SQL_COLUMN_UNSIGNED* = 8
-  SQL_COLUMN_MONEY* = 9
-  SQL_COLUMN_UPDATABLE* = 10
-  SQL_COLUMN_AUTO_INCREMENT* = 11
-  SQL_COLUMN_CASE_SENSITIVE* = 12
-  SQL_COLUMN_SEARCHABLE* = 13
-  SQL_COLUMN_TYPE_NAME* = 14
-  SQL_COLUMN_TABLE_NAME* = 15
-  SQL_COLUMN_OWNER_NAME* = 16
-  SQL_COLUMN_QUALIFIER_NAME* = 17
-  SQL_COLUMN_LABEL* = 18
-  SQL_COLATT_OPT_MAX* = SQL_COLUMN_LABEL
-  SQL_COLUMN_DRIVER_START* = 1000
-  SQL_DESC_ARRAY_SIZE* = 20
-  SQL_DESC_ARRAY_STATUS_PTR* = 21
-  SQL_DESC_AUTO_UNIQUE_VALUE* = SQL_COLUMN_AUTO_INCREMENT
-  SQL_DESC_BASE_COLUMN_NAME* = 22
-  SQL_DESC_BASE_TABLE_NAME* = 23
-  SQL_DESC_BIND_OFFSET_PTR* = 24
-  SQL_DESC_BIND_TYPE* = 25
-  SQL_DESC_CASE_SENSITIVE* = SQL_COLUMN_CASE_SENSITIVE
-  SQL_DESC_CATALOG_NAME* = SQL_COLUMN_QUALIFIER_NAME
-  SQL_DESC_CONCISE_TYPE* = SQL_COLUMN_TYPE
-  SQL_DESC_DATETIME_INTERVAL_PRECISION* = 26
-  SQL_DESC_DISPLAY_SIZE* = SQL_COLUMN_DISPLAY_SIZE
-  SQL_DESC_FIXED_PREC_SCALE* = SQL_COLUMN_MONEY
-  SQL_DESC_LABEL* = SQL_COLUMN_LABEL
-  SQL_DESC_LITERAL_PREFIX* = 27
-  SQL_DESC_LITERAL_SUFFIX* = 28
-  SQL_DESC_LOCAL_TYPE_NAME* = 29
-  SQL_DESC_MAXIMUM_SCALE* = 30
-  SQL_DESC_MINIMUM_SCALE* = 31
-  SQL_DESC_NUM_PREC_RADIX* = 32
-  SQL_DESC_PARAMETER_TYPE* = 33
-  SQL_DESC_ROWS_PROCESSED_PTR* = 34
-  SQL_DESC_SCHEMA_NAME* = SQL_COLUMN_OWNER_NAME
-  SQL_DESC_SEARCHABLE* = SQL_COLUMN_SEARCHABLE
-  SQL_DESC_TYPE_NAME* = SQL_COLUMN_TYPE_NAME
-  SQL_DESC_TABLE_NAME* = SQL_COLUMN_TABLE_NAME
-  SQL_DESC_UNSIGNED* = SQL_COLUMN_UNSIGNED
-  SQL_DESC_UPDATABLE* = SQL_COLUMN_UPDATABLE #* SQLEndTran() options */
-  SQL_COMMIT* = 0
-  SQL_ROLLBACK* = 1
-  SQL_ATTR_ROW_ARRAY_SIZE* = 27 #* SQLConfigDataSource() options */
-  ODBC_ADD_DSN* = 1
-  ODBC_CONFIG_DSN* = 2
-  ODBC_REMOVE_DSN* = 3
-  ODBC_ADD_SYS_DSN* = 4
-  ODBC_CONFIG_SYS_DSN* = 5
-  ODBC_REMOVE_SYS_DSN* = 6
+  SqlFetchNext* = 1
+  SqlFetchFirst* = 2
+  SqlFetchFirstUser* = 31
+  SqlFetchFirstSystem* = 32 # Other codes used for FetchOrientation in SQLFetchScroll() 
+  SqlFetchLast* = 3
+  SqlFetchPrior* = 4
+  SqlFetchAbsolute* = 5
+  SqlFetchRelative* = 6   
+  SqlNullHenv* = TSqlHEnv(nil)
+  SqlNullHdbc* = TSqlHDBC(nil)
+  SqlNullHstmt* = TSqlHStmt(nil)
+  SqlNullHdesc* = TSqlHDesc(nil) #* null handle used in place of parent handle when allocating HENV */
+  SqlNullHandle* = TSqlHandle(nil) #* Values that may appear in the result set of SQLSpecialColumns() */
+  SqlScopeCurrow* = 0
+  SqlScopeTransaction* = 1
+  SqlScopeSession* = 2      #* Column types and scopes in SQLSpecialColumns.  */
+  SqlBestRowid* = 1
+  SqlRowver* = 2             
+  SqlRowIdentifier* = 1     #* Reserved values for UNIQUE argument of SQLStatistics() */
+  SqlIndexUnique* = 0
+  SqlIndexAll* = 1          #* Reserved values for RESERVED argument of SQLStatistics() */
+  SqlQuick* = 0
+  SqlEnsure* = 1             #* Values that may appear in the result set of SQLStatistics() */
+  SqlTableStat* = 0
+  SqlIndexClustered* = 1
+  SqlIndexHashed* = 2
+  SqlIndexOther* = 3 
+  SqlScrollConcurrency* = 43
+  SqlTxnCapable* = 46
+  SqlTransactionCapable* = SQL_TXN_CAPABLE
+  SqlUserName* = 47
+  SqlTxnIsolationOption* = 72
+  SqlTransactionIsolationOption* = SQL_TXN_ISOLATION_OPTION 
+  SqlOjCapabilities* = 115
+  SqlOuterJoinCapabilities* = SQL_OJ_CAPABILITIES
+  SqlXopenCliYear* = 10000
+  SqlCursorSensitivity* = 10001
+  SqlDescribeParameter* = 10002
+  SqlCatalogName* = 10003
+  SqlCollationSeq* = 10004
+  SqlMaxIdentifierLen* = 10005
+  SqlMaximumIdentifierLength* = SQL_MAX_IDENTIFIER_LEN
+  SqlSccoReadOnly* = 1
+  SqlSccoLock* = 2
+  SqlSccoOptRowver* = 4
+  SqlSccoOptValues* = 8    #* SQL_TXN_CAPABLE values */
+  SqlTcNone* = 0
+  SqlTcDml* = 1
+  SqlTcAll* = 2
+  SqlTcDdlCommit* = 3
+  SqlTcDdlIgnore* = 4      #* SQL_TXN_ISOLATION_OPTION bitmasks */
+  SqlTxnReadUncommitted* = 1
+  SqlTransactionReadUncommitted* = SQL_TXN_READ_UNCOMMITTED
+  SqlTxnReadCommitted* = 2
+  SqlTransactionReadCommitted* = SQL_TXN_READ_COMMITTED
+  SqlTxnRepeatableRead* = 4
+  SqlTransactionRepeatableRead* = SQL_TXN_REPEATABLE_READ
+  SqlTxnSerializable* = 8
+  SqlTransactionSerializable* = SQL_TXN_SERIALIZABLE 
+  SqlSsAdditions* = 1
+  SqlSsDeletions* = 2
+  SqlSsUpdates* = 4         # SQLColAttributes defines 
+  SqlColumnCount* = 0
+  SqlColumnName* = 1
+  SqlColumnType* = 2
+  SqlColumnLength* = 3
+  SqlColumnPrecision* = 4
+  SqlColumnScale* = 5
+  SqlColumnDisplaySize* = 6
+  SqlColumnNullable* = 7
+  SqlColumnUnsigned* = 8
+  SqlColumnMoney* = 9
+  SqlColumnUpdatable* = 10
+  SqlColumnAutoIncrement* = 11
+  SqlColumnCaseSensitive* = 12
+  SqlColumnSearchable* = 13
+  SqlColumnTypeName* = 14
+  SqlColumnTableName* = 15
+  SqlColumnOwnerName* = 16
+  SqlColumnQualifierName* = 17
+  SqlColumnLabel* = 18
+  SqlColattOptMax* = SQL_COLUMN_LABEL
+  SqlColumnDriverStart* = 1000
+  SqlDescArraySize* = 20
+  SqlDescArrayStatusPtr* = 21
+  SqlDescAutoUniqueValue* = SQL_COLUMN_AUTO_INCREMENT
+  SqlDescBaseColumnName* = 22
+  SqlDescBaseTableName* = 23
+  SqlDescBindOffsetPtr* = 24
+  SqlDescBindType* = 25
+  SqlDescCaseSensitive* = SQL_COLUMN_CASE_SENSITIVE
+  SqlDescCatalogName* = SQL_COLUMN_QUALIFIER_NAME
+  SqlDescConciseType* = SQL_COLUMN_TYPE
+  SqlDescDatetimeIntervalPrecision* = 26
+  SqlDescDisplaySize* = SQL_COLUMN_DISPLAY_SIZE
+  SqlDescFixedPrecScale* = SQL_COLUMN_MONEY
+  SqlDescLabel* = SQL_COLUMN_LABEL
+  SqlDescLiteralPrefix* = 27
+  SqlDescLiteralSuffix* = 28
+  SqlDescLocalTypeName* = 29
+  SqlDescMaximumScale* = 30
+  SqlDescMinimumScale* = 31
+  SqlDescNumPrecRadix* = 32
+  SqlDescParameterType* = 33
+  SqlDescRowsProcessedPtr* = 34
+  SqlDescSchemaName* = SQL_COLUMN_OWNER_NAME
+  SqlDescSearchable* = SQL_COLUMN_SEARCHABLE
+  SqlDescTypeName* = SQL_COLUMN_TYPE_NAME
+  SqlDescTableName* = SQL_COLUMN_TABLE_NAME
+  SqlDescUnsigned* = SQL_COLUMN_UNSIGNED
+  SqlDescUpdatable* = SQL_COLUMN_UPDATABLE #* SQLEndTran() options */
+  SqlCommit* = 0
+  SqlRollback* = 1
+  SqlAttrRowArraySize* = 27 #* SQLConfigDataSource() options */
+  OdbcAddDsn* = 1
+  OdbcConfigDsn* = 2
+  OdbcRemoveDsn* = 3
+  OdbcAddSysDsn* = 4
+  OdbcConfigSysDsn* = 5
+  OdbcRemoveSysDsn* = 6
 
 proc SQLAllocHandle*(HandleType: TSqlSmallInt, InputHandle: TSqlHandle, 
                      OutputHandlePtr: var TSqlHandle): TSqlSmallInt{.
@@ -630,13 +630,13 @@ proc SQLSetEnvAttr*(EnvironmentHandle: TSqlHEnv, Attribute: TSqlInteger,
     dynlib: odbclib, importc.}
 proc SQLGetEnvAttr*(EnvironmentHandle: TSqlHEnv, Attribute: TSqlInteger, 
                     Value: TSqlPointer, BufferLength: TSqlInteger, 
-                    StringLength: PSQLINTEGER): TSqlSmallInt{.dynlib: odbclib, 
+                    StringLength: Psqlinteger): TSqlSmallInt{.dynlib: odbclib, 
     importc.}
 proc SQLFreeHandle*(HandleType: TSqlSmallInt, Handle: TSqlHandle): TSqlSmallInt{.
     dynlib: odbclib, importc.}
 proc SQLGetDiagRec*(HandleType: TSqlSmallInt, Handle: TSqlHandle, 
-                    RecNumber: TSqlSmallInt, Sqlstate: PSQLCHAR, 
-                    NativeError: var TSqlInteger, MessageText: PSQLCHAR, 
+                    RecNumber: TSqlSmallInt, Sqlstate: Psqlchar, 
+                    NativeError: var TSqlInteger, MessageText: Psqlchar, 
                     BufferLength: TSqlSmallInt, TextLength: var TSqlSmallInt): TSqlSmallInt{.
     dynlib: odbclib, importc.}
 proc SQLGetDiagField*(HandleType: TSqlSmallInt, Handle: TSqlHandle, 
@@ -644,24 +644,24 @@ proc SQLGetDiagField*(HandleType: TSqlSmallInt, Handle: TSqlHandle,
                       DiagInfoPtr: TSqlPointer, BufferLength: TSqlSmallInt, 
                       StringLengthPtr: var TSqlSmallInt): TSqlSmallInt{.
     dynlib: odbclib, importc.}
-proc SQLConnect*(ConnectionHandle: TSqlHDBC, ServerName: PSQLCHAR, 
-                 NameLength1: TSqlSmallInt, UserName: PSQLCHAR, 
-                 NameLength2: TSqlSmallInt, Authentication: PSQLCHAR, 
+proc SQLConnect*(ConnectionHandle: TSqlHDBC, ServerName: Psqlchar, 
+                 NameLength1: TSqlSmallInt, UserName: Psqlchar, 
+                 NameLength2: TSqlSmallInt, Authentication: Psqlchar, 
                  NameLength3: TSqlSmallInt): TSqlSmallInt{.dynlib: odbclib, importc.}
 proc SQLDisconnect*(ConnectionHandle: TSqlHDBC): TSqlSmallInt{.dynlib: odbclib, 
     importc.}
-proc SQLDriverConnect*(hdbc: TSqlHDBC, hwnd: TSqlHWND, szCsin: cstring, 
-                       szCLen: TSqlSmallInt, szCsout: cstring, 
+proc SQLDriverConnect*(hdbc: TSqlHDBC, hwnd: TSqlHWND, szCsin: Cstring, 
+                       szCLen: TSqlSmallInt, szCsout: Cstring, 
                        cbCSMax: TSqlSmallInt, cbCsOut: var TSqlSmallInt, 
                        f: TSqlUSmallInt): TSqlSmallInt{.dynlib: odbclib, importc.}
-proc SQLBrowseConnect*(hdbc: TSqlHDBC, szConnStrIn: PSQLCHAR, 
-                       cbConnStrIn: TSqlSmallInt, szConnStrOut: PSQLCHAR, 
+proc SQLBrowseConnect*(hdbc: TSqlHDBC, szConnStrIn: Psqlchar, 
+                       cbConnStrIn: TSqlSmallInt, szConnStrOut: Psqlchar, 
                        cbConnStrOutMax: TSqlSmallInt, 
                        cbConnStrOut: var TSqlSmallInt): TSqlSmallInt{.
     dynlib: odbclib, importc.}
-proc SQLExecDirect*(StatementHandle: TSqlHStmt, StatementText: PSQLCHAR, 
+proc SQLExecDirect*(StatementHandle: TSqlHStmt, StatementText: Psqlchar, 
                     TextLength: TSqlInteger): TSqlSmallInt{.dynlib: odbclib, importc.}
-proc SQLPrepare*(StatementHandle: TSqlHStmt, StatementText: PSQLCHAR, 
+proc SQLPrepare*(StatementHandle: TSqlHStmt, StatementText: Psqlchar, 
                  TextLength: TSqlInteger): TSqlSmallInt{.dynlib: odbclib, importc.}
 proc SQLCloseCursor*(StatementHandle: TSqlHStmt): TSqlSmallInt{.dynlib: odbclib, 
     importc.}
@@ -670,7 +670,7 @@ proc SQLFetch*(StatementHandle: TSqlHStmt): TSqlSmallInt{.dynlib: odbclib, impor
 proc SQLNumResultCols*(StatementHandle: TSqlHStmt, ColumnCount: var TSqlSmallInt): TSqlSmallInt{.
     dynlib: odbclib, importc.}
 proc SQLDescribeCol*(StatementHandle: TSqlHStmt, ColumnNumber: TSqlUSmallInt, 
-                     ColumnName: PSQLCHAR, BufferLength: TSqlSmallInt, 
+                     ColumnName: Psqlchar, BufferLength: TSqlSmallInt, 
                      NameLength: var TSqlSmallInt, DataType: var TSqlSmallInt, 
                      ColumnSize: var TSqlUInteger, 
                      DecimalDigits: var TSqlSmallInt, Nullable: var TSqlSmallInt): TSqlSmallInt{.
@@ -679,23 +679,23 @@ proc SQLFetchScroll*(StatementHandle: TSqlHStmt, FetchOrientation: TSqlSmallInt,
                      FetchOffset: TSqlInteger): TSqlSmallInt{.dynlib: odbclib, 
     importc.}
 proc SQLExtendedFetch*(hstmt: TSqlHStmt, fFetchType: TSqlUSmallInt, 
-                       irow: TSqlInteger, pcrow: PSQLUINTEGER, 
-                       rgfRowStatus: PSQLUSMALLINT): TSqlSmallInt{.dynlib: odbclib, 
+                       irow: TSqlInteger, pcrow: Psqluinteger, 
+                       rgfRowStatus: Psqlusmallint): TSqlSmallInt{.dynlib: odbclib, 
     importc.}
 proc SQLGetData*(StatementHandle: TSqlHStmt, ColumnNumber: TSqlUSmallInt, 
                  TargetType: TSqlSmallInt, TargetValue: TSqlPointer, 
-                 BufferLength: TSqlInteger, StrLen_or_Ind: PSQLINTEGER): TSqlSmallInt{.
+                 BufferLength: TSqlInteger, StrLen_or_Ind: Psqlinteger): TSqlSmallInt{.
     dynlib: odbclib, importc.}
 proc SQLSetStmtAttr*(StatementHandle: TSqlHStmt, Attribute: TSqlInteger, 
                      Value: TSqlPointer, StringLength: TSqlInteger): TSqlSmallInt{.
     dynlib: odbclib, importc.}
 proc SQLGetStmtAttr*(StatementHandle: TSqlHStmt, Attribute: TSqlInteger, 
                      Value: TSqlPointer, BufferLength: TSqlInteger, 
-                     StringLength: PSQLINTEGER): TSqlSmallInt{.dynlib: odbclib, 
+                     StringLength: Psqlinteger): TSqlSmallInt{.dynlib: odbclib, 
     importc.}
 proc SQLGetInfo*(ConnectionHandle: TSqlHDBC, InfoType: TSqlUSmallInt, 
                  InfoValue: TSqlPointer, BufferLength: TSqlSmallInt, 
-                 StringLength: PSQLSMALLINT): TSqlSmallInt{.dynlib: odbclib, 
+                 StringLength: Psqlsmallint): TSqlSmallInt{.dynlib: odbclib, 
     importc.}
 proc SQLBulkOperations*(StatementHandle: TSqlHStmt, Operation: TSqlSmallInt): TSqlSmallInt{.
     dynlib: odbclib, importc.}
@@ -703,27 +703,27 @@ proc SQLPutData*(StatementHandle: TSqlHStmt, Data: TSqlPointer,
                  StrLen_or_Ind: TSqlInteger): TSqlSmallInt{.dynlib: odbclib, importc.}
 proc SQLBindCol*(StatementHandle: TSqlHStmt, ColumnNumber: TSqlUSmallInt, 
                  TargetType: TSqlSmallInt, TargetValue: TSqlPointer, 
-                 BufferLength: TSqlInteger, StrLen_or_Ind: PSQLINTEGER): TSqlSmallInt{.
+                 BufferLength: TSqlInteger, StrLen_or_Ind: Psqlinteger): TSqlSmallInt{.
     dynlib: odbclib, importc.}
 proc SQLSetPos*(hstmt: TSqlHStmt, irow: TSqlUSmallInt, fOption: TSqlUSmallInt, 
                 fLock: TSqlUSmallInt): TSqlSmallInt{.dynlib: odbclib, importc.}
 proc SQLDataSources*(EnvironmentHandle: TSqlHEnv, Direction: TSqlUSmallInt, 
-                     ServerName: PSQLCHAR, BufferLength1: TSqlSmallInt, 
-                     NameLength1: PSQLSMALLINT, Description: PSQLCHAR, 
-                     BufferLength2: TSqlSmallInt, NameLength2: PSQLSMALLINT): TSqlSmallInt{.
+                     ServerName: Psqlchar, BufferLength1: TSqlSmallInt, 
+                     NameLength1: Psqlsmallint, Description: Psqlchar, 
+                     BufferLength2: TSqlSmallInt, NameLength2: Psqlsmallint): TSqlSmallInt{.
     dynlib: odbclib, importc.}
 proc SQLDrivers*(EnvironmentHandle: TSqlHEnv, Direction: TSqlUSmallInt, 
-                 DriverDescription: PSQLCHAR, BufferLength1: TSqlSmallInt, 
-                 DescriptionLength1: PSQLSMALLINT, DriverAttributes: PSQLCHAR, 
-                 BufferLength2: TSqlSmallInt, AttributesLength2: PSQLSMALLINT): TSqlSmallInt{.
+                 DriverDescription: Psqlchar, BufferLength1: TSqlSmallInt, 
+                 DescriptionLength1: Psqlsmallint, DriverAttributes: Psqlchar, 
+                 BufferLength2: TSqlSmallInt, AttributesLength2: Psqlsmallint): TSqlSmallInt{.
     dynlib: odbclib, importc.}
 proc SQLSetConnectAttr*(ConnectionHandle: TSqlHDBC, Attribute: TSqlInteger, 
                         Value: TSqlPointer, StringLength: TSqlInteger): TSqlSmallInt{.
     dynlib: odbclib, importc.}
-proc SQLGetCursorName*(StatementHandle: TSqlHStmt, CursorName: PSQLCHAR, 
-                       BufferLength: TSqlSmallInt, NameLength: PSQLSMALLINT): TSqlSmallInt{.
+proc SQLGetCursorName*(StatementHandle: TSqlHStmt, CursorName: Psqlchar, 
+                       BufferLength: TSqlSmallInt, NameLength: Psqlsmallint): TSqlSmallInt{.
     dynlib: odbclib, importc.}
-proc SQLSetCursorName*(StatementHandle: TSqlHStmt, CursorName: PSQLCHAR, 
+proc SQLSetCursorName*(StatementHandle: TSqlHStmt, CursorName: Psqlchar, 
                        NameLength: TSqlSmallInt): TSqlSmallInt{.dynlib: odbclib, 
     importc.}
 proc SQLRowCount*(StatementHandle: TSqlHStmt, RowCount: var TSqlInteger): TSqlSmallInt{.
@@ -732,55 +732,55 @@ proc SQLBindParameter*(hstmt: TSqlHStmt, ipar: TSqlUSmallInt,
                        fParamType: TSqlSmallInt, fCType: TSqlSmallInt, 
                        fSqlType: TSqlSmallInt, cbColDef: TSqlUInteger, 
                        ibScale: TSqlSmallInt, rgbValue: TSqlPointer, 
-                       cbValueMax: TSqlInteger, pcbValue: PSQLINTEGER): TSqlSmallInt{.
+                       cbValueMax: TSqlInteger, pcbValue: Psqlinteger): TSqlSmallInt{.
     dynlib: odbclib, importc.}
 proc SQLFreeStmt*(StatementHandle: TSqlHStmt, Option: TSqlUSmallInt): TSqlSmallInt{.
     dynlib: odbclib, importc.}
 proc SQLColAttribute*(StatementHandle: TSqlHStmt, ColumnNumber: TSqlUSmallInt, 
                       FieldIdentifier: TSqlUSmallInt, 
-                      CharacterAttribute: PSQLCHAR, BufferLength: TSqlSmallInt, 
-                      StringLength: PSQLSMALLINT, 
+                      CharacterAttribute: Psqlchar, BufferLength: TSqlSmallInt, 
+                      StringLength: Psqlsmallint, 
                       NumericAttribute: TSqlPointer): TSqlSmallInt{.
     dynlib: odbclib, importc.}
 proc SQLEndTran*(HandleType: TSqlSmallInt, Handle: TSqlHandle, 
                  CompletionType: TSqlSmallInt): TSqlSmallInt{.dynlib: odbclib, 
     importc.}
-proc SQLTables*(hstmt: TSqlHStmt, szTableQualifier: PSQLCHAR, 
-                cbTableQualifier: TSqlSmallInt, szTableOwner: PSQLCHAR, 
-                cbTableOwner: TSqlSmallInt, szTableName: PSQLCHAR, 
-                cbTableName: TSqlSmallInt, szTableType: PSQLCHAR, 
+proc SQLTables*(hstmt: TSqlHStmt, szTableQualifier: Psqlchar, 
+                cbTableQualifier: TSqlSmallInt, szTableOwner: Psqlchar, 
+                cbTableOwner: TSqlSmallInt, szTableName: Psqlchar, 
+                cbTableName: TSqlSmallInt, szTableType: Psqlchar, 
                 cbTableType: TSqlSmallInt): TSqlSmallInt{.dynlib: odbclib, importc.}
-proc SQLColumns*(hstmt: TSqlHStmt, szTableQualifier: PSQLCHAR, 
-                 cbTableQualifier: TSqlSmallInt, szTableOwner: PSQLCHAR, 
-                 cbTableOwner: TSqlSmallInt, szTableName: PSQLCHAR, 
-                 cbTableName: TSqlSmallInt, szColumnName: PSQLCHAR, 
+proc SQLColumns*(hstmt: TSqlHStmt, szTableQualifier: Psqlchar, 
+                 cbTableQualifier: TSqlSmallInt, szTableOwner: Psqlchar, 
+                 cbTableOwner: TSqlSmallInt, szTableName: Psqlchar, 
+                 cbTableName: TSqlSmallInt, szColumnName: Psqlchar, 
                  cbColumnName: TSqlSmallInt): TSqlSmallInt{.dynlib: odbclib, importc.}
 proc SQLSpecialColumns*(StatementHandle: TSqlHStmt, IdentifierType: TSqlUSmallInt, 
-                        CatalogName: PSQLCHAR, NameLength1: TSqlSmallInt, 
-                        SchemaName: PSQLCHAR, NameLength2: TSqlSmallInt, 
-                        TableName: PSQLCHAR, NameLength3: TSqlSmallInt, 
+                        CatalogName: Psqlchar, NameLength1: TSqlSmallInt, 
+                        SchemaName: Psqlchar, NameLength2: TSqlSmallInt, 
+                        TableName: Psqlchar, NameLength3: TSqlSmallInt, 
                         Scope: TSqlUSmallInt, 
                         Nullable: TSqlUSmallInt): TSqlSmallInt{.
     dynlib: odbclib, importc.}
-proc SQLProcedures*(hstmt: TSqlHStmt, szTableQualifier: PSQLCHAR, 
-                    cbTableQualifier: TSqlSmallInt, szTableOwner: PSQLCHAR, 
-                    cbTableOwner: TSqlSmallInt, szTableName: PSQLCHAR, 
+proc SQLProcedures*(hstmt: TSqlHStmt, szTableQualifier: Psqlchar, 
+                    cbTableQualifier: TSqlSmallInt, szTableOwner: Psqlchar, 
+                    cbTableOwner: TSqlSmallInt, szTableName: Psqlchar, 
                     cbTableName: TSqlSmallInt): TSqlSmallInt{.dynlib: odbclib, 
     importc.}
-proc SQLPrimaryKeys*(hstmt: TSqlHStmt, CatalogName: PSQLCHAR, 
-                     NameLength1: TSqlSmallInt, SchemaName: PSQLCHAR, 
-                     NameLength2: TSqlSmallInt, TableName: PSQLCHAR, 
+proc SQLPrimaryKeys*(hstmt: TSqlHStmt, CatalogName: Psqlchar, 
+                     NameLength1: TSqlSmallInt, SchemaName: Psqlchar, 
+                     NameLength2: TSqlSmallInt, TableName: Psqlchar, 
                      NameLength3: TSqlSmallInt): TSqlSmallInt{.dynlib: odbclib, 
     importc.}
-proc SQLProcedureColumns*(hstmt: TSqlHStmt, CatalogName: PSQLCHAR, 
-                          NameLength1: TSqlSmallInt, SchemaName: PSQLCHAR, 
-                          NameLength2: TSqlSmallInt, ProcName: PSQLCHAR, 
-                          NameLength3: TSqlSmallInt, ColumnName: PSQLCHAR, 
+proc SQLProcedureColumns*(hstmt: TSqlHStmt, CatalogName: Psqlchar, 
+                          NameLength1: TSqlSmallInt, SchemaName: Psqlchar, 
+                          NameLength2: TSqlSmallInt, ProcName: Psqlchar, 
+                          NameLength3: TSqlSmallInt, ColumnName: Psqlchar, 
                           NameLength4: TSqlSmallInt): TSqlSmallInt{.dynlib: odbclib, 
     importc.}
-proc SQLStatistics*(hstmt: TSqlHStmt, CatalogName: PSQLCHAR, 
-                    NameLength1: TSqlSmallInt, SchemaName: PSQLCHAR, 
-                    NameLength2: TSqlSmallInt, TableName: PSQLCHAR, 
+proc SQLStatistics*(hstmt: TSqlHStmt, CatalogName: Psqlchar, 
+                    NameLength1: TSqlSmallInt, SchemaName: Psqlchar, 
+                    NameLength2: TSqlSmallInt, TableName: Psqlchar, 
                     NameLength3: TSqlSmallInt, Unique: TSqlUSmallInt, 
                     Reserved: TSqlUSmallInt): TSqlSmallInt {.
                     dynlib: odbclib, importc.}

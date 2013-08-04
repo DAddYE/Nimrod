@@ -1,10 +1,10 @@
 import 
   libcurl
 
-var hCurl = easy_init()
+var hCurl = easyInit()
 if hCurl != nil: 
-  discard easy_setopt(hCurl, OPT_VERBOSE, True)
-  discard easy_setopt(hCurl, OPT_URL, "http://force7.de/nimrod")
-  discard easy_perform(hCurl)
-  easy_cleanup(hCurl)
+  discard easySetopt(hCurl, OptVerbose, true)
+  discard easySetopt(hCurl, OptUrl, "http://force7.de/nimrod")
+  discard easyPerform(hCurl)
+  easyCleanup(hCurl)
 

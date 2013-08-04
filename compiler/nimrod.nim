@@ -24,19 +24,19 @@ when defined(profiler) or defined(memProfiler):
   {.hint: "Profiling support is turned on!".}
   import nimprof
   
-proc prependCurDir(f: string): string =
+proc prependCurDir(f: String): String =
   when defined(unix):
     if os.isAbsolute(f): result = f
     else: result = "./" & f
   else:
     result = f
 
-proc HandleCmdLine() =
+proc handleCmdLine() =
   if paramCount() == 0:
     writeCommandLineUsage()
   else:
     # Process command line arguments:
-    ProcessCmdLine(passCmd1, "")
+    processCmdLine(passCmd1, "")
     if gProjectName != "":
       try:
         gProjectFull = canonicalizePath(gProjectName)
@@ -47,13 +47,13 @@ proc HandleCmdLine() =
       gProjectName = p.name
     else:
       gProjectPath = getCurrentDir()
-    LoadConfigs(DefaultConfig) # load all config files
+    loadConfigs(DefaultConfig) # load all config files
     # now process command line arguments again, because some options in the
     # command line can overwite the config file's settings
     extccomp.initVars()
-    ProcessCmdLine(passCmd2, "")
-    MainCommand()
-    if gVerbosity >= 2: echo(GC_getStatistics())
+    processCmdLine(passCmd2, "")
+    mainCommand()
+    if gVerbosity >= 2: echo(gCGetStatistics())
     #echo(GC_getStatistics())
     if msgs.gErrorCounter == 0:
       when hasTinyCBackend:
@@ -66,7 +66,7 @@ proc HandleCmdLine() =
           execExternalProgram("node " & ex & ' ' & service.arguments)
         else:
           var ex = quoteIfContainsWhite(
-            changeFileExt(gProjectFull, exeExt).prependCurDir)
+            changeFileExt(gProjectFull, ExeExt).prependCurDir)
           execExternalProgram(ex & ' ' & service.arguments)
 
 when defined(GC_setMaxPause):
@@ -74,7 +74,7 @@ when defined(GC_setMaxPause):
 
 when compileOption("gc", "v2") or compileOption("gc", "refc"):
   # the new correct mark&sweet collector is too slow :-/
-  GC_disableMarkAndSweep()
+  gCDisableMarkAndSweep()
 condsyms.InitDefines()
-HandleCmdLine()
-quit(int8(msgs.gErrorCounter > 0))
+handleCmdLine()
+quit(Int8(msgs.gErrorCounter > 0))

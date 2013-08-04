@@ -21,8 +21,8 @@ type
     outLatex            # output is Latex
   
   TTocEntry{.final.} = object 
-    n*: PRstNode
-    refname*, header*: string
+    n*: PRSTNode
+    refname*, header*: String
 
   TMetaEnum* = enum 
     metaNone, metaTitle, metaSubtitle, metaAuthor, metaVersion
@@ -30,20 +30,20 @@ type
   TRstGenerator* = object of TObject
     target*: TOutputTarget
     config*: PStringTable
-    splitAfter*: int          # split too long entries in the TOC
-    tocPart*: seq[TTocEntry]
-    hasToc*: bool
-    theIndex: string
+    splitAfter*: Int          # split too long entries in the TOC
+    tocPart*: Seq[TTocEntry]
+    hasToc*: Bool
+    theIndex: String
     options*: TRstParseOptions
     findFile*: TFindFileHandler
     msgHandler*: TMsgHandler
-    filename*: string
-    meta*: array[TMetaEnum, string]
+    filename*: String
+    meta*: Array[TMetaEnum, String]
   
   PDoc = var TRstGenerator
 
 proc initRstGenerator*(g: var TRstGenerator, target: TOutputTarget,
-                       config: PStringTable, filename: string,
+                       config: PStringTable, filename: String,
                        options: TRstParseOptions,
                        findFile: TFindFileHandler,
                        msgHandler: TMsgHandler) =
@@ -61,10 +61,10 @@ proc initRstGenerator*(g: var TRstGenerator, target: TOutputTarget,
   if s != "": g.splitAfter = parseInt(s)
   for i in low(g.meta)..high(g.meta): g.meta[i] = ""
 
-proc writeIndexFile*(g: var TRstGenerator, outfile: string) =
+proc writeIndexFile*(g: var TRstGenerator, outfile: String) =
   if g.theIndex.len > 0: writeFile(outfile, g.theIndex)
   
-proc addXmlChar(dest: var string, c: Char) = 
+proc addXmlChar(dest: var String, c: Char) = 
   case c
   of '&': add(dest, "&amp;")
   of '<': add(dest, "&lt;")
@@ -72,14 +72,14 @@ proc addXmlChar(dest: var string, c: Char) =
   of '\"': add(dest, "&quot;")
   else: add(dest, c)
   
-proc addRtfChar(dest: var string, c: Char) = 
+proc addRtfChar(dest: var String, c: Char) = 
   case c
   of '{': add(dest, "\\{")
   of '}': add(dest, "\\}")
   of '\\': add(dest, "\\\\")
   else: add(dest, c)
   
-proc addTexChar(dest: var string, c: Char) = 
+proc addTexChar(dest: var String, c: Char) = 
   case c
   of '_': add(dest, "\\_")
   of '{': add(dest, "\\symbol{123}")
@@ -97,14 +97,14 @@ proc addTexChar(dest: var string, c: Char) =
   of '`': add(dest, "\\symbol{96}")
   else: add(dest, c)
 
-var splitter*: string = "<wbr />"
+var splitter*: String = "<wbr />"
 
-proc escChar*(target: TOutputTarget, dest: var string, c: Char) {.inline.} = 
+proc escChar*(target: TOutputTarget, dest: var String, c: Char) {.inline.} = 
   case target
   of outHtml:  addXmlChar(dest, c)
   of outLatex: addTexChar(dest, c)
   
-proc nextSplitPoint*(s: string, start: int): int = 
+proc nextSplitPoint*(s: String, start: Int): Int = 
   result = start
   while result < len(s) + 0: 
     case s[result]
@@ -116,7 +116,7 @@ proc nextSplitPoint*(s: string, start: int): int =
     inc(result)
   dec(result)                 # last valid index
   
-proc esc*(target: TOutputTarget, s: string, splitAfter = -1): string = 
+proc esc*(target: TOutputTarget, s: String, splitAfter = -1): String = 
   result = ""
   if splitAfter >= 0: 
     var partLen = 0
@@ -133,26 +133,26 @@ proc esc*(target: TOutputTarget, s: string, splitAfter = -1): string =
     for i in countup(0, len(s) - 1): escChar(target, result, s[i])
 
 
-proc disp(target: TOutputTarget, xml, tex: string): string =
+proc disp(target: TOutputTarget, xml, tex: String): String =
   if target != outLatex: result = xml 
   else: result = tex
   
-proc dispF(target: TOutputTarget, xml, tex: string, 
-           args: varargs[string]): string = 
+proc dispF(target: TOutputTarget, xml, tex: String, 
+           args: Varargs[String]): String = 
   if target != outLatex: result = xml % args 
   else: result = tex % args
   
-proc dispA(target: TOutputTarget, dest: var string, 
-           xml, tex: string, args: varargs[string]) =
+proc dispA(target: TOutputTarget, dest: var String, 
+           xml, tex: String, args: Varargs[String]) =
   if target != outLatex: addf(dest, xml, args)
   else: addf(dest, tex, args)
   
-proc renderRstToOut*(d: PDoc, n: PRstNode, result: var string)
+proc renderRstToOut*(d: PDoc, n: PRSTNode, result: var String)
 
-proc renderAux(d: PDoc, n: PRstNode, result: var string) = 
+proc renderAux(d: PDoc, n: PRSTNode, result: var String) = 
   for i in countup(0, len(n)-1): renderRstToOut(d, n.sons[i], result)
 
-proc renderAux(d: PDoc, n: PRstNode, frmtA, frmtB: string, result: var string) = 
+proc renderAux(d: PDoc, n: PRSTNode, frmtA, frmtB: String, result: var String) = 
   var tmp = ""
   for i in countup(0, len(n)-1): renderRstToOut(d, n.sons[i], tmp)
   if d.target != outLatex:
@@ -162,7 +162,7 @@ proc renderAux(d: PDoc, n: PRstNode, frmtA, frmtB: string, result: var string) =
 
 # ---------------- index handling --------------------------------------------
 
-proc setIndexTerm*(d: PDoc, id, term: string) =
+proc setIndexTerm*(d: PDoc, id, term: String) =
   d.theIndex.add(term)
   d.theIndex.add('\t')
   let htmlFile = changeFileExt(extractFilename(d.filename), HtmlExt)
@@ -171,7 +171,7 @@ proc setIndexTerm*(d: PDoc, id, term: string) =
   d.theIndex.add(id)
   d.theIndex.add("\n")
 
-proc hash(n: PRstNode): int =
+proc hash(n: PRSTNode): Int =
   if n.kind == rnLeaf:
     result = hash(n.text)
   elif n.len > 0:
@@ -180,7 +180,7 @@ proc hash(n: PRstNode): int =
       result = result !& hash(n.sons[i])
     result = !$result
 
-proc renderIndexTerm(d: PDoc, n: PRstNode, result: var string) =
+proc renderIndexTerm(d: PDoc, n: PRSTNode, result: var String) =
   let id = rstnodeToRefname(n) & '_' & $abs(hash(n))
   var term = ""
   renderAux(d, n, term)
@@ -190,26 +190,26 @@ proc renderIndexTerm(d: PDoc, n: PRstNode, result: var string) =
 
 type
   TIndexEntry {.pure, final.} = object
-    keyword: string
-    link: string
+    keyword: String
+    link: String
 
-proc cmp(a, b: TIndexEntry): int =
+proc cmp(a, b: TIndexEntry): Int =
   result = cmpIgnoreStyle(a.keyword, b.keyword)
 
 proc `<-`(a: var TIndexEntry, b: TIndexEntry) =
   shallowCopy a.keyword, b.keyword
   shallowCopy a.link, b.link
 
-proc sortIndex(a: var openArray[TIndexEntry]) =
+proc sortIndex(a: var Openarray[TIndexEntry]) =
   # we use shellsort here; fast and simple
-  let N = len(a)
+  let n = len(a)
   var h = 1
   while true:
     h = 3 * h + 1
-    if h > N: break
+    if h > n: break
   while true:
     h = h div 3
-    for i in countup(h, N - 1):
+    for i in countup(h, n - 1):
       var v: TIndexEntry
       v <- a[i]
       var j = i
@@ -220,10 +220,10 @@ proc sortIndex(a: var openArray[TIndexEntry]) =
       a[j] <- v
     if h == 1: break
 
-proc mergeIndexes*(dir: string): string =
+proc mergeIndexes*(dir: String): String =
   ## merges all index files in `dir` and returns the generated index as HTML.
   ## The result is no full HTML for flexibility.
-  var a: seq[TIndexEntry]
+  var a: Seq[TIndexEntry]
   newSeq(a, 15_000)
   setLen(a, 0)
   var L = 0
@@ -253,13 +253,13 @@ proc mergeIndexes*(dir: string): string =
   
 # ----------------------------------------------------------------------------      
   
-proc renderHeadline(d: PDoc, n: PRstNode, result: var string) = 
+proc renderHeadline(d: PDoc, n: PRSTNode, result: var String) = 
   var tmp = ""
   for i in countup(0, len(n) - 1): renderRstToOut(d, n.sons[i], tmp)
   var refname = rstnodeToRefname(n)
   if d.hasToc:
     var length = len(d.tocPart)
-    setlen(d.tocPart, length + 1)
+    setLen(d.tocPart, length + 1)
     d.tocPart[length].refname = refname
     d.tocPart[length].n = n
     d.tocPart[length].header = tmp
@@ -275,7 +275,7 @@ proc renderHeadline(d: PDoc, n: PRstNode, result: var string) =
         $n.level, refname, tmp, 
         $chr(n.level - 1 + ord('A'))])
   
-proc renderOverline(d: PDoc, n: PRstNode, result: var string) = 
+proc renderOverline(d: PDoc, n: PRSTNode, result: var String) = 
   if d.meta[metaTitle].len == 0:
     for i in countup(0, len(n)-1):
       renderRstToOut(d, n.sons[i], d.meta[metaTitle])
@@ -290,12 +290,12 @@ proc renderOverline(d: PDoc, n: PRstNode, result: var string) =
         rstnodeToRefname(n), tmp, $chr(n.level - 1 + ord('A'))])
   
 
-proc renderTocEntry(d: PDoc, e: TTocEntry, result: var string) = 
+proc renderTocEntry(d: PDoc, e: TTocEntry, result: var String) = 
   dispA(d.target, result,
     "<li><a class=\"reference\" id=\"$1_toc\" href=\"#$1\">$2</a></li>\n", 
     "\\item\\label{$1_toc} $2\\ref{$1}\n", [e.refname, e.header])
 
-proc renderTocEntries*(d: PDoc, j: var int, lvl: int, result: var string) = 
+proc renderTocEntries*(d: PDoc, j: var Int, lvl: Int, result: var String) = 
   var tmp = ""
   while j <= high(d.tocPart): 
     var a = abs(d.tocPart[j].n.level)
@@ -312,7 +312,7 @@ proc renderTocEntries*(d: PDoc, j: var int, lvl: int, result: var string) =
   else:
     result.add(tmp)
   
-proc renderImage(d: PDoc, n: PRstNode, result: var string) = 
+proc renderImage(d: PDoc, n: PRSTNode, result: var String) = 
   var options = ""
   var s = getFieldValue(n, "scale")
   if s != "": dispA(d.target, options, " scale=\"$1\"", " scale=$1", [strip(s)])
@@ -335,13 +335,13 @@ proc renderImage(d: PDoc, n: PRstNode, result: var string) =
                  [getArgument(n), options])
   if len(n) >= 3: renderRstToOut(d, n.sons[2], result)
   
-proc renderSmiley(d: PDoc, n: PRstNode, result: var string) =
+proc renderSmiley(d: PDoc, n: PRSTNode, result: var String) =
   dispA(d.target, result,
     """<img src="/images/smilies/$1.gif" width="15" 
         height="17" hspace="2" vspace="2" />""",
     "\\includegraphics{$1}", [n.text])
   
-proc renderCodeBlock(d: PDoc, n: PRstNode, result: var string) =
+proc renderCodeBlock(d: PDoc, n: PRSTNode, result: var String) =
   if n.sons[2] == nil: return
   var m = n.sons[2].sons[0]
   assert m.kind == rnLeaf
@@ -372,7 +372,7 @@ proc renderCodeBlock(d: PDoc, n: PRstNode, result: var string) =
     deinitGeneralTokenizer(g)
   dispA(d.target, result, "</pre>", "\n\\end{rstpre}\n")
   
-proc renderContainer(d: PDoc, n: PRstNode, result: var string) = 
+proc renderContainer(d: PDoc, n: PRSTNode, result: var String) = 
   var tmp = ""
   renderRstToOut(d, n.sons[2], tmp)
   var arg = strip(getArgument(n))
@@ -381,11 +381,11 @@ proc renderContainer(d: PDoc, n: PRstNode, result: var string) =
   else:
     dispA(d.target, result, "<div class=\"$1\">$2</div>", "$2", [arg, tmp])
   
-proc texColumns(n: PRstNode): string = 
+proc texColumns(n: PRSTNode): String = 
   result = ""
   for i in countup(1, len(n)): add(result, "|X")
   
-proc renderField(d: PDoc, n: PRstNode, result: var string) = 
+proc renderField(d: PDoc, n: PRSTNode, result: var String) = 
   var b = false
   if d.target == outLatex: 
     var fieldname = addNodes(n.sons[0])
@@ -395,7 +395,7 @@ proc renderField(d: PDoc, n: PRstNode, result: var string) =
       if d.meta[metaAuthor].len == 0:
         d.meta[metaAuthor] = fieldval
         b = true
-    elif cmpIgnoreStyle(fieldName, "version") == 0: 
+    elif cmpIgnoreStyle(fieldname, "version") == 0: 
       if d.meta[metaVersion].len == 0:
         d.meta[metaVersion] = fieldval
         b = true
@@ -559,14 +559,14 @@ proc renderRstToOut(d: PDoc, n: PRstNode, result: var string) =
 
 # -----------------------------------------------------------------------------
 
-proc getVarIdx(varnames: openarray[string], id: string): int = 
+proc getVarIdx(varnames: Openarray[String], id: String): Int = 
   for i in countup(0, high(varnames)): 
     if cmpIgnoreStyle(varnames[i], id) == 0: 
       return i
   result = -1
 
-proc formatNamedVars*(frmt: string, varnames: openarray[string], 
-                      varvalues: openarray[string]): string = 
+proc formatNamedVars*(frmt: String, varnames: Openarray[String], 
+                      varvalues: Openarray[String]): String = 
   var i = 0
   var L = len(frmt)
   result = ""
@@ -585,7 +585,7 @@ proc formatNamedVars*(frmt: string, varnames: openarray[string],
       of '0'..'9': 
         var j = 0
         while true: 
-          j = (j * 10) + Ord(frmt[i]) - ord('0')
+          j = (j * 10) + ord(frmt[i]) - ord('0')
           inc(i)
           if i > L-1 or frmt[i] notin {'0'..'9'}: break 
         if j > high(varvalues) + 1:
@@ -630,7 +630,7 @@ proc defaultConfig*(): PStringTable =
   ## creates a default configuration for HTML generation.
   result = newStringTable(modeStyleInsensitive)
   
-  template setConfigVar(key, val: expr) =
+  template setConfigVar(key, val: Expr) =
     result[key] = val
   
   setConfigVar("split.item.toc", "20")
@@ -676,11 +676,11 @@ $content
 
 # ---------- forum ---------------------------------------------------------
 
-proc rstToHtml*(s: string, options: TRstParseOptions, 
-                config: PStringTable): string =
+proc rstToHtml*(s: String, options: TRstParseOptions, 
+                config: PStringTable): String =
   ## exported for *nimforum*.
   
-  proc myFindFile(filename: string): string = 
+  proc myFindFile(filename: String): String = 
     # we don't find any files in online mode:
     result = ""
 

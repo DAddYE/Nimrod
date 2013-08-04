@@ -80,7 +80,7 @@ type
 
     wInOut, wByCopy, wByRef, wOneWay,
     
-  TSpecialWords* = set[TSpecialWord]
+  TSpecialWords* = Set[TSpecialWord]
 
 const 
   oprLow* = ord(wColon)
@@ -96,7 +96,7 @@ const
     wAsm, wBreak, wCase, wConst, wContinue, wDo, wElse, wEnum, wExport,
     wFor, wIf, wReturn, wStatic, wTemplate, wTry, wWhile}
 
-  specialWords*: array[low(TSpecialWord)..high(TSpecialWord), string] = ["", 
+  specialWords*: Array[low(TSpecialWord)..high(TSpecialWord), String] = ["", 
     
     "addr", "and", "as", "asm", "atomic", 
     "bind", "block", "break", "case", "cast", 
@@ -163,7 +163,7 @@ const
     "inout", "bycopy", "byref", "oneway",
     ]
 
-proc findStr*(a: openarray[string], s: string): int = 
+proc findStr*(a: Openarray[String], s: String): Int = 
   for i in countup(low(a), high(a)): 
     if cmpIgnoreStyle(a[i], s) == 0: 
       return i

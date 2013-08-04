@@ -7,31 +7,31 @@ import
   mvarious
 
 type
-  PA = ref TA
-  PB = ref TB
+  Pa = ref TA
+  Pb = ref TB
 
   TB = object
-    a: PA
+    a: Pa
 
   TA = object
     b: TB
-    x: int
+    x: Int
 
-proc getPA(): PA =
+proc getPA(): Pa =
   var
-    b: bool
+    b: Bool
   b = not false
   return nil
 
 # bug #501
-proc f(): int = result
+proc f(): Int = result
 
 var
-  global: int
+  global: Int
 
 var
-  s: string
-  i: int
+  s: String
+  i: Int
   r: TA
 
 r.b.a.x = 0
@@ -49,12 +49,12 @@ write(stdout, "Du heißt " & s)
 
 # bug #544
 
-type Bar [T; I:range] = array[I, T]
+type Bar [T; I:range] = Array[I, T]
 proc foo*[T; I:range](a, b: Bar[T, I]): Bar[T, I] =
   when len(a) != 3: 
     # Error: constant expression expected
     {.fatal:"Dimensions have to be 3".}
   #...
 block:
-  var a, b: Bar[int, 0..2]
+  var a, b: Bar[Int, 0..2]
   discard foo(a, b)

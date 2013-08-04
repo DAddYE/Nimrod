@@ -2,8 +2,8 @@ import imported, strutils
 
 type
   TFoo = object
-    x: int
-    y: string
+    x: Int
+    y: String
 
 proc main =
   var t1 = "text"

@@ -11,13 +11,13 @@
 import osproc, os, times, json
 
 type
-  TBenchResult = tuple[file: string, success: bool, time: float]
+  TBenchResult = tuple[file: String, success: Bool, time: Float]
 
-proc compileBench(file: string) =
+proc compileBench(file: String) =
   ## Compiles ``file``.
   doAssert(execCmdEx("nimrod c -d:release " & file).exitCode == QuitSuccess)
 
-proc runBench(file: string): TBenchResult =
+proc runBench(file: String): TBenchResult =
   ## Runs ``file`` and returns info on how long it took to run.
   var start = epochTime()
   if execCmdEx(file.addFileExt(ExeExt)).exitCode == QuitSuccess:
@@ -25,7 +25,7 @@ proc runBench(file: string): TBenchResult =
     result = (file, true, t)
   else: result = (file, false, -1.0)
 
-proc genOutput(benches: seq[TBenchResult]): PJsonNode =
+proc genOutput(benches: Seq[TBenchResult]): PJsonNode =
   result = newJObject()
   for i in benches:
     if i.success:
@@ -33,7 +33,7 @@ proc genOutput(benches: seq[TBenchResult]): PJsonNode =
     else:
       result[i.file.extractFilename] = newJNull()
 
-proc doBench(): seq[TBenchResult] =
+proc doBench(): Seq[TBenchResult] =
   result = @[]
   for i in walkFiles("tests/benchmarks/*.nim"):
     echo(i.extractFilename)

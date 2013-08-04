@@ -1,5 +1,5 @@
 
-proc p(a, b: int, c: proc ()) =
+proc p(a, b: Int, c: proc ()) =
   c()
 
  

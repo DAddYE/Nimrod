@@ -7,15 +7,15 @@ discard """
 type
   TObj = object {.pure, inheritable.}
   TObjB = object of TObj
-    a, b, c: string
+    a, b, c: String
   
-  EIO2 = ref object of EIO
+  Eio2 = ref object of Eio
   
-proc forw: int {. .}
+proc forw: Int {. .}
   
-proc lier(): int {.raises: [EIO2].} =
+proc lier(): Int {.raises: [Eio2].} =
   writeln stdout, "arg"
 
 proc forw: int =
-  raise newException(EIO, "arg")
+  raise newException(Eio, "arg")
 

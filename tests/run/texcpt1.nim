@@ -5,13 +5,13 @@ type
   ESomething = object of E_Base
   ESomeOtherErr = object of E_Base
 
-proc genErrors(s: string) =
+proc genErrors(s: String) =
   if s == "error!":
     raise newException(ESomething, "Test")
   else:
-    raise newException(EsomeotherErr, "bla")
+    raise newException(ESomeOtherErr, "bla")
 
-proc raiseBla(): int =
+proc raiseBla(): Int =
   try:
     genErrors("errssor!")
   except ESomething:
@@ -19,7 +19,7 @@ proc raiseBla(): int =
   except:
     raise
 
-proc blah(): int =
+proc blah(): Int =
   try:
     result = raiseBla()
   except ESomeOtherErr:

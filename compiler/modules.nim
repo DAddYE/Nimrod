@@ -18,29 +18,29 @@ type
   TCrcStatus* = enum crcNotTaken, crcCached, crcHasChanged, crcNotChanged
 
   TModuleInMemory* = object
-    compiledAt*: float
+    compiledAt*: Float
     crc*: TCrc32
-    deps*: seq[int32] ## XXX: slurped files are not currently tracked
+    deps*: Seq[Int32] ## XXX: slurped files are not currently tracked
     needsRecompile*: TNeedRecompile
     crcStatus*: TCrcStatus
 
 var
-  gCompiledModules: seq[PSym] = @[]
-  gMemCacheData*: seq[TModuleInMemory] = @[]
+  gCompiledModules: Seq[PSym] = @[]
+  gMemCacheData*: Seq[TModuleInMemory] = @[]
     ## XXX: we should implement recycling of file IDs
     ## if the user keeps renaming modules, the file IDs will keep growing
 
-proc getModule(fileIdx: int32): PSym =
+proc getModule(fileIdx: Int32): PSym =
   if fileIdx >= 0 and fileIdx < gCompiledModules.len:
     result = gCompiledModules[fileIdx]
 
-template compiledAt(x: PSym): expr =
+template compiledAt(x: PSym): Expr =
   gMemCacheData[x.position].compiledAt
 
-template crc(x: PSym): expr =
+template crc(x: PSym): Expr =
   gMemCacheData[x.position].crc
 
-proc crcChanged(fileIdx: int32): bool =
+proc crcChanged(fileIdx: Int32): Bool =
   InternalAssert fileIdx >= 0 and fileIdx < gMemCacheData.len
   
   template updateStatus =
@@ -63,16 +63,16 @@ proc crcChanged(fileIdx: int32): bool =
     result = true
     updateStatus()
 
-proc doCRC(fileIdx: int32) =
+proc doCRC(fileIdx: Int32) =
   if gMemCacheData[fileIdx].crcStatus == crcNotTaken:
     # echo "FIRST CRC: ", fileIdx.ToFilename
     gMemCacheData[fileIdx].crc = crcFromFile(fileIdx.toFilename)
 
-proc addDep(x: Psym, dep: int32) =
+proc addDep(x: PSym, dep: Int32) =
   growCache gMemCacheData, dep
   gMemCacheData[x.position].deps.safeAdd(dep)
 
-proc resetModule*(fileIdx: int32) =
+proc resetModule*(fileIdx: Int32) =
   # echo "HARD RESETTING ", fileIdx.toFilename
   gMemCacheData[fileIdx].needsRecompile = Yes
   gCompiledModules[fileIdx] = nil
@@ -82,11 +82,11 @@ proc resetModule*(fileIdx: int32) =
 proc resetAllModules* =
   for i in 0..gCompiledModules.high:
     if gCompiledModules[i] != nil:
-      resetModule(i.int32)
+      resetModule(i.Int32)
 
   # for m in cgenModules(): echo "CGEN MODULE FOUND"
 
-proc checkDepMem(fileIdx: int32): TNeedRecompile =
+proc checkDepMem(fileIdx: Int32): TNeedRecompile =
   template markDirty =
     resetModule(fileIdx)
     return Yes
@@ -109,7 +109,7 @@ proc checkDepMem(fileIdx: int32): TNeedRecompile =
   gMemCacheData[fileIdx].needsRecompile = No
   return No
 
-proc newModule(fileIdx: int32): PSym =
+proc newModule(fileIdx: Int32): PSym =
   # We cannot call ``newSym`` here, because we have to circumvent the ID
   # mechanism, which we do in order to assign each module a persistent ID. 
   new(result)
@@ -130,9 +130,9 @@ proc newModule(fileIdx: int32): PSym =
   
   incl(result.flags, sfUsed)
   initStrTable(result.tab)
-  StrTableAdd(result.tab, result) # a module knows itself
+  strTableAdd(result.tab, result) # a module knows itself
 
-proc compileModule*(fileIdx: int32, flags: TSymFlags): PSym =
+proc compileModule*(fileIdx: Int32, flags: TSymFlags): PSym =
   result = getModule(fileIdx)
   if result == nil:
     growCache gMemCacheData, fileIdx
@@ -144,7 +144,7 @@ proc compileModule*(fileIdx: int32, flags: TSymFlags): PSym =
     if gCmd in {cmdCompileToC, cmdCompileToCpp, cmdCheck, cmdIdeTools}:
       rd = handleSymbolFile(result)
       if result.id < 0: 
-        InternalError("handleSymbolFile should have set the module\'s ID")
+        internalError("handleSymbolFile should have set the module\'s ID")
         return
     else:
       result.id = getID()
@@ -155,25 +155,25 @@ proc compileModule*(fileIdx: int32, flags: TSymFlags): PSym =
       doCRC fileIdx
   else:
     if checkDepMem(fileIdx) == Yes:
-      result = CompileModule(fileIdx, flags)
+      result = compileModule(fileIdx, flags)
     else:
       result = gCompiledModules[fileIdx]
 
-proc importModule*(s: PSym, fileIdx: int32): PSym {.procvar.} =
+proc importModule*(s: PSym, fileIdx: Int32): PSym {.procvar.} =
   # this is called by the semantic checking phase
   result = compileModule(fileIdx, {})
   if optCaasEnabled in gGlobalOptions: addDep(s, fileIdx)
   if sfSystemModule in result.flags:
-    LocalError(result.info, errAttemptToRedefine, result.Name.s)
+    localError(result.info, errAttemptToRedefine, result.Name.s)
 
-proc includeModule*(s: PSym, fileIdx: int32): PNode {.procvar.} =
+proc includeModule*(s: PSym, fileIdx: Int32): PNode {.procvar.} =
   result = syntaxes.parseFile(fileIdx)
   if optCaasEnabled in gGlobalOptions:
     growCache gMemCacheData, fileIdx
     addDep(s, fileIdx)
-    doCrc(fileIdx)
+    doCRC(fileIdx)
 
-proc `==^`(a, b: string): bool =
+proc `==^`(a, b: String): Bool =
   try:
     result = sameFile(a, b)
   except EOS:
@@ -181,16 +181,16 @@ proc `==^`(a, b: string): bool =
 
 proc compileSystemModule* =
   if magicsys.SystemModule == nil:
-    SystemFileIdx = fileInfoIdx(options.libpath/"system.nim")
-    discard CompileModule(SystemFileIdx, {sfSystemModule})
+    systemFileIdx = fileInfoIdx(options.libpath/"system.nim")
+    discard compileModule(systemFileIdx, {sfSystemModule})
 
-proc CompileProject*(projectFile = gProjectMainIdx) =
+proc compileProject*(projectFile = gProjectMainIdx) =
   let systemFileIdx = fileInfoIdx(options.libpath / "system.nim")
-  if projectFile == SystemFileIdx:
-    discard CompileModule(projectFile, {sfMainModule, sfSystemModule})
+  if projectFile == systemFileIdx:
+    discard compileModule(projectFile, {sfMainModule, sfSystemModule})
   else:
     compileSystemModule()
-    discard CompileModule(projectFile, {sfMainModule})
+    discard compileModule(projectFile, {sfMainModule})
 
 var stdinModule: PSym
 proc makeStdinModule*(): PSym =

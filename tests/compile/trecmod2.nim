@@ -1,5 +1,5 @@
 type
-  T1* = int  # Module A exports the type ``T1``
+  T1* = Int  # Module A exports the type ``T1``
 
 import mrecmod2   # the compiler starts parsing B
 

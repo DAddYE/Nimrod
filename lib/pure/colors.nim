@@ -12,29 +12,29 @@
 import strutils
 
 type
-  TColor* = distinct int ## a color stored as RGB
+  TColor* = distinct Int ## a color stored as RGB
 
-proc `==` *(a, b: TColor): bool {.borrow.}
+proc `==` *(a, b: TColor): Bool {.borrow.}
   ## compares two colors.
   
-template extract(a: TColor, r, g, b: expr) {.immediate.}=
-  var r = a.int shr 16 and 0xff
-  var g = a.int shr 8 and 0xff
-  var b = a.int and 0xff
+template extract(a: TColor, r, g, b: Expr) {.immediate.}=
+  var r = a.Int shr 16 and 0xff
+  var g = a.Int shr 8 and 0xff
+  var b = a.Int and 0xff
   
-template rawRGB(r, g, b: int): expr =
+template rawRGB(r, g, b: Int): Expr =
   TColor(r shl 16 or g shl 8 or b)
   
-template colorOp(op: expr) {.immediate.} =
+template colorOp(op: Expr) {.immediate.} =
   extract(a, ar, ag, ab)
   extract(b, br, bg, bb)
   result = rawRGB(op(ar, br), op(ag, bg), op(ab, bb))
 
-proc satPlus(a, b: int): int {.inline.} =
+proc satPlus(a, b: Int): Int {.inline.} =
   result = a +% b
   if result > 255: result = 255
 
-proc satMinus(a, b: int): int {.inline.} =
+proc satMinus(a, b: Int): Int {.inline.} =
   result = a -% b
   if result < 0: result = 0
   
@@ -48,24 +48,24 @@ proc `-`*(a, b: TColor): TColor =
   ## component cannot overflow (255 is used as a maximum).
   colorOp(satMinus)
   
-proc extractRGB*(a: TColor): tuple[r, g, b: range[0..255]] =
+proc extractRGB*(a: TColor): tuple[r, g, b: Range[0..255]] =
   ## extracts the red/green/blue components of the color `a`.
-  result.r = a.int shr 16 and 0xff
-  result.g = a.int shr 8 and 0xff
-  result.b = a.int and 0xff
+  result.r = a.Int shr 16 and 0xff
+  result.g = a.Int shr 8 and 0xff
+  result.b = a.Int and 0xff
   
-proc intensity*(a: TColor, f: float): TColor = 
+proc intensity*(a: TColor, f: Float): TColor = 
   ## returns `a` with intensity `f`. `f` should be a float from 0.0 (completely
   ## dark) to 1.0 (full color intensity).
-  var r = toInt(toFloat(a.int shr 16 and 0xff) * f)
-  var g = toInt(toFloat(a.int shr 8 and 0xff) * f)
-  var b = toInt(toFloat(a.int and 0xff) * f)
+  var r = toInt(toFloat(a.Int shr 16 and 0xff) * f)
+  var g = toInt(toFloat(a.Int shr 8 and 0xff) * f)
+  var b = toInt(toFloat(a.Int and 0xff) * f)
   if r >% 255: r = 255
   if g >% 255: g = 255
   if b >% 255: b = 255
   result = rawRGB(r, g, b)
   
-template mix*(a, b: TColor, fn: expr): expr =
+template mix*(a, b: TColor, fn: Expr): Expr =
   ## uses `fn` to mix the colors `a` and `b`. `fn` is invoked for each component
   ## R, G, and B. This is a template because `fn` should be inlined and the
   ## compiler cannot inline proc pointers yet. If `fn`'s result is not in the
@@ -367,12 +367,12 @@ const
     ("yellow", colYellow),
     ("yellowgreen", colYellowGreen)]
 
-proc `$`*(c: TColor): string = 
+proc `$`*(c: TColor): String = 
   ## converts a color into its textual representation. Example: ``#00FF00``.
-  result = '#' & toHex(int(c), 6)
+  result = '#' & toHex(Int(c), 6)
 
-proc binaryStrSearch(x: openarray[tuple[name: string, col: TColor]], 
-                     y: string): int = 
+proc binaryStrSearch(x: Openarray[tuple[name: String, col: TColor]], 
+                     y: String): Int = 
   var a = 0
   var b = len(x) - 1
   while a <= b: 
@@ -383,7 +383,7 @@ proc binaryStrSearch(x: openarray[tuple[name: string, col: TColor]],
     else: return mid
   result = - 1
   
-proc parseColor*(name: string): TColor = 
+proc parseColor*(name: String): TColor = 
   ## parses `name` to a color value. If no valid color could be 
   ## parsed ``EInvalidValue`` is raised.
   if name[0] == '#':
@@ -393,7 +393,7 @@ proc parseColor*(name: string): TColor =
     if idx < 0: raise newException(EInvalidValue, "unkown color: " & name)
     result = colorNames[idx][1]
 
-proc isColor*(name: string): bool =
+proc isColor*(name: String): Bool =
   ## returns true if `name` is a known color name or a hexadecimal color 
   ## prefixed with ``#``.
   if name[0] == '#': 
@@ -403,7 +403,7 @@ proc isColor*(name: string): bool =
   else:
     result = binaryStrSearch(colorNames, name) >= 0
 
-proc rgb*(r, g, b: range[0..255]): TColor =
+proc rgb*(r, g, b: Range[0..255]): TColor =
   ## constructs a color from RGB values.
   result = rawRGB(r, g, b)
 

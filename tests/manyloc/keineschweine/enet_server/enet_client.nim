@@ -7,9 +7,9 @@ if enetInit() != 0:
 type
   TClientSettings = object
     resolution*: TVideoMode
-    offlineFile: string
-    dirserver: tuple[host: string, port: int16]
-    website*: string
+    offlineFile: String
+    dirserver: tuple[host: String, port: Int16]
+    website*: String
 var
   clientSettings: TClientSettings
   event: enet.TEvent
@@ -23,9 +23,9 @@ var
   chatInput: PTextEntry
   loginBtn, playBtn: PButton
   fpsText = newText("", guiFont, 18)
-  connectionButtons: seq[PButton]
+  connectionButtons: Seq[PButton]
   connectButton: PButton
-  u_alias, u_passwd: PTextEntry
+  uAlias, uPasswd: PTextEntry
   dirServer: PServer
   zone: PServer
   showZoneList = false
@@ -53,14 +53,14 @@ block:
 
 gui.setActive(chatInput)
 
-proc dispMessage(args: varargs[string, `$`]) =
+proc dispMessage(args: Varargs[String, `$`]) =
   var s = ""
   for it in items(args):
     s.add it
-  chatbox.add(s)
-proc dispMessage(text: string) {.inline.} =
-  chatbox.add(text)
-proc dispError(text: string) {.inline.} =
+  chatBox.add(s)
+proc dispMessage(text: String) {.inline.} =
+  chatBox.add(text)
+proc dispError(text: String) {.inline.} =
   chatBox.add(newScChat(kind = CError, text = text))
 
 proc updateButtons() =
@@ -71,7 +71,7 @@ proc updateButtons() =
   else:
     connectButton.setString "Connect"
 
-proc poll(serv: PServer; timeout: cuint = 30) =
+proc poll(serv: PServer; timeout: Cuint = 30) =
   if serv.isNil or serv.host.isNil: return
   if serv.connected:
     while serv.host.hostService(event, timeout) > 0:
@@ -103,12 +103,12 @@ proc tryLogin*(b: PButton) =
   var login = newCsLogin(
     alias = u_alias.getText(),
     passwd = u_passwd.getText())
-  dirServer.send HLogin, login
+  dirServer.send hLogin, login
 proc tryTransition*(b: PButton) =
   #zone.writePkt HZoneJoinReq, myCreds
 proc tryConnect*(b: PButton) =
   if not dirServer.connected:
-    var error: string
+    var error: String
     if not dirServer.connect(
             clientSettings.dirServer.host, 
             clientSettings.dirServer.port, 
@@ -118,7 +118,7 @@ proc tryConnect*(b: PButton) =
     dirServer.peer.disconnect(1)
 
 proc playOffline*(b: PButton) =
-  var errors: seq[string] = @[]
+  var errors: Seq[String] = @[]
   if loadSettingsFromFile(clientSettings.offlineFile, errors):
     transition()
   else:
@@ -135,20 +135,20 @@ proc lobbyInit*() =
   clientSettings.offlineFile.add s["default-file"].str
   let dirserv = s["directory-server"]
   clientSettings.dirserver.host = dirserv["host"].str
-  clientSettings.dirserver.port = dirserv["port"].num.int16
-  clientSettings.resolution.width = s["resolution"][0].num.cint
-  clientSettings.resolution.height= s["resolution"][1].num.cint
-  clientSettings.resolution.bitsPerPixel = s["resolution"][2].num.cint
+  clientSettings.dirserver.port = dirserv["port"].num.Int16
+  clientSettings.resolution.width = s["resolution"][0].num.Cint
+  clientSettings.resolution.height= s["resolution"][1].num.Cint
+  clientSettings.resolution.bitsPerPixel = s["resolution"][2].num.Cint
   clientSettings.website = s["website"].str
   zonelist.setPosition(vec2f(200.0, 100.0))
   connectionButtons = @[]
   
   var pos = vec2f(10, 10)
-  u_alias = gui.newTextEntry(
+  uAlias = gui.newTextEntry(
     if s.hasKey("alias"): s["alias"].str else: "alias", 
     pos)
   pos.y += 20
-  u_passwd = gui.newTextEntry("buzz", pos)
+  uPasswd = gui.newTextEntry("buzz", pos)
   pos.y += 20
   connectionButtons.add(gui.newButton(
     text = "Login", 
@@ -165,14 +165,14 @@ proc lobbyInit*() =
   pos.y += 20
   gui.newButton("Test Files", position = pos, onClick = proc(b: PButton) =
     var req = newCsZoneJoinReq(myCreds)
-    dirServer.send HZoneJoinReq, req)
+    dirServer.send hZoneJoinReq, req)
   pos.y += 20
   connectionButtons.add(gui.newButton(
     text = "Test Chat",
     position = pos,
     onClick = (proc(b: PButton) = 
       var pkt = newCsChat(text = "ohai")
-      dirServer.send HChat, pkt),
+      dirServer.send hChat, pkt),
     startEnabled = false))
   pos.y += 20
   downloadProgress.setPosition(pos) 
@@ -199,18 +199,18 @@ proc lobbyInit*() =
     for i in 0.. <30: 
       dispMessage($i))"""
   dirServer = newServer() 
-  dirServer.addHandler HChat, handleChat
-  dirServer.addHandler HLogin, handlePlayerLogin
-  dirServer.addHandler HFileTransfer, client_helpers.handleFilePartRecv
-  dirServer.addHandler HChallengeResult, client_helpers.handleFileChallengeResult
-  dirServer.addHandler HFileChallenge, client_helpers.handleFileChallenge
+  dirServer.addHandler hChat, handleChat
+  dirServer.addHandler hLogin, handlePlayerLogin
+  dirServer.addHandler hFileTransfer, client_helpers.handleFilePartRecv
+  dirServer.addHandler hChallengeResult, client_helpers.handleFileChallengeResult
+  dirServer.addHandler hFileChallenge, client_helpers.handleFileChallenge
 
 proc lobbyReady*() = 
   kc.setActive()
-  gui.setActive(u_alias)
+  gui.setActive(uAlias)
 
 var i = 0
-proc lobbyUpdate*(dt: float) =
+proc lobbyUpdate*(dt: Float) =
   dirServer.poll()
   #let res = disp.poll()
   gui.update(dt)
@@ -219,10 +219,10 @@ proc lobbyUpdate*(dt: float) =
     fpsText.setString("FPS: "& ff(1.0/dt))
 
 proc lobbyDraw*(window: PRenderWindow) =
-  window.clear(Black)
+  window.clear(black)
   window.draw chatBox
   window.draw gui
   window.draw fpsText
-  if showZonelist: window.draw zonelist
+  if showZoneList: window.draw zonelist
   window.display()
 

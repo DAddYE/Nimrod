@@ -4,7 +4,7 @@ discard """
 """
 # Test the overloading resolution in connection with a qualifier
 
-proc write(t: TFile, s: string) =
+proc write(t: TFile, s: String) =
   nil # a nop
 
 system.write(stdout, "hello")

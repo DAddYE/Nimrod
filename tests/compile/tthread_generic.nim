@@ -7,7 +7,7 @@ type
     a: proc(): T {.thread.}
     b: proc(val: T) {.thread.}
 
-proc handleThreadFunc(arg: TThreadFuncArgs[int]){.thread.} =
+proc handleThreadFunc(arg: TThreadFuncArgs[Int]){.thread.} =
   var func = arg.a
   var callback = arg.b
   var output = func()
@@ -27,9 +27,9 @@ proc `||->`*[T](func: proc(): T{.thread.}, callback: proc(val: T){.thread.}) =
 
 when isMainModule:
   import os
-  proc testFunc(): int {.thread.} =
+  proc testFunc(): Int {.thread.} =
     return 1
-  proc callbackFunc(val: int) {.thread.} =
+  proc callbackFunc(val: Int) {.thread.} =
     echo($(val))
    
   var thr = (testFunc @||-> callbackFunc)

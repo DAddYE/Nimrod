@@ -7,7 +7,7 @@ discard """
 
 type
   TDict*[TKey, TValue] = object 
-    data: seq[tuple[k: TKey, v: TValue]]
+    data: Seq[tuple[k: TKey, v: TValue]]
   PDict*[TKey, TValue] = ref TDict[TKey, TValue]
   
 proc newDict*[TKey, TValue](): PDict[TKey, TValue] = 

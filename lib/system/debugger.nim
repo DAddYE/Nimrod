@@ -11,9 +11,9 @@
 
 type
   TVarSlot* {.compilerproc, final.} = object ## a slot in a frame
-    address*: pointer ## the variable's address
+    address*: Pointer ## the variable's address
     typ*: PNimType    ## the variable's type
-    name*: cstring    ## the variable's name; for globals this is "module.name"
+    name*: Cstring    ## the variable's name; for globals this is "module.name"
 
   PExtendedFrame = ptr TExtendedFrame
   TExtendedFrame = object  # If the debugger is enabled the compiler
@@ -22,13 +22,13 @@ type
                            # needed are allocated and not 10_000,
                            # except for the global data description.
     f: TFrame
-    slots: array[0..10_000, TVarSlot]
+    slots: Array[0..10_000, TVarSlot]
 
 var
   dbgGlobalData: TExtendedFrame # this reserves much space, but
                                 # for now it is the most practical way
 
-proc dbgRegisterGlobal(name: cstring, address: pointer,
+proc dbgRegisterGlobal(name: Cstring, address: Pointer,
                        typ: PNimType) {.compilerproc.} =
   let i = dbgGlobalData.f.len
   if i >= high(dbgGlobalData.slots):
@@ -39,16 +39,16 @@ proc dbgRegisterGlobal(name: cstring, address: pointer,
   dbgGlobalData.slots[i].address = address
   inc(dbgGlobalData.f.len)
 
-proc getLocal*(frame: PFrame; slot: int): TVarSlot {.inline.} =
+proc getLocal*(frame: PFrame; slot: Int): TVarSlot {.inline.} =
   ## retrieves the meta data for the local variable at `slot`. CAUTION: An
   ## invalid `slot` value causes a corruption!
   result = cast[PExtendedFrame](frame).slots[slot]
 
-proc getGlobalLen*(): int {.inline.} =
+proc getGlobalLen*(): Int {.inline.} =
   ## gets the number of registered globals.
   result = dbgGlobalData.f.len
 
-proc getGlobal*(slot: int): TVarSlot {.inline.} =
+proc getGlobal*(slot: Int): TVarSlot {.inline.} =
   ## retrieves the meta data for the global variable at `slot`. CAUTION: An
   ## invalid `slot` value causes a corruption!
   result = dbgGlobalData.slots[slot]
@@ -57,26 +57,26 @@ proc getGlobal*(slot: int): TVarSlot {.inline.} =
 
 type
   TBreakpoint* = object  ## represents a break point
-    low*, high*: int     ## range from low to high; if disabled
+    low*, high*: Int     ## range from low to high; if disabled
                          ## both low and high are set to their negative values
-    filename*: cstring   ## the filename of the breakpoint
+    filename*: Cstring   ## the filename of the breakpoint
 
 var
-  dbgBP: array[0..127, TBreakpoint] # breakpoints
-  dbgBPlen: int
-  dbgBPbloom: int64  # we use a bloom filter to speed up breakpoint checking
+  dbgBP: Array[0..127, TBreakpoint] # breakpoints
+  dbgBPlen: Int
+  dbgBPbloom: Int64  # we use a bloom filter to speed up breakpoint checking
   
-  dbgFilenames*: array[0..300, cstring] ## registered filenames;
+  dbgFilenames*: Array[0..300, Cstring] ## registered filenames;
                                         ## 'nil' terminated
-  dbgFilenameLen: int
+  dbgFilenameLen: Int
 
-proc dbgRegisterFilename(filename: cstring) {.compilerproc.} =
+proc dbgRegisterFilename(filename: Cstring) {.compilerproc.} =
   # XXX we could check for duplicates here for DLL support
   dbgFilenames[dbgFilenameLen] = filename
   inc dbgFilenameLen
 
-proc dbgRegisterBreakpoint(line: int,
-                           filename, name: cstring) {.compilerproc.} =
+proc dbgRegisterBreakpoint(line: Int,
+                           filename, name: Cstring) {.compilerproc.} =
   let x = dbgBPlen
   if x >= high(dbgBP):
     #debugOut("[Warning] cannot register breakpoint")
@@ -87,7 +87,7 @@ proc dbgRegisterBreakpoint(line: int,
   dbgBP[x].high = line
   dbgBPbloom = dbgBPbloom or line
 
-proc addBreakpoint*(filename: cstring, lo, hi: int): bool =
+proc addBreakpoint*(filename: Cstring, lo, hi: Int): Bool =
   let x = dbgBPlen
   if x >= high(dbgBP): return false
   inc(dbgBPlen)
@@ -100,15 +100,15 @@ proc addBreakpoint*(filename: cstring, lo, hi: int): bool =
 const
   FileSystemCaseInsensitive = defined(windows) or defined(dos) or defined(os2)
 
-proc fileMatches(c, bp: cstring): bool =
+proc fileMatches(c, bp: Cstring): Bool =
   # bp = breakpoint filename
   # c = current filename
   # we consider it a match if bp is a suffix of c
   # and the character for the suffix does not exist or
   # is one of: \  /  :
   # depending on the OS case does not matter!
-  var blen: int = c_strlen(bp)
-  var clen: int = c_strlen(c)
+  var blen: Int = c_strlen(bp)
+  var clen: Int = c_strlen(c)
   if blen > clen: return false
   # check for \ /  :
   if clen-blen-1 >= 0 and c[clen-blen-1] notin {'\\', '/', ':'}:
@@ -124,7 +124,7 @@ proc fileMatches(c, bp: cstring): bool =
     inc(i)
   return true
 
-proc canonFilename*(filename: cstring): cstring =
+proc canonFilename*(filename: Cstring): Cstring =
   ## returns 'nil' if the filename cannot be found.
   for i in 0 .. <dbgFilenameLen:
     result = dbgFilenames[i]
@@ -135,12 +135,12 @@ iterator listBreakpoints*(): ptr TBreakpoint =
   ## lists all breakpoints.
   for i in 0..dbgBPlen-1: yield addr(dbgBP[i])
 
-proc isActive*(b: ptr TBreakpoint): bool = b.low > 0
+proc isActive*(b: ptr TBreakpoint): Bool = b.low > 0
 proc flip*(b: ptr TBreakpoint) =
   ## enables or disables 'b' depending on its current state.
   b.low = -b.low; b.high = -b.high
 
-proc checkBreakpoints*(filename: cstring, line: int): ptr TBreakpoint =
+proc checkBreakpoints*(filename: Cstring, line: Int): ptr TBreakpoint =
   ## in which breakpoint (if any) we are.
   if (dbgBPbloom and line) != line: return nil
   for b in listBreakpoints():
@@ -149,18 +149,18 @@ proc checkBreakpoints*(filename: cstring, line: int): ptr TBreakpoint =
 # ------------------- watchpoint support ------------------------------------
 
 type
-  THash = int
+  THash = Int
   TWatchpoint {.pure, final.} = object
-    name: cstring
-    address: pointer
+    name: Cstring
+    address: Pointer
     typ: PNimType
     oldValue: THash
 
 var
-  Watchpoints: array [0..99, TWatchpoint]
-  WatchpointsLen: int
+  watchpoints: Array [0..99, TWatchpoint]
+  watchpointsLen: Int
 
-proc `!&`(h: THash, val: int): THash {.inline.} =
+proc `!&`(h: THash, val: Int): THash {.inline.} =
   result = h +% val
   result = result +% result shl 10
   result = result xor (result shr 6)
@@ -170,40 +170,40 @@ proc `!$`(h: THash): THash {.inline.} =
   result = result xor (result shr 11)
   result = result +% result shl 15
 
-proc hash(Data: Pointer, Size: int): THash =
+proc hash(Data: Pointer, Size: Int): THash =
   var h: THash = 0
-  var p = cast[cstring](Data)
+  var p = cast[Cstring](data)
   var i = 0
   var s = size
   while s > 0:
     h = h !& ord(p[i])
-    Inc(i)
-    Dec(s)
+    inc(i)
+    dec(s)
   result = !$h
 
-proc hashGcHeader(data: pointer): THash =
+proc hashGcHeader(data: Pointer): THash =
   const headerSize = sizeof(int)*2
-  result = hash(cast[pointer](cast[int](data) -% headerSize), headerSize)
+  result = hash(cast[Pointer](cast[Int](data) -% headerSize), headerSize)
 
-proc genericHashAux(dest: Pointer, mt: PNimType, shallow: bool,
+proc genericHashAux(dest: Pointer, mt: PNimType, shallow: Bool,
                     h: THash): THash
-proc genericHashAux(dest: Pointer, n: ptr TNimNode, shallow: bool,
+proc genericHashAux(dest: Pointer, n: ptr TNimNode, shallow: Bool,
                     h: THash): THash =
   var d = cast[TAddress](dest)
   case n.kind
   of nkSlot:
-    result = genericHashAux(cast[pointer](d +% n.offset), n.typ, shallow, h)
+    result = genericHashAux(cast[Pointer](d +% n.offset), n.typ, shallow, h)
   of nkList:
     result = h
     for i in 0..n.len-1: 
       result = result !& genericHashAux(dest, n.sons[i], shallow, result)
   of nkCase:
-    result = h !& hash(cast[pointer](d +% n.offset), n.typ.size)
+    result = h !& hash(cast[Pointer](d +% n.offset), n.typ.size)
     var m = selectBranch(dest, n)
     if m != nil: result = genericHashAux(dest, m, shallow, result)
   of nkNone: sysAssert(false, "genericHashAux")
 
-proc genericHashAux(dest: Pointer, mt: PNimType, shallow: bool, 
+proc genericHashAux(dest: Pointer, mt: PNimType, shallow: Bool, 
                     h: THash): THash =
   sysAssert(mt != nil, "genericHashAux 2")
   case mt.Kind
@@ -226,7 +226,7 @@ proc genericHashAux(dest: Pointer, mt: PNimType, shallow: bool,
       else:
         for i in 0..cast[pgenericseq](dst).len-1:
           result = result !& genericHashAux(
-            cast[pointer](dst +% i*% mt.base.size +% GenericSeqSize),
+            cast[Pointer](dst +% i*% mt.base.size +% genericSeqSize),
             mt.Base, shallow, result)
   of tyObject, tyTuple:
     # we don't need to copy m_type field for tyObject, as they are equal anyway
@@ -235,7 +235,7 @@ proc genericHashAux(dest: Pointer, mt: PNimType, shallow: bool,
     let d = cast[TAddress](dest)
     result = h
     for i in 0..(mt.size div mt.base.size)-1:
-      result = result !& genericHashAux(cast[pointer](d +% i*% mt.base.size),
+      result = result !& genericHashAux(cast[Pointer](d +% i*% mt.base.size),
                                         mt.base, shallow, result)
   of tyRef:
     when defined(trackGcHeaders):
@@ -253,28 +253,28 @@ proc genericHashAux(dest: Pointer, mt: PNimType, shallow: bool,
   else:
     result = h !& hash(dest, mt.size) # hash raw bits
 
-proc genericHash(dest: Pointer, mt: PNimType): int =
+proc genericHash(dest: Pointer, mt: PNimType): Int =
   result = genericHashAux(dest, mt, false, 0)
   
-proc dbgRegisterWatchpoint(address: pointer, name: cstring,
+proc dbgRegisterWatchpoint(address: Pointer, name: Cstring,
                            typ: PNimType) {.compilerproc.} =
-  let L = WatchpointsLen
+  let L = watchpointsLen
   for i in 0.. <L:
-    if Watchpoints[i].name == name:
+    if watchpoints[i].name == name:
       # address may have changed:
-      Watchpoints[i].address = address
+      watchpoints[i].address = address
       return
-  if L >= watchPoints.high:
+  if L >= watchpoints.high:
     #debugOut("[Warning] cannot register watchpoint")
     return
-  Watchpoints[L].name = name
-  Watchpoints[L].address = address
-  Watchpoints[L].typ = typ
-  Watchpoints[L].oldValue = genericHash(address, typ)
-  inc WatchpointsLen
+  watchpoints[L].name = name
+  watchpoints[L].address = address
+  watchpoints[L].typ = typ
+  watchpoints[L].oldValue = genericHash(address, typ)
+  inc watchpointsLen
 
 proc dbgUnregisterWatchpoints*() =
-  WatchpointsLen = 0
+  watchpointsLen = 0
 
 var
   dbgLineHook*: proc () {.nimcall.}
@@ -282,17 +282,17 @@ var
     ## each executed instruction. This should only be used by debuggers!
     ## Only code compiled with the ``debugger:on`` switch calls this hook.
 
-  dbgWatchpointHook*: proc (watchpointName: cstring) {.nimcall.}
+  dbgWatchpointHook*: proc (watchpointName: Cstring) {.nimcall.}
   
 proc checkWatchpoints =
-  let L = WatchpointsLen
+  let L = watchpointsLen
   for i in 0.. <L:
-    let newHash = genericHash(Watchpoints[i].address, Watchpoints[i].typ)
-    if newHash != Watchpoints[i].oldValue:
-      dbgWatchpointHook(Watchpoints[i].name)
-      Watchpoints[i].oldValue = newHash
+    let newHash = genericHash(watchpoints[i].address, watchpoints[i].typ)
+    if newHash != watchpoints[i].oldValue:
+      dbgWatchpointHook(watchpoints[i].name)
+      watchpoints[i].oldValue = newHash
 
-proc endb(line: int, file: cstring) {.compilerproc, noinline.} =
+proc endb(line: Int, file: Cstring) {.compilerproc, noinline.} =
   # This proc is called before every Nimrod code line!
   if framePtr == nil: return
   if dbgWatchpointHook != nil: checkWatchpoints()

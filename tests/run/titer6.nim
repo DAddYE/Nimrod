@@ -6,8 +6,8 @@ discard """
 
 import strutils
 
-iterator tokenize2(s: string, seps: set[char] = Whitespace): tuple[
-  token: string, isSep: bool] =
+iterator tokenize2(s: String, seps: Set[Char] = Whitespace): tuple[
+  token: String, isSep: Bool] =
   var i = 0
   while i < s.len:
     var j = i
@@ -25,10 +25,10 @@ for word, isSep in tokenize2("ta da", whiteSpace):
   var titer2TestVar = 0 
   stdout.write(titer2TestVar)
 
-proc wordWrap2(s: string, maxLineWidth = 80, 
+proc wordWrap2(s: String, maxLineWidth = 80, 
                splitLongWords = true,
-               seps: set[char] = whitespace,
-               newLine = "\n"): string  = 
+               seps: Set[Char] = whitespace,
+               newLine = "\n"): String  = 
   result = ""
   for word, isSep in tokenize2(s, seps):
     var w = 0 

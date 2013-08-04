@@ -19,10 +19,10 @@ proc getConstExpr*(m: PSym, n: PNode): PNode
   # evaluates the constant expression or returns nil if it is no constant
   # expression
 proc evalOp*(m: TMagic, n, a, b, c: PNode): PNode
-proc leValueConv*(a, b: PNode): bool
+proc leValueConv*(a, b: PNode): Bool
 proc newIntNodeT*(intVal: BiggestInt, n: PNode): PNode
 proc newFloatNodeT*(floatVal: BiggestFloat, n: PNode): PNode
-proc newStrNodeT*(strVal: string, n: PNode): PNode
+proc newStrNodeT*(strVal: String, n: PNode): PNode
 
 # implementation
 
@@ -51,7 +51,7 @@ proc newStrNodeT(strVal: string, n: PNode): PNode =
   result.typ = n.typ
   result.info = n.info
 
-proc ordinalValToString(a: PNode): string = 
+proc ordinalValToString(a: PNode): String = 
   # because $ has the param ordinal[T], `a` is not necessarily an enum, but an
   # ordinal
   var x = getInt(a)
@@ -59,25 +59,25 @@ proc ordinalValToString(a: PNode): string =
   var t = skipTypes(a.typ, abstractRange)
   case t.kind
   of tyChar: 
-    result = $chr(int(x) and 0xff)
+    result = $chr(Int(x) and 0xff)
   of tyEnum:
     var n = t.n
     for i in countup(0, sonsLen(n) - 1): 
-      if n.sons[i].kind != nkSym: InternalError(a.info, "ordinalValToString")
+      if n.sons[i].kind != nkSym: internalError(a.info, "ordinalValToString")
       var field = n.sons[i].sym
       if field.position == x: 
         if field.ast == nil: 
           return field.name.s
         else:
           return field.ast.strVal
-    InternalError(a.info, "no symbol for ordinal value: " & $x)
+    internalError(a.info, "no symbol for ordinal value: " & $x)
   else:
     result = $x
 
-proc isFloatRange(t: PType): bool {.inline.} =
+proc isFloatRange(t: PType): Bool {.inline.} =
   result = t.kind == tyRange and t.sons[0].kind in {tyFloat..tyFloat128}
 
-proc isIntRange(t: PType): bool {.inline.} =
+proc isIntRange(t: PType): Bool {.inline.} =
   result = t.kind == tyRange and t.sons[0].kind in {
       tyInt..tyInt64, tyUInt8..tyUInt32}
 
@@ -86,10 +86,10 @@ proc pickIntRange(a, b: PType): PType =
   elif isIntRange(b): result = b
   else: result = a
 
-proc isIntRangeOrLit(t: PType): bool =
+proc isIntRangeOrLit(t: PType): Bool =
   result = isIntRange(t) or isIntLit(t)
 
-proc pickMinInt(n: PNode): biggestInt =
+proc pickMinInt(n: PNode): BiggestInt =
   if n.kind in {nkIntLit..nkUInt64Lit}:
     result = n.intVal
   elif isIntLit(n.typ):
@@ -97,9 +97,9 @@ proc pickMinInt(n: PNode): biggestInt =
   elif isIntRange(n.typ):
     result = firstOrd(n.typ)
   else:
-    InternalError(n.info, "pickMinInt")
+    internalError(n.info, "pickMinInt")
 
-proc pickMaxInt(n: PNode): biggestInt =
+proc pickMaxInt(n: PNode): BiggestInt =
   if n.kind in {nkIntLit..nkUInt64Lit}:
     result = n.intVal
   elif isIntLit(n.typ):
@@ -107,9 +107,9 @@ proc pickMaxInt(n: PNode): biggestInt =
   elif isIntRange(n.typ):
     result = lastOrd(n.typ)
   else:
-    InternalError(n.info, "pickMaxInt")
+    internalError(n.info, "pickMaxInt")
 
-proc makeRange(typ: PType, first, last: biggestInt): PType = 
+proc makeRange(typ: PType, first, last: BiggestInt): PType = 
   var n = newNode(nkRange)
   addSon(n, newIntNode(nkIntLit, min(first, last)))
   addSon(n, newIntNode(nkIntLit, max(first, last)))
@@ -117,10 +117,10 @@ proc makeRange(typ: PType, first, last: biggestInt): PType =
   result.n = n
   addSonSkipIntLit(result, skipTypes(typ, {tyRange}))
 
-proc makeRangeF(typ: PType, first, last: biggestFloat): PType =
+proc makeRangeF(typ: PType, first, last: BiggestFloat): PType =
   var n = newNode(nkRange)
-  addSon(n, newFloatNode(nkFloatLit, min(first.float, last.float)))
-  addSon(n, newFloatNode(nkFloatLit, max(first.float, last.float)))
+  addSon(n, newFloatNode(nkFloatLit, min(first.Float, last.Float)))
+  addSon(n, newFloatNode(nkFloatLit, max(first.Float, last.Float)))
   result = newType(tyRange, typ.owner)
   result.n = n
   addSonSkipIntLit(result, skipTypes(typ, {tyRange}))
@@ -130,7 +130,7 @@ proc getIntervalType*(m: TMagic, n: PNode): PType =
   # work but the feature is very nice for reducing explicit conversions.
   result = n.typ
   
-  template commutativeOp(opr: expr) {.immediate.} =
+  template commutativeOp(opr: Expr) {.immediate.} =
     let a = n.sons[1]
     let b = n.sons[2]
     if isIntRangeOrLit(a.typ) and isIntRangeOrLit(b.typ):
@@ -138,7 +138,7 @@ proc getIntervalType*(m: TMagic, n: PNode): PType =
                          opr(pickMinInt(a), pickMinInt(b)),
                          opr(pickMaxInt(a), pickMaxInt(b)))
   
-  template binaryOp(opr: expr) {.immediate.} =
+  template binaryOp(opr: Expr) {.immediate.} =
     let a = n.sons[1]
     let b = n.sons[2]
     if isIntRange(a.typ) and b.kind in {nkIntLit..nkUInt64Lit}:
@@ -242,7 +242,7 @@ proc evalOp(m: TMagic, n, a, b, c: PNode): PNode =
   of mLengthSeq, mLengthOpenArray: result = newIntNodeT(sonsLen(a), n) # BUGFIX
   of mUnaryPlusI, mUnaryPlusI64, mUnaryPlusF64: result = a # throw `+` away
   of mToFloat, mToBiggestFloat: 
-    result = newFloatNodeT(toFloat(int(getInt(a))), n)
+    result = newFloatNodeT(toFloat(Int(getInt(a))), n)
   of mToInt, mToBiggestInt: result = newIntNodeT(system.toInt(getFloat(a)), n)
   of mAbsF64: result = newFloatNodeT(abs(getFloat(a)), n)
   of mAbsI, mAbsI64: 
@@ -268,20 +268,20 @@ proc evalOp(m: TMagic, n, a, b, c: PNode): PNode =
     else: result = newIntNodeT(getInt(b), n)
   of mShlI, mShlI64: 
     case skipTypes(n.typ, abstractRange).kind
-    of tyInt8: result = newIntNodeT(int8(getInt(a)) shl int8(getInt(b)), n)
-    of tyInt16: result = newIntNodeT(int16(getInt(a)) shl int16(getInt(b)), n)
-    of tyInt32: result = newIntNodeT(int32(getInt(a)) shl int32(getInt(b)), n)
+    of tyInt8: result = newIntNodeT(Int8(getInt(a)) shl Int8(getInt(b)), n)
+    of tyInt16: result = newIntNodeT(Int16(getInt(a)) shl Int16(getInt(b)), n)
+    of tyInt32: result = newIntNodeT(Int32(getInt(a)) shl Int32(getInt(b)), n)
     of tyInt64, tyInt, tyUInt..tyUInt64: 
       result = newIntNodeT(`shl`(getInt(a), getInt(b)), n)
-    else: InternalError(n.info, "constant folding for shl")
+    else: internalError(n.info, "constant folding for shl")
   of mShrI, mShrI64: 
     case skipTypes(n.typ, abstractRange).kind
-    of tyInt8: result = newIntNodeT(int8(getInt(a)) shr int8(getInt(b)), n)
-    of tyInt16: result = newIntNodeT(int16(getInt(a)) shr int16(getInt(b)), n)
-    of tyInt32: result = newIntNodeT(int32(getInt(a)) shr int32(getInt(b)), n)
+    of tyInt8: result = newIntNodeT(Int8(getInt(a)) shr Int8(getInt(b)), n)
+    of tyInt16: result = newIntNodeT(Int16(getInt(a)) shr Int16(getInt(b)), n)
+    of tyInt32: result = newIntNodeT(Int32(getInt(a)) shr Int32(getInt(b)), n)
     of tyInt64, tyInt, tyUInt..tyUInt64:
       result = newIntNodeT(`shr`(getInt(a), getInt(b)), n)
-    else: InternalError(n.info, "constant folding for shr")
+    else: internalError(n.info, "constant folding for shr")
   of mDivI, mDivI64: result = newIntNodeT(getInt(a) div getInt(b), n)
   of mModI, mModI64: result = newIntNodeT(getInt(a) mod getInt(b), n)
   of mAddF64: result = newFloatNodeT(getFloat(a) + getFloat(b), n)
@@ -324,10 +324,10 @@ proc evalOp(m: TMagic, n, a, b, c: PNode): PNode =
   of mMulU: result = newIntNodeT(`*%`(getInt(a), getInt(b)), n)
   of mModU: result = newIntNodeT(`%%`(getInt(a), getInt(b)), n)
   of mDivU: result = newIntNodeT(`/%`(getInt(a), getInt(b)), n)
-  of mLeSet: result = newIntNodeT(Ord(containsSets(a, b)), n)
-  of mEqSet: result = newIntNodeT(Ord(equalSets(a, b)), n)
+  of mLeSet: result = newIntNodeT(ord(containsSets(a, b)), n)
+  of mEqSet: result = newIntNodeT(ord(equalSets(a, b)), n)
   of mLtSet: 
-    result = newIntNodeT(Ord(containsSets(a, b) and not equalSets(a, b)), n)
+    result = newIntNodeT(ord(containsSets(a, b) and not equalSets(a, b)), n)
   of mMulSet: 
     result = nimsets.intersectSets(a, b)
     result.info = n.info
@@ -341,17 +341,17 @@ proc evalOp(m: TMagic, n, a, b, c: PNode): PNode =
     result = nimsets.symdiffSets(a, b)
     result.info = n.info
   of mConStrStr: result = newStrNodeT(getStrOrChar(a) & getStrOrChar(b), n)
-  of mInSet: result = newIntNodeT(Ord(inSet(a, b)), n)
+  of mInSet: result = newIntNodeT(ord(inSet(a, b)), n)
   of mRepr:
     # BUGFIX: we cannot eval mRepr here for reasons that I forgot.
   of mIntToStr, mInt64ToStr: result = newStrNodeT($(getOrdValue(a)), n)
   of mBoolToStr: 
     if getOrdValue(a) == 0: result = newStrNodeT("false", n)
     else: result = newStrNodeT("true", n)
-  of mCopyStr: result = newStrNodeT(substr(getStr(a), int(getOrdValue(b))), n)
+  of mCopyStr: result = newStrNodeT(substr(getStr(a), Int(getOrdValue(b))), n)
   of mCopyStrLast: 
-    result = newStrNodeT(substr(getStr(a), int(getOrdValue(b)), 
-                                           int(getOrdValue(c))), n)
+    result = newStrNodeT(substr(getStr(a), Int(getOrdValue(b)), 
+                                           Int(getOrdValue(c))), n)
   of mFloatToStr: result = newStrNodeT($getFloat(a), n)
   of mCStrToStr, mCharToStr: result = newStrNodeT(getStrOrChar(a), n)
   of mStrToStr: result = a
@@ -360,9 +360,9 @@ proc evalOp(m: TMagic, n, a, b, c: PNode): PNode =
     result = copyTree(a)
     result.typ = n.typ
   of mCompileOption:
-    result = newIntNodeT(Ord(commands.testCompileOption(a.getStr, n.info)), n)  
+    result = newIntNodeT(ord(commands.testCompileOption(a.getStr, n.info)), n)  
   of mCompileOptionArg:
-    result = newIntNodeT(Ord(
+    result = newIntNodeT(ord(
       testCompileOptionArg(getStr(a), getStr(b), n.info)), n)
   of mNewString, mNewStringOfCap, 
      mExit, mInc, ast.mDec, mEcho, mSwap, mAppendStrCh, 
@@ -371,8 +371,8 @@ proc evalOp(m: TMagic, n, a, b, c: PNode): PNode =
      mNLen..mNError, mEqRef, mSlurp, mStaticExec, mNGenSym: 
     nil
   of mRand:
-    result = newIntNodeT(math.random(a.getInt.int), n)
-  else: InternalError(a.info, "evalOp(" & $m & ')')
+    result = newIntNodeT(math.random(a.getInt.Int), n)
+  else: internalError(a.info, "evalOp(" & $m & ')')
   
 proc getConstIfExpr(c: PSym, n: PNode): PNode = 
   result = nil
@@ -422,13 +422,13 @@ proc leValueConv(a, b: PNode): bool =
     case b.kind
     of nkCharLit..nkUInt64Lit: result = a.intVal <= b.intVal
     of nkFloatLit..nkFloat128Lit: result = a.intVal <= round(b.floatVal)
-    else: InternalError(a.info, "leValueConv")
+    else: internalError(a.info, "leValueConv")
   of nkFloatLit..nkFloat128Lit: 
     case b.kind
     of nkFloatLit..nkFloat128Lit: result = a.floatVal <= b.floatVal
-    of nkCharLit..nkUInt64Lit: result = a.floatVal <= toFloat(int(b.intVal))
-    else: InternalError(a.info, "leValueConv")
-  else: InternalError(a.info, "leValueConv")
+    of nkCharLit..nkUInt64Lit: result = a.floatVal <= toFloat(Int(b.intVal))
+    else: internalError(a.info, "leValueConv")
+  else: internalError(a.info, "leValueConv")
   
 proc magicCall(m: PSym, n: PNode): PNode =
   if sonsLen(n) <= 1: return
@@ -457,9 +457,9 @@ proc getAppType(n: PNode): PNode =
   else:
     result = newStrNodeT("console", n)
 
-proc rangeCheck(n: PNode, value: biggestInt) =
+proc rangeCheck(n: PNode, value: BiggestInt) =
   if value < firstOrd(n.typ) or value > lastOrd(n.typ):
-    LocalError(n.info, errGenerated, "cannot convert " & $value &
+    localError(n.info, errGenerated, "cannot convert " & $value &
                                      " to " & typeToString(n.typ))
 
 proc foldConv*(n, a: PNode; check = false): PNode = 
@@ -477,7 +477,7 @@ proc foldConv*(n, a: PNode; check = false): PNode =
   of tyFloat..tyFloat64:
     case skipTypes(a.typ, abstractRange).kind
     of tyInt..tyInt64, tyEnum, tyBool, tyChar: 
-      result = newFloatNodeT(toFloat(int(getOrdValue(a))), n)
+      result = newFloatNodeT(toFloat(Int(getOrdValue(a))), n)
     else:
       result = a
       result.typ = n.typ
@@ -505,21 +505,21 @@ proc foldArrayAccess(m: PSym, n: PNode): PNode =
   case x.kind
   of nkPar: 
     if (idx >= 0) and (idx < sonsLen(x)): 
-      result = x.sons[int(idx)]
+      result = x.sons[Int(idx)]
       if result.kind == nkExprColonExpr: result = result.sons[1]
     else:
-      LocalError(n.info, errIndexOutOfBounds)
+      localError(n.info, errIndexOutOfBounds)
   of nkBracket, nkMetaNode: 
-    if (idx >= 0) and (idx < sonsLen(x)): result = x.sons[int(idx)]
-    else: LocalError(n.info, errIndexOutOfBounds)
+    if (idx >= 0) and (idx < sonsLen(x)): result = x.sons[Int(idx)]
+    else: localError(n.info, errIndexOutOfBounds)
   of nkStrLit..nkTripleStrLit: 
     result = newNodeIT(nkCharLit, x.info, n.typ)
     if (idx >= 0) and (idx < len(x.strVal)): 
-      result.intVal = ord(x.strVal[int(idx)])
+      result.intVal = ord(x.strVal[Int(idx)])
     elif idx == len(x.strVal): 
       nil
     else: 
-      LocalError(n.info, errIndexOutOfBounds)
+      localError(n.info, errIndexOutOfBounds)
   else: nil
   
 proc foldFieldAccess(m: PSym, n: PNode): PNode =
@@ -569,7 +569,7 @@ proc getConstExpr(m: PSym, n: PNode): PNode =
       of mNimrodMajor: result = newIntNodeT(VersionMajor, n)
       of mNimrodMinor: result = newIntNodeT(VersionMinor, n)
       of mNimrodPatch: result = newIntNodeT(VersionPatch, n)
-      of mCpuEndian: result = newIntNodeT(ord(CPU[targetCPU].endian), n)
+      of mCpuEndian: result = newIntNodeT(ord(Cpu[targetCPU].endian), n)
       of mHostOS: result = newStrNodeT(toLower(platform.OS[targetOS].name), n)
       of mHostCPU: result = newStrNodeT(platform.CPU[targetCPU].name.toLower, n)
       of mAppType: result = getAppType(n)
@@ -597,7 +597,7 @@ proc getConstExpr(m: PSym, n: PNode): PNode =
       of mSizeOf:
         var a = n.sons[1]
         if computeSize(a.typ) < 0: 
-          LocalError(a.info, errCannotEvalXBecauseIncompletelyDefined, 
+          localError(a.info, errCannotEvalXBecauseIncompletelyDefined, 
                      "sizeof")
           result = nil
         elif skipTypes(a.typ, typedescInst).kind in
@@ -636,9 +636,9 @@ proc getConstExpr(m: PSym, n: PNode): PNode =
       else:
         result = magicCall(m, n)
     except EOverflow: 
-      LocalError(n.info, errOverOrUnderflow)
+      localError(n.info, errOverOrUnderflow)
     except EDivByZero: 
-      LocalError(n.info, errConstantDivisionByZero)
+      localError(n.info, errConstantDivisionByZero)
   of nkAddr: 
     var a = getConstExpr(m, n.sons[0])
     if a != nil: 
@@ -694,7 +694,7 @@ proc getConstExpr(m: PSym, n: PNode): PNode =
       result = a              # a <= x and x <= b
       result.typ = n.typ
     else: 
-      LocalError(n.info, errGenerated, `%`(
+      localError(n.info, errGenerated, `%`(
           msgKindToString(errIllegalConvFromXtoY), 
           [typeToString(n.sons[0].typ), typeToString(n.typ)]))
   of nkStringToCString, nkCStringToString: 

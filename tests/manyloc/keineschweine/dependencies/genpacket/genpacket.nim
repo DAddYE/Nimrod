@@ -1,15 +1,15 @@
 import macros, macro_dsl, streams, streams_enh
 from strutils import format
 
-template newLenName(): stmt {.immediate.} =
+template newLenName(): Stmt {.immediate.} =
   let lenName {.inject.} = ^("len"& $lenNames)
   inc(lenNames)
 
-template defPacketImports*(): stmt {.immediate, dirty.} =
+template defPacketImports*(): Stmt {.immediate, dirty.} =
   import macros, macro_dsl, streams, streams_enh
   from strutils import format
 
-proc `$`*[T](x: seq[T]): string =
+proc `$`*[T](x: Seq[T]): String =
   result = "[seq len="
   result.add($x.len)
   result.add ':'
@@ -18,7 +18,7 @@ proc `$`*[T](x: seq[T]): string =
     result.add($x[i])
   result.add ']'
 
-macro defPacket*(typeNameN: expr, typeFields: expr): stmt {.immediate.} = 
+macro defPacket*(typeNameN: Expr, typeFields: Expr): Stmt {.immediate.} = 
   result = newNimNode(nnkStmtList)
   let 
     typeName = quoted2ident(typeNameN)
@@ -113,7 +113,7 @@ macro defPacket*(typeNameN: expr, typeFields: expr): stmt {.immediate.} =
               newCall(  ## add(result.name, unpack[seqType](stream))
                 "add", resName, newNimNode(nnkCall).und(readName, streamID)
         ) ) ) )
-        packbody.add(
+        packBody.add(
           newNimNode(nnkVarSection).und(newNimNode(nnkIdentDefs).und(
             lenName,  ## var lenName = int16(len(p.name))
             newIdentNode("int16"),
@@ -142,7 +142,7 @@ macro defPacket*(typeNameN: expr, typeFields: expr): stmt {.immediate.} =
         packBody.add(newCall("pack", dotName, streamID))
         readBody.add(resName := newCall("read"& $typeFields[i][1].ident, streamID))
     else:
-      error("I dont know what to do with: "& treerepr(typeFields[i]))
+      error("I dont know what to do with: "& treeRepr(typeFields[i]))
   
   var 
     toStringFunc = newNimNode(nnkProcDef).und(
@@ -206,15 +206,15 @@ macro defPacket*(typeNameN: expr, typeFields: expr): stmt {.immediate.} =
   when defined(GenPacketShowOutput):
     echo(repr(result))
 
-proc `->`(a: string, b: string): PNimrodNode {.compileTime.} =
+proc `->`(a: String, b: String): PNimrodNode {.compileTime.} =
   result = newNimNode(nnkIdentDefs).und(^a, ^b, newNimNode(nnkEmpty))
-proc `->`(a: string, b: PNimrodNode): PNimrodNode {.compileTime.} =
+proc `->`(a: String, b: PNimrodNode): PNimrodNode {.compileTime.} =
   result = newNimNode(nnkIdentDefs).und(^a, b, newNimNode(nnkEmpty))
 proc `->`(a, b: PNimrodNode): PNimrodNode {.compileTime.} =
   a[2] = b
   result = a
 
-proc newProc*(name: string, params: varargs[PNimrodNode], resultType: PNimrodNode): PNimrodNode {.compileTime.} =
+proc newProc*(name: String, params: Varargs[PNimrodNode], resultType: PNimrodNode): PNimrodNode {.compileTime.} =
   result = newNimNode(nnkProcDef).und(
     ^name,
     emptyNode(),
@@ -224,7 +224,7 @@ proc newProc*(name: string, params: varargs[PNimrodNode], resultType: PNimrodNod
     emptyNode(),
     newNimNode(nnkStmtList))
   result[3].add(params)
-macro forwardPacket*(typeName: expr, underlyingType: typedesc): stmt {.immediate.} =
+macro forwardPacket*(typeName: Expr, underlyingType: TypeDesc): Stmt {.immediate.} =
   result = newNimNode(nnkStmtList).und(
     newProc(
       "read"& $typeName.ident, 
@@ -246,7 +246,7 @@ macro forwardPacket*(typeName: expr, underlyingType: typedesc): stmt {.immediate
   when defined(GenPacketShowOutput):
     echo(repr(result))
 
-template forwardPacketT*(typeName: expr): stmt {.dirty, immediate.} =
+template forwardPacketT*(typeName: Expr): Stmt {.dirty, immediate.} =
   proc `read typeName`*(s: PStream): typeName =
     discard readData(s, addr result, sizeof(result))
   proc `pack typeName`*(p: var typeName; s: PStream) =
@@ -285,7 +285,7 @@ when isMainModule:
   s.flush
   
   defPacket(Y, tuple[z: int8])
-  proc `$`(z: Y): string = result = "Y("& $z.z &")"
+  proc `$`(z: Y): String = result = "Y("& $z.z &")"
   defPacket(TestPkt, tuple[x: seq[Y]])
   var test = newTestPkt()
   test.x.add([newY(5), newY(4), newY(3), newY(2), newY(1)])

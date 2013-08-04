@@ -15,62 +15,62 @@
 # we don't use refcounts because that's a behaviour
 # the programmer may not want
 
-proc resize(old: int): int {.inline.} =
+proc resize(old: Int): Int {.inline.} =
   if old <= 0: result = 4
   elif old < 65536: result = old * 2
   else: result = old * 3 div 2 # for large arrays * 3/2 is better
 
-proc cmpStrings(a, b: NimString): int {.inline, compilerProc.} =
+proc cmpStrings(a, b: NimString): Int {.inline, compilerProc.} =
   if a == b: return 0
   if a == nil: return -1
   if b == nil: return 1
-  return c_strcmp(a.data, b.data)
+  return cStrcmp(a.data, b.data)
 
-proc eqStrings(a, b: NimString): bool {.inline, compilerProc.} =
+proc eqStrings(a, b: NimString): Bool {.inline, compilerProc.} =
   if a == b: return true
   if a == nil or b == nil: return false
   return a.len == b.len and
-    c_memcmp(a.data, b.data, a.len * sizeof(char)) == 0'i32
+    cMemcmp(a.data, b.data, a.len * sizeof(Char)) == 0'i32
 
 when defined(allocAtomic):
   template allocStr(size: expr): expr =
     cast[NimString](allocAtomic(size))
 else:
-  template allocStr(size: expr): expr =
+  template allocStr(size: Expr): Expr =
     cast[NimString](newObj(addr(strDesc), size))
 
-proc rawNewString(space: int): NimString {.compilerProc.} =
+proc rawNewString(space: Int): NimString {.compilerProc.} =
   var s = space
   if s < 8: s = 7
   result = allocStr(sizeof(TGenericSeq) + s + 1)
   result.reserved = s
 
-proc mnewString(len: int): NimString {.compilerProc.} =
+proc mnewString(len: Int): NimString {.compilerProc.} =
   result = rawNewString(len)
   result.len = len
 
-proc copyStrLast(s: NimString, start, last: int): NimString {.compilerProc.} =
+proc copyStrLast(s: NimString, start, last: Int): NimString {.compilerProc.} =
   var start = max(start, 0)
   var len = min(last, s.len-1) - start + 1
   if len > 0:
     result = rawNewString(len)
     result.len = len
-    c_memcpy(result.data, addr(s.data[start]), len * sizeof(Char))
+    cMemcpy(result.data, addr(s.data[start]), len * sizeof(Char))
     #result.data[len] = '\0'
   else:
     result = rawNewString(len)
 
-proc copyStr(s: NimString, start: int): NimString {.compilerProc.} =
+proc copyStr(s: NimString, start: Int): NimString {.compilerProc.} =
   result = copyStrLast(s, start, s.len-1)
 
-proc toNimStr(str: CString, len: int): NimString {.compilerProc.} =
+proc toNimStr(str: Cstring, len: Int): NimString {.compilerProc.} =
   result = rawNewString(len)
   result.len = len
-  c_memcpy(result.data, str, (len+1) * sizeof(Char))
+  cMemcpy(result.data, str, (len+1) * sizeof(Char))
   #result.data[len] = '\0' # readline relies on this!
 
-proc cstrToNimstr(str: CString): NimString {.compilerRtl.} =
-  result = toNimstr(str, c_strlen(str))
+proc cstrToNimstr(str: Cstring): NimString {.compilerRtl.} =
+  result = toNimStr(str, cStrlen(str))
 
 proc copyString(src: NimString): NimString {.compilerRtl.} =
   if src != nil:
@@ -79,7 +79,7 @@ proc copyString(src: NimString): NimString {.compilerRtl.} =
     else:
       result = rawNewString(src.space)
       result.len = src.len
-      c_memcpy(result.data, src.data, (src.len + 1) * sizeof(Char))
+      cMemcpy(result.data, src.data, (src.len + 1) * sizeof(Char))
 
 proc copyStringRC1(src: NimString): NimString {.compilerRtl.} =
   if src != nil:
@@ -92,14 +92,14 @@ proc copyStringRC1(src: NimString): NimString {.compilerRtl.} =
       result = allocStr(sizeof(TGenericSeq) + s + 1)
     result.reserved = s
     result.len = src.len
-    c_memcpy(result.data, src.data, src.len + 1)
+    cMemcpy(result.data, src.data, src.len + 1)
 
-proc hashString(s: string): int {.compilerproc.} =
+proc hashString(s: String): Int {.compilerproc.} =
   # the compiler needs exactly the same hash function!
   # this used to be used for efficient generation of string case statements
   var h = 0
-  for i in 0..Len(s)-1:
-    h = h +% Ord(s[i])
+  for i in 0..len(s)-1:
+    h = h +% ord(s[i])
     h = h +% h shl 10
     h = h xor (h shr 6)
   h = h +% h shl 3
@@ -113,7 +113,7 @@ proc addChar(s: NimString, c: char): NimString =
   if result.len >= result.space:
     result.reserved = resize(result.space)
     result = cast[NimString](growObj(result,
-      sizeof(TGenericSeq) + (result.reserved+1) * sizeof(char)))
+      sizeof(TGenericSeq) + (result.reserved+1) * sizeof(Char)))
   result.data[result.len] = c
   result.data[result.len+1] = '\0'
   inc(result.len)
@@ -149,11 +149,11 @@ proc addChar(s: NimString, c: char): NimString =
 #   <generated C code>
 #   s = rawNewString(0);
 
-proc resizeString(dest: NimString, addlen: int): NimString {.compilerRtl.} =
-  if dest.len + addLen <= dest.space:
+proc resizeString(dest: NimString, addlen: Int): NimString {.compilerRtl.} =
+  if dest.len + addlen <= dest.space:
     result = dest
   else: # slow path:
-    var sp = max(resize(dest.space), dest.len + addLen)
+    var sp = max(resize(dest.space), dest.len + addlen)
     result = cast[NimString](growObj(dest, sizeof(TGenericSeq) + sp + 1))
     result.reserved = sp
     #result = rawNewString(sp)
@@ -161,15 +161,15 @@ proc resizeString(dest: NimString, addlen: int): NimString {.compilerRtl.} =
     # DO NOT UPDATE LEN YET: dest.len = newLen
 
 proc appendString(dest, src: NimString) {.compilerproc, inline.} =
-  c_memcpy(addr(dest.data[dest.len]), src.data, src.len + 1)
+  cMemcpy(addr(dest.data[dest.len]), src.data, src.len + 1)
   inc(dest.len, src.len)
 
-proc appendChar(dest: NimString, c: char) {.compilerproc, inline.} =
+proc appendChar(dest: NimString, c: Char) {.compilerproc, inline.} =
   dest.data[dest.len] = c
   dest.data[dest.len+1] = '\0'
   inc(dest.len)
 
-proc setLengthStr(s: NimString, newLen: int): NimString {.compilerRtl.} =
+proc setLengthStr(s: NimString, newLen: Int): NimString {.compilerRtl.} =
   var n = max(newLen, 0)
   if n <= s.space:
     result = s
@@ -180,7 +180,7 @@ proc setLengthStr(s: NimString, newLen: int): NimString {.compilerRtl.} =
 
 # ----------------- sequences ----------------------------------------------
 
-proc incrSeq(seq: PGenericSeq, elemSize: int): PGenericSeq {.compilerProc.} =
+proc incrSeq(seq: PGenericSeq, elemSize: Int): PGenericSeq {.compilerProc.} =
   # increments the length by one:
   # this is needed for supporting ``add``;
   #
@@ -194,7 +194,7 @@ proc incrSeq(seq: PGenericSeq, elemSize: int): PGenericSeq {.compilerProc.} =
                                GenericSeqSize))
   inc(result.len)
 
-proc setLengthSeq(seq: PGenericSeq, elemSize, newLen: int): PGenericSeq {.
+proc setLengthSeq(seq: PGenericSeq, elemSize, newLen: Int): PGenericSeq {.
     compilerRtl.} =
   result = seq
   if result.space < newLen:
@@ -217,7 +217,7 @@ proc setLengthSeq(seq: PGenericSeq, elemSize, newLen: int): PGenericSeq {.
           gch.tempStack.len = len0
       else:
         for i in newLen..result.len-1:
-          forAllChildrenAux(cast[pointer](cast[TAddress](result) +%
+          forAllChildrenAux(cast[Pointer](cast[TAddress](result) +%
                             GenericSeqSize +% (i*%elemSize)),
                             extGetCellType(result).base, waZctDecRef)
       
@@ -227,18 +227,18 @@ proc setLengthSeq(seq: PGenericSeq, elemSize, newLen: int): PGenericSeq {.
     # presense of user defined destructors, the user will expect the cell to be
     # "destroyed" thus creating the same problem. We can destoy the cell in the
     # finalizer of the sequence, but this makes destruction non-deterministic.
-    zeroMem(cast[pointer](cast[TAddress](result) +% GenericSeqSize +%
+    zeroMem(cast[Pointer](cast[TAddress](result) +% GenericSeqSize +%
            (newLen*%elemSize)), (result.len-%newLen) *% elemSize)
   result.len = newLen
 
 # --------------- other string routines ----------------------------------
-proc nimIntToStr(x: int): string {.compilerRtl.} =
+proc nimIntToStr(x: Int): String {.compilerRtl.} =
   result = newString(sizeof(x)*4)
   var i = 0
   var y = x
-  while True:
+  while true:
     var d = y div 10
-    result[i] = chr(abs(int(y - d*10)) + ord('0'))
+    result[i] = chr(abs(Int(y - d*10)) + ord('0'))
     inc(i)
     y = d
     if y == 0: break
@@ -250,18 +250,18 @@ proc nimIntToStr(x: int): string {.compilerRtl.} =
   for j in 0..i div 2 - 1:
     swap(result[j], result[i-j-1])
 
-proc nimFloatToStr(x: float): string {.compilerproc.} =
-  var buf: array [0..59, char]
-  c_sprintf(buf, "%#.16e", x)
+proc nimFloatToStr(x: Float): String {.compilerproc.} =
+  var buf: Array [0..59, Char]
+  cSprintf(buf, "%#.16e", x)
   return $buf
 
-proc nimInt64ToStr(x: int64): string {.compilerRtl.} =
+proc nimInt64ToStr(x: Int64): String {.compilerRtl.} =
   result = newString(sizeof(x)*4)
   var i = 0
   var y = x
-  while True:
+  while true:
     var d = y div 10
-    result[i] = chr(abs(int(y - d*10)) + ord('0'))
+    result[i] = chr(abs(Int(y - d*10)) + ord('0'))
     inc(i)
     y = d
     if y == 0: break
@@ -273,14 +273,14 @@ proc nimInt64ToStr(x: int64): string {.compilerRtl.} =
   for j in 0..i div 2 - 1:
     swap(result[j], result[i-j-1])
 
-proc nimBoolToStr(x: bool): string {.compilerRtl.} =
+proc nimBoolToStr(x: Bool): String {.compilerRtl.} =
   return if x: "true" else: "false"
 
-proc nimCharToStr(x: char): string {.compilerRtl.} =
+proc nimCharToStr(x: Char): String {.compilerRtl.} =
   result = newString(1)
   result[0] = x
 
-proc binaryStrSearch(x: openarray[string], y: string): int {.compilerproc.} =
+proc binaryStrSearch(x: Openarray[String], y: String): Int {.compilerproc.} =
   var
     a = 0
     b = len(x)

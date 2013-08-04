@@ -12,7 +12,7 @@
 const 
   cb64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
-proc encode*(s: string, lineLen = 75, newLine="\13\10"): string = 
+proc encode*(s: String, lineLen = 75, newLine="\13\10"): String = 
   ## encodes `s` into base64 representation. After `lineLen` characters, a 
   ## `newline` is added.
   var total = ((len(s) + 2) div 3) * 4
@@ -58,7 +58,7 @@ proc encode*(s: string, lineLen = 75, newLine="\13\10"): string =
   else:
     assert(r == result.len)
 
-proc decodeByte(b: char): int {.inline.} = 
+proc decodeByte(b: Char): Int {.inline.} = 
   case b
   of '+': result = ord('>')
   of '0'..'9': result = ord(b) + 4
@@ -66,7 +66,7 @@ proc decodeByte(b: char): int {.inline.} =
   of 'a'..'z': result = ord(b) - 71
   else: result = 63
 
-proc decode*(s: string): string = 
+proc decode*(s: String): String = 
   ## decodes a string in base64 representation back into its original form.
   ## Whitespace is skipped.
   const Whitespace = {' ', '\t', '\v', '\r', '\l', '\f'}

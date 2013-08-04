@@ -3,11 +3,11 @@ import
   gtk2, glib2, atk, gdk2, gdk2pixbuf, libglade2, pango,
   pangoutils
 
-proc hello(widget: PWidget, data: pointer) {.cdecl.} =
+proc hello(widget: PWidget, data: Pointer) {.cdecl.} =
   write(stdout, "Hello World\n")
 
-proc delete_event(widget: PWidget, event: PEvent,
-                  data: pointer): bool {.cdecl.} =
+proc deleteEvent(widget: PWidget, event: PEvent,
+                  data: Pointer): Bool {.cdecl.} =
   # If you return FALSE in the "delete_event" signal handler,
   # GTK will emit the "destroy" signal. Returning TRUE means
   # you don't want the window to be destroyed.
@@ -19,23 +19,23 @@ proc delete_event(widget: PWidget, event: PEvent,
   return false
 
 # Another callback
-proc mydestroy(widget: PWidget, data: pointer) {.cdecl.} =
+proc mydestroy(widget: PWidget, data: Pointer) {.cdecl.} =
   gtk2.main_quit()
 
 proc mymain() =
   # GtkWidget is the storage type for widgets
   gtk2.nimrod_init()
-  var window = window_new(gtk2.WINDOW_TOPLEVEL)
-  discard g_signal_connect(window, "delete_event", 
-                           Gcallback(delete_event), nil)
-  discard g_signal_connect(window, "destroy", Gcallback(mydestroy), nil)
+  var window = windowNew(gtk2.WINDOW_TOPLEVEL)
+  discard gSignalConnect(window, "delete_event", 
+                           gCallback(deleteEvent), nil)
+  discard gSignalConnect(window, "destroy", gCallback(mydestroy), nil)
   # Sets the border width of the window.
-  set_border_width(window, 10)
+  setBorderWidth(window, 10)
 
   # Creates a new button with the label "Hello World".
-  var button = button_new("Hello World")
+  var button = buttonNew("Hello World")
 
-  discard g_signal_connect(button, "clicked", Gcallback(hello), nil)
+  discard gSignalConnect(button, "clicked", gCallback(hello), nil)
 
   # This packs the button into the window (a gtk container).
   add(window, button)

@@ -1,10 +1,10 @@
 
 {.deadCodeElim: on.}
 
-proc p1*(x, y: int): int =
+proc p1*(x, y: Int): Int =
   result = x + y
   
-proc p2*(x, y: string): string =
+proc p2*(x, y: String): String =
   result = x & y
   
 

@@ -5,7 +5,7 @@ discard """
 # Test inheritance for exception matching:
 
 try:
-  raise newException(EOS, "dummy message")
+  raise newException(Eos, "dummy message")
 except E_Base:
   echo "caught!"
 except: 

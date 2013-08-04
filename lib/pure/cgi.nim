@@ -31,7 +31,7 @@
 
 import strutils, os, strtabs, cookies
 
-proc URLencode*(s: string): string =
+proc uRLencode*(s: String): String =
   ## Encodes a value to be HTTP safe: This means that characters in the set
   ## ``{'A'..'Z', 'a'..'z', '0'..'9', '_'}`` are carried over to the result,
   ## a space is converted to ``'+'`` and every other character is encoded as
@@ -45,14 +45,14 @@ proc URLencode*(s: string): string =
       add(result, '%')
       add(result, toHex(ord(s[i]), 2))
 
-proc handleHexChar(c: char, x: var int) {.inline.} =
+proc handleHexChar(c: Char, x: var Int) {.inline.} =
   case c
   of '0'..'9': x = (x shl 4) or (ord(c) - ord('0'))
   of 'a'..'f': x = (x shl 4) or (ord(c) - ord('a') + 10)
   of 'A'..'F': x = (x shl 4) or (ord(c) - ord('A') + 10)
   else: assert(false)
 
-proc URLdecode*(s: string): string =
+proc uRLdecode*(s: String): String =
   ## Decodes a value from its HTTP representation: This means that a ``'+'``
   ## is converted to a space, ``'%xx'`` (where ``xx`` denotes a hexadecimal
   ## value) is converted to the character with ordinal number ``xx``, and
@@ -74,7 +74,7 @@ proc URLdecode*(s: string): string =
     inc(j)
   setLen(result, j)
 
-proc addXmlChar(dest: var string, c: Char) {.inline.} =
+proc addXmlChar(dest: var String, c: Char) {.inline.} =
   case c
   of '&': add(dest, "&amp;")
   of '<': add(dest, "&lt;")
@@ -82,7 +82,7 @@ proc addXmlChar(dest: var string, c: Char) {.inline.} =
   of '\"': add(dest, "&quot;")
   else: add(dest, c)
 
-proc XMLencode*(s: string): string =
+proc xMLencode*(s: String): String =
   ## Encodes a value to be XML safe:
   ## * ``"`` is replaced by ``&quot;``
   ## * ``<`` is replaced by ``&lt;``
@@ -93,37 +93,37 @@ proc XMLencode*(s: string): string =
   for i in 0..len(s)-1: addXmlChar(result, s[i])
 
 type
-  ECgi* = object of EIO  ## the exception that is raised, if a CGI error occurs
+  ECgi* = object of Eio  ## the exception that is raised, if a CGI error occurs
   TRequestMethod* = enum ## the used request method
     methodNone,          ## no REQUEST_METHOD environment variable
     methodPost,          ## query uses the POST method
     methodGet            ## query uses the GET method
 
-proc cgiError*(msg: string) {.noreturn.} =
+proc cgiError*(msg: String) {.noreturn.} =
   ## raises an ECgi exception with message `msg`.
   var e: ref ECgi
   new(e)
   e.msg = msg
   raise e
 
-proc getEncodedData(allowedMethods: set[TRequestMethod]): string =
-  case getenv("REQUEST_METHOD").string
+proc getEncodedData(allowedMethods: Set[TRequestMethod]): String =
+  case getEnv("REQUEST_METHOD").String
   of "POST":
     if methodPost notin allowedMethods:
       cgiError("'REQUEST_METHOD' 'POST' is not supported")
-    var L = parseInt(getenv("CONTENT_LENGTH").string)
+    var L = parseInt(getEnv("CONTENT_LENGTH").String)
     result = newString(L)
     if readBuffer(stdin, addr(result[0]), L) != L:
       cgiError("cannot read from stdin")
   of "GET":
     if methodGet notin allowedMethods:
       cgiError("'REQUEST_METHOD' 'GET' is not supported")
-    result = getenv("QUERY_STRING").string
+    result = getEnv("QUERY_STRING").String
   else:
     if methodNone notin allowedMethods:
       cgiError("'REQUEST_METHOD' must be 'POST' or 'GET'")
 
-iterator decodeData*(data: string): tuple[key, value: TaintedString] =
+iterator decodeData*(data: String): tuple[key, value: TaintedString] =
   ## Reads and decodes CGI data and yields the (name, value) pairs the
   ## data consists of.
   var i = 0
@@ -165,7 +165,7 @@ iterator decodeData*(data: string): tuple[key, value: TaintedString] =
     elif data[i] == '\0': break
     else: cgiError("'&' expected")
 
-iterator decodeData*(allowedMethods: set[TRequestMethod] =
+iterator decodeData*(allowedMethods: Set[TRequestMethod] =
        {methodNone, methodPost, methodGet}): tuple[key, value: TaintedString] =
   ## Reads and decodes CGI data and yields the (name, value) pairs the
   ## data consists of. If the client does not use a method listed in the
@@ -175,166 +175,166 @@ iterator decodeData*(allowedMethods: set[TRequestMethod] =
     for key, value in decodeData(data):
       yield (key, value)
 
-proc readData*(allowedMethods: set[TRequestMethod] =
+proc readData*(allowedMethods: Set[TRequestMethod] =
                {methodNone, methodPost, methodGet}): PStringTable =
   ## Read CGI data. If the client does not use a method listed in the
   ## `allowedMethods` set, an `ECgi` exception is raised.
   result = newStringTable()
   for name, value in decodeData(allowedMethods):
-    result[name.string] = value.string
+    result[name.String] = value.String
 
-proc validateData*(data: PStringTable, validKeys: varargs[string]) =
+proc validateData*(data: PStringTable, validKeys: Varargs[String]) =
   ## validates data; raises `ECgi` if this fails. This checks that each variable
   ## name of the CGI `data` occurs in the `validKeys` array.
   for key, val in pairs(data):
     if find(validKeys, key) < 0:
       cgiError("unknown variable name: " & key)
 
-proc getContentLength*(): string =
+proc getContentLength*(): String =
   ## returns contents of the ``CONTENT_LENGTH`` environment variable
-  return getenv("CONTENT_LENGTH").string
+  return getEnv("CONTENT_LENGTH").String
 
-proc getContentType*(): string =
+proc getContentType*(): String =
   ## returns contents of the ``CONTENT_TYPE`` environment variable
-  return getenv("CONTENT_Type").string
+  return getEnv("CONTENT_Type").String
 
-proc getDocumentRoot*(): string =
+proc getDocumentRoot*(): String =
   ## returns contents of the ``DOCUMENT_ROOT`` environment variable
-  return getenv("DOCUMENT_ROOT").string
+  return getEnv("DOCUMENT_ROOT").String
 
-proc getGatewayInterface*(): string =
+proc getGatewayInterface*(): String =
   ## returns contents of the ``GATEWAY_INTERFACE`` environment variable
-  return getenv("GATEWAY_INTERFACE").string
+  return getEnv("GATEWAY_INTERFACE").String
 
-proc getHttpAccept*(): string =
+proc getHttpAccept*(): String =
   ## returns contents of the ``HTTP_ACCEPT`` environment variable
-  return getenv("HTTP_ACCEPT").string
+  return getEnv("HTTP_ACCEPT").String
 
-proc getHttpAcceptCharset*(): string =
+proc getHttpAcceptCharset*(): String =
   ## returns contents of the ``HTTP_ACCEPT_CHARSET`` environment variable
-  return getenv("HTTP_ACCEPT_CHARSET").string
+  return getEnv("HTTP_ACCEPT_CHARSET").String
 
-proc getHttpAcceptEncoding*(): string =
+proc getHttpAcceptEncoding*(): String =
   ## returns contents of the ``HTTP_ACCEPT_ENCODING`` environment variable
-  return getenv("HTTP_ACCEPT_ENCODING").string
+  return getEnv("HTTP_ACCEPT_ENCODING").String
 
-proc getHttpAcceptLanguage*(): string =
+proc getHttpAcceptLanguage*(): String =
   ## returns contents of the ``HTTP_ACCEPT_LANGUAGE`` environment variable
-  return getenv("HTTP_ACCEPT_LANGUAGE").string
+  return getEnv("HTTP_ACCEPT_LANGUAGE").String
 
-proc getHttpConnection*(): string =
+proc getHttpConnection*(): String =
   ## returns contents of the ``HTTP_CONNECTION`` environment variable
-  return getenv("HTTP_CONNECTION").string
+  return getEnv("HTTP_CONNECTION").String
 
-proc getHttpCookie*(): string =
+proc getHttpCookie*(): String =
   ## returns contents of the ``HTTP_COOKIE`` environment variable
-  return getenv("HTTP_COOKIE").string
+  return getEnv("HTTP_COOKIE").String
 
-proc getHttpHost*(): string =
+proc getHttpHost*(): String =
   ## returns contents of the ``HTTP_HOST`` environment variable
-  return getenv("HTTP_HOST").string
+  return getEnv("HTTP_HOST").String
 
-proc getHttpReferer*(): string =
+proc getHttpReferer*(): String =
   ## returns contents of the ``HTTP_REFERER`` environment variable
-  return getenv("HTTP_REFERER").string
+  return getEnv("HTTP_REFERER").String
 
-proc getHttpUserAgent*(): string =
+proc getHttpUserAgent*(): String =
   ## returns contents of the ``HTTP_USER_AGENT`` environment variable
-  return getenv("HTTP_USER_AGENT").string
+  return getEnv("HTTP_USER_AGENT").String
 
-proc getPathInfo*(): string =
+proc getPathInfo*(): String =
   ## returns contents of the ``PATH_INFO`` environment variable
-  return getenv("PATH_INFO").string
+  return getEnv("PATH_INFO").String
 
-proc getPathTranslated*(): string =
+proc getPathTranslated*(): String =
   ## returns contents of the ``PATH_TRANSLATED`` environment variable
-  return getenv("PATH_TRANSLATED").string
+  return getEnv("PATH_TRANSLATED").String
 
-proc getQueryString*(): string =
+proc getQueryString*(): String =
   ## returns contents of the ``QUERY_STRING`` environment variable
-  return getenv("QUERY_STRING").string
+  return getEnv("QUERY_STRING").String
 
-proc getRemoteAddr*(): string =
+proc getRemoteAddr*(): String =
   ## returns contents of the ``REMOTE_ADDR`` environment variable
-  return getenv("REMOTE_ADDR").string
+  return getEnv("REMOTE_ADDR").String
 
-proc getRemoteHost*(): string =
+proc getRemoteHost*(): String =
   ## returns contents of the ``REMOTE_HOST`` environment variable
-  return getenv("REMOTE_HOST").string
+  return getEnv("REMOTE_HOST").String
 
-proc getRemoteIdent*(): string =
+proc getRemoteIdent*(): String =
   ## returns contents of the ``REMOTE_IDENT`` environment variable
-  return getenv("REMOTE_IDENT").string
+  return getEnv("REMOTE_IDENT").String
 
-proc getRemotePort*(): string =
+proc getRemotePort*(): String =
   ## returns contents of the ``REMOTE_PORT`` environment variable
-  return getenv("REMOTE_PORT").string
+  return getEnv("REMOTE_PORT").String
 
-proc getRemoteUser*(): string =
+proc getRemoteUser*(): String =
   ## returns contents of the ``REMOTE_USER`` environment variable
-  return getenv("REMOTE_USER").string
+  return getEnv("REMOTE_USER").String
 
-proc getRequestMethod*(): string =
+proc getRequestMethod*(): String =
   ## returns contents of the ``REQUEST_METHOD`` environment variable
-  return getenv("REQUEST_METHOD").string
+  return getEnv("REQUEST_METHOD").String
 
-proc getRequestURI*(): string =
+proc getRequestURI*(): String =
   ## returns contents of the ``REQUEST_URI`` environment variable
-  return getenv("REQUEST_URI").string
+  return getEnv("REQUEST_URI").String
 
-proc getScriptFilename*(): string =
+proc getScriptFilename*(): String =
   ## returns contents of the ``SCRIPT_FILENAME`` environment variable
-  return getenv("SCRIPT_FILENAME").string
+  return getEnv("SCRIPT_FILENAME").String
 
-proc getScriptName*(): string =
+proc getScriptName*(): String =
   ## returns contents of the ``SCRIPT_NAME`` environment variable
-  return getenv("SCRIPT_NAME").string
+  return getEnv("SCRIPT_NAME").String
 
-proc getServerAddr*(): string =
+proc getServerAddr*(): String =
   ## returns contents of the ``SERVER_ADDR`` environment variable
-  return getenv("SERVER_ADDR").string
+  return getEnv("SERVER_ADDR").String
 
-proc getServerAdmin*(): string =
+proc getServerAdmin*(): String =
   ## returns contents of the ``SERVER_ADMIN`` environment variable
-  return getenv("SERVER_ADMIN").string
+  return getEnv("SERVER_ADMIN").String
 
-proc getServerName*(): string =
+proc getServerName*(): String =
   ## returns contents of the ``SERVER_NAME`` environment variable
-  return getenv("SERVER_NAME").string
+  return getEnv("SERVER_NAME").String
 
-proc getServerPort*(): string =
+proc getServerPort*(): String =
   ## returns contents of the ``SERVER_PORT`` environment variable
-  return getenv("SERVER_PORT").string
+  return getEnv("SERVER_PORT").String
 
-proc getServerProtocol*(): string =
+proc getServerProtocol*(): String =
   ## returns contents of the ``SERVER_PROTOCOL`` environment variable
-  return getenv("SERVER_PROTOCOL").string
+  return getEnv("SERVER_PROTOCOL").String
 
-proc getServerSignature*(): string =
+proc getServerSignature*(): String =
   ## returns contents of the ``SERVER_SIGNATURE`` environment variable
-  return getenv("SERVER_SIGNATURE").string
+  return getEnv("SERVER_SIGNATURE").String
 
-proc getServerSoftware*(): string =
+proc getServerSoftware*(): String =
   ## returns contents of the ``SERVER_SOFTWARE`` environment variable
-  return getenv("SERVER_SOFTWARE").string
+  return getEnv("SERVER_SOFTWARE").String
 
-proc setTestData*(keysvalues: varargs[string]) =
+proc setTestData*(keysvalues: Varargs[String]) =
   ## fills the appropriate environment variables to test your CGI application.
   ## This can only simulate the 'GET' request method. `keysvalues` should
   ## provide embedded (name, value)-pairs. Example:
   ##
   ## .. code-block:: Nimrod
   ##    setTestData("name", "Hanz", "password", "12345")
-  putenv("REQUEST_METHOD", "GET")
+  putEnv("REQUEST_METHOD", "GET")
   var i = 0
   var query = ""
   while i < keysvalues.len:
-    add(query, URLencode(keysvalues[i]))
+    add(query, uRLencode(keysvalues[i]))
     add(query, '=')
-    add(query, URLencode(keysvalues[i+1]))
+    add(query, uRLencode(keysvalues[i+1]))
     add(query, '&')
     inc(i, 2)
-  putenv("QUERY_STRING", query)
+  putEnv("QUERY_STRING", query)
 
 proc writeContentType*() =
   ## call this before starting to send your HTML data to `stdout`. This
@@ -353,19 +353,19 @@ proc setStackTraceNewLine*() =
   ## ``<br />`` and are easily readable in a browser.
   system.stackTraceNewLine = "<br />\n"
 
-proc setCookie*(name, value: string) =
+proc setCookie*(name, value: String) =
   ## Sets a cookie.
   write(stdout, "Set-Cookie: ", name, "=", value, "\n")
 
 var
   gcookies: PStringTable = nil
 
-proc getCookie*(name: string): TaintedString =
+proc getCookie*(name: String): TaintedString =
   ## Gets a cookie. If no cookie of `name` exists, "" is returned.
   if gcookies == nil: gcookies = parseCookies(getHttpCookie())
   result = TaintedString(gcookies[name])
 
-proc existsCookie*(name: string): bool =
+proc existsCookie*(name: String): Bool =
   ## Checks if a cookie of `name` exists.
   if gcookies == nil: gcookies = parseCookies(getHttpCookie())
   result = hasKey(gcookies, name)

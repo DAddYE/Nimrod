@@ -91,15 +91,15 @@ type
     reportComments         ## report comments
 
   TXmlParser* = object of TBaseLexer ## the parser object.
-    a, b, c: string
+    a, b, c: String
     kind: TXmlEventKind
     err: TXmlError
     state: TParserState
-    filename: string
-    options: set[TXmlParseOption]
+    filename: String
+    options: Set[TXmlParseOption]
  
 const
-  errorMessages: array [TXmlError, string] = [
+  errorMessages: Array [TXmlError, String] = [
     "no error",
     "']]>' expected",
     "name expected",
@@ -111,8 +111,8 @@ const
     "'-->' expected"
   ]
 
-proc open*(my: var TXmlParser, input: PStream, filename: string,
-           options: set[TXmlParseOption] = {}) =
+proc open*(my: var TXmlParser, input: PStream, filename: String,
+           options: Set[TXmlParseOption] = {}) =
   ## initializes the parser with an input stream. `Filename` is only used
   ## for nice error messages. The parser's behaviour can be controlled by
   ## the `options` parameter: If `options` contains ``reportWhitespace``
@@ -135,79 +135,79 @@ proc kind*(my: TXmlParser): TXmlEventKind {.inline.} =
   ## returns the current event type for the XML parser
   return my.kind
 
-proc charData*(my: TXmlParser): string {.inline.} = 
+proc charData*(my: TXmlParser): String {.inline.} = 
   ## returns the character data for the events: ``xmlCharData``, 
   ## ``xmlWhitespace``, ``xmlComment``, ``xmlCData``, ``xmlSpecial``
   assert(my.kind in {xmlCharData, xmlWhitespace, xmlComment, xmlCData, 
                      xmlSpecial})
   return my.a
 
-proc elementName*(my: TXmlParser): string {.inline.} = 
+proc elementName*(my: TXmlParser): String {.inline.} = 
   ## returns the element name for the events: ``xmlElementStart``, 
   ## ``xmlElementEnd``, ``xmlElementOpen``
   assert(my.kind in {xmlElementStart, xmlElementEnd, xmlElementOpen})
   return my.a
 
-proc entityName*(my: TXmlParser): string {.inline.} = 
+proc entityName*(my: TXmlParser): String {.inline.} = 
   ## returns the entity name for the event: ``xmlEntity``
   assert(my.kind == xmlEntity)
   return my.a
   
-proc attrKey*(my: TXmlParser): string {.inline.} = 
+proc attrKey*(my: TXmlParser): String {.inline.} = 
   ## returns the attribute key for the event ``xmlAttribute``
   assert(my.kind == xmlAttribute)
   return my.a
   
-proc attrValue*(my: TXmlParser): string {.inline.} = 
+proc attrValue*(my: TXmlParser): String {.inline.} = 
   ## returns the attribute value for the event ``xmlAttribute``
   assert(my.kind == xmlAttribute)
   return my.b
 
-proc PIName*(my: TXmlParser): string {.inline.} = 
+proc pIName*(my: TXmlParser): String {.inline.} = 
   ## returns the processing instruction name for the event ``xmlPI``
   assert(my.kind == xmlPI)
   return my.a
 
-proc PIRest*(my: TXmlParser): string {.inline.} = 
+proc pIRest*(my: TXmlParser): String {.inline.} = 
   ## returns the rest of the processing instruction for the event ``xmlPI``
   assert(my.kind == xmlPI)
   return my.b
 
-proc rawData*(my: TXmlParser): string {.inline.} =
+proc rawData*(my: TXmlParser): String {.inline.} =
   ## returns the underlying 'data' string by reference.
   ## This is only used for speed hacks.
   shallowCopy(result, my.a)
 
-proc rawData2*(my: TXmlParser): string {.inline.} =
+proc rawData2*(my: TXmlParser): String {.inline.} =
   ## returns the underlying second 'data' string by reference.
   ## This is only used for speed hacks.
   shallowCopy(result, my.b)
 
-proc getColumn*(my: TXmlParser): int {.inline.} = 
+proc getColumn*(my: TXmlParser): Int {.inline.} = 
   ## get the current column the parser has arrived at.
   result = getColNumber(my, my.bufPos)
 
-proc getLine*(my: TXmlParser): int {.inline.} = 
+proc getLine*(my: TXmlParser): Int {.inline.} = 
   ## get the current line the parser has arrived at.
   result = my.linenumber
 
-proc getFilename*(my: TXmlParser): string {.inline.} = 
+proc getFilename*(my: TXmlParser): String {.inline.} = 
   ## get the filename of the file that the parser processes.
   result = my.filename
   
-proc errorMsg*(my: TXmlParser): string = 
+proc errorMsg*(my: TXmlParser): String = 
   ## returns a helpful error message for the event ``xmlError``
   assert(my.kind == xmlError)
   result = "$1($2, $3) Error: $4" % [
     my.filename, $getLine(my), $getColumn(my), errorMessages[my.err]]
 
-proc errorMsgExpected*(my: TXmlParser, tag: string): string = 
+proc errorMsgExpected*(my: TXmlParser, tag: String): String = 
   ## returns an error message "<tag> expected" in the same format as the
   ## other error messages 
   result = "$1($2, $3) Error: $4" % [
     my.filename, $getLine(my), $getColumn(my), "<$1> expected" % tag]
 
-proc errorMsg*(my: TXmlParser, msg: string): string = 
+proc errorMsg*(my: TXmlParser, msg: String): String = 
   ## returns an error message with text `msg` in the same format as the
   ## other error messages 
   result = "$1($2, $3) Error: $4" % [
@@ -243,7 +243,7 @@ proc parseCDATA(my: var TXMLParser) =
       add(my.a, buf[pos])
       inc(pos)    
   my.bufpos = pos # store back
-  my.kind = xmlCDATA
+  my.kind = xmlCData
 
 proc parseComment(my: var TXMLParser) = 
   var pos = my.bufpos + len("<!--")
@@ -273,14 +273,14 @@ proc parseComment(my: var TXMLParser) =
   my.bufpos = pos
   my.kind = xmlComment
 
-proc parseWhitespace(my: var TXmlParser, skip=False) = 
+proc parseWhitespace(my: var TXmlParser, skip=false) = 
   var pos = my.bufpos
   var buf = my.buf
   while true: 
     case buf[pos]
     of ' ', '\t': 
       if not skip: add(my.a, buf[pos])
-      Inc(pos)
+      inc(pos)
     of '\c':  
       # the specification says that CR-LF, CR are to be transformed to LF
       pos = lexbase.HandleCR(my, pos)
@@ -298,7 +298,7 @@ const
   NameStartChar = {'A'..'Z', 'a'..'z', '_', ':', '\128'..'\255'}
   NameChar = {'A'..'Z', 'a'..'z', '0'..'9', '.', '-', '_', ':', '\128'..'\255'}
 
-proc parseName(my: var TXmlParser, dest: var string) = 
+proc parseName(my: var TXmlParser, dest: var String) = 
   var pos = my.bufpos
   var buf = my.buf
   if buf[pos] in nameStartChar: 
@@ -310,12 +310,12 @@ proc parseName(my: var TXmlParser, dest: var string) =
   else:
     markError(my, errNameExpected)
 
-proc parseEntity(my: var TXmlParser, dest: var string) = 
+proc parseEntity(my: var TXmlParser, dest: var String) = 
   var pos = my.bufpos+1
   var buf = my.buf
   my.kind = xmlCharData
   if buf[pos] == '#':
-    var r: int
+    var r: Int
     inc(pos)
     if buf[pos] == 'x': 
       inc(pos)
@@ -360,7 +360,7 @@ proc parseEntity(my: var TXmlParser, dest: var string) =
   if buf[pos] == ';': 
     inc(pos)
   else:
-    markError(my, errSemiColonExpected)
+    markError(my, errSemicolonExpected)
   my.bufpos = pos
 
 proc parsePI(my: var TXmlParser) = 
@@ -438,7 +438,7 @@ proc parseTag(my: var TXmlParser) =
     my.kind = xmlCharData
     add(my.a, '<')
     return
-  parseWhitespace(my, skip=True)
+  parseWhitespace(my, skip=true)
   if my.buf[my.bufpos] in NameStartChar: 
     # an attribute follows:
     my.kind = xmlElementOpen
@@ -458,7 +458,7 @@ proc parseTag(my: var TXmlParser) =
 proc parseEndTag(my: var TXmlParser) = 
   inc(my.bufpos, 2)
   parseName(my, my.a)
-  parseWhitespace(my, skip=True)
+  parseWhitespace(my, skip=true)
   if my.buf[my.bufpos] == '>':
     inc(my.bufpos)
   else:
@@ -474,12 +474,12 @@ proc parseAttribute(my: var TXmlParser) =
   if my.a.len == 0: 
     markError(my, errGtExpected)
     return
-  parseWhitespace(my, skip=True)
+  parseWhitespace(my, skip=true)
   if my.buf[my.bufpos] != '=':
     markError(my, errEqExpected)
     return
   inc(my.bufpos)
-  parseWhitespace(my, skip=True)
+  parseWhitespace(my, skip=true)
 
   var pos = my.bufpos
   var buf = my.buf
@@ -524,7 +524,7 @@ proc parseAttribute(my: var TXmlParser) =
   else:
     markError(my, errQuoteExpected)  
   my.bufpos = pos
-  parseWhitespace(my, skip=True)
+  parseWhitespace(my, skip=true)
   
 proc parseCharData(my: var TXmlParser) = 
   var pos = my.bufpos
@@ -571,7 +571,7 @@ proc rawGetTok(my: var TXmlParser) =
     else: 
       parseTag(my)
   of ' ', '\t', '\c', '\l': 
-    parseWhiteSpace(my)
+    parseWhitespace(my)
     my.kind = xmlWhitespace
   of '\0': 
     my.kind = xmlEof

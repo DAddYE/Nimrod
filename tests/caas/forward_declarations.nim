@@ -2,7 +2,7 @@
 # declared proc in proc/symproc runs, but correctly returns the full signature
 # in caas mode.
 
-proc echoHello(text: string)
+proc echoHello(text: String)
 
 proc testForward() =
   echo "T"

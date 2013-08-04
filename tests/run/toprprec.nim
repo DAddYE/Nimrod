@@ -4,16 +4,16 @@ discard """
 """
 # Test operator precedence: 
 
-template `@` (x: expr): expr {.immediate.} = self.x
-template `@!` (x: expr): expr {.immediate.} = x
-template `===` (x: expr): expr {.immediate.} = x
+template `@` (x: Expr): Expr {.immediate.} = self.x
+template `@!` (x: Expr): Expr {.immediate.} = x
+template `===` (x: Expr): Expr {.immediate.} = x
 
 type
   TO = object
-    x: int
-  TA = tuple[a, b: int, obj: TO]
+    x: Int
+  TA = tuple[a, b: Int, obj: TO]
   
-proc init(self: var TA): string =
+proc init(self: var TA): String =
   @a = 3
   === @b = 4
   @obj.x = 4
@@ -22,7 +22,7 @@ proc init(self: var TA): string =
 
 assert 3+5*5-2 == 28- -26-28
 
-proc `^-` (x, y: int): int =  
+proc `^-` (x, y: Int): Int =  
   # now right-associative!
   result = x - y
   

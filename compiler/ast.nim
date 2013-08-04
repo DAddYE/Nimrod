@@ -27,7 +27,7 @@ type
     ccNoConvention            # needed for generating proper C procs sometimes
 
 const 
-  CallingConvToStr*: array[TCallingConvention, string] = ["", "stdcall", 
+  CallingConvToStr*: Array[TCallingConvention, String] = ["", "stdcall", 
     "cdecl", "safecall", "syscall", "inline", "noinline", "fastcall",
     "closure", "noconv"]
 
@@ -212,7 +212,7 @@ type
     nkGotoState,          # used for the state machine (for iterators)
     nkState,              # give a label to a code section (for iterators)
     nkBreakState,         # special break statement for easier code generation
-  TNodeKinds* = set[TNodeKind]
+  TNodeKinds* = Set[TNodeKind]
 
 type
   TSymFlag* = enum    # already 30 flags!
@@ -258,7 +258,7 @@ type
     sfDestructor,     # proc is destructor
     sfGenSym          # symbol is 'gensym'ed; do not add to symbol table
 
-  TSymFlags* = set[TSymFlag]
+  TSymFlags* = Set[TSymFlag]
 
 const
   sfFakeConst* = sfDeadCodeElim  # const cannot be put into a data section
@@ -340,7 +340,7 @@ const
   tyError* = tyProxy # as an errornous node should match everything
 
 type
-  TTypeKinds* = set[TTypeKind]
+  TTypeKinds* = Set[TTypeKind]
 
   TNodeFlag* = enum
     nfNone,
@@ -353,7 +353,7 @@ type
     nfTransf,   # node has been transformed
     nfSem       # node has been checked for semantics
 
-  TNodeFlags* = set[TNodeFlag]
+  TNodeFlags* = Set[TNodeFlag]
   TTypeFlag* = enum   # keep below 32 for efficiency reasons (now: 23)
     tfVarargs,        # procedure has C styled varargs
     tfNoSideEffect,   # procedure type does not allow side effects
@@ -389,7 +389,7 @@ type
     tfHasMeta,        # type has "typedesc" or "expr" somewhere
     tfHasGCedMem,     # type contains GC'ed memory
 
-  TTypeFlags* = set[TTypeFlag]
+  TTypeFlags* = Set[TTypeFlag]
 
   TSymKind* = enum        # the different symbols (start with the prefix sk);
                           # order is important for the documentation generator!
@@ -421,7 +421,7 @@ type
     skStub,               # symbol is a stub and not yet loaded from the ROD
                           # file (it is loaded on demand, which may
                           # mean: never)
-  TSymKinds* = set[TSymKind]
+  TSymKinds* = Set[TSymKind]
 
 const
   routineKinds* = {skProc, skMethod, skIterator, skConverter,
@@ -527,7 +527,7 @@ const
 
 type 
   PNode* = ref TNode
-  TNodeSeq* = seq[PNode]
+  TNodeSeq* = Seq[PNode]
   PType* = ref TType
   PSym* = ref TSym
   TNode*{.final, acyclic.} = object # on a 32bit machine, this takes 32 bytes
@@ -536,24 +536,24 @@ type
     typ*: PType
     info*: TLineInfo
     flags*: TNodeFlags
-    case Kind*: TNodeKind
+    case kind*: TNodeKind
     of nkCharLit..nkUInt64Lit:
-      intVal*: biggestInt
+      intVal*: BiggestInt
     of nkFloatLit..nkFloat128Lit:
-      floatVal*: biggestFloat
+      floatVal*: BiggestFloat
     of nkStrLit..nkTripleStrLit:
-      strVal*: string
+      strVal*: String
     of nkSym: 
       sym*: PSym
     of nkIdent: 
       ident*: PIdent
     else:
       sons*: TNodeSeq
-    comment*: string
+    comment*: String
   
-  TSymSeq* = seq[PSym]
+  TSymSeq* = Seq[PSym]
   TStrTable* = object         # a table[PIdent] of PSym
-    counter*: int
+    counter*: Int
     data*: TSymSeq
   
   # -------------- backend information -------------------------------
@@ -584,7 +584,7 @@ type
     OnStack,                  # location is on hardware stack
     OnHeap                    # location is on heap or global
                               # (reference counting needed)
-  TLocFlags* = set[TLocFlag]
+  TLocFlags* = Set[TLocFlag]
   TLoc*{.final.} = object     
     k*: TLocKind              # kind of location
     s*: TStorageLoc
@@ -594,7 +594,7 @@ type
     heapRoot*: PRope          # keeps track of the enclosing heap object that
                               # owns this location (required by GC algorithms
                               # employing heap snapshots or sliding views)
-    a*: int                   # location's "address", i.e. slot for temporaries
+    a*: Int                   # location's "address", i.e. slot for temporaries
 
   # ---------------- end of backend information ------------------------------
 
@@ -602,15 +602,15 @@ type
     libHeader, libDynamic
   TLib* = object of lists.TListEntry # also misused for headers!
     kind*: TLibKind
-    generated*: bool          # needed for the backends:
-    isOverriden*: bool
+    generated*: Bool          # needed for the backends:
+    isOverriden*: Bool
     name*: PRope
     path*: PNode              # can be a string literal!
   
   TInstantiation* = object
     sym*: PSym
-    concreteTypes*: seq[PType]
-    usedBy*: seq[int32]       # list of modules using the generic
+    concreteTypes*: Seq[PType]
+    usedBy*: Seq[Int32]       # list of modules using the generic
                               # needed in caas mode for purging the cache
                               # XXX: it's possible to switch to a 
                               # simple ref count here
@@ -618,7 +618,7 @@ type
   PInstantiation* = ref TInstantiation
  
   TScope* = object
-    depthLevel*: int
+    depthLevel*: Int
     symbols*: TStrTable
     parent*: PScope
 
@@ -629,16 +629,16 @@ type
     # proc and type instantiations are cached in the generic symbol
     case kind*: TSymKind
     of skType:
-      typeInstCache*: seq[PType]
+      typeInstCache*: Seq[PType]
     of routineKinds:
-      procInstCache*: seq[PInstantiation]
+      procInstCache*: Seq[PInstantiation]
       scope*: PScope          # the scope where the proc was defined
     of skModule:
       # modules keep track of the generic symbols they use from other modules.
       # this is because in incremental compilation, when a module is about to
       # be replaced with a newer version, we must decrement the usage count
       # of all previously used generics.
-      usedGenerics*: seq[PInstantiation]
+      usedGenerics*: Seq[PInstantiation]
       tab*: TStrTable         # interface table for modules
     else: nil
 
@@ -657,7 +657,7 @@ type
                               # generated code that will be appended to the
                               # module after the sem pass (see appendToModule)
     options*: TOptions
-    position*: int            # used for many different things:
+    position*: Int            # used for many different things:
                               # for enum fields its position;
                               # for fields its offset
                               # for parameters its position
@@ -668,7 +668,7 @@ type
                               # to the module's fileIdx
                               # for variables a slot index for the evaluator
                               # for routines a superop-ID
-    offset*: int              # offset of record field
+    offset*: Int              # offset of record field
     loc*: TLoc
     annex*: PLib              # additional fields (seldom used, so we use a
                               # reference to another object to safe space)
@@ -676,7 +676,7 @@ type
                               # misused for the codegenDecl pragma in the hope
                               # it won't cause problems
   
-  TTypeSeq* = seq[PType]
+  TTypeSeq* = Seq[PType]
   TType* {.acyclic.} = object of TIdObj # \
                               # types are identical iff they have the
                               # same id; there may be multiple copies of a type
@@ -699,49 +699,49 @@ type
                               # it is used for converting types to strings
     size*: BiggestInt         # the size of the type in bytes
                               # -1 means that the size is unkwown
-    align*: int               # the type's alignment requirements
+    align*: Int               # the type's alignment requirements
     loc*: TLoc
 
   TPair*{.final.} = object 
     key*, val*: PObject
 
-  TPairSeq* = seq[TPair]
+  TPairSeq* = Seq[TPair]
   TTable*{.final.} = object   # the same as table[PObject] of PObject
-    counter*: int
+    counter*: Int
     data*: TPairSeq
 
   TIdPair*{.final.} = object 
     key*: PIdObj
     val*: PObject
 
-  TIdPairSeq* = seq[TIdPair]
+  TIdPairSeq* = Seq[TIdPair]
   TIdTable*{.final.} = object # the same as table[PIdent] of PObject
-    counter*: int
+    counter*: Int
     data*: TIdPairSeq
 
   TIdNodePair*{.final.} = object 
     key*: PIdObj
     val*: PNode
 
-  TIdNodePairSeq* = seq[TIdNodePair]
+  TIdNodePairSeq* = Seq[TIdNodePair]
   TIdNodeTable*{.final.} = object # the same as table[PIdObj] of PNode
-    counter*: int
+    counter*: Int
     data*: TIdNodePairSeq
 
   TNodePair*{.final.} = object 
     h*: THash                 # because it is expensive to compute!
     key*: PNode
-    val*: int
+    val*: Int
 
-  TNodePairSeq* = seq[TNodePair]
+  TNodePairSeq* = Seq[TNodePair]
   TNodeTable*{.final.} = object # the same as table[PNode] of int;
                                 # nodes are compared by structure!
-    counter*: int
+    counter*: Int
     data*: TNodePairSeq
 
-  TObjectSeq* = seq[PObject]
+  TObjectSeq* = Seq[PObject]
   TObjectSet*{.final.} = object 
-    counter*: int
+    counter*: Int
     data*: TObjectSeq
 
 # BUGFIX: a module is overloadable so that a proc can have the
@@ -800,14 +800,14 @@ const
     # imported via 'importc: "fullname"' and no format string.
 
 # creator procs:
-proc NewSym*(symKind: TSymKind, Name: PIdent, owner: PSym,
+proc newSym*(symKind: TSymKind, Name: PIdent, owner: PSym,
              info: TLineInfo): PSym
-proc NewType*(kind: TTypeKind, owner: PSym): PType
+proc newType*(kind: TTypeKind, owner: PSym): PType
 proc newNode*(kind: TNodeKind): PNode
 proc newIntNode*(kind: TNodeKind, intVal: BiggestInt): PNode
 proc newIntTypeNode*(kind: TNodeKind, intVal: BiggestInt, typ: PType): PNode
 proc newFloatNode*(kind: TNodeKind, floatVal: BiggestFloat): PNode
-proc newStrNode*(kind: TNodeKind, strVal: string): PNode
+proc newStrNode*(kind: TNodeKind, strVal: String): PNode
 proc newIdentNode*(ident: PIdent, info: TLineInfo): PNode
 proc newSymNode*(sym: PSym): PNode
 proc newNodeI*(kind: TNodeKind, info: TLineInfo): PNode
@@ -820,39 +820,39 @@ proc initIdNodeTable*(x: var TIdNodeTable)
 proc initNodeTable*(x: var TNodeTable)
   
 # copy procs:
-proc copyType*(t: PType, owner: PSym, keepId: bool): PType
-proc copySym*(s: PSym, keepId: bool = false): PSym
+proc copyType*(t: PType, owner: PSym, keepId: Bool): PType
+proc copySym*(s: PSym, keepId: Bool = false): PSym
 proc assignType*(dest, src: PType)
 proc copyStrTable*(dest: var TStrTable, src: TStrTable)
 proc copyTable*(dest: var TTable, src: TTable)
 proc copyObjectSet*(dest: var TObjectSet, src: TObjectSet)
 proc copyIdTable*(dest: var TIdTable, src: TIdTable)
-proc sonsLen*(n: PNode): int {.inline.}
-proc sonsLen*(n: PType): int {.inline.}
+proc sonsLen*(n: PNode): Int {.inline.}
+proc sonsLen*(n: PType): Int {.inline.}
 proc lastSon*(n: PNode): PNode {.inline.}
 proc lastSon*(n: PType): PType {.inline.}
-proc newSons*(father: PNode, length: int)
-proc newSons*(father: PType, length: int)
+proc newSons*(father: PNode, length: Int)
+proc newSons*(father: PType, length: Int)
 proc addSon*(father, son: PNode)
-proc delSon*(father: PNode, idx: int)
-proc hasSonWith*(n: PNode, kind: TNodeKind): bool
-proc hasSubnodeWith*(n: PNode, kind: TNodeKind): bool
+proc delSon*(father: PNode, idx: Int)
+proc hasSonWith*(n: PNode, kind: TNodeKind): Bool
+proc hasSubnodeWith*(n: PNode, kind: TNodeKind): Bool
 proc replaceSons*(n: PNode, oldKind, newKind: TNodeKind)
 proc copyNode*(src: PNode): PNode
   # does not copy its sons!
 proc copyTree*(src: PNode): PNode
   # does copy its sons!
 
-proc isCallExpr*(n: PNode): bool =
+proc isCallExpr*(n: PNode): Bool =
   result = n.kind in nkCallKinds
 
 proc discardSons*(father: PNode)
 
-proc len*(n: PNode): int {.inline.} =
+proc len*(n: PNode): Int {.inline.} =
   if isNil(n.sons): result = 0
   else: result = len(n.sons)
   
-proc safeLen*(n: PNode): int {.inline.} =
+proc safeLen*(n: PNode): Int {.inline.} =
   ## works even for leaves.
   if n.kind in {nkNone..nkNilLit} or isNil(n.sons): result = 0
   else: result = len(n.sons)
@@ -862,12 +862,12 @@ proc add*(father, son: PNode) =
   if isNil(father.sons): father.sons = @[]
   add(father.sons, son)
   
-proc `[]`*(n: PNode, i: int): PNode {.inline.} =
+proc `[]`*(n: PNode, i: Int): PNode {.inline.} =
   result = n.sons[i]
 
 # son access operators with support for negative indices
-template `{}`*(n: PNode, i: int): expr = n[i -| n]
-template `{}=`*(n: PNode, i: int, s: PNode): stmt =
+template `{}`*(n: PNode, i: Int): Expr = n[i -| n]
+template `{}=`*(n: PNode, i: Int, s: PNode): Stmt =
   n.sons[i -| n] = s
   
 var emptyNode* = newNode(nkEmpty)
@@ -883,11 +883,11 @@ proc linkTo*(s: PSym, t: PType): PSym {.discardable.} =
   s.typ = t
   result = s
 
-template fileIdx*(c: PSym): int32 =
+template fileIdx*(c: PSym): Int32 =
   # XXX: this should be used only on module symbols
-  c.position.int32
+  c.position.Int32
 
-template filename*(c: PSym): string =
+template filename*(c: PSym): String =
   # XXX: this should be used only on module symbols
   c.position.int32.toFileName
 
@@ -908,7 +908,7 @@ const                         # for all kind of hash tables:
 proc copyStrTable(dest: var TStrTable, src: TStrTable) = 
   dest.counter = src.counter
   if isNil(src.data): return 
-  setlen(dest.data, len(src.data))
+  setLen(dest.data, len(src.data))
   for i in countup(0, high(src.data)): dest.data[i] = src.data[i]
   
 proc copyIdTable(dest: var TIdTable, src: TIdTable) = 
@@ -920,13 +920,13 @@ proc copyIdTable(dest: var TIdTable, src: TIdTable) =
 proc copyTable(dest: var TTable, src: TTable) = 
   dest.counter = src.counter
   if isNil(src.data): return 
-  setlen(dest.data, len(src.data))
+  setLen(dest.data, len(src.data))
   for i in countup(0, high(src.data)): dest.data[i] = src.data[i]
   
 proc copyObjectSet(dest: var TObjectSet, src: TObjectSet) = 
   dest.counter = src.counter
   if isNil(src.data): return 
-  setlen(dest.data, len(src.data))
+  setLen(dest.data, len(src.data))
   for i in countup(0, high(src.data)): dest.data[i] = src.data[i]
   
 proc discardSons(father: PNode) = 
@@ -943,9 +943,9 @@ proc newNode(kind: TNodeKind): PNode =
   new(result)
   result.kind = kind
   #result.info = UnknownLineInfo() inlined:
-  result.info.fileIndex = int32(- 1)
-  result.info.col = int16(- 1)
-  result.info.line = int16(- 1)
+  result.info.fileIndex = Int32(- 1)
+  result.info.col = Int16(- 1)
+  result.info.line = Int16(- 1)
   when defined(useNodeIds):
     result.id = gNodeId
     if result.id == nodeIdToDebug:
@@ -997,7 +997,7 @@ proc newNodeI(kind: TNodeKind, info: TLineInfo): PNode =
       writeStackTrace()
     inc gNodeId
 
-proc newNodeI*(kind: TNodeKind, info: TLineInfo, children: int): PNode =
+proc newNodeI*(kind: TNodeKind, info: TLineInfo, children: Int): PNode =
   new(result)
   result.kind = kind
   result.info = info
@@ -1046,7 +1046,7 @@ proc newProcNode*(kind: TNodeKind, info: TLineInfo, body: PNode,
                   pragmas, exceptions, body]
 
 
-proc NewType(kind: TTypeKind, owner: PSym): PType = 
+proc newType(kind: TTypeKind, owner: PSym): PType = 
   new(result)
   result.kind = kind
   result.owner = owner
@@ -1113,11 +1113,11 @@ proc copySym(s: PSym, keepId: bool = false): PSym =
   result.loc = s.loc
   result.annex = s.annex      # BUGFIX
   
-proc NewSym(symKind: TSymKind, Name: PIdent, owner: PSym,
+proc newSym(symKind: TSymKind, Name: PIdent, owner: PSym,
             info: TLineInfo): PSym = 
   # generates a symbol and initializes the hash field too
   new(result)
-  result.Name = Name
+  result.Name = name
   result.Kind = symKind
   result.flags = {}
   result.info = info
@@ -1161,7 +1161,7 @@ proc sonsLen(n: PType): int =
   if isNil(n.sons): result = 0
   else: result = len(n.sons)
 
-proc len*(n: PType): int = 
+proc len*(n: PType): Int = 
   if isNil(n.sons): result = 0
   else: result = len(n.sons)
   
@@ -1169,7 +1169,7 @@ proc newSons(father: PType, length: int) =
   if isNil(father.sons): 
     newSeq(father.sons, length)
   else:
-    setlen(father.sons, length)
+    setLen(father.sons, length)
 
 proc sonsLen(n: PNode): int = 
   if isNil(n.sons): result = 0
@@ -1179,7 +1179,7 @@ proc newSons(father: PNode, length: int) =
   if isNil(father.sons): 
     newSeq(father.sons, length)
   else:
-    setlen(father.sons, length)
+    setLen(father.sons, length)
 
 proc propagateToOwner*(owner, elem: PType) =
   const HaveTheirOwnEmpty =  {tySequence, tySet}
@@ -1222,7 +1222,7 @@ proc delSon(father: PNode, idx: int) =
   if isNil(father.sons): return 
   var length = sonsLen(father)
   for i in countup(idx, length - 2): father.sons[i] = father.sons[i + 1]
-  setlen(father.sons, length - 1)
+  setLen(father.sons, length - 1)
 
 proc copyNode(src: PNode): PNode = 
   # does not copy its sons!
@@ -1295,7 +1295,7 @@ proc hasSonWith(n: PNode, kind: TNodeKind): bool =
       return true
   result = false
 
-proc hasNilSon*(n: PNode): bool = 
+proc hasNilSon*(n: PNode): Bool = 
   for i in countup(0, safeLen(n) - 1): 
     if n.sons[i] == nil: 
       return true
@@ -1303,7 +1303,7 @@ proc hasNilSon*(n: PNode): bool =
       return true
   result = false
 
-proc containsNode*(n: PNode, kinds: TNodeKinds): bool =
+proc containsNode*(n: PNode, kinds: TNodeKinds): Bool =
   if n == nil: return
   case n.kind
   of nkEmpty..nkNilLit: result = n.kind in kinds
@@ -1324,60 +1324,60 @@ proc replaceSons(n: PNode, oldKind, newKind: TNodeKind) =
   for i in countup(0, sonsLen(n) - 1): 
     if n.sons[i].kind == oldKind: n.sons[i].kind = newKind
   
-proc sonsNotNil(n: PNode): bool = 
+proc sonsNotNil(n: PNode): Bool = 
   for i in countup(0, sonsLen(n) - 1): 
     if n.sons[i] == nil: 
       return false
   result = true
 
-proc getInt*(a: PNode): biggestInt = 
+proc getInt*(a: PNode): BiggestInt = 
   case a.kind
   of nkIntLit..nkUInt64Lit: result = a.intVal
   else: 
     internalError(a.info, "getInt")
     result = 0
 
-proc getFloat*(a: PNode): biggestFloat = 
+proc getFloat*(a: PNode): BiggestFloat = 
   case a.kind
   of nkFloatLit..nkFloat128Lit: result = a.floatVal
   else: 
     internalError(a.info, "getFloat")
     result = 0.0
 
-proc getStr*(a: PNode): string = 
+proc getStr*(a: PNode): String = 
   case a.kind
   of nkStrLit..nkTripleStrLit: result = a.strVal
   else: 
     internalError(a.info, "getStr")
     result = ""
 
-proc getStrOrChar*(a: PNode): string = 
+proc getStrOrChar*(a: PNode): String = 
   case a.kind
   of nkStrLit..nkTripleStrLit: result = a.strVal
-  of nkCharLit: result = $chr(int(a.intVal))
+  of nkCharLit: result = $chr(Int(a.intVal))
   else: 
     internalError(a.info, "getStrOrChar")
     result = ""
 
-proc isGenericRoutine*(s: PSym): bool = 
+proc isGenericRoutine*(s: PSym): Bool = 
   case s.kind
   of skProc, skTemplate, skMacro, skIterator, skMethod, skConverter:
     result = s.ast != nil and s.ast[genericParamsPos].kind != nkEmpty
   else: nil
 
-proc isRoutine*(s: PSym): bool {.inline.} =
+proc isRoutine*(s: PSym): Bool {.inline.} =
   result = s.kind in {skProc, skTemplate, skMacro, skIterator, skMethod,
                       skConverter}
 
-proc hasPattern*(s: PSym): bool {.inline.} =
+proc hasPattern*(s: PSym): Bool {.inline.} =
   result = isRoutine(s) and s.ast.sons[patternPos].kind != nkEmpty
 
 iterator items*(n: PNode): PNode =
   for i in 0.. <n.len: yield n.sons[i]
 
-proc isAtom*(n: PNode): bool {.inline.} =
+proc isAtom*(n: PNode): Bool {.inline.} =
   result = n.kind >= nkNone and n.kind <= nkNilLit
 
-proc isEmptyType*(t: PType): bool {.inline.} =
+proc isEmptyType*(t: PType): Bool {.inline.} =
   ## 'void' and 'stmt' types are often equivalent to 'nil' these days:
   result = t == nil or t.kind in {tyEmpty, tyStmt}

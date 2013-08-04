@@ -13,114 +13,114 @@
 
 {.push hints:off}
 
-proc c_strcmp(a, b: CString): cint {.header: "<string.h>", 
+proc cStrcmp(a, b: Cstring): Cint {.header: "<string.h>", 
   noSideEffect, importc: "strcmp".}
-proc c_memcmp(a, b: CString, size: int): cint {.header: "<string.h>", 
+proc cMemcmp(a, b: Cstring, size: Int): Cint {.header: "<string.h>", 
   noSideEffect, importc: "memcmp".}
-proc c_memcpy(a, b: CString, size: int) {.header: "<string.h>", importc: "memcpy".}
-proc c_strlen(a: CString): int {.header: "<string.h>", 
+proc cMemcpy(a, b: Cstring, size: Int) {.header: "<string.h>", importc: "memcpy".}
+proc cStrlen(a: Cstring): Int {.header: "<string.h>", 
   noSideEffect, importc: "strlen".}
-proc c_memset(p: pointer, value: cint, size: int) {.
+proc cMemset(p: Pointer, value: Cint, size: Int) {.
   header: "<string.h>", importc: "memset".}
 
 type
-  C_TextFile {.importc: "FILE", header: "<stdio.h>", 
+  CTextFile {.importc: "FILE", header: "<stdio.h>", 
                final, incompleteStruct.} = object
-  C_BinaryFile {.importc: "FILE", header: "<stdio.h>", 
+  CBinaryFile {.importc: "FILE", header: "<stdio.h>", 
                  final, incompleteStruct.} = object
-  C_TextFileStar = ptr CTextFile
-  C_BinaryFileStar = ptr CBinaryFile
+  CTextFileStar = ptr CTextFile
+  CBinaryFileStar = ptr CBinaryFile
 
-  C_JmpBuf {.importc: "jmp_buf", header: "<setjmp.h>".} = object
+  CJmpBuf {.importc: "jmp_buf", header: "<setjmp.h>".} = object
 
 var
-  c_stdin {.importc: "stdin", nodecl.}: C_TextFileStar
-  c_stdout {.importc: "stdout", nodecl.}: C_TextFileStar
-  c_stderr {.importc: "stderr", nodecl.}: C_TextFileStar
+  cStdin {.importc: "stdin", nodecl.}: CTextFileStar
+  cStdout {.importc: "stdout", nodecl.}: CTextFileStar
+  cStderr {.importc: "stderr", nodecl.}: CTextFileStar
 
 # constants faked as variables:
 when not defined(SIGINT):
   var 
-    SIGINT {.importc: "SIGINT", nodecl.}: cint
-    SIGSEGV {.importc: "SIGSEGV", nodecl.}: cint
-    SIGABRT {.importc: "SIGABRT", nodecl.}: cint
-    SIGFPE {.importc: "SIGFPE", nodecl.}: cint
-    SIGILL {.importc: "SIGILL", nodecl.}: cint
+    sigint {.importc: "SIGINT", nodecl.}: Cint
+    sigsegv {.importc: "SIGSEGV", nodecl.}: Cint
+    sigabrt {.importc: "SIGABRT", nodecl.}: Cint
+    sigfpe {.importc: "SIGFPE", nodecl.}: Cint
+    sigill {.importc: "SIGILL", nodecl.}: Cint
 
 when defined(macosx):
   var
-    SIGBUS {.importc: "SIGBUS", nodecl.}: cint
+    sigbus {.importc: "SIGBUS", nodecl.}: Cint
       # hopefully this does not lead to new bugs
 else:
   var
     SIGBUS {.importc: "SIGSEGV", nodecl.}: cint
       # only Mac OS X has this shit
 
-proc c_longjmp(jmpb: C_JmpBuf, retval: cint) {.
+proc cLongjmp(jmpb: CJmpBuf, retval: Cint) {.
   header: "<setjmp.h>", importc: "longjmp".}
-proc c_setjmp(jmpb: var C_JmpBuf): cint {.
+proc cSetjmp(jmpb: var CJmpBuf): Cint {.
   header: "<setjmp.h>", importc: "setjmp".}
 
-proc c_signal(sig: cint, handler: proc (a: cint) {.noconv.}) {.
+proc cSignal(sig: Cint, handler: proc (a: Cint) {.noconv.}) {.
   importc: "signal", header: "<signal.h>".}
-proc c_raise(sig: cint) {.importc: "raise", header: "<signal.h>".}
+proc cRaise(sig: Cint) {.importc: "raise", header: "<signal.h>".}
 
-proc c_fputs(c: cstring, f: C_TextFileStar) {.importc: "fputs", 
+proc cFputs(c: Cstring, f: CTextFileStar) {.importc: "fputs", 
   header: "<stdio.h>".}
-proc c_fgets(c: cstring, n: int, f: C_TextFileStar): cstring  {.
+proc cFgets(c: Cstring, n: Int, f: CTextFileStar): Cstring  {.
   importc: "fgets", header: "<stdio.h>".}
-proc c_fgetc(stream: C_TextFileStar): int {.importc: "fgetc", 
+proc cFgetc(stream: CTextFileStar): Int {.importc: "fgetc", 
   header: "<stdio.h>".}
-proc c_ungetc(c: int, f: C_TextFileStar) {.importc: "ungetc", 
+proc cUngetc(c: Int, f: CTextFileStar) {.importc: "ungetc", 
   header: "<stdio.h>".}
-proc c_putc(c: Char, stream: C_TextFileStar) {.importc: "putc", 
+proc cPutc(c: Char, stream: CTextFileStar) {.importc: "putc", 
   header: "<stdio.h>".}
-proc c_fprintf(f: C_TextFileStar, frmt: CString) {.
+proc cFprintf(f: CTextFileStar, frmt: Cstring) {.
   importc: "fprintf", header: "<stdio.h>", varargs.}
-proc c_printf(frmt: CString) {.
+proc cPrintf(frmt: Cstring) {.
   importc: "printf", header: "<stdio.h>", varargs.}
 
-proc c_fopen(filename, mode: cstring): C_TextFileStar {.
+proc cFopen(filename, mode: Cstring): CTextFileStar {.
   importc: "fopen", header: "<stdio.h>".}
-proc c_fclose(f: C_TextFileStar) {.importc: "fclose", header: "<stdio.h>".}
+proc cFclose(f: CTextFileStar) {.importc: "fclose", header: "<stdio.h>".}
 
-proc c_sprintf(buf, frmt: CString) {.header: "<stdio.h>", 
+proc cSprintf(buf, frmt: Cstring) {.header: "<stdio.h>", 
   importc: "sprintf", varargs, noSideEffect.}
   # we use it only in a way that cannot lead to security issues
 
-proc c_fread(buf: Pointer, size, n: int, f: C_BinaryFileStar): int {.
+proc cFread(buf: Pointer, size, n: Int, f: CBinaryFileStar): Int {.
   importc: "fread", header: "<stdio.h>".}
-proc c_fseek(f: C_BinaryFileStar, offset: clong, whence: int): int {.
+proc cFseek(f: CBinaryFileStar, offset: Clong, whence: Int): Int {.
   importc: "fseek", header: "<stdio.h>".}
 
-proc c_fwrite(buf: Pointer, size, n: int, f: C_BinaryFileStar): int {.
+proc cFwrite(buf: Pointer, size, n: Int, f: CBinaryFileStar): Int {.
   importc: "fwrite", header: "<stdio.h>".}
 
-proc c_exit(errorcode: cint) {.importc: "exit", header: "<stdlib.h>".}
-proc c_ferror(stream: C_TextFileStar): bool {.
+proc cExit(errorcode: Cint) {.importc: "exit", header: "<stdlib.h>".}
+proc cFerror(stream: CTextFileStar): Bool {.
   importc: "ferror", header: "<stdio.h>".}
-proc c_fflush(stream: C_TextFileStar) {.importc: "fflush", header: "<stdio.h>".}
-proc c_abort() {.importc: "abort", header: "<stdlib.h>".}
-proc c_feof(stream: C_TextFileStar): bool {.
+proc cFflush(stream: CTextFileStar) {.importc: "fflush", header: "<stdio.h>".}
+proc cAbort() {.importc: "abort", header: "<stdlib.h>".}
+proc cFeof(stream: CTextFileStar): Bool {.
   importc: "feof", header: "<stdio.h>".}
 
-proc c_malloc(size: int): pointer {.importc: "malloc", header: "<stdlib.h>".}
-proc c_free(p: pointer) {.importc: "free", header: "<stdlib.h>".}
-proc c_realloc(p: pointer, newsize: int): pointer {.
+proc cMalloc(size: Int): Pointer {.importc: "malloc", header: "<stdlib.h>".}
+proc cFree(p: Pointer) {.importc: "free", header: "<stdlib.h>".}
+proc cRealloc(p: Pointer, newsize: Int): Pointer {.
   importc: "realloc", header: "<stdlib.h>".}
 
 when hostOS != "standalone":
   when not defined(errno):
-    var errno {.importc, header: "<errno.h>".}: cint ## error variable
-proc strerror(errnum: cint): cstring {.importc, header: "<string.h>".}
+    var errno {.importc, header: "<errno.h>".}: Cint ## error variable
+proc strerror(errnum: Cint): Cstring {.importc, header: "<string.h>".}
 
-proc c_remove(filename: CString): cint {.
+proc cRemove(filename: Cstring): Cint {.
   importc: "remove", header: "<stdio.h>".}
-proc c_rename(oldname, newname: CString): cint {.
+proc cRename(oldname, newname: Cstring): Cint {.
   importc: "rename", header: "<stdio.h>".}
 
-proc c_system(cmd: CString): cint {.importc: "system", header: "<stdlib.h>".}
-proc c_getenv(env: CString): CString {.importc: "getenv", header: "<stdlib.h>".}
-proc c_putenv(env: CString): cint {.importc: "putenv", header: "<stdlib.h>".}
+proc cSystem(cmd: Cstring): Cint {.importc: "system", header: "<stdlib.h>".}
+proc cGetenv(env: Cstring): Cstring {.importc: "getenv", header: "<stdlib.h>".}
+proc cPutenv(env: Cstring): Cint {.importc: "putenv", header: "<stdlib.h>".}
 
 {.pop}

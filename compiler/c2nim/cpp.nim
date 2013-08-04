@@ -23,7 +23,7 @@ proc skipLine(p: var TParser) =
   while p.tok.xkind notin {pxEof, pxNewLine, pxLineComment}: getTok(p)
   eatNewLine(p, nil)
 
-proc parseDefineBody(p: var TParser, tmplDef: PNode): string = 
+proc parseDefineBody(p: var TParser, tmplDef: PNode): String = 
   if p.tok.xkind == pxCurlyLe or 
     (p.tok.xkind == pxSymbol and (
         declKeyword(p.tok.s) or stmtKeyword(p.tok.s))):
@@ -83,7 +83,7 @@ proc parseDefine(p: var TParser): PNode =
       eatNewLine(p, c)
   assert result != nil
   
-proc parseDefBody(p: var TParser, m: var TMacro, params: seq[string]) =
+proc parseDefBody(p: var TParser, m: var TMacro, params: Seq[String]) =
   m.body = @[]
   # A little hack: We safe the context, so that every following token will be 
   # put into a newly allocated TToken object. Thus we can just save a
@@ -119,7 +119,7 @@ proc parseDef(p: var TParser, m: var TMacro) =
   expectIdent(p)
   m.name = p.tok.s
   getTok(p)
-  var params: seq[string] = @[]
+  var params: Seq[String] = @[]
   # parse parameters:
   if hasParams:
     eat(p, pxParLe)
@@ -134,7 +134,7 @@ proc parseDef(p: var TParser, m: var TMacro) =
   m.params = params.len
   parseDefBody(p, m, params)
   
-proc isDir(p: TParser, dir: string): bool = 
+proc isDir(p: TParser, dir: String): Bool = 
   result = p.tok.xkind in {pxDirectiveParLe, pxDirective} and p.tok.s == dir
 
 proc parseInclude(p: var TParser): PNode = 
@@ -226,7 +226,7 @@ proc skipUntilElifElseEndif(p: var TParser): TEndifMarker =
   
 proc parseIfdef(p: var TParser): PNode = 
   getTok(p) # skip #ifdef
-  ExpectIdent(p)
+  expectIdent(p)
   case p.tok.s
   of "__cplusplus":
     skipUntilEndif(p)
@@ -245,7 +245,7 @@ proc parseIfdef(p: var TParser): PNode =
 proc parseIfndef(p: var TParser): PNode = 
   result = ast.emptyNode
   getTok(p) # skip #ifndef
-  ExpectIdent(p)
+  expectIdent(p)
   if p.tok.s == c2nimSymbol: 
     skipLine(p)
     case skipUntilElifElseEndif(p)
@@ -282,11 +282,11 @@ proc parseIfDir(p: var TParser): PNode =
 proc parsePegLit(p: var TParser): TPeg =
   var col = getColumn(p.lex) + 2
   getTok(p)
-  if p.tok.xkind != pxStrLit: ExpectIdent(p)
+  if p.tok.xkind != pxStrLit: expectIdent(p)
   try:
     result = parsePeg(
       pattern = if p.tok.xkind == pxStrLit: p.tok.s else: escapePeg(p.tok.s), 
-      filename = p.lex.fileIdx.ToFilename, 
+      filename = p.lex.fileIdx.toFilename, 
       line = p.lex.linenumber, 
       col = col)
     getTok(p)
@@ -295,7 +295,7 @@ proc parsePegLit(p: var TParser): TPeg =
 
 proc parseMangleDir(p: var TParser) = 
   var pattern = parsePegLit(p)
-  if p.tok.xkind != pxStrLit: ExpectIdent(p)
+  if p.tok.xkind != pxStrLit: expectIdent(p)
   p.options.mangleRules.add((pattern, p.tok.s))
   getTok(p)
   eatNewLine(p, nil)
@@ -326,7 +326,7 @@ proc parseDir(p: var TParser): PNode =
   of "dynlib", "header", "prefix", "suffix": 
     var key = p.tok.s
     getTok(p)
-    if p.tok.xkind != pxStrLit: ExpectIdent(p)
+    if p.tok.xkind != pxStrLit: expectIdent(p)
     discard setOption(p.options, key, p.tok.s)
     getTok(p)
     eatNewLine(p, nil)

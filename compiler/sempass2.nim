@@ -63,14 +63,14 @@ type
   TEffects = object
     exc: PNode  # stack of exceptions
     tags: PNode # list of tags
-    bottom: int
+    bottom: Int
     owner: PSym
-    init: seq[int] # list of initialized variables
+    init: Seq[Int] # list of initialized variables
     guards: TModel # nested guards
-    locked: seq[PNode] # locked locations
+    locked: Seq[PNode] # locked locations
   PEffects = var TEffects
 
-proc isLocalVar(a: PEffects, s: PSym): bool =
+proc isLocalVar(a: PEffects, s: PSym): Bool =
   s.kind in {skVar, skResult} and sfGlobal notin s.flags and s.owner == a.owner
 
 proc initVar(a: PEffects, n: PNode) =
@@ -95,19 +95,19 @@ proc useVar(a: PEffects, n: PNode) =
     if s.id notin a.init:
       if {tfNeedsInit, tfNotNil} * s.typ.flags != {}:
         when true:
-          Message(n.info, warnProveInit, s.name.s)
+          message(n.info, warnProveInit, s.name.s)
         else:
           Message(n.info, errGenerated,
             "'$1' might not have been initialized" % s.name.s)
       else:
-        Message(n.info, warnUninit, s.name.s)
+        message(n.info, warnUninit, s.name.s)
       # prevent superfluous warnings about the same variable:
       a.init.add s.id
 
 type
-  TIntersection = seq[tuple[id, count: int]] # a simple count table
+  TIntersection = Seq[tuple[id, count: Int]] # a simple count table
 
-proc addToIntersection(inter: var TIntersection, s: int) =
+proc addToIntersection(inter: var TIntersection, s: Int) =
   for j in 0.. <inter.len:
     if s == inter[j].id:
       inc inter[j].count
@@ -162,8 +162,8 @@ proc mergeTags(a: PEffects, b, comesFrom: PNode) =
     for effect in items(b): addTag(a, effect, useLineInfo=comesFrom != nil)
 
 proc listEffects(a: PEffects) =
-  for e in items(a.exc):  Message(e.info, hintUser, typeToString(e.typ))
-  for e in items(a.tags): Message(e.info, hintUser, typeToString(e.typ))
+  for e in items(a.exc):  message(e.info, hintUser, typeToString(e.typ))
+  for e in items(a.tags): message(e.info, hintUser, typeToString(e.typ))
 
 proc catches(tracked: PEffects, e: PType) =
   let e = skipTypes(e, skipPtrs)
@@ -227,7 +227,7 @@ proc trackTryStmt(tracked: PEffects, n: PNode) =
   for id, count in items(inter):
     if count == branches: tracked.init.add id
 
-proc isIndirectCall(n: PNode, owner: PSym): bool =
+proc isIndirectCall(n: PNode, owner: PSym): Bool =
   # we don't count f(...) as an indirect call if 'f' is an parameter.
   # Instead we track expressions of type tyProc too. See the manual for
   # details:
@@ -238,7 +238,7 @@ proc isIndirectCall(n: PNode, owner: PSym): bool =
   elif n.sym.kind notin routineKinds:
     result = true
 
-proc isForwardedProc(n: PNode): bool =
+proc isForwardedProc(n: PNode): Bool =
   result = n.kind == nkSym and sfForward in n.sym.flags
 
 proc trackPragmaStmt(tracked: PEffects, n: PNode) = 
@@ -258,7 +258,7 @@ proc effectSpec(n: PNode, effectType = wRaises): PNode =
         result.add(it.sons[1])
       return
 
-proc documentEffect(n, x: PNode, effectType: TSpecialWord, idx: int) =
+proc documentEffect(n, x: PNode, effectType: TSpecialWord, idx: Int) =
   var x = x
   let spec = effectSpec(x, effectType)
   if isNil(spec):
@@ -310,10 +310,10 @@ proc notNilCheck(tracked: PEffects, n: PNode, paramType: PType) =
       return
     case impliesNotNil(tracked.guards, n)
     of impUnknown:
-      Message(n.info, errGenerated, 
+      message(n.info, errGenerated, 
               "cannot prove '$1' is not nil" % n.renderTree)
     of impNo:
-      Message(n.info, errGenerated, "'$1' is provably nil" % n.renderTree)
+      message(n.info, errGenerated, "'$1' is provably nil" % n.renderTree)
     of impYes: discard
 
 proc trackOperand(tracked: PEffects, n: PNode, paramType: PType) =
@@ -335,7 +335,7 @@ proc trackOperand(tracked: PEffects, n: PNode, paramType: PType) =
       mergeTags(tracked, effectList.sons[tagEffects], n)
   notNilCheck(tracked, n, paramType)
 
-proc breaksBlock(n: PNode): bool =
+proc breaksBlock(n: PNode): Bool =
   case n.kind
   of nkStmtList, nkStmtListExpr:
     for c in n: 
@@ -428,11 +428,11 @@ proc trackBlock(tracked: PEffects, n: PNode) =
   else:
     track(tracked, n)
 
-proc isTrue(n: PNode): bool =
+proc isTrue(n: PNode): Bool =
   n.kind == nkSym and n.sym.kind == skEnumField and n.sym.position != 0 or
     n.kind == nkIntLit and n.intVal != 0
 
-proc paramType(op: PType, i: int): PType =
+proc paramType(op: PType, i: Int): PType =
   if op != nil and i < op.len: result = op.sons[i]
 
 proc track(tracked: PEffects, n: PNode) =
@@ -528,7 +528,7 @@ proc track(tracked: PEffects, n: PNode) =
   else:
     for i in 0 .. <safeLen(n): track(tracked, n.sons[i])
 
-proc checkRaisesSpec(spec, real: PNode, msg: string, hints: bool) =
+proc checkRaisesSpec(spec, real: PNode, msg: String, hints: Bool) =
   # check that any real exception is listed in 'spec'; mark those as used;
   # report any unused exception
   var used = initIntSet()
@@ -546,7 +546,7 @@ proc checkRaisesSpec(spec, real: PNode, msg: string, hints: bool) =
   if hints:
     for s in 0 .. <spec.len:
       if not used.contains(s):
-        Message(spec[s].info, hintXDeclaredButNotUsed, renderTree(spec[s]))
+        message(spec[s].info, hintXDeclaredButNotUsed, renderTree(spec[s]))
 
 proc checkMethodEffects*(disp, branch: PSym) =
   ## checks for consistent effects for multi methods.
@@ -600,7 +600,7 @@ proc trackProc*(s: PSym, body: PNode) =
       s.kind in {skProc, skConverter, skMethod}:
     var res = s.ast.sons[resultPos].sym # get result symbol
     if res.id notin t.init:
-      Message(body.info, warnProveInit, "result")
+      message(body.info, warnProveInit, "result")
   let p = s.ast.sons[pragmasPos]
   let raisesSpec = effectSpec(p, wRaises)
   if not isNil(raisesSpec):

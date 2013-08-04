@@ -18,7 +18,7 @@ import
 # be part of C string literals.
 
 const
-  CFileSectionNames: array[TCFileSection, string] = [
+  CFileSectionNames: Array[TCFileSection, String] = [
     cfsMergeInfo: "",
     cfsHeaders: "NIM_merge_HEADERS",
     cfsForwardTypes: "NIM_merge_FORWARD_TYPES",
@@ -38,7 +38,7 @@ const
     cfsDynLibInit: "NIM_merge_DYNLIB_INIT",
     cfsDynLibDeinit: "NIM_merge_DYNLIB_DEINIT",
   ]
-  CProcSectionNames: array[TCProcSection, string] = [
+  CProcSectionNames: Array[TCProcSection, String] = [
     cpsLocals: "NIM_merge_PROC_LOCALS",
     cpsInit: "NIM_merge_PROC_INIT",
     cpsStmts: "NIM_merge_PROC_BODY"
@@ -69,7 +69,7 @@ proc genSectionEnd*(ps: TCProcSection): PRope =
   if compilationCachePresent:
     result = toRope(NimMergeEndMark & tnl)
 
-proc writeTypeCache(a: TIdTable, s: var string) =
+proc writeTypeCache(a: TIdTable, s: var String) =
   var i = 0
   for id, value in pairs(a):
     if i == 10:
@@ -83,7 +83,7 @@ proc writeTypeCache(a: TIdTable, s: var string) =
     inc i
   s.add('}')
 
-proc writeIntSet(a: TIntSet, s: var string) =
+proc writeIntSet(a: TIntSet, s: var String) =
   var i = 0
   for x in items(a):
     if i == 10:
@@ -113,7 +113,7 @@ proc genMergeInfo*(m: BModule): PRope =
   s.add("*/")
   result = s.toRope
 
-template `^`(pos: expr): expr = L.buf[pos]
+template `^`(pos: Expr): Expr = L.buf[pos]
 
 proc skipWhite(L: var TBaseLexer) =
   var pos = L.bufpos
@@ -140,7 +140,7 @@ proc skipUntilCmd(L: var TBaseLexer) =
     else: inc pos
   L.bufpos = pos
 
-proc atEndMark(buf: cstring, pos: int): bool =
+proc atEndMark(buf: Cstring, pos: Int): Bool =
   var s = 0
   while s < NimMergeEndMark.len and buf[pos+s] == NimMergeEndMark[s]: inc s
   result = s == NimMergeEndMark.len
@@ -187,7 +187,7 @@ proc readVerbatimSection(L: var TBaseLexer): PRope =
       buf = L.buf
       r.add(tnl)
     of '\0':
-      InternalError("ccgmerge: expected: " & NimMergeEndMark)
+      internalError("ccgmerge: expected: " & NimMergeEndMark)
       break
     else: 
       if atEndMark(buf, pos):
@@ -198,7 +198,7 @@ proc readVerbatimSection(L: var TBaseLexer): PRope =
   L.bufpos = pos
   result = r.toRope
 
-proc readKey(L: var TBaseLexer, result: var string) =
+proc readKey(L: var TBaseLexer, result: var String) =
   var pos = L.bufpos
   var buf = L.buf
   setLen(result, 0)
@@ -208,7 +208,7 @@ proc readKey(L: var TBaseLexer, result: var string) =
   if buf[pos] != ':': internalError("ccgmerge: ':' expected")
   L.bufpos = pos + 1 # skip ':'
 
-proc NewFakeType(id: int): PType = 
+proc newFakeType(id: Int): PType = 
   new(result)
   result.id = id
 
@@ -224,7 +224,7 @@ proc readTypeCache(L: var TBaseLexer, result: var TIdTable) =
     # XXX little hack: we create a "fake" type object with the correct Id
     # better would be to adapt the data structure to not even store the
     # object as key, but only the Id
-    IdTablePut(result, newFakeType(key), value.toRope)
+    idTablePut(result, newFakeType(key), value.toRope)
   inc L.bufpos
 
 proc readIntSet(L: var TBaseLexer, result: var TIntSet) =
@@ -250,13 +250,13 @@ proc processMergeInfo(L: var TBaseLexer, m: BModule) =
     of "typeInfo":  readIntSet(L, m.typeInfoMarker)
     of "labels":    m.labels = decodeVInt(L.buf, L.bufpos)
     of "hasframe":  m.FrameDeclared = decodeVInt(L.buf, L.bufpos) != 0
-    else: InternalError("ccgmerge: unkown key: " & k)
+    else: internalError("ccgmerge: unkown key: " & k)
 
 when not defined(nimhygiene):
   {.pragma: inject.}
   
-template withCFile(cfilename: string, body: stmt) {.immediate.} = 
-  var s = LLStreamOpen(cfilename, fmRead)
+template withCFile(cfilename: String, body: Stmt) {.immediate.} = 
+  var s = lLStreamOpen(cfilename, fmRead)
   if s == nil: return
   var L {.inject.}: TBaseLexer
   openBaseLexer(L, s)
@@ -267,7 +267,7 @@ template withCFile(cfilename: string, body: stmt) {.immediate.} =
     body
   closeBaseLexer(L)
   
-proc readMergeInfo*(cfilename: string, m: BModule) =
+proc readMergeInfo*(cfilename: String, m: BModule) =
   ## reads the merge meta information into `m`.
   withCFile(cfilename):
     readKey(L, k)
@@ -280,7 +280,7 @@ type
     f: TCFileSections
     p: TCProcSections
 
-proc readMergeSections(cfilename: string, m: var TMergeSections) =
+proc readMergeSections(cfilename: String, m: var TMergeSections) =
   ## reads the merge sections into `m`.
   withCFile(cfilename):
     readKey(L, k)
@@ -293,18 +293,18 @@ proc readMergeSections(cfilename: string, m: var TMergeSections) =
       var verbatim = readVerbatimSection(L)
       skipWhite(L)
       var sectionA = CFileSectionNames.find(k)
-      if sectionA > 0 and sectionA <= high(TCFileSection).int:
+      if sectionA > 0 and sectionA <= high(TCFileSection).Int:
         m.f[TCFileSection(sectionA)] = verbatim
       else:
         var sectionB = CProcSectionNames.find(k)
-        if sectionB >= 0 and sectionB <= high(TCProcSection).int:
+        if sectionB >= 0 and sectionB <= high(TCProcSection).Int:
           m.p[TCProcSection(sectionB)] = verbatim
         else:
-          InternalError("ccgmerge: unknown section: " & k)
+          internalError("ccgmerge: unknown section: " & k)
     else:
-      InternalError("ccgmerge: '*/' expected")
+      internalError("ccgmerge: '*/' expected")
 
-proc mergeRequired*(m: BModule): bool =
+proc mergeRequired*(m: BModule): Bool =
   for i in cfsHeaders..cfsProcs:
     if m.s[i] != nil:
       #echo "not empty: ", i, " ", ropeToStr(m.s[i])
@@ -314,7 +314,7 @@ proc mergeRequired*(m: BModule): bool =
       #echo "not empty: ", i, " ", ropeToStr(m.initProc.s[i])
       return true
 
-proc mergeFiles*(cfilename: string, m: BModule) =
+proc mergeFiles*(cfilename: String, m: BModule) =
   ## merges the C file with the old version on hard disc.
   var old: TMergeSections
   readMergeSections(cfilename, old)
